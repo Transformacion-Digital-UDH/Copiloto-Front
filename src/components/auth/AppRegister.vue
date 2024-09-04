@@ -15,17 +15,10 @@
           <router-link to="/login" class="text-base hover:underline">Inicia sesión aquí</router-link>
         </p>
       </div>
-      <!-- Botones de Google -->
-      <div class="flex justify-center mb-6">
-        <button class="flex items-center justify-center bg-white border border-gray-300 hover:border-gray-400 text-gray-700 font-medium px-4 py-2 rounded shadow hover:shadow-md transition duration-150" type="button">
-          <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2 flex-shrink-0" />
-          <span>Continuar con Google</span>
-        </button>
-      </div>
       <!-- Separador -->
       <div class="flex items-center justify-center my-2">
         <hr class="flex-1 border-t border-gray-300" />
-        <span class="mx-4 text-gray-900">O regístrate usando tu correo electrónico y contraseña</span>
+        <span class="mx-4 text-gray-900"> </span>
         <hr class="flex-1 border-t border-gray-300" />
       </div>
       <!-- Formulario de Registro -->
