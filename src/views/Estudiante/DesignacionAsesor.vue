@@ -14,7 +14,7 @@ const trámites = ref([
 
 <template>
   <div class="flex-1 p-6 font-Roboto">
-    <h3 class="text-4xl font-semibold text-center text-gray-700">
+    <h3 class="text-4xl font-medium text-center text-gray-700">
       Designación de Asesor
     </h3>
     <div class="mt-6">

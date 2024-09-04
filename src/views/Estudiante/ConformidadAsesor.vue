@@ -63,7 +63,7 @@ function solicitarRevision() {
         <!-- Informe de Conformidad de Observaciones -->
         <div class="mb-8">
           <h4 class="text-2xl font-medium text-black mb-4">3. Informe de Conformidad de Observaciones</h4>
-          <div class="bg-white rounded-md shadow-sm custom-rounded px-5 py-6">
+          <div class="bg-white rounded-md shadow-xl custom-rounded px-5 py-6">
             <p class="mb-4 text-1xl">Por tu asesor elegido</p>
             <div class="flex items-center justify-between mb-4">
               <input id="informe" type="text" value="imageattachment.jpg" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6" disabled>
