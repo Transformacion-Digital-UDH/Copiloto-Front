@@ -1,11 +1,16 @@
+<script setup>
+import AppHeader from '../components/AppHeader.vue';
+import AppFooter from '../components/AppFooter.vue';
+</script>
+
 <template>
     <header>
-        header
+        <AppHeader />
     </header>
     <main>
         <RouterView />
     </main>
     <footer>
-        footer
+        <AppFooter />
     </footer>
 </template>
