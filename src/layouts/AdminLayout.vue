@@ -14,7 +14,7 @@ import Sidebar from '../components/Sidebar.vue';
       <AdminHeader />
 
       <!-- Content area with scroll -->
-      <main class="flex-grow overflow-y-auto p-4 bg-gray-100">
+      <main class="flex-grow overflow-y-auto bg-white">
         <router-view />
       </main>
     </div>

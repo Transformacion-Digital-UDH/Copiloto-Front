@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
 
-const activeDropdownIndex = ref<number | null>(null);
-const showModal = ref(false);
-const showRejectModal = ref(false); // Nuevo estado para el modal de rechazo
-const selectedFilter = ref(''); // Estado seleccionado para el filtro
-const rowsPerPage = ref(5); // Cantidad de filas por página
-const currentPage = ref(1); // Página actual
+const activeDropdownIndex = ref<number | null>(null);  // dropdown generar y rechazar
+const showModal = ref(false); // para ver el modal de aprobado
+const showRejectModal = ref(false);  // para ver el modal de rechazado
+const selectedFilter = ref(''); // para seleccionar el estado
+const rowsPerPage = ref(5) // cantidad para mostrar en la tabla
+const currentPage = ref(1); // pagina actual
 
 function toggleDropdown(index: number) {
   activeDropdownIndex.value = activeDropdownIndex.value === index ? null : index;
@@ -22,24 +22,17 @@ function openRejectModal() {
 
 function closeModal() {
   showModal.value = false;
-  showRejectModal.value = false; // Cerrar ambos modales
+  showRejectModal.value = false; // cerrar ambos modales
 }
 
-// Simulación de datos para la tabla
+// simulacion de datos
 const tableData = ref([
-  { name: 'Estudiante 1', role: 'Implementación de una plataforma de comercio electrónico para mejorar la venta de los agricultores en la región de Huánuco', status: 'Completado', statusColor: 'estadoVerde' },
-  { name: 'Estudiante 2', role: 'Título 2', status: 'En Proceso', statusColor: 'yellow' },
-  { name: 'Estudiante 3', role: 'Título 3', status: 'Pendiente', statusColor: 'estadoPlomo' },
-  { name: 'Estudiante 1', role: 'Título 1', status: 'Completado', statusColor: 'estadoVerde' },
-  { name: 'Estudiante 2', role: 'Título 2', status: 'En Proceso', statusColor: 'yellow' },
-  { name: 'Estudiante 3', role: 'Título 3', status: 'Pendiente', statusColor: 'estadoPlomo' },
-  { name: 'Estudiante 1', role: 'Título 1', status: 'Completado', statusColor: 'estadoVerde' },
-  { name: 'Estudiante 2', role: 'Título 2', status: 'En Proceso', statusColor: 'yellow' },
-  { name: 'Estudiante 3', role: 'Título 3', status: 'Pendiente', statusColor: 'estadoPlomo' },
-  // Otros datos...
+  { name: 'Estudiante 1', role: 'Título 1 implementacion de un sistema web para el estudio viable', status: 'Completado', statusColor: 'estadoVerde' },
+  { name: 'Estudiante 2', role: 'Título 2 implementacion de un algoritmo muy basico para el ingeniero', status: 'En Proceso', statusColor: 'yellow' },
+  { name: 'Estudiante 3', role: 'Título 3 implementacion de una base de datos para el rectorado izi', status: 'Pendiente', statusColor: 'estadoPlomo' },
 ]);
 
-// Computed property to filter table data based on selected filter and pagination
+// para filtrar datos segun el filtro y paginacion seleccionado
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
@@ -55,27 +48,31 @@ const filteredTableData = computed(() => {
 
 // Total de páginas
 const totalPages = computed(() => {
+  // Filtra los datos si hay un filtro seleccionado
   const filteredData = selectedFilter.value
     ? tableData.value.filter(data => data.status === selectedFilter.value)
     : tableData.value;
+  // Calcula el número total de páginas basadas en los datos filtrados y las filas por pagina
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
 // Manejo de la página anterior y siguiente
 function goToPreviousPage() {
+   // decrementa la página actual si no es la última página
   if (currentPage.value > 1) currentPage.value--;
 }
 
 function goToNextPage() {
+   // Incrementa la página actual si no es la última página
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 </script>
 
 <template>
-  <div class="flex h-screen bg-gray-200 font-roboto">
-    <div class="flex-1 p-6 overflow-auto">
+  <div class="flex h-screen border-s-2 font-roboto">
+    <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Solicitud de Asesoría
+        Solicitud de asesoría
       </h3>
 
       <div class="mt-8">
@@ -164,16 +161,16 @@ function goToNextPage() {
                         {{ u.role }}
                       </p>
                     </td>
-                    <td class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative">
+                    <td class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative">
                       <button class="focus:outline-none" @click="toggleDropdown(index)">
-                        <svg class="w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        <svg class="w-4 h-4 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none"
                           viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M4 6h16M4 12h16m-7 6h7" />
                         </svg>
                       </button>
                       <div v-if="activeDropdownIndex === index"
-                        class="absolute right-0 z-10 w-32 mt-2 origin-top-right bg-white border border-gray-200 rounded-md shadow-lg">
+                        class="absolute left-1/2 transform -translate-x-1/2 z-10 w-24 origin-top-center bg-white border border-gray-200 rounded-lg shadow-lg">
                         <div class="py-1">
                           <a href="#" class="block px-4 py-2 text-sm text-estadoVerde font-Thin 100 hover:bg-green-100 "
                             @click="openModal">
@@ -197,13 +194,13 @@ function goToNextPage() {
                 <span class="text-xs text-gray-900 xs:text-sm">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }}
                   al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}
                   entradas</span>
-                <div class="inline-flex mt-2 xs:mt-0">
+                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
                   <button :disabled="currentPage === 1" @click="goToPreviousPage"
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400">
+                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400">
                     Anterior
                   </button>
                   <button :disabled="currentPage === totalPages" @click="goToNextPage"
-                    class="px-4 py-2 text-sm font-semibold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400">
+                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400">
                     Siguiente
                   </button>
                 </div>
@@ -213,14 +210,14 @@ function goToNextPage() {
         </div>
       </div>
       <!-- Modal de confirmación -->
-      <div v-if="showModal"
+      <div   v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-lg font-ligth text-gray-900">
+            <h5 class="text-lg font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-400 hover:text-gray-500" @click="closeModal">
+            <button class="text-gray-900" @click="closeModal">
               <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -233,11 +230,11 @@ function goToNextPage() {
             </p>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded hover:bg-gray-400"
+            <button class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
               @click="closeModal">
               Cancelar
             </button>
-            <button class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base hover:bg-base" @click="closeModal">
+            <button class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base hover:bg-base rounded-2xl" @click="closeModal">
               Aceptar
             </button>
           </div>
@@ -249,10 +246,10 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-lg font-Thin 100 text-gray-900">
+            <h5 class="text-lg font-Thin 100 text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-400 hover:text-gray-500" @click="closeModal">
+            <button class="text-gray-900" @click="closeModal">
               <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -265,11 +262,11 @@ function goToNextPage() {
             </p>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded hover:bg-gray-400"
+            <button class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
               @click="closeModal">
               Cancelar
             </button>
-            <button class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded hover:bg-base"
+            <button class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
               @click="closeModal">
               Aceptar
             </button>
@@ -279,9 +276,6 @@ function goToNextPage() {
     </div>
   </div>
 </template>
-
-
-
 
 <style scoped>
 .estado-estilo {

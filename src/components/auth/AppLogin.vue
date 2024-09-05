@@ -7,6 +7,7 @@ import router from "@/router";
 const email = ref("");
 const password = ref("");
 const errorMessage = ref<string | null>(null);
+const rememberMe = ref(false);
 
 // Manejo del inicio de sesión
 const handleLogin = async () => {
@@ -51,6 +52,9 @@ const handleLogin = async () => {
 <template>
   <div class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg px-8 py-6">
+      <div class="flex justify-center mb-6">
+        <img src="/img/logo.svg" alt="Logo" class="h-16 w-auto"/>
+      </div>
       <div class="text-center mb-6">
         <h6 class="text-2xl text-azul font-semibold">Iniciar sesión</h6>
         <p class="text-sm text-gray-600">
@@ -59,6 +63,11 @@ const handleLogin = async () => {
             >Regístrate aquí</router-link
           >
         </p>
+      </div>
+      <div class="flex items-center justify-center my-4">
+        <hr class="w-1/3 border-t border-gray-300" />
+        <span class="mx-2 text-gray-500"> </span>
+        <hr class="w-1/3 border-t border-gray-300" />
       </div>
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
@@ -90,6 +99,12 @@ const handleLogin = async () => {
             class="input-field"
             required
           />
+        </div>
+        <div class="flex justify-between items-center mb-4">
+          <label class="inline-flex items-center">
+            <input type="checkbox" class="form-checkbox rounded text-blue-600" v-model="rememberMe" />
+            <span class="ml-2 text-sm text-gray-600">Mantener sesión activa</span>
+          </label>
         </div>
         <div class="text-center mt-6">
           <button

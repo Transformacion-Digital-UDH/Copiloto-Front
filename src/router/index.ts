@@ -7,6 +7,7 @@ import AppRegister from '../components/auth/AppRegister.vue'
 import DesignacionAsesor from '../views/Estudiante/DesignacionAsesor.vue'
 import SolicitudAsesoria from '../views/Asesor/SolicitudAsesoria.vue'
 import ConformidadAsesor from '@/views/Estudiante/ConformidadAsesor.vue'
+import ProyectoTesis from '../views/Asesor/ProyectoTesis.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +32,7 @@ const router = createRouter({
       component: AdminLayout,
       children: [
         { path: 'solicitud-asesoria', name: 'SolicitudAsesoria', component: SolicitudAsesoria },
+        { path: 'proyecto-tesis', name: 'ProyectoTesis', component: ProyectoTesis},
       ]
     },
     {

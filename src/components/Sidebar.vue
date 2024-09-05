@@ -10,30 +10,28 @@
 
     <div
       :class="isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'"
-      class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-white lg:translate-x-0 lg:static lg:inset-0"
+      class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-white sidebar lg:translate-x-0 lg:static lg:inset-0"
     >
       <!-- LOGO COPILOTO -->
       <div class="flex items-center justify-center mt-8">
-        <div class="flex flex-shrink-0 items-center">
-          <a href="/" aria-label="Inicio">
+          <a aria-label="Inicio">
             <img class="h-10 w-auto" src="/img/logo.svg" alt="Logo" />
           </a>
-        </div>
       </div>
 
       <!-- INFO DEL ESTUDIANTE COMO EL NOMBRE -->
       <div class="flex flex-col items-center justify-center mt-10">
-        <div class="w-24 h-24 overflow-hidden rounded-full shadow-lg">
+        <div class="w-24 h-24 overflow-hidden rounded-full shadow-lg mb-4">
           <img
             class="object-cover w-full h-full"
             :src="EstudianteAvatar"
-            alt="Avatar"
-          />
-        </div><br>
+            alt="Avatar"/>
+        </div>
         <div class="text-center w-full max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ EstudianteNombre }}</h2>
           <p class="text-base text-gray-600 break-words">{{ EstudianteCarrera }}</p>
         </div>
+        
       </div>
 
       <!-- INFO DEL ESTUDIANTE COMO PROGRESO -->
@@ -134,8 +132,12 @@ export default defineComponent({
             path: '/vistaEstudiante/aprobacion-proyecto' },
 
           { name: 'Solicitud asesoria', 
-          label: 'Solicitud asesoria', 
-          path: '/asesor/solicitud-asesoria' },
+            label: 'Solicitud asesoria', 
+            path: '/asesor/solicitud-asesoria' },
+
+          { name: 'Proyecto Tesis', 
+            label: 'Proyecto tesis', 
+            path: '/asesor/proyecto-tesis' },
         ]
       },
       { 
