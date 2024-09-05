@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/*/.{vue,js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -16,7 +16,7 @@ export default {
       },
       fontWeight: {
         Medium: 500,
-        SemiBold: 600, 
+        SemiBold: 600, // Define el peso de fuente SemiBold
       },
       width: {
         '7/10': '75%',

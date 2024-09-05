@@ -1,5 +1,7 @@
 import './assets/css/main.css'
+//import './assets/tailwind.css';
 
+import '@fortawesome/fontawesome-free/css/all.css';
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
