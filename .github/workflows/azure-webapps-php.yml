@@ -16,6 +16,7 @@ jobs:
         username: ${{ secrets.DEV_SSH_USER }}
         key: ${{ secrets.DEV_SSH_KEY }}
         script: |
+          source ~/.bashrc
           cd htdocs/titulacion.abimaelfv.site
           git pull origin main
           ls
