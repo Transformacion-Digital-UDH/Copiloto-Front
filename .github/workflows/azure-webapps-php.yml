@@ -21,6 +21,4 @@ jobs:
         key: ${{ secrets.DEV_SSH_KEY }}
         script: |
           cd htdocs/titulacion.abimaelfv.site
-          git pull origin main
-          npm install
-          npm run build
+          git pull origin main && npm install && npm run build && ls
