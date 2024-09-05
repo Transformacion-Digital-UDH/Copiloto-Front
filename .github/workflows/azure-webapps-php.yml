@@ -17,6 +17,10 @@ jobs:
         key: ${{ secrets.DEV_SSH_KEY }}
         script: |
           source ~/.bashrc
+          source ~/.bashrc
+          export PATH=$PATH:/usr/local/bin
+          node -v
+          npm -v
           cd htdocs/titulacion.abimaelfv.site
           git pull origin main
           ls
