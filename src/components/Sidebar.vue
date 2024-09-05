@@ -121,15 +121,15 @@ export default defineComponent({
 
           { name: 'Designacion de jurados', 
             label: 'Designación de jurados', 
-            path: '/vistaEstudiante/designacion-jurados' },
+            path: '/estudiante/designacion-jurado' },
 
           { name: 'Conformidad por el jurado', 
             label: 'Conformidad por el jurado', 
-            path: '/vistaEstudiante/conformidad-jurado' },
+            path: '/estudiante/conformidad-jurado' },
 
           { name: 'Aprobacion del proyecto', 
             label: 'Aprobación del proyecto', 
-            path: '/vistaEstudiante/aprobacion-proyecto' },
+            path: '/estudiante/aprobacion-proyecto' },
 
           { name: 'Solicitud asesoria', 
             label: 'Solicitud asesoria', 
