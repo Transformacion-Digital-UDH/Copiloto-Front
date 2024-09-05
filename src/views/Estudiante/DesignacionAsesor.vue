@@ -13,8 +13,8 @@ const trámites = ref([
 </script>
 
 <template>
-  <div class="flex-1 p-6 font-Roboto">
-    <h3 class="text-4xl font-medium text-center text-gray-700">
+  <div class="flex-1 p-10 border-s-2 font-Roboto">
+    <h3 class="text-4xl font-semibold text-center text-gray-700">
       Designación de Asesor
     </h3>
     <div class="mt-6">
