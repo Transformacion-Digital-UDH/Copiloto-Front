@@ -1,4 +1,4 @@
-name: Deploy VPS de Prueba
+name: Deploy to VPS
 
 on:
   push:
@@ -13,15 +13,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Run deployment script
+    - name: Deploy to Server
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.DEV_SSH_HOST }}
-        username: ${{ secrets.DEV_SSH_USER }}
-        key: ${{ secrets.DEV_SSH_KEY }}
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
         script: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
           cd htdocs/titulacion.abimaelfv.site
-          ls
           git pull origin main
           ls
+          npm install
+          npm run build
           ls
+
