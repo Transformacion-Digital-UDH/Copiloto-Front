@@ -16,10 +16,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      component: AppLayout,
-      children: [
-        { path: '', name: 'home', component: Home },
-      ]
+      name: 'login',
+      component: AppLogin,
+      meta: {
+        title: 'Login',
+      },
     },
     {
       path: '/estudiante',
@@ -38,15 +39,7 @@ const router = createRouter({
       children: [
         { path: 'solicitud-asesoria', name: 'SolicitudAsesoria', component: SolicitudAsesoria },
       ]
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: AppLogin,
-      meta: {
-        title: 'Login',
-      },
-    },
+    }, 
     {
       path: '/register',
       name: 'register',
