@@ -46,25 +46,24 @@ const procesos = ref([
           2. Solicitar designación de Jurados
         </h2>
         <div class="mt-4">
-            <div class="mt-4">
-        <div class="bg-white rounded-md shadow-xl px-5 py-6">
+          <div class="bg-white rounded-md shadow-xl px-5 py-6">
             <!-- Contenedor del título y estado en una fila -->
             <div class="flex items-center justify-between">
-            <h4 class="text-lg font-light text-gray-800">
+              <h4 class="text-lg font-light text-gray-800">
                 Haz click en el botón de Solicitar Jurados para seguir con el proceso
-            </h4>
-            <span class="estado-estilo estado-en-proceso">En Proceso</span>
+              </h4>
+              <span class="estado-estilo estado-en-proceso">En Proceso</span>
             </div>
             <!-- Botón centrado abajo -->
             <div class="flex justify-center mt-6">
-            <button class="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed" disabled>
+              <button class="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed" disabled>
                 SOLICITAR JURADOS
-            </button>
+              </button>
             </div>
+          </div>
         </div>
-    </div>
-</div>
-</div>
+      </div>
+
       <!-- Sección 3: Designación de Jurados por el Coordinador -->
       <div class="mt-8">
         <h2 class="text-2xl font-medium text-black">
@@ -86,31 +85,31 @@ const procesos = ref([
           </div>
         </div>
       </div>
+
       <!-- Sección 4: Solicitar Cambio de Jurado -->
       <div class="mt-8">
         <h2 class="text-2xl font-medium text-black">
           4. Solicitar cambio de jurado
         </h2>
         <div class="mt-4">
-  <div class="bg-white rounded-md shadow-xl px-5 py-6">
-    <!-- Contenedor del título y estado en una fila -->
-    <div class="flex items-center justify-between">
-      <h4 class="text-lg font-light text-gray-800">
-        Haz click en el botón de Solicitar cambio de jurado
-      </h4>
-      <span class="estado-estilo estado-no-solicitado">No solicitado</span>
-    </div>
-    <!-- Botón centrado abajo -->
-    <div class="flex justify-center mt-6">
-      <button class="px-4 py-2 bg-base text-white rounded-md flex justify-center">
-        SOLICITAR CAMBIO DE JURADOS
-      </button>
-    </div>
-  </div>
-</div>
-
+          <div class="bg-white rounded-md shadow-xl px-5 py-6">
+            <!-- Contenedor del título y estado en una fila -->
+            <div class="flex items-center justify-between">
+              <h4 class="text-lg font-light text-gray-800">
+                Haz click en el botón de Solicitar cambio de jurado
+              </h4>
+              <span class="estado-estilo estado-no-solicitado">No solicitado</span>
+            </div>
+            <!-- Botón centrado abajo -->
+            <div class="flex justify-center mt-6">
+              <button class="px-4 py-2 bg-base text-white rounded-md flex justify-center">
+                SOLICITAR CAMBIO DE JURADOS
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-      
+
     </div>
   </div>
 </template>
