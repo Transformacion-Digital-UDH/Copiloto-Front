@@ -80,7 +80,7 @@ const handleLogin = async () => {
           class="absolute bg-white px-2 text-gray-500 text-sm"
           style="top: -0.75rem; left: 50%; transform: translateX(-50%)"
         >
-          o
+          O
         </span>
       </div>
 
