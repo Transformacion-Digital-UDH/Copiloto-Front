@@ -1,4 +1,4 @@
-name: Deploy VPS de Prueba
+name: Desplegar VPS de Prueba
 on:
   push:
     branches:
@@ -7,9 +7,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
+    - name: Obtener código GitHub
       uses: actions/checkout@v2
-    - name: Run deployment script
+    - name: Ejecutar script de despliegue
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.DEV_SSH_HOST }}
@@ -19,6 +19,5 @@ jobs:
           node -v
           npm -v
           cd htdocs/titulacion.abimaelfv.site
-          git pull origin main
           npm install
           npm run build
