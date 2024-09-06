@@ -230,13 +230,11 @@ const totalPages = computed(() => {
                         {{ u.name }}
                       </p>
                     </td>
-                    <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                    >
-                      <p class="text-gray-900 whitespace-nowrap">
-                        {{ u.title }}
-                      </p>
-                    </td>
+                    <td class="title-cell px-5 py-5 text-sm bg-white border-b border-gray-200">
+      <p class="text-gray-900">
+        {{ u.title }}
+      </p>
+    </td> 
                     <td
                       class="px-11 py-5 text-sm bg-white border-b border-gray-200 relative"
                     >
@@ -267,18 +265,39 @@ const totalPages = computed(() => {
                       class="px-10 py-5 text-sm bg-white border-b border-gray-200"
                     >
                       <button
-                        :class="{ verde: activo, gris: !activo }"
+                        :class="{
+                          'circle-button': true,
+                          red: !activo,
+                          green: activo,
+                        }"
                         @click="cambiarEstado"
-                      >
-                        aaaaa
-                      </button>
+                      ></button>
+                    </td>
+
+                    <td
+                      class="px-10 py-5 text-sm bg-white border-b border-gray-200"
+                    >
+                      <button
+                        :class="{
+                          'circle-button': true,
+                          red: !activo,
+                          green: activo,
+                        }"
+                        @click="cambiarEstado"
+                      ></button>
                     </td>
                     <td
                       class="px-10 py-5 text-sm bg-white border-b border-gray-200"
-                    ></td>
-                    <td
-                      class="px-10 py-5 text-sm bg-white border-b border-gray-200"
-                    ></td>
+                    >
+                      <button
+                        :class="{
+                          'circle-button': true,
+                          red: !activo,
+                          green: activo,
+                        }"
+                        @click="cambiarEstado"
+                      ></button>
+                    </td>
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200 space-x-1"
                     >
@@ -305,34 +324,34 @@ const totalPages = computed(() => {
                   </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
 
-              <!-- paginacion -->
-              <div
-                class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+          <!-- paginacion -->
+          <div
+            class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+          >
+            <span class="text-xs text-gray-900 xs:text-sm"
+              >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+              {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
+              {{ tableData.length }}
+              entradas
+            </span>
+            <div class="inline-flex mt-2 xs:mt-0 space-x-8">
+              <button
+                :disabled="currentPage === 1"
+                @click="goToPreviousPage"
+                class="button"
               >
-                <span class="text-xs text-gray-900 xs:text-sm"
-                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}
-                  entradas
-                </span>
-                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
-                  <button
-                    :disabled="currentPage === 1"
-                    @click="goToPreviousPage"
-                    class="button"
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    :disabled="currentPage === totalPages"
-                    @click="goToNextPage"
-                    class="button"
-                  >
-                    Siguiente
-                  </button>
-                </div>
-              </div>
+                Anterior
+              </button>
+              <button
+                :disabled="currentPage === totalPages"
+                @click="goToNextPage"
+                class="button"
+              >
+                Siguiente
+              </button>
             </div>
           </div>
         </div>
@@ -471,11 +490,33 @@ const totalPages = computed(() => {
   color: #ffffff;
 }
 
-.verde {
-  background-color: #48bb78;
+.circle-button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.3s ease;
 }
 
-.gris {
-  background-color: #8898aa;
+.red {
+  background-color: red;
 }
+
+.green {
+  background-color: green;
+}
+/* Asegúrate de que el contenedor tenga un ancho máximo y ajuste el texto */
+.title-cell {
+  max-width: 300px; /* Ajusta el valor según sea necesario */
+  overflow-wrap: break-word;
+}
+
+/* Opcional: puedes ajustar la fuente y el espaciado según el diseño */
+.title-cell p {
+  margin: 0; /* Elimina el margen para un mejor ajuste */
+  white-space: normal; /* Permite que el texto se ajuste en varias líneas */
+}
+
 </style>
