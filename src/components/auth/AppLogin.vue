@@ -54,7 +54,7 @@ const handleLogin = async () => {
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg px-8 py-6">
       <div class="text-center mb-6">
         <img src="/img/logo.svg" alt="Logo" class="mx-auto mb-6 w-48" />
-        <h6 class="text-2xl text-azul font-semibold">Iniciar sesión prueba</h6>
+        <h6 class="text-2xl text-azul font-semibold">Iniciar sesión</h6>
         <p class="text-sm text-gray-600">
           ¿Aún no tienes una cuenta?
           <router-link to="/register" class="text-base hover:underline"
