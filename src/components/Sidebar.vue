@@ -141,8 +141,14 @@ export default defineComponent({
 
           { name: 'Solicitud Jurado',
             label: 'Solicitud Jurado',
-            path: '/jurado/solicitud-jurado',
-          }
+            path: '/jurado/solicitud-jurado'
+          },
+
+          {
+            name: 'Jurado Presidente',
+            label: 'Jurado Presidente',
+            path: '/jurado/solicitud-jurado-presidente'
+          },
         ]
       },
       { 
