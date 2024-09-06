@@ -138,6 +138,11 @@ export default defineComponent({
           { name: 'Proyecto Tesis', 
             label: 'Proyecto tesis', 
             path: '/asesor/proyecto-tesis' },
+
+          { name: 'Solicitud Jurado',
+            label: 'Solicitud Jurado',
+            path: '/jurado/solicitud-jurado',
+          }
         ]
       },
       { 
