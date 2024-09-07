@@ -27,6 +27,7 @@ const trámites = ref<Trámite[]>([
 
 // Título de tesis simulado como si viniera del backend
 const tituloTesis = ref('Implementación de un chatbot para el sistema de trámite');
+const mostrarModal = ref(false);
 
 // Asesor seleccionado (vacío al inicio)
 const asesorSeleccionado = ref('');
@@ -70,29 +71,47 @@ const enviarSolicitud = () => {
 <template>
   <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
     <!-- Título principal -->
-    <h3 class="text-4xl font-semibold text-center text-gray-700">Designación de Asesor</h3>
+    <h3 class="text-4xl font-semibold text-center text-azul">Designación de Asesor</h3>
 
     <div class="mt-6 space-y-10">
       
       <!-- Card 1: Inicio de Trámite -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center ">
-          <h2 class="text-2xl font-medium text-black">1. Inicio de Trámite</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
-        </div>
+      <!-- Card 1: Inicio de Trámite -->
+<div class="bg-white rounded-lg shadow-lg p-6 relative">
+  <div class="flex items-center">
+    <h2 class="text-2xl font-medium text-azul">1. Inicio de Trámite</h2>
+    <!-- Icono de información con eventos para mostrar el modal -->
+    <img 
+      src="/icon/info2.svg" 
+      alt="Info" 
+      class="ml-2 w-4 h-4 cursor-pointer" 
+      @mouseover="mostrarModal = true" 
+      @mouseleave="mostrarModal = false" 
+    />
+  </div>
 
-        <!-- Listado de trámites dinámico -->
-        <div class="mt-4 space-y-6">
-          <div v-for="(trámite, index) in trámites.slice(0, 2)" :key="index" class=" bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-            <h4 class="text-lg font-light text-gray-800 flex-1">{{ trámite.título }}</h4>
-            <span :class="estadoClase(trámite.estado)" class="estado-estilo ml-4">{{ trámite.estado }}</span>
-          </div>
-        </div>
-      </div>
+  <!-- Modal de información que aparece al pasar el mouse -->
+  <div v-if="mostrarModal" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+    <p class="text-sm text-gray-600">
+      En esta sección se va a mostrar los estados de los trámites que debiste de haber hecho en el sistema de la UDH.
+    </p>
+  </div>
+
+  <!-- Listado de trámites dinámico -->
+  <div class="mt-4 space-y-6">
+    <div v-for="(trámite, index) in trámites.slice(0, 2)" :key="index" class=" bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
+      <h4 class="text-lg font-light text-gray-800 flex-1">{{ trámite.título }}</h4>
+      <span :class="estadoClase(trámite.estado)" class="estado-estilo ml-4">{{ trámite.estado }}</span>
+    </div>
+  </div>
+</div>
 
       <!-- Card 2: Solicitud de Asesor -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-medium text-black">2. Solicitud de Asesor</h2>
+        <div class="flex items-center ">
+          <h2 class="text-2xl font-medium text-black">2. Solicitud de Asesor</h2>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
+        </div>
 
         <div class="mt-4">
           <div class="flex items-center justify-between mb-4">
@@ -123,7 +142,10 @@ const enviarSolicitud = () => {
 
       <!-- Card 3: Documentos -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+        <div class="flex items-center ">
+          <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
+        </div>
         <div class="mt-4 space-y-4">
           <div v-for="documento in trámites[2]?.documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
             <div class="flex flex-col md:flex-row justify-between md:items-center">
