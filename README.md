@@ -24,6 +24,10 @@ npm install
 npm install axios
 ```
 
+```sh
+npm install flowbite
+```
+
 ### Compile and Hot-Reload for Development
 
 ```sh
