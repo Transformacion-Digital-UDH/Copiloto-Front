@@ -80,7 +80,7 @@
               />
               <span class="ml-2 text-sm text-gray-600"
                 >Estoy de acuerdo con la
-                <a href="#" class="text-[#2ebaa1]">Política de Privacidad</a>
+                <a href="#" class="text-[#ba2e2e]">Política de Privacidad</a>
               </span>
             </label>
           </div>
