@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from "vue";
-import { useSidebar } from "../assets/ts/useSidebar.ts";
+import { useSidebar } from "@/assets/ts/useSidebar.ts";
 import { useDark, useToggle } from "@vueuse/core";
-import IconMoon from "./icons/IconMoon.vue";
-import IconSun from "./icons/IconSun.vue";
+import IconMoon from "@/components/icons/IconMoon.vue";
+import IconSun from "@/components/icons/IconSun.vue";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
