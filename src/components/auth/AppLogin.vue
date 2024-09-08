@@ -1,4 +1,4 @@
-<script setup lang="ts">
+  <script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
 import router from "@/router";
@@ -9,7 +9,7 @@ const password = ref("");
 const errorMessage = ref<string | null>(null);
 const rememberMe = ref(false);
 
-const roleRoutes: string = {
+const roleRoutes: Record<string, string> = {
   estudiante: "/estudiante",
   asesor: "/asesor",
   jurado: "/jurado",
