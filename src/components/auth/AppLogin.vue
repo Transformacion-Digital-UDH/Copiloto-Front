@@ -9,7 +9,7 @@ const password = ref("");
 const errorMessage = ref<string | null>(null);
 const rememberMe = ref(false);
 
-const roleRoutes = {
+const roleRoutes: string = {
   estudiante: "/estudiante",
   asesor: "/asesor",
   jurado: "/jurado",
@@ -31,16 +31,16 @@ const handleLogin = async () => {
     // Aquí podrías redirigir al usuario segun su rol
 
     const userRole = response.data.data.rol;
-    const route = roleRoutes[userRole];
+    const route: string = roleRoutes[userRole];
 
-    if(route) {
+    if (route) {
       router.push(route);
     }
-   
+
     // Asegúrate de limpiar el mensaje de error en caso de éxito
-    errorMessage.value = null; 
-  } catch (error) {
-    console.log("Lo que devuelve la peticion",error.response?.data);
+    errorMessage.value = null;
+  } catch (error: any) {
+    console.log("Lo que devuelve la peticion", error.response?.data);
     errorMessage.value = error.response?.data.error;
   }
 };
@@ -50,7 +50,7 @@ const handleLogin = async () => {
   <div class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg px-8 py-6">
       <div class="text-center mb-6">
-        <img src="/img/logo.svg" alt="Logo" class="mx-auto mb-6 w-48" />
+        <img src="/img/logo_light.svg" alt="Logo" class="mx-auto mb-6 w-48" />
         <h6 class="text-2xl text-azul font-semibold">Iniciar sesión</h6>
         <p class="text-sm text-gray-600">
           ¿Aún no tienes una cuenta?
