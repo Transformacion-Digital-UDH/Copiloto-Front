@@ -9,6 +9,12 @@ const password = ref("");
 const errorMessage = ref<string | null>(null);
 const rememberMe = ref(false);
 
+const roleRoutes = {
+  estudiante: "/estudiante",
+  asesor: "/asesor",
+  jurado: "/jurado",
+}
+
 // Manejo del inicio de sesión
 const handleLogin = async () => {
   try {
@@ -20,11 +26,17 @@ const handleLogin = async () => {
     // Procesar la respuesta, por ejemplo, guardar el token y redirigir al usuario
     localStorage.setItem("token", response.data.token);
 
-    console.log("Lo que devuelve la peticion",error.response?.data);
+    console.log("Lo que devuelve la peticion", response.data);
 
-    // Aquí podrías redirigir al usuario a la página principal o a otra ruta
-    router.push("/estudiante");
-    
+    // Aquí podrías redirigir al usuario segun su rol
+
+    const userRole = response.data.data.rol;
+    const route = roleRoutes[userRole];
+
+    if(route) {
+      router.push(route);
+    }
+   
     // Asegúrate de limpiar el mensaje de error en caso de éxito
     errorMessage.value = null; 
   } catch (error) {
