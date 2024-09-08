@@ -15,7 +15,7 @@ const handleLogin = async () => {
     console.log("Email:", email.value);
     console.log("Password:", password.value);
 
-    const response = await axios.post("http://192.168.22.122:8000/api/login", {
+    const response = await axios.post("https://titulacion-back.abimaelfv.site/api/login", {
       email: email.value,
       password: password.value,
     });
@@ -57,18 +57,14 @@ const handleLogin = async () => {
         <h6 class="text-2xl text-azul font-semibold">Iniciar sesión</h6>
         <p class="text-sm text-gray-600">
           ¿Aún no tienes una cuenta?
-          <router-link to="/register" class="text-base hover:underline"
-            >Regístrate aquí</router-link
-          >
+          <router-link to="/register" class="text-base hover:underline">Regístrate aquí</router-link>
         </p>
       </div>
 
       <!-- Botón de Google -->
       <div class="mb-4">
-        <button
-          type="button"
-          class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150"
-        >
+        <button type="button"
+          class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150">
           <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
           Continuar con Google
         </button>
@@ -76,10 +72,8 @@ const handleLogin = async () => {
 
       <div class="relative mb-4 text-center">
         <hr class="border-t border-gray-300" />
-        <span
-          class="absolute bg-white px-2 text-gray-500 text-sm"
-          style="top: -0.75rem; left: 50%; transform: translateX(-50%)"
-        >
+        <span class="absolute bg-white px-2 text-gray-500 text-sm"
+          style="top: -0.75rem; left: 50%; transform: translateX(-50%)">
           O
         </span>
       </div>
@@ -87,60 +81,30 @@ const handleLogin = async () => {
       <!-- Formulario de inicio de sesión -->
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700" for="email"
-            >Correo electrónico</label
-          >
-          <input
-            type="email"
-            id="email"
-            placeholder="Correo electrónico"
-            v-model="email"
-            class="input-field"
-            required
-          />
+          <label class="block text-sm font-medium text-gray-700" for="email">Correo electrónico</label>
+          <input type="email" id="email" placeholder="Correo electrónico" v-model="email" class="input-field"
+            required />
         </div>
 
         <!-- Modificación aquí para alinear el enlace "Olvidó su contraseña" -->
         <div class="mb-4">
           <div class="flex justify-between items-center">
-            <label
-              class="block text-sm font-medium text-gray-700"
-              for="password"
-              >Contraseña</label
-            >
-            <router-link
-              to="/forgot-password"
-              class="text-sm text-base hover:underline"
-            >
+            <label class="block text-sm font-medium text-gray-700" for="password">Contraseña</label>
+            <router-link to="/forgot-password" class="text-sm text-base hover:underline">
               ¿Olvidó su contraseña?
             </router-link>
           </div>
-          <input
-            type="password"
-            id="password"
-            placeholder="Contraseña"
-            v-model="password"
-            class="input-field"
-            required
-          />
+          <input type="password" id="password" placeholder="Contraseña" v-model="password" class="input-field"
+            required />
         </div>
         <div class="flex justify-between items-center mb-4">
           <label class="inline-flex items-center">
-            <input
-              type="checkbox"
-              class="form-checkbox rounded text-blue-600"
-              v-model="rememberMe"
-            />
-            <span class="ml-2 text-sm text-gray-600"
-              >Mantener sesión activa</span
-            >
+            <input type="checkbox" class="form-checkbox rounded text-blue-600" v-model="rememberMe" />
+            <span class="ml-2 text-sm text-gray-600">Mantener sesión activa</span>
           </label>
         </div>
         <div class="text-center mt-6">
-          <button
-            type="submit"
-            class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150"
-          >
+          <button type="submit" class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150">
             INICIAR SESIÓN
           </button>
         </div>
