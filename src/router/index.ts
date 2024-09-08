@@ -1,6 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
-import AppLayout from '@/layouts/AppLayout.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
 import AppLogin from '../components/auth/AppLogin.vue'
 import AppRegister from '../components/auth/AppRegister.vue'
@@ -28,6 +26,7 @@ const router = createRouter({
     {
       path: '/estudiante',
       name: 'estudiante',
+      meta: { roles: ['estudiante'] },
       component: AdminLayout,
       children: [
         { path: 'designacion-asesor', name: 'DesignacionAsesor', component: DesignacionAsesor },
@@ -40,6 +39,7 @@ const router = createRouter({
     {
       path: '/asesor',
       name: 'asesor',
+      meta: { roles: ['asesor'] },
       component: AdminLayout,
       children: [
         { path: 'solicitud-asesoria', name: 'SolicitudAsesoria', component: SolicitudAsesoria },
@@ -49,6 +49,7 @@ const router = createRouter({
     {
       path: '/jurado',
       name: 'jurado',
+      meta: { roles: ['jurado'] },
       component: AdminLayout,
       children: [
         { path: 'solicitud-jurado', name: 'SolicitudJurado', component: SolicitudJurado },
@@ -69,16 +70,35 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token');
-  // cuando no hay usuario autenticado, y quiere entrar a una ruta que requiere autenticación, redirige al login
+  const role = localStorage.getItem('role') || '';
+
+  // Si no hay token y la ruta requiere autenticación, redirigir al login
   if (!token && to.name !== 'login' && to.name !== 'register') {
-    next({ name: 'login' });
+    return next({ name: 'login' });
   }
-  // cuando hay usuario autenticado, quiere volver al login o al register, redirige al dashboard
-  if (token && (to.name === 'login' || to.name === 'register')) {
-    
-    next({ name: 'estudiante' });
+
+  // Si hay token, verificar el rol del usuario
+  if (token && !to.meta.roles.includes(role)) {
+    // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
+    const routesByRole: Record<string, string> = {
+      estudiante: 'estudiante',
+      asesor: 'asesor',
+      jurado: 'jurado'
+    };
+    return next({ name: routesByRole[role] });
   }
-  // puedo seguir navegando
+
+  if ((to.name === 'login' || to.name === 'register') && token) {
+    const routesByRole: Record<string, string> = {
+      estudiante: 'estudiante',
+      asesor: 'asesor',
+      jurado: 'jurado'
+    };
+    return next({ name: routesByRole[role] });
+  }
+
+
+  // Si todo está bien, continuar con la navegación
   next();
 })
 
