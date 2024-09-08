@@ -38,7 +38,7 @@ function goToLoginOrEstudiante() {
     >
       <!-- Logo -->
       <a href="/" aria-label="Inicio">
-        <img class="h-12" src="/img/logo.svg" alt="Logo" />
+        <img class="h-12" src="/img/logo_light.svg" alt="Logo" />
       </a>
       <!-- Menu -->
       <div class="hidden sm:flex space-x-6 ">

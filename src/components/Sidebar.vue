@@ -19,7 +19,8 @@
       <!-- LOGO COPILOTO -->
       <div class="flex items-center justify-center mt-8">
         <a aria-label="Inicio">
-          <img class="w-auto h-10" src="/img/logo.svg" alt="Logo" />
+          <img v-if="isDark" class="w-auto h-10" src="/img/logo_dark.svg" alt="Logo" />
+          <img v-else class="w-auto h-10" src="/img/logo_light.svg" alt="Logo" />
         </a>
       </div>
 
