@@ -1,5 +1,5 @@
 <template>
-  <div :class="[isOpen ? 'w-64' : '', 'flex bg-white dark:bg-gray-800']">
+  <div :class="[isOpen ? 'w-0 lg:w-64' : '', 'flex bg-white dark:bg-gray-800']">
     <!-- Backdrop -->
     <div :class="isOpen ? 'block' : 'hidden'" @click="isOpen = !isOpen"
       class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
@@ -7,7 +7,7 @@
 
     <div :class="[
       isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
-      'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform ',
+      'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform',
       isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900',
       'sidebar'
     ]">
@@ -33,11 +33,11 @@
       <!-- INFO DEL ESTUDIANTE COMO PROGRESO -->
       <div class="px-6 mt-6 mb-10">
         <div class="flex justify-between mb-4">
-          <span class="text-base font-medium">Progreso General</span>
+          <span class="font-medium">Progreso General</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
           <div :style="{ width: progreso + '%' }" class="bg-blue-600 h-2.5 rounded-full"></div>
-          <span class="text-sm font-medium text-blue-700">{{ progreso }}%</span>
+          <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ progreso }}%</span>
         </div>
       </div>
       <hr />
@@ -47,14 +47,10 @@
         <div v-for="section in sections" :key="section.name" class="mb-4">
           <button
             @click="toggleSubmenu(section.name)"
-            class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+            class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
           >
-            <span
-              v-if="section.name !== 'Bienvenidos'"
-              v-html="section.icon"
-              class="w-5 h-5"
-            ></span>
-            <span class="mx-4 text-base">{{ section.label }}</span>
+            <component :is="section.icon" />
+            <span class="mx-4">{{ section.label }}</span>
             <svg
               v-if="!section.isOpen"
               viewBox="0 0 24 24"
@@ -90,7 +86,11 @@
               <li v-for="submenu in section.submenus" :key="submenu.name">
                 <router-link
                   :to="submenu.path"
-                  class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-800"
+                  class=""
+                  :class="[
+                    'block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700',
+                    isActive(submenu) ? 'bg-green-500 text-white hover:bg-green-500 dark:hover:bg-green-500' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                  ]"
                 >
                   {{ submenu.label }}
                 </router-link>
@@ -104,9 +104,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue';
-import { useSidebar } from '../assets/ts/useSidebar';
+import { defineComponent, ref, onMounted, markRaw } from 'vue';
+import { useSidebar } from '@/assets/ts/useSidebar';
 import { useDark } from '@vueuse/core';
+import IconProject from '@/components/icons/IconProject.vue';
+import IconExecution from '@/components/icons/IconExecution.vue';
+import IconFinally from '@/components/icons/IconFinally.vue';
+import IconTest from '@/components/icons/IconTest.vue';
+import IconClosed from '@/components/icons/IconClosed.vue';
+import { useRoute } from 'vue-router';
 
 export default defineComponent({
   data() {
@@ -115,18 +121,13 @@ export default defineComponent({
       progreso: 30, // Valor inicial del progreso en porcentaje
     }
   },
-
   setup() {
     const { isOpen } = useSidebar();
     const isDark = useDark();
 
     const role = ref('');
     const full_name = ref('');
-
-    onMounted(() => {
-      full_name.value = localStorage.getItem('full_name') || '';
-      role.value = localStorage.getItem('role') || '';
-    })
+    const route = useRoute();
 
     // Definición de secciones con submenús
     const sections = ref([
@@ -134,7 +135,7 @@ export default defineComponent({
         name: 'ProyectoDeTesis',
         label: 'Proyecto Tesis',
         isOpen: false,
-        icon: '<img src="/img/project-icon.svg" alt="Icono Proyecto Tesis">',
+        icon: markRaw(IconProject),
         submenus: [
           { name: 'Designacion de asesor', label: 'Designación de asesor', path: '/estudiante/designacion-asesor' },
           { name: 'Conformidad por el asesor', label: 'Conformidad por el asesor', path: '/estudiante/conformidad-asesor' },
@@ -151,7 +152,7 @@ export default defineComponent({
         name: 'Ejecucion',
         label: 'Ejecución',
         isOpen: false,
-        icon: '<img src="/img/execution-icon.svg" alt="Icono Ejecución">',
+        icon: markRaw(IconExecution),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/ejecucion/submenu1' },
           { name: 'Submenu2', label: 'Submenu 2', path: '/ejecucion/submenu2' },
@@ -163,7 +164,7 @@ export default defineComponent({
         name: 'InformeFinal',
         label: 'Informe Final',
         isOpen: false,
-        icon: '<img src="/img/finally-icon.svg" alt="Icono Informe Final">',
+        icon: markRaw(IconFinally),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/informe-final/submenu1' },
           { name: 'Submenu2', label: 'Submenu 2', path: '/informe-final/submenu2' },
@@ -175,7 +176,7 @@ export default defineComponent({
         name: 'Sustentacion',
         label: 'Sustentación',
         isOpen: false,
-        icon: '<img src="/img/test-icon.svg" alt="Icono Sustentación">',
+        icon: markRaw(IconTest),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/sustentacion/submenu1' },
           { name: 'Submenu2', label: 'Submenu 2', path: '/sustentacion/submenu2' },
@@ -187,7 +188,7 @@ export default defineComponent({
         name: 'Cierre',
         label: 'Cierre',
         isOpen: false,
-        icon: '<img src="/img/closed-icon.svg" alt="Icono Cierre">',
+        icon: markRaw(IconClosed),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/cierre/submenu1' },
           { name: 'Submenu2', label: 'Submenu 2', path: '/cierre/submenu2' },
@@ -203,7 +204,26 @@ export default defineComponent({
       if (section) {
         section.isOpen = !section.isOpen;
       }
+      };
+      
+      
+    const isActive = (submenu: any) => {
+      // compara la ruta actual con la sección seleccionada.
+      return route.path.includes(submenu.path); 
     };
+
+    const openSectionIfActive = () => {
+      sections.value.forEach(section => {
+        section.isOpen = section.submenus.some(submenu => isActive(submenu));
+      });
+    };
+
+    onMounted(() => {
+      full_name.value = localStorage.getItem('full_name') || '';
+      role.value = localStorage.getItem('role') || '';
+      openSectionIfActive();
+
+    })
 
     return {
       isOpen,
@@ -212,6 +232,7 @@ export default defineComponent({
       isDark,
       full_name,
       role,
+      isActive
     };
   }
 });
