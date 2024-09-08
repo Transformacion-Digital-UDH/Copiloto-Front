@@ -1,16 +1,13 @@
 <template>
-  <div class="flex">
+  <div :class="[isOpen ? 'w-64' : '', 'flex bg-white dark:bg-gray-800']">
     <!-- Backdrop -->
-    <div
-      :class="isOpen ? 'block' : 'hidden'"
-      @click="isOpen = !isOpen"
-      class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"
-    ></div>
+    <div :class="isOpen ? 'block' : 'hidden'" @click="isOpen = !isOpen"
+      class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
     <!-- End Backdrop -->
 
     <div :class="[
       isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
-      'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform lg:w-64 ',
+      'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform ',
       isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900',
       'sidebar'
     ]">
@@ -25,15 +22,11 @@
       <!-- INFO DEL ESTUDIANTE COMO EL NOMBRE -->
       <div class="flex flex-col items-center justify-center mt-10">
         <div class="w-24 h-24 mb-4 overflow-hidden rounded-full shadow-lg">
-          <img
-            class="object-cover w-full h-full"
-            :src="EstudianteAvatar"
-            alt="Avatar"
-          />
+          <img class="object-cover w-full h-full" :src="avatar" alt="Avatar" />
         </div>
         <div class="w-full text-center max-w-44">
-          <h2 class="text-xl font-semibold break-words">{{ EstudianteNombre }}</h2>
-          <p class="text-base break-words">{{ EstudianteCarrera }}</p>
+          <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>
+          <p class="text-base break-words">{{ role }}</p>
         </div>
       </div>
 
@@ -54,7 +47,7 @@
         <div v-for="section in sections" :key="section.name" class="mb-4">
           <button
             @click="toggleSubmenu(section.name)"
-            class="flex items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+            class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
           >
             <span
               v-if="section.name !== 'Bienvenidos'"
@@ -111,23 +104,29 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import { useSidebar } from '../assets/ts/useSidebar';
 import { useDark } from '@vueuse/core';
 
 export default defineComponent({
   data() {
     return {
-      EstudianteNombre: 'Renzo Paolo Luciano Estela',
-      EstudianteCarrera: 'Ingeniería de Sistemas',
-      EstudianteAvatar: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=296&q=80',
+      avatar: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=296&q=80',
       progreso: 30, // Valor inicial del progreso en porcentaje
-    };
+    }
   },
 
   setup() {
     const { isOpen } = useSidebar();
     const isDark = useDark();
+
+    const role = ref('');
+    const full_name = ref('');
+
+    onMounted(() => {
+      full_name.value = localStorage.getItem('full_name') || '';
+      role.value = localStorage.getItem('role') || '';
+    })
 
     // Definición de secciones con submenús
     const sections = ref([
@@ -210,7 +209,9 @@ export default defineComponent({
       isOpen,
       sections,
       toggleSubmenu,
-      isDark
+      isDark,
+      full_name,
+      role,
     };
   }
 });

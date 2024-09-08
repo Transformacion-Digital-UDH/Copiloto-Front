@@ -25,6 +25,9 @@ const handleLogin = async () => {
 
     // Procesar la respuesta, por ejemplo, guardar el token y redirigir al usuario
     localStorage.setItem("token", response.data.token);
+    localStorage.setItem("full_name", response.data.data.nombre);
+    localStorage.setItem("email", response.data.data.correo);
+    localStorage.setItem("role", response.data.data.rol);
 
     console.log("Lo que devuelve la peticion", response.data);
 
