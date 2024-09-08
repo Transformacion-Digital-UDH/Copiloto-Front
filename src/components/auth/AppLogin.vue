@@ -12,39 +12,24 @@ const rememberMe = ref(false);
 // Manejo del inicio de sesión
 const handleLogin = async () => {
   try {
-    console.log("Email:", email.value);
-    console.log("Password:", password.value);
-
     const response = await axios.post("https://titulacion-back.abimaelfv.site/api/login", {
       email: email.value,
       password: password.value,
     });
 
-    console.log("Response:", response.data); // Verifica la respuesta completa
+    // Procesar la respuesta, por ejemplo, guardar el token y redirigir al usuario
+    localStorage.setItem("token", response.data.token);
 
-    if (response.data) {
-      console.log("Login successful:", response.data);
-      // Procesar la respuesta, por ejemplo, guardar el token y redirigir al usuario
-      localStorage.setItem("token", response.data.token);
+    console.log("Lo que devuelve la peticion",error.response?.data);
 
-      // Aquí podrías redirigir al usuario a la página principal o a otra ruta
-      router.push("/estudiante");
-      errorMessage.value = null; // Asegúrate de limpiar el mensaje de error en caso de éxito
-    } else {
-      console.log("Login failed:", response.data.message);
-      errorMessage.value = response.data.message || "Credenciales incorrectas.";
-    }
+    // Aquí podrías redirigir al usuario a la página principal o a otra ruta
+    router.push("/estudiante");
+    
+    // Asegúrate de limpiar el mensaje de error en caso de éxito
+    errorMessage.value = null; 
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Error en el inicio de sesión:", error.response?.data);
-      errorMessage.value =
-        error.response?.data.message ||
-        "Hubo un error al intentar iniciar sesión. Por favor, inténtelo de nuevo.";
-    } else {
-      console.error("Error en el inicio de sesión:", error);
-      errorMessage.value =
-        "Hubo un error al intentar iniciar sesión. Por favor, inténtelo de nuevo.";
-    }
+    console.log("Lo que devuelve la peticion",error.response?.data);
+    errorMessage.value = error.response?.data.error;
   }
 };
 </script>
@@ -108,8 +93,10 @@ const handleLogin = async () => {
             INICIAR SESIÓN
           </button>
         </div>
-        <div v-if="errorMessage" class="mt-4 text-red-600 text-center">
-          {{ errorMessage }}
+        <div v-if="errorMessage" class="mt-4 text-red-600 ">
+          <ol v-for="error in errorMessage" :key="errorMessage">
+            <li> - {{ error }}</li>
+          </ol>
         </div>
       </form>
     </div>
