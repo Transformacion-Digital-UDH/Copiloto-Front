@@ -23,7 +23,7 @@ const { isOpen } = useSidebar();
         :class="[
           isOpen
           ? 'lg:left-[18rem] translate-x-0 ease-out duration-200 delay-300' 
-          : 'lg:left-4 translate-x-0 ease-in duration-200 delay-0',      
+          : 'lg:left-8 translate-x-0 ease-in duration-200 delay-0',      
         'dark:text-white focus:outline-none transition transform fixed z-40 top-4 left-4 lg:z-0'
         ]"
       >
