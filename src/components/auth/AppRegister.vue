@@ -8,7 +8,7 @@
     >
       <!-- Logo copiloto -->
       <div class="flex justify-center py-6">
-        <img src="/img/logo.svg" alt="Logo" class="h-12 w-auto" />
+        <img src="/img/logo_light.svg" alt="Logo" class="h-12 w-auto" />
       </div>
 
       <!-- Encabezado -->
