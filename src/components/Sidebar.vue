@@ -3,19 +3,17 @@
     <!-- Backdrop -->
     <div
       :class="isOpen ? 'block' : 'hidden'"
-      @click="isOpen = false"
+      @click="isOpen = !isOpen"
       class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"
     ></div>
     <!-- End Backdrop -->
 
-    <div
-      :class="[
-        isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
-        'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform',
-        isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900',
-        'sidebar lg:translate-x-0 lg:static lg:inset-0'
-      ]"
-    >
+    <div :class="[
+      isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
+      'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform lg:w-64 ',
+      isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900',
+      'sidebar'
+    ]">
       <!-- LOGO COPILOTO -->
       <div class="flex items-center justify-center mt-8">
         <a aria-label="Inicio">
@@ -133,8 +131,8 @@ export default defineComponent({
 
     // Definición de secciones con submenús
     const sections = ref([
-      { 
-        name: 'ProyectoDeTesis', 
+      {
+        name: 'ProyectoDeTesis',
         label: 'Proyecto Tesis',
         isOpen: false,
         icon: '<img src="/img/project-icon.svg" alt="Icono Proyecto Tesis">',
@@ -150,8 +148,8 @@ export default defineComponent({
           { name: 'Jurado Presidente', label: 'Jurado Presidente', path: '/jurado/solicitud-jurado-presidente' },
         ]
       },
-      { 
-        name: 'Ejecucion', 
+      {
+        name: 'Ejecucion',
         label: 'Ejecución',
         isOpen: false,
         icon: '<img src="/img/execution-icon.svg" alt="Icono Ejecución">',
@@ -162,8 +160,8 @@ export default defineComponent({
           { name: 'Submenu4', label: 'Submenu 4', path: '/ejecucion/submenu4' }
         ]
       },
-      { 
-        name: 'InformeFinal', 
+      {
+        name: 'InformeFinal',
         label: 'Informe Final',
         isOpen: false,
         icon: '<img src="/img/finally-icon.svg" alt="Icono Informe Final">',
@@ -174,7 +172,7 @@ export default defineComponent({
           { name: 'Submenu4', label: 'Submenu 4', path: '/informe-final/submenu4' }
         ]
       },
-      { 
+      {
         name: 'Sustentacion',
         label: 'Sustentación',
         isOpen: false,
@@ -186,7 +184,7 @@ export default defineComponent({
           { name: 'Submenu4', label: 'Submenu 4', path: '/sustentacion/submenu4' }
         ]
       },
-      { 
+      {
         name: 'Cierre',
         label: 'Cierre',
         isOpen: false,

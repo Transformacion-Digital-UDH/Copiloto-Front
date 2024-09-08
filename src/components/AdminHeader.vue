@@ -14,13 +14,18 @@ const { isOpen } = useSidebar();
 
 <template>
   <header
-    class="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-800 dark:text-white border-b-2 "
+    class="flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-700 dark:text-white border-b-2 "
   >
     <div class="flex items-center">
       <!-- boton hamburguesa cerrar y abrir menu de navegacion -->
-      <button1
-        @click="isOpen = true"
-        class="text-[#2ebaa1] focus:outline-none lg:hidden"
+      <button
+        @click="isOpen = !isOpen"
+        :class="[
+          isOpen
+          ? 'lg:left-[18rem] translate-x-0 ease-out duration-200 delay-300' 
+          : 'lg:left-4 translate-x-0 ease-in duration-200 delay-0',      
+        'dark:text-white focus:outline-none transition transform fixed z-40 top-4 left-4 lg:z-0'
+        ]"
       >
         <svg
           class="w-6 h-6"
@@ -36,7 +41,7 @@ const { isOpen } = useSidebar();
             stroke-linejoin="round"
           />
         </svg>
-      </button1>
+      </button>
 
       <!-- campo de busqueda 
         <div-- class="relative mx-4 lg:mx-0">
