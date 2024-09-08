@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 import AppLayout from '@/layouts/AppLayout.vue'
 import AdminLayout from '@/layouts/AdminLayout.vue'
-import AppLogin from '../components/auth/AppLogin.vue' 
+import AppLogin from '../components/auth/AppLogin.vue'
 import AppRegister from '../components/auth/AppRegister.vue'
 import DesignacionAsesor from '../views/Estudiante/DesignacionAsesor.vue'
 import SolicitudAsesoria from '../views/Asesor/SolicitudAsesoria.vue'
@@ -27,6 +27,7 @@ const router = createRouter({
     },
     {
       path: '/estudiante',
+      name: 'estudiante',
       component: AdminLayout,
       children: [
         { path: 'designacion-asesor', name: 'DesignacionAsesor', component: DesignacionAsesor },
@@ -38,19 +39,21 @@ const router = createRouter({
     },
     {
       path: '/asesor',
+      name: 'asesor',
       component: AdminLayout,
       children: [
         { path: 'solicitud-asesoria', name: 'SolicitudAsesoria', component: SolicitudAsesoria },
-        { path: 'proyecto-tesis', name: 'ProyectoTesis', component: ProyectoTesis},
+        { path: 'proyecto-tesis', name: 'ProyectoTesis', component: ProyectoTesis },
       ]
     },
     {
       path: '/jurado',
+      name: 'jurado',
       component: AdminLayout,
       children: [
-        { path: 'solicitud-jurado', name: 'SolicitudJurado', component: SolicitudJurado},
-        { path: 'solicitud-jurado-presidente', name: 'JuradoPresidente', component: JuradoPresidente},
-        
+        { path: 'solicitud-jurado', name: 'SolicitudJurado', component: SolicitudJurado },
+        { path: 'solicitud-jurado-presidente', name: 'JuradoPresidente', component: JuradoPresidente },
+
       ]
     },
     {
@@ -62,6 +65,21 @@ const router = createRouter({
       },
     },
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token');
+  // cuando no hay usuario autenticado, y quiere entrar a una ruta que requiere autenticación, redirige al login
+  if (!token && to.name !== 'login' && to.name !== 'register') {
+    next({ name: 'login' });
+  }
+  // cuando hay usuario autenticado, quiere volver al login o al register, redirige al dashboard
+  if (token && (to.name === 'login' || to.name === 'register')) {
+    
+    next({ name: 'estudiante' });
+  }
+  // puedo seguir navegando
+  next();
 })
 
 export default router
