@@ -9,7 +9,8 @@ export default {
       colors: {
         'custom-gray': '#838383',
         'base': '#39B49E',
-        'azul': '#0F2757',
+        'baseClarito': '#A0D6C9 ',
+        'azul': '#011B4B',
         'amarillo': '#F2A603',
         'custom-green': '#2ebaa1',
         'plomosidebar': '#222D32',
