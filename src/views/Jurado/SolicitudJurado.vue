@@ -326,7 +326,7 @@ const rangeInfo = computed(() => {
     </h1>
     <div class="relative w-full max-w-full">
       <!-- Buscador -->
-      <div class="mb-6">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg m-20">
         <input
           type="text"
           v-model="searchQuery"
@@ -336,7 +336,7 @@ const rangeInfo = computed(() => {
       </div>
 
       <!-- Tabla -->
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg m-10">
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg m-20">
         <table
           class="w-full text-lg text-left text-gray-500 dark:black"
         >
