@@ -98,7 +98,7 @@ function goToNextPage() {
 </script>
 
 <template>
-  <div class="flex h-screen border-s-2 font-roboto">
+  <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
         Solicitud de asesoría
@@ -107,7 +107,7 @@ function goToNextPage() {
       <div class="mt-8">
         <!-- Filtros de tabla -->
         <div class="mt-6">
-          <div class="flex flex-col mt-3 sm:flex-row font-roboto">
+          <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
             <!-- Filtro de cantidad de entradas -->
             <div class="flex">
               <div class="relative">
