@@ -1,5 +1,5 @@
 <template>
-  <div class="flex">
+  <div class="flex text-white">
     <!-- Backdrop -->
     <div
       :class="isOpen ? 'block' : 'hidden'"
@@ -10,7 +10,7 @@
 
     <div
       :class="isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in'"
-      class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-white sidebar lg:translate-x-0 lg:static lg:inset-0"
+      class="fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform bg-plomosidebar sidebar lg:translate-x-0 lg:static lg:inset-0"
     >
       <!-- LOGO COPILOTO -->
       <div class="flex items-center justify-center mt-8">
@@ -29,7 +29,7 @@
         </div>
         <div class="text-center w-full max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ EstudianteNombre }}</h2>
-          <p class="text-base text-gray-600 break-words">{{ EstudianteCarrera }}</p>
+          <p class="text-white break-words">{{ EstudianteCarrera }}</p>
         </div>
         
       </div>
@@ -37,11 +37,11 @@
       <!-- INFO DEL ESTUDIANTE COMO PROGRESO -->
       <div class="mt-6 px-6 mb-10">
         <div class="flex justify-between mb-4">
-          <span class="text-base font-medium text-black">Progreso General</span>
+          <span class="text-white font-medium ">Progreso General</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div :style="{ width: progreso + '%' }" class="bg-blue-600 h-2.5 rounded-full"></div>
-          <span class="text-sm font-medium text-blue-700">{{ progreso }}%</span>
+          <div :style="{ width: progreso + '%' }" class="bg-base h-2.5 rounded-full"></div>
+          <span class="text-sm font-medium text-white">{{ progreso }}%</span>
         </div>
       </div><hr>
 
@@ -50,7 +50,7 @@
         <div v-for="section in sections" :key="section.name" class="mb-4">
           <button @click="toggleSubmenu(section.name)" class="flex items-center px-6 py-2 mt-4 duration-200 cursor-pointer">
             <span v-if="section.name !== 'Bienvenidos'" v-html="section.icon" class="w-5 h-5 text-black"></span>
-            <span class="mx-4 text-black text-base">{{ section.label }}</span><svg v-if="!section.isOpen" viewBox="0 0 24 24" class="ml-auto h-4 w-4" fill="none"
+            <span class="mx-4 text-white text-base">{{ section.label }}</span><svg v-if="!section.isOpen" viewBox="0 0 24 24" class="ml-auto h-4 w-4" fill="none"
               xmlns="http://www.w3.org/2000/svg">
               <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
               <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -74,7 +74,7 @@
           <div v-if="section.isOpen">
             <ul class="pl-4">
               <li v-for="submenu in section.submenus" :key="submenu.name">
-                <router-link :to="submenu.path" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">
+                <router-link :to="submenu.path" class="block px-4 py-2 text-white hover:bg-gray-900">
                   {{ submenu.label }}
                 </router-link>
               </li>

@@ -9,6 +9,8 @@ export default {
         'azul': '#0F2757',
         'amarillo': '#F2A603',
         'custom-green': '#2ebaa1',
+        'plomosidebar': '#222D32',
+        'barra': '#F2A603'
       },
       fontFamily: {
         Roboto: ["Roboto, sans-serif"],
