@@ -44,60 +44,60 @@
 
       <nav class="mt-5 mb-10">
         <!-- Secciones Dinámicas -->
-        <div v-for="section in sections" :key="section.name" class="mb-4">
-          <button
-            @click="toggleSubmenu(section.name)"
-            class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
-          >
-            <component :is="section.icon" />
-            <span class="mx-4">{{ section.label }}</span>
-            <svg
-              v-if="!section.isOpen"
-              viewBox="0 0 24 24"
-              class="w-4 h-4 ml-auto"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-                fill="currentColor"
-              />
-            </svg>
-            <svg
-              v-else
-              viewBox="0 0 24 24"
-              class="w-4 h-4 ml-auto"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              transform="rotate(270)"
-            >
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-          <div v-if="section.isOpen">
-            <ul class="pl-4">
-              <li v-for="submenu in section.submenus" :key="submenu.name">
-                <router-link
-                  :to="submenu.path"
-                  class=""
-                  :class="[
-                    'block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700',
-                    isActive(submenu) ? 'bg-custom-green text-white hover:bg-custom-green dark:hover:bg-custom-green' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
-                  ]"
-                >
-                  {{ submenu.label }}
-                </router-link>
-              </li>
-            </ul>
-          </div>
-        </div>
+<div v-for="section in sections" :key="section.name" class="mb-4">
+  <button
+    @click="toggleSubmenu(section.name)"
+    class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600"
+  >
+    <component :is="section.icon" />
+    <span class="mx-4">{{ section.label }}</span>
+    <svg
+      v-if="!section.isOpen"
+      viewBox="0 0 24 24"
+      class="w-4 h-4 ml-auto"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
+        fill="currentColor"
+      />
+    </svg>
+    <svg
+      v-else
+      viewBox="0 0 24 24"
+      class="w-4 h-4 ml-auto"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      transform="rotate(270)"
+    >
+      <path
+        fill-rule="evenodd"
+        clip-rule="evenodd"
+        d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
+        fill="currentColor"
+      />
+    </svg>
+  </button>
+  <div v-if="section.isOpen">
+    <ul class="pl-4">
+      <li v-for="submenu in section.submenus" :key="submenu.name">
+        <router-link
+          :to="submenu.path"
+          class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
+          :class="[
+            isActive(submenu) ? 'bg-custom-green text-white hover:bg-custom-green dark:hover:bg-custom-green' : ''
+          ]"
+        >
+          {{ submenu.label }}
+        </router-link>
+      </li>
+    </ul>
+  </div>
+</div>
+
       </nav>
     </div>
   </div>
@@ -282,4 +282,18 @@ export default defineComponent({
 .dark .hover:bg-gray-200 {
   background-color: #482d2d; /* Color de fondo para hover en modo oscuro */
 }
+/* Estilos específicos para el modo oscuro */
+.dark .sidebar {
+  background-color: #1a202c; /* Fondo oscuro */
+  color: #edf2f7; /* Texto claro */
+}
+
+.dark .hover:bg-gray-200 {
+  background-color: #482d2d; /* Color de fondo para hover en modo oscuro */
+}
+
+.sidebar ul li .text-sm {
+  font-size: 0.875rem; /* Ajusta el tamaño de fuente para los submenús */
+}
+
 </style>
