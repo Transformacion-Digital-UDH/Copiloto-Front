@@ -1,6 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Luego puedes añadir tus estilos personalizados aquí */
+
+@import 'flowbite';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 
 .sidebar {
     scrollbar-width: none;

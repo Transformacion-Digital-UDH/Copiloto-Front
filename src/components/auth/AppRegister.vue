@@ -8,7 +8,7 @@
     >
       <!-- Logo copiloto -->
       <div class="flex justify-center py-6">
-        <img src="/img/logo.svg" alt="Logo" class="h-12 w-auto" />
+        <img src="/img/logo_light.svg" alt="Logo" class="h-12 w-auto" />
       </div>
 
       <!-- Encabezado -->
@@ -80,7 +80,7 @@
               />
               <span class="ml-2 text-sm text-gray-600"
                 >Estoy de acuerdo con la
-                <a href="#" class="text-[#2ebaa1]">Política de Privacidad</a>
+                <a href="#" class="text-[#ba2e2e]">Política de Privacidad</a>
               </span>
             </label>
           </div>
