@@ -110,9 +110,7 @@ function goToNextPage() {
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                >
-                 
-                </div>
+                ></div>
               </div>
 
               <!-- Filtro de estado -->
@@ -128,9 +126,7 @@ function goToNextPage() {
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                >
-                  
-                </div>
+                ></div>
               </div>
             </div>
 
@@ -270,14 +266,14 @@ function goToNextPage() {
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
+                    class="button"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
+                    class="button"
                   >
                     Siguiente
                   </button>

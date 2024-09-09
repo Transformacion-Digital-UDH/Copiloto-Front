@@ -43,7 +43,8 @@ const tableData = ref([
   },
   {
     name: "Estudiante 2",
-    title: "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
+    title:
+      "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
     observations: "Observación 2",
     reviewNumber: "Rev002",
     president: "Presidente 2",
@@ -120,9 +121,7 @@ function goToNextPage() {
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                >
-                 
-                </div>
+                ></div>
               </div>
 
               <!-- Filtro de estado -->
@@ -138,9 +137,7 @@ function goToNextPage() {
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                >
-                 
-                </div>
+                ></div>
               </div>
             </div>
 
@@ -245,7 +242,9 @@ function goToNextPage() {
                     <td class="px-5 py-5 text-sm">
                       {{ u.vocal }}
                     </td>
-                    <td class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative">
+                    <td
+                      class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative"
+                    >
                       <button
                         class="focus:outline-none"
                         @click="toggleDropdown(index)"
@@ -289,7 +288,9 @@ function goToNextPage() {
                     </td>
                     <td class="px-5 py-5 text-sm">
                       <span
-                        :class="`estado-estilo estado-${u.status.toLowerCase().replace(' ', '-')}`"
+                        :class="`estado-estilo estado-${u.status
+                          .toLowerCase()
+                          .replace(' ', '-')}`"
                       >
                         {{ u.status }}
                       </span>
@@ -302,23 +303,23 @@ function goToNextPage() {
               <div
                 class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
               >
-                <span class="text-xs text-gray-900 xs:text-sm">
-                  Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+                <span class="text-xs text-gray-900 xs:text-sm"
+                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }} entradas
-                </span>
+                  {{ tableData.length }} entradas</span
+                >
                 <div class="inline-flex mt-2 xs:mt-0 space-x-8">
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
+                    class="button"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
+                    class="button"
                   >
                     Siguiente
                   </button>
@@ -335,7 +336,9 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
             <h5 class="text-lg font-light text-gray-900 text-center flex-1">
               Confirmación
             </h5>
@@ -361,7 +364,9 @@ function goToNextPage() {
               ¿Estás seguro de que quieres generar una Carta de Aceptacion?
             </p>
           </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
             <button
               class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
               @click="closeModal"
@@ -384,7 +389,9 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
             <h5 class="text-lg font-Thin 100 text-gray-900 text-center flex-1">
               Confirmación
             </h5>
@@ -411,7 +418,9 @@ function goToNextPage() {
               estudiante?
             </p>
           </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
             <button
               class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
               @click="closeModal"
@@ -439,19 +448,19 @@ function goToNextPage() {
   border-radius: 0.375rem;
 }
 
-.estado-pendiente {
-  background-color: #fbd38d;
-  color: #d69e2e;
+.estado-completado {
+  background-color: #48bb78;
+  color: #ffffff;
 }
 
 .estado-en-proceso {
-  background-color: #feebc8;
-  color: #f6e05e;
+  background-color: #e89519;
+  color: #ffffff;
 }
 
-.estado-completado {
-  background-color: #c6f6d5;
-  color: #38a169;
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
 }
 
 .estadoVerde {
@@ -466,4 +475,3 @@ function goToNextPage() {
   color: #d6d6d6;
 }
 </style>
-
