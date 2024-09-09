@@ -18,7 +18,7 @@ const roleRoutes: Record<string, string> = {
 // Manejo del inicio de sesión
 const handleLogin = async () => {
   try {
-    const response = await axios.post("https://titulacion-back.abimaelfv.site/api/login", {
+    const response = await axios.post("/api/login", {
       email: email.value,
       password: password.value,
     });
