@@ -141,14 +141,19 @@ export default defineComponent({
 
           { name: 'Solicitud Jurado',
             label: 'Solicitud Jurado',
-            path: '/jurado/solicitud-jurado'
-          },
+            path: '/jurado/solicitud-jurado'},
 
-          {
-            name: 'Jurado Presidente',
+          { name: 'Jurado Presidente',
             label: 'Jurado Presidente',
-            path: '/jurado/solicitud-jurado-presidente'
-          },
+            path: '/jurado/solicitud-jurado-presidente'},
+
+          { name: 'Designar jurados',
+            label: 'Designar jurados',
+            path: '/paisi/designar-jurado'},
+          
+          { name: 'Aprobar proyecto',
+            label: 'Aprobar proyecto',
+            path: '/paisi/aprobar-proyecto'},
         ]
       },
       { 
