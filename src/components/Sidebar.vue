@@ -37,7 +37,7 @@
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
           <div :style="{ width: progreso + '%' }" class="bg-blue-600 h-2.5 rounded-full"></div>
-          <span class="text-sm font-medium text-blue-700 dark:text-blue-300">{{ progreso }}%</span>
+          <span class="text-sm font-medium text-blue-700 dark:text-blue-200">{{ progreso }}%</span>
         </div>
       </div>
       <hr />
@@ -89,7 +89,7 @@
                   class=""
                   :class="[
                     'block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700',
-                    isActive(submenu) ? 'bg-green-500 text-white hover:bg-green-500 dark:hover:bg-green-500' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
+                    isActive(submenu) ? 'bg-custom-green text-white hover:bg-custom-green dark:hover:bg-custom-green' : 'hover:bg-gray-200 dark:hover:bg-gray-600'
                   ]"
                 >
                   {{ submenu.label }}
