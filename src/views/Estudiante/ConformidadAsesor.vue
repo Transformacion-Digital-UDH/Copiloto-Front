@@ -67,9 +67,7 @@ function estadoClase(estado: string) {
         <h4 class="text-2xl font-medium text-black mb-4">1. Observaciones</h4>
         <div class="flex items-center justify-between">
           <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
-          <!-- solicitudEstado es un ref, así que aquí sí usamos .value -->
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
-
         </div>
         <div class="flex justify-center mt-4">
           <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>

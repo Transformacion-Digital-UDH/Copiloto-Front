@@ -1,19 +1,25 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
 
-// Estado y datos para Designación de Jurado
+// Estado y datos para Designación de Jurados
 const procesos = ref([
   { título: 'Trámite en el sistema', estado: 'Hecho' },
   { título: 'Pago de Trámite', estado: 'Hecho' },
   { título: 'Solicitar Jurados', estado: 'Pendiente' },
-  { título: 'Oficio múltiple con los jurados seleccionados', estado: 'Pendiente' },
+  { título: 'Tus jurados seleccionados', estado: 'Hecho' }, // Nuevo estado para los jurados
   { título: 'Solicitar cambio de jurado', estado: 'No solicitado' },
+]);
+
+// Jurados seleccionados
+const jurados = ref([
+  { rol: 'Vocal', nombre: 'Lucas Vadivia' },
+  { rol: 'Presidente', nombre: 'Sebastian Martínez' },
+  { rol: 'Secretario', nombre: 'Lorenzo Perez' }
 ]);
 
 // Documentos asociados a la designación
 const documentos = ref([
-  { nombre: 'Oficio múltiple', estado: 'Hecho', documentoUrl: '' },
-  { nombre: 'Solicitud de cambio de jurado', estado: 'No solicitado', documentoUrl: '' },
+  { nombre: 'Oficio Múltiple (Facultad)', estado: 'Hecho', documentoUrl: '/docs/informe_de_conformidad.jpg' }
 ]);
 
 // Método para determinar la clase del estado
@@ -35,6 +41,7 @@ const estadoClase = (estado: string) => {
 // Función para solicitar jurados y cambiar el estado
 const solicitarJurados = () => {
   procesos.value[2].estado = 'Hecho'; // Cambiar el estado de 'Solicitar Jurados' a 'Hecho'
+  procesos.value[3].estado = 'Hecho'; // Cambiar también el estado de 'Tus jurados seleccionados' a 'Hecho'
   isSolicitarJuradosDisabled.value = true; // Deshabilitar el botón
 };
 
@@ -48,14 +55,14 @@ const isSolicitarJuradosDisabled = ref(false);
 
 // Función que verifica si los estados del punto 1 al 3 están en 'Hecho'
 const puedeContinuar = computed(() => {
-  return procesos.value.slice(0, 3).every(proceso => proceso.estado === 'Hecho');
+  return procesos.value.slice(0, 4).every(proceso => proceso.estado === 'Hecho');
 });
 </script>
 
 <template>
   <div class="flex-1 p-10 bg-gray-100 font-Roboto">
     <!-- Título principal -->
-    <h3 class="text-4xl font-semibold text-center text-azul">Designación de Jurado</h3>
+    <h3 class="text-4xl font-semibold text-center text-azul">Designación de Jurados para el Informe Final</h3>
 
     <div class="mt-6 space-y-10">
       <!-- Card 1: Inicio de Trámite -->
@@ -76,25 +83,52 @@ const puedeContinuar = computed(() => {
       <div class="bg-white rounded-lg shadow-lg p-6">
         <h2 class="text-2xl font-medium text-black mb-4">2. Solicitar designación de Jurados</h2>
         <div class="flex items-center justify-between">
-          <p class="text-gray-500">Haz click en el botón para solicitar jurados.</p>
+          <p class="text-lg text-gray-500">Haz click en el botón para solicitar jurados.</p>
           <span :class="estadoClase(procesos[2].estado)" class="estado-estilo ml-4">{{ procesos[2].estado }}</span>
         </div>
 
-        <div class="mt-4">
-          <div class="flex justify-center mt-6">
+        <div class="flex justify-center mt-4">
             <button :disabled="isSolicitarJuradosDisabled" @click="solicitarJurados"
               :class="isSolicitarJuradosDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-green-600'"
               class="px-4 py-2 text-white rounded-md">
               SOLICITAR JURADOS
             </button>
-          </div>
         </div>
       </div>
 
-      <!-- Card 3: Oficio múltiple con los jurados seleccionados (sin estado) -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+     <!-- Card 3: Jurados seleccionados -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-medium text-black">3. Tus jurados seleccionados son:</h2>
+            <span :class="estadoClase(procesos[3].estado)" class="estado-estilo ml-4">{{ procesos[3].estado }}</span>
+        </div>
         
+        <!-- Tabla centrada y con ajuste de ancho -->
+        <div class="mt-4 flex justify-center">
+            <table class="w-full max-w-2xl text-left bg-gray-50 border border-gray-200 rounded-md shadow">
+            <thead>
+                <tr>
+                <th class="px-4 py-2 text-gray-600 border-b">ROL</th>
+                <th class="px-4 py-2 text-gray-600 border-b">NOMBRE Y APELLIDO</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(jurado, index) in jurados" :key="index" class="bg-white">
+                <td class="px-4 py-2 border-b">{{ jurado.rol }}</td>
+                <td class="px-4 py-2 border-b">{{ jurado.nombre }}</td>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+  
+ 
+</div>
+
+
+      <!-- Card 4: Documentos -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-medium text-black">4. Documentos</h2>
+
         <div class="mt-4">
           <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
             <div class="flex flex-col md:flex-row justify-between md:items-center">
@@ -125,19 +159,19 @@ const puedeContinuar = computed(() => {
           </div>
         </div>
       </div>
-      
+
       <!-- Botón Siguiente -->
-      <div class="flex justify-end">
+      <div class="flex justify-end mt-6">
         <button :disabled="!puedeContinuar" class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed"
           :class="puedeContinuar ? 'bg-green-600 hover:bg-base cursor-pointer' : 'bg-gray-300 cursor-not-allowed'">
           Siguiente
         </button>
       </div>
 
-      <!-- Card 4: Solicitar cambio de jurado -->
+      <!-- Card 5: Solicitar cambio de jurado -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center">
-          <h2 class="text-2xl font-medium text-black"> Solicitar cambio de jurado</h2>
+          <h2 class="text-2xl font-medium text-black">5. Solicitar cambio de jurado</h2>
           <span :class="estadoClase(procesos[4].estado)" class="estado-estilo ml-4">{{ procesos[4].estado }}</span>
         </div>
 

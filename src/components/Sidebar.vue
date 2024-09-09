@@ -200,7 +200,16 @@ export default defineComponent({
         isOpen: false,
         icon: markRaw(IconFinally),
         submenus: [
-          { name: 'Submenu1', label: 'Submenu 1', path: '/informe-final/submenu1' },
+          { name: 'Conformidad del Informe Final por el Asesor', 
+              label: 'Conformidad por el asesor', 
+              path: '/estudiante/conformidad-informe-asesor' },
+          { name: 'Designacion de Jurado para el Informe Final', 
+            label: 'Designacion de Jurado', 
+            path: '/estudiante/designacion-informe-jurado' },
+          { name: 'Conformidad de Informe Final por los Jurados', 
+            label: 'Conformidad Jurados', 
+            path: '/estudiante/conformidad-informe-jurado' },
+
           { name: 'Submenu2', label: 'Submenu 2', path: '/informe-final/submenu2' },
           { name: 'Submenu3', label: 'Submenu 3', path: '/informe-final/submenu3' },
           { name: 'Submenu4', label: 'Submenu 4', path: '/informe-final/submenu4' }

@@ -13,6 +13,9 @@ import SolicitudJurado from '@/views/Jurado/SolicitudJurado.vue'
 import JuradoPresidente from '@/views/Jurado/JuradoPresidente.vue'
 import DesignarJurados from '@/views/Paisi/DesignarJurados.vue'
 import AprobarProyecto from '@/views/Paisi/AprobarProyecto.vue'
+import ConformidadInformeAsesor from '@/views/Estudiante/ConformidadInformeAsesor.vue'
+import DesignacionJuradoInforme from '@/views/Estudiante/DesignacionJuradoInforme.vue'
+import ConformidadInformeJurados from '@/views/Estudiante/ConformidadInformeJurados.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -36,6 +39,9 @@ const router = createRouter({
         { path: 'designacion-jurado', name: 'DesignacionJurado', component: DesignacionJurado, meta: { title: 'Designación de jurado' } },
         { path: 'conformidad-jurado', name: 'ConformidadJurado', component: ConformidadJurado, meta: { title: 'Conformidad de jurado' } },
         { path: 'aprobacion-proyecto', name: 'AprobacionProyecto', component: AprobacionProyecto, meta: { title: 'Aprobación de proyecto' } },
+        { path: 'conformidad-informe-asesor', name: 'ConformidadInformeAsesor', component: ConformidadInformeAsesor, meta: { title: 'Conformidad de Informe Final por el Asesor' } },
+        { path: 'designacion-informe-jurado', name: 'DesignacionJuradoInforme', component: DesignacionJuradoInforme, meta: { title: 'Designacion de Jurado para el Informe Final' } },
+        { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: { title: 'Conformidad de Informe Final por los Jurados' } },
       ]
     },
     {
