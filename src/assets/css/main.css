@@ -10,6 +10,10 @@
     scrollbar-width: none;
 }
 
+.tabla1 {
+  scrollbar-width: thin;
+}
+
 ::-webkit-scrollbar {
     width: 5px;
   }
@@ -23,7 +27,6 @@
     background: #ccc;
     border-radius: px;
   }
-
 /* Diseño para botones de paginacion */
 .button {
   --bg: #000;
@@ -49,14 +52,13 @@
   transform: translate(0);
   box-shadow: none;
 }
-
 /* Boton para subir archivos */ 
 .custum-file-upload {
   height: 100px;
   width: 150px;
   display: flex;
   flex-direction: column;
-  align-items: space-between;
+  align-items: center;
   gap: 20px;
   cursor: pointer;
   align-items: center;
@@ -66,6 +68,7 @@
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
 
 .custum-file-upload .icon {
@@ -74,8 +77,8 @@
   justify-content: center;
 }
 
-.custum-file-upload .icon svg {
-  height: 80px;
+.custum-file-upload .icon img {
+  height: 24px;
   fill: rgba(75, 85, 99, 1);
 }
 

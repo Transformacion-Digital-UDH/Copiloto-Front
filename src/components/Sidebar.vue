@@ -137,15 +137,49 @@ export default defineComponent({
         isOpen: false,
         icon: markRaw(IconProject),
         submenus: [
-          { name: 'Designacion de asesor', label: 'Designación de asesor', path: '/estudiante/designacion-asesor' },
-          { name: 'Conformidad por el asesor', label: 'Conformidad por el asesor', path: '/estudiante/conformidad-asesor' },
-          { name: 'Designacion de jurados', label: 'Designación de jurados', path: '/estudiante/designacion-jurado' },
-          { name: 'Conformidad por el jurado', label: 'Conformidad por el jurado', path: '/estudiante/conformidad-jurado' },
-          { name: 'Aprobacion del proyecto', label: 'Aprobación del proyecto', path: '/estudiante/aprobacion-proyecto' },
-          { name: 'Solicitud asesoria', label: 'Solicitud asesoria', path: '/asesor/solicitud-asesoria' },
-          { name: 'Proyecto Tesis', label: 'Proyecto tesis', path: '/asesor/proyecto-tesis' },
-          { name: 'Solicitud Jurado', label: 'Solicitud Jurado', path: '/jurado/solicitud-jurado' },
-          { name: 'Jurado Presidente', label: 'Jurado Presidente', path: '/jurado/solicitud-presidente' },
+          { name: 'Designacion de asesor', 
+            label: 'Designación de asesor', 
+            path: '/estudiante/designacion-asesor' },
+
+          { name: 'Conformidad por el asesor', 
+            label: 'Conformidad por el asesor', 
+            path: '/estudiante/conformidad-asesor' },
+
+          { name: 'Designacion de jurados', 
+            label: 'Designación de jurados', 
+            path: '/estudiante/designacion-jurado' },
+
+          { name: 'Conformidad por el jurado', 
+            label: 'Conformidad por el jurado', 
+            path: '/estudiante/conformidad-jurado' },
+
+          { name: 'Aprobacion del proyecto', 
+            label: 'Aprobación del proyecto', 
+            path: '/estudiante/aprobacion-proyecto' },
+
+          { name: 'Solicitud asesoria', 
+            label: 'Solicitud asesoria', 
+            path: '/asesor/solicitud-asesoria' },
+
+          { name: 'Proyecto Tesis', 
+            label: 'Proyecto tesis', 
+            path: '/asesor/proyecto-tesis' },
+
+          { name: 'Solicitud Jurado',
+            label: 'Solicitud Jurado',
+            path: '/jurado/solicitud-jurado'},
+
+          { name: 'Jurado Presidente',
+            label: 'Jurado Presidente',
+            path: '/jurado/solicitud-jurado-presidente'},
+
+          { name: 'Designar jurados',
+            label: 'Designar jurados',
+            path: '/paisi/designar-jurado'},
+          
+          { name: 'Aprobar proyecto',
+            label: 'Aprobar proyecto',
+            path: '/paisi/aprobar-proyecto'},
         ]
       },
       {
