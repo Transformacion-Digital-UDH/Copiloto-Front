@@ -53,7 +53,7 @@ const router = createRouter({
       component: AdminLayout,
       children: [
         { path: 'solicitud-jurado', name: 'SolicitudJurado', component: SolicitudJurado, meta: { title: 'Solicitud de jurado' } },
-        { path: 'solicitud-jurado-presidente', name: 'JuradoPresidente', component: JuradoPresidente, meta: { title: 'Solicitud de jurado presidente' } },
+        { path: 'solicitud-presidente', name: 'JuradoPresidente', component: JuradoPresidente, meta: { title: 'Solicitud de jurado presidente' } },
 
       ]
     },
