@@ -171,7 +171,7 @@ export default defineComponent({
 
           { name: 'Jurado Presidente',
             label: 'Jurado Presidente',
-            path: '/jurado/solicitud-jurado-presidente'},
+            path: '/jurado/solicitud-presidente'},
 
           { name: 'Designar jurados',
             label: 'Designar jurados',
