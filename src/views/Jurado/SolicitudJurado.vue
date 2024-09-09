@@ -357,13 +357,10 @@ const rangeInfo = computed(() => {
           </thead>
           <tbody>
             <tr
-  v-for="(item, index) in filteredTableData"
-  :key="index"
-  class="border-b bg-white border-gray-200"
->
-  <td
-    class="px-8 py-5 font-medium text-gray-900 whitespace-nowrap"
-  >
+                v-for="(item, index) in filteredTableData"
+                :key="index"
+                class="border-b bg-white border-gray-200">
+              <td class="px-8 py-5 font-medium text-gray-900 whitespace-nowrap">
                 {{ item.estudiante }}
               </td>
               <td class="px-8 py-5 title-cell">
