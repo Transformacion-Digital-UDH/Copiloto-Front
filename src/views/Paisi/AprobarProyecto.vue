@@ -283,25 +283,25 @@ function goToNextPage() {
 
               <!-- Paginación -->
               <div
-                class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
               >
-                <span class="text-xs text-gray-900 xs:text-sm"
+                <span class="text-sm text-gray-900 xs:text-sm"
                   >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }} entradas</span
+                  {{ tableData.length }}</span
                 >
-                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
                   >
                     Siguiente
                   </button>

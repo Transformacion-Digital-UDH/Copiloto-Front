@@ -16,6 +16,7 @@ export default {
         'plomosidebar': '#222D32',
         'barra': '#F2A603',
         'grisTabla': '#ECECEC',
+        'azulbajo': '#2C8AAA',
       },
       fontFamily: {
         Roboto: ["Roboto", "sans-serif"], // Corregido el formato aquí

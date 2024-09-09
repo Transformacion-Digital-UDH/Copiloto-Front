@@ -98,7 +98,7 @@ function goToNextPage() {
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Pendientes de correción de tesis
+        Pendientes de correción de tesis (J)
       </h3>
 
       <div class="mt-8">
@@ -283,25 +283,25 @@ function goToNextPage() {
 
               <!-- Paginación -->
               <div
-                class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
               >
-                <span class="text-xs text-gray-900 xs:text-sm"
+                <span class="text-sm text-gray-900 xs:text-sm"
                   >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }} entradas</span
+                  {{ tableData.length }}</span
                 >
-                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
                   >
                     Siguiente
                   </button>
@@ -373,7 +373,7 @@ function goToNextPage() {
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-600">
+            <p class="text-gray-600 text-lg text-center">
               ¿Aún le falta correciones a este proyecto de tesis?
             </p>
           </div>
@@ -383,14 +383,12 @@ function goToNextPage() {
             <button
               class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
               @click="closeModal"
-            >
-              Cancelar
+            > Cancelar
             </button>
             <button
               class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
               @click="closeModal"
-            >
-              Aceptar
+            > Aceptar
             </button>
           </div>
         </div>
