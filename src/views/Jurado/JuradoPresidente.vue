@@ -231,7 +231,7 @@ function goToNextPage() {
                     <td class="px-5 py-5 text-sm text-wrap w-80">
                       {{ u.title }}
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative">
                       <div class="text-center items-center">
                         <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
                           <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">

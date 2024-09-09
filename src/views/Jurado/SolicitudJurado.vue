@@ -33,31 +33,28 @@ const tableData = ref([
   {
     name: "Estudiante 1",
     title: "Título 1 implementacion de un sistema web para el estudio viable",
-    observations: "Observación 1",
-    reviewNumber: "Rev001",
+    reviewNumber: "10",
     president: "Presidente 1",
     secretary: "Secretario 1",
     vocal: "Vocal 1",
-    status: "Completado",
+    status: "Terminado",
     statusColor: "estadoVerde",
   },
   {
     name: "Estudiante 2",
     title:
       "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
-    observations: "Observación 2",
-    reviewNumber: "Rev002",
+    reviewNumber: "20",
     president: "Presidente 2",
     secretary: "Secretario 2",
     vocal: "Vocal 2",
-    status: "En Proceso",
+    status: "Corregido",
     statusColor: "yellow",
   },
   {
     name: "Estudiante 3",
     title: "Título 3 implementacion de una base de datos para el rectorado izi",
-    observations: "Observación 3",
-    reviewNumber: "Rev003",
+    reviewNumber: "30",
     president: "Presidente 3",
     secretary: "Secretario 3",
     vocal: "Vocal 3",
@@ -101,7 +98,7 @@ function goToNextPage() {
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Solicitud de asesoría
+        Pendientes de correción de tesis
       </h3>
 
       <div class="mt-8">
@@ -132,8 +129,8 @@ function goToNextPage() {
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
-                  <option value="En Proceso">En Proceso</option>
-                  <option value="Completado">Completado</option>
+                  <option value="Terminado">Terminado</option>
+                  <option value="Corregido">Corregido</option>
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
@@ -227,8 +224,23 @@ function goToNextPage() {
                     <td class="px-5 py-5 text-sm text-wrap w-80">
                       {{ u.title }}
                     </td>
-                    <td class="px-5 py-5 text-sm">
-                      {{ u.observations }}
+                    <td class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative">
+                      <div class="text-center items-center">
+                        <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
+                          <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
+                            <div class="icon">
+                              <img
+                                src="/img/subirarchivo.svg"
+                                alt="Icono Subir archivo"
+                              />
+                            </div>
+                            <div class="text">
+                              <span>Subir archivo</span>
+                            </div>
+                            <input type="file" id="file" class="hidden" />
+                          </label>
+                        </button>
+                      </div>
                     </td>
                     <td class="px-5 py-5 text-sm">
                       {{ u.reviewNumber }}
@@ -246,45 +258,15 @@ function goToNextPage() {
                       class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative"
                     >
                       <button
-                        class="focus:outline-none"
-                        @click="toggleDropdown(index)"
-                      >
-                        <svg
-                          class="w-4 h-4 text-gray-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16m-7 6h7"
-                          />
-                        </svg>
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        @click="openModal"
+                      > Aprobar
                       </button>
-                      <div
-                        v-if="activeDropdownIndex === index"
-                        class="absolute left-1/2 transform -translate-x-1/2 z-10 w-24 origin-top-center bg-white border border-gray-200 rounded-lg shadow-lg"
-                      >
-                        <div class="py-1">
-                          <a
-                            href="#"
-                            class="block px-4 py-2 text-sm text-estadoVerde font-Thin 100 hover:bg-green-100"
-                            @click="openModal"
-                          >
-                            Aceptar
-                          </a>
-                          <a
-                            href="#"
-                            class="block px-4 py-2 text-sm text-rojo font-Thin 100 hover:bg-green-100"
-                            @click="openRejectModal"
-                          >
-                            Rechazar
-                          </a>
-                        </div>
-                      </div>
+                      <button 
+                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                      > Corregir
+                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
                       <span
@@ -336,32 +318,21 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-lg font-light text-gray-900 text-center flex-1">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-900" @click="closeModal">
-              <svg
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
           </div>
           <div class="p-6">
-            <p class="text-gray-600">
-              ¿Estás seguro de que quieres generar una Carta de Aceptacion?
+            <p class="text-gray-600 text-lg text-center">
+              ¿Está seguro que este proyecto de tesis no necesita más correciones?
             </p>
           </div>
           <div
@@ -389,33 +360,21 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-lg font-Thin 100 text-gray-900 text-center flex-1">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-900" @click="closeModal">
-              <svg
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
           </div>
           <div class="p-6">
             <p class="text-gray-600">
-              ¿Estás seguro de que quieres rechazar a ser el asesor de este
-              estudiante?
+              ¿Aún le falta correciones a este proyecto de tesis?
             </p>
           </div>
           <div
@@ -448,13 +407,13 @@ function goToNextPage() {
   border-radius: 0.375rem;
 }
 
-.estado-completado {
+.estado-terminado {
   background-color: #48bb78;
   color: #ffffff;
 }
 
-.estado-en-proceso {
-  background-color: #e89519;
+.estado-corregido {
+  background-color: #3B82F6;
   color: #ffffff;
 }
 
