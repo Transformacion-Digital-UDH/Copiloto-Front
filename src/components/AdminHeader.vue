@@ -1,15 +1,31 @@
 <script setup>
 import { ref } from "vue";
-import { useSidebar } from "@/assets/ts/useSidebar.ts";
 import { useDark, useToggle } from "@vueuse/core";
+import { useSidebar } from "@/assets/ts/useSidebar.ts";
 import IconMoon from "@/components/icons/IconMoon.vue";
 import IconSun from "@/components/icons/IconSun.vue";
+import router from "@/router";
+import axios from "axios";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
 
 const dropdownOpen = ref(false);
 const { isOpen } = useSidebar();
+
+const logout = async () => {
+  await axios.get("/api/logout", {
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    }
+  }).then(() => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("full_name");
+    localStorage.removeItem("role");
+    localStorage.removeItem("email");
+    router.push("/");
+  })
+}
 </script>
 
 <template>
@@ -122,12 +138,12 @@ const { isOpen } = useSidebar();
               class="block px-4 py-2 text-sm text-gray-900 hover:bg-custom-green hover:text-white"
               >Perfil</a
             >
-            <router-link
-              to="/"
-              class="block px-4 py-2 text-sm text-gray-900 hover:bg-custom-green hover:text-white"
+            <button
+              @click="logout()"
+              class="block w-full text-start px-4 py-2 text-sm text-gray-900 hover:bg-custom-green hover:text-white"
             >
               Cerrar sesión
-            </router-link>
+            </button>
           </div>
         </transition>
       </div>
