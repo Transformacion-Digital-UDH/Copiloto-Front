@@ -191,7 +191,7 @@ function goToNextPage() {
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                     >
-                      <p class="text-gray-900 whitespace-nowrap">
+                      <p class="text-gray-900 text-wrap w-80">
                         {{ u.role }}
                       </p>
                     </td>

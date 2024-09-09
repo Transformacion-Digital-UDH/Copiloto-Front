@@ -224,7 +224,7 @@ function goToNextPage() {
                     <td class="px-5 py-5 text-sm">
                       {{ u.name }}
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-5 py-5 text-sm text-wrap w-80">
                       {{ u.title }}
                     </td>
                     <td class="px-5 py-5 text-sm">
