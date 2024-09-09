@@ -87,7 +87,7 @@ function goToNextPage() {
 </script>
 
 <template>
-  <div class="flex h-screen border-s-2 font-roboto">
+  <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
         Solicitud de asesoría
@@ -96,7 +96,7 @@ function goToNextPage() {
       <div class="mt-8">
         <!-- Filtros de tabla -->
         <div class="mt-6">
-          <div class="flex flex-col mt-3 sm:flex-row font-roboto">
+          <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
             <!-- Filtro de cantidad de entradas -->
             <div class="flex">
               <div class="relative">
@@ -110,17 +110,7 @@ function goToNextPage() {
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                >
-                  <svg
-                    class="w-4 h-4 fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                    />
-                  </svg>
-                </div>
+                ></div>
               </div>
 
               <!-- Filtro de estado -->
@@ -136,17 +126,7 @@ function goToNextPage() {
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                >
-                  <svg
-                    class="w-4 h-4 fill-current"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
-                    />
-                  </svg>
-                </div>
+                ></div>
               </div>
             </div>
 
@@ -286,14 +266,14 @@ function goToNextPage() {
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-l hover:bg-gray-400"
+                    class="button"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="px-4 py-2 text-sm font-bold text-gray-800 bg-gray-300 rounded-r hover:bg-gray-400"
+                    class="button"
                   >
                     Siguiente
                   </button>
