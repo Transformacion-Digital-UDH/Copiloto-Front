@@ -145,7 +145,7 @@ export default defineComponent({
           { name: 'Solicitud asesoria', label: 'Solicitud asesoria', path: '/asesor/solicitud-asesoria' },
           { name: 'Proyecto Tesis', label: 'Proyecto tesis', path: '/asesor/proyecto-tesis' },
           { name: 'Solicitud Jurado', label: 'Solicitud Jurado', path: '/jurado/solicitud-jurado' },
-          { name: 'Jurado Presidente', label: 'Jurado Presidente', path: '/jurado/solicitud-jurado-presidente' },
+          { name: 'Jurado Presidente', label: 'Jurado Presidente', path: '/jurado/solicitud-presidente' },
         ]
       },
       {
