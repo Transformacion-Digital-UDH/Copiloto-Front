@@ -64,15 +64,15 @@ const router = createRouter({
       path: '/paisi',
       component: AdminLayout,
       children: [
-        { path: 'designar-jurado', name: 'Designar jurados', component: DesignarJurados},
-        { path: 'aprobar-proyecto', name: 'Aprobar proyecto', component: AprobarProyecto},
+        { path: 'designar-jurado', name: 'Designar jurados', component: DesignarJurados, meta: { title: 'Designar Jurado' } },
+        { path: 'aprobar-proyecto', name: 'Aprobacion proyecto', component: AprobarProyecto, meta: { title: 'Aprobacion proyecto' } },
       ]
     },
     {
       path: '/facultad',
       component: AdminLayout,
       children: [
-        { path: 'aprobar-proyecto-tesis', name: 'Aprobar proyectoT', component: AprobarProyectoT, meta: { title: 'Aprobar ProyectoT' } },
+        { path: 'aprobar-proyecto-tesis', name: 'Aprobacion proyectoT', component: AprobarProyectoT, meta: { title: 'Aprobacion proyectoT' } },
       ]
     },
     {

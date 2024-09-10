@@ -54,19 +54,19 @@ function goToNextPage() {
 // Datos actuales
 const tableData = ref([
   {
-    name: "Estudiante 1",
+    name: "Rodríguez Meléndez, Fabio",
     title: "Diseño, desarrollo y evaluación de la usabilidad de un sistema de información para la ferretería Huánuco del distrito de Amarilis en el 2022",
     status: "Pendiente",
   },
   {
-    name: "Estudiante 2",
+    name: "Sulca Correa, Omar Iván",
     title: "Auditoria informática y propuesta de mejora bajo la metodología cobit al área de compras y abastecimiento de la empresa chapacuete s.a.c de la ciudad de Huánuco en el 2019",
-    status: "Aprobado",
+    status: "Tramitado",
   },
   {
-    name: "Estudiante 3",
+    name: "Nuñez Vicente, José Antonio",
     title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2022",
-    status: "Aprobado",
+    status: "Tramitado",
   },
 ]);
 </script>
@@ -75,7 +75,7 @@ const tableData = ref([
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Aprobacion de proyecto de tesis
+        Aprobacion de proyecto de tesis (Facultad)
       </h3>
 
       <div class="mt-8">
@@ -106,7 +106,7 @@ const tableData = ref([
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
-                  <option value="Aprobado">Aprobado</option>
+                  <option value="Tramitado">Tramitado</option>
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
@@ -154,25 +154,25 @@ const tableData = ref([
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      CONFORMIDAD ASESOR
+                      OFICIO PAISI
                     </th>
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      CONFORMIDAD JURADO
+                      JURADO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-10 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      VALIDAR TRÁMITE
+                      VALIDAR
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-11 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ESTADO
                     </th>
@@ -218,7 +218,14 @@ const tableData = ref([
                         Observar
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm"></td>
+                    <td class="px-5 py-5 text-sm">
+                      <button
+                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                      >
+                        Enviar
+                      </button>
+                    </td>
                     <td class="px-5 py-5 text-sm">
                       <span
                         :class="`estado-estilo estado-${u.status
@@ -365,7 +372,7 @@ const tableData = ref([
   border-radius: 0.375rem;
 }
 
-.estado-aprobado {
+.estado-tramitado {
   background-color: #48bb78;
   color: #ffffff;
 }

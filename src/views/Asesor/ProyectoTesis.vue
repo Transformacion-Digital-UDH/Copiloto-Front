@@ -154,7 +154,7 @@ const tableData = ref([
                       TÍTULO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       OBSERVACIONES
                     </th>
@@ -164,12 +164,12 @@ const tableData = ref([
                       N° REVISIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-12 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ESTADO
                     </th>
@@ -223,7 +223,7 @@ const tableData = ref([
                       > Aprobar
                       </button>
                       <button 
-                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        class="block w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
                         @click="openRejectModal"
                       > Corregir
                       </button>
@@ -300,13 +300,13 @@ const tableData = ref([
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Sí
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base hover:bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-2xl"
               @click="closeModal"
             >
               No
@@ -342,13 +342,13 @@ const tableData = ref([
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Sí
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base hover:bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-2xl"
               @click="closeModal"
             >
               No
@@ -374,7 +374,7 @@ const tableData = ref([
 }
 
 .estado-corregido {
-  background-color: #3B82F6;
+  background-color: #5dade2;
   color: #ffffff;
 }
 

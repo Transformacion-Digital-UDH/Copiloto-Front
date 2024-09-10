@@ -88,7 +88,7 @@
           :to="submenu.path"
           class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
           :class="[
-            isActive(submenu) ? 'bg-custom-green text-white hover:bg-custom-green dark:hover:bg-custom-green' : ''
+            isActive(submenu) ? 'bg-base text-white hover:bg-base dark:hover:bg-base' : ''
           ]"
         >
           {{ submenu.label }}
@@ -177,12 +177,12 @@ export default defineComponent({
             label: 'Designar jurados',
             path: '/paisi/designar-jurado'},
           
-          { name: 'Aprobar proyecto',
-            label: 'Aprobar proyecto',
+          { name: 'Aprobacion proyecto',
+            label: 'Aprobacion proyecto',
             path: '/paisi/aprobar-proyecto'},
 
-          { name: 'Aprobar proyectoT',
-            label: 'Aprobar proyectoT',
+          { name: 'Aprobacion proyectoT',
+            label: 'Aprobacion proyectoT',
             path: '/facultad/aprobar-proyecto-tesis'},
         ]
       },
@@ -193,9 +193,6 @@ export default defineComponent({
         icon: markRaw(IconExecution),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/ejecucion/submenu1' },
-          { name: 'Submenu2', label: 'Submenu 2', path: '/ejecucion/submenu2' },
-          { name: 'Submenu3', label: 'Submenu 3', path: '/ejecucion/submenu3' },
-          { name: 'Submenu4', label: 'Submenu 4', path: '/ejecucion/submenu4' }
         ]
       },
       {
@@ -205,9 +202,6 @@ export default defineComponent({
         icon: markRaw(IconFinally),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/informe-final/submenu1' },
-          { name: 'Submenu2', label: 'Submenu 2', path: '/informe-final/submenu2' },
-          { name: 'Submenu3', label: 'Submenu 3', path: '/informe-final/submenu3' },
-          { name: 'Submenu4', label: 'Submenu 4', path: '/informe-final/submenu4' }
         ]
       },
       {
@@ -217,9 +211,6 @@ export default defineComponent({
         icon: markRaw(IconTest),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/sustentacion/submenu1' },
-          { name: 'Submenu2', label: 'Submenu 2', path: '/sustentacion/submenu2' },
-          { name: 'Submenu3', label: 'Submenu 3', path: '/sustentacion/submenu3' },
-          { name: 'Submenu4', label: 'Submenu 4', path: '/sustentacion/submenu4' }
         ]
       },
       {
@@ -229,9 +220,6 @@ export default defineComponent({
         icon: markRaw(IconClosed),
         submenus: [
           { name: 'Submenu1', label: 'Submenu 1', path: '/cierre/submenu1' },
-          { name: 'Submenu2', label: 'Submenu 2', path: '/cierre/submenu2' },
-          { name: 'Submenu3', label: 'Submenu 3', path: '/cierre/submenu3' },
-          { name: 'Submenu4', label: 'Submenu 4', path: '/cierre/submenu4' }
         ]
       }
     ]);
