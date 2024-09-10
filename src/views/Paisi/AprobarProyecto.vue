@@ -5,6 +5,21 @@ import { ref, computed } from "vue";
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
+const showModal = ref(false);
+const showRejectModal = ref(false); 
+
+function openModal() {
+  showModal.value = true;
+}
+
+function openRejectModal() {
+  showRejectModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+  showRejectModal.value = false; //cerrar ambos modales
+}
 
 // Filtrado y paginación
 const filteredTableData = computed(() => {
@@ -175,6 +190,16 @@ const tableData = ref([
                       </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
+                      <button
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        @click="openModal"
+                        > Generar
+                      </button>
+                      <button
+                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                        > Observar
+                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
                     </td>
@@ -218,6 +243,91 @@ const tableData = ref([
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para generar un oficio al estudiante -->
+      <div
+        v-if="showModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Se autogenerará el oficio para este estudiante
+            </h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-600 text-lg text-center">
+              Por favor escriba el número de oficio que va a autogenerar
+            </p>
+            <input type="text" placeholder="Nro de oficio">
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Generar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-black bg-gray-300 rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de rechazo -->
+      <div
+        v-if="showRejectModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Confirmación
+            </h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-600">
+              ¿Aún le falta correciones a este proyecto de tesis?
+            </p>
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+              @click="closeModal"
+            >
+              Aceptar
+            </button>
           </div>
         </div>
       </div>
