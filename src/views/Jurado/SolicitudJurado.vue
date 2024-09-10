@@ -2,18 +2,11 @@
 import { ref, computed } from "vue";
 
 // Estados y propiedades
-const activeDropdownIndex = ref<number | null>(null);
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
-
-// Funciones para manejar dropdown y modales
-function toggleDropdown(index: number) {
-  activeDropdownIndex.value =
-    activeDropdownIndex.value === index ? null : index;
-}
 
 function openModal() {
   showModal.value = true;
@@ -27,41 +20,6 @@ function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
 }
-
-// Datos actuales
-const tableData = ref([
-  {
-    name: "Estudiante 1",
-    title: "Título 1 implementacion de un sistema web para el estudio viable",
-    reviewNumber: "10",
-    president: "Presidente 1",
-    secretary: "Secretario 1",
-    vocal: "Vocal 1",
-    status: "Terminado",
-    statusColor: "estadoVerde",
-  },
-  {
-    name: "Estudiante 2",
-    title:
-      "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
-    reviewNumber: "20",
-    president: "Presidente 2",
-    secretary: "Secretario 2",
-    vocal: "Vocal 2",
-    status: "Corregido",
-    statusColor: "yellow",
-  },
-  {
-    name: "Estudiante 3",
-    title: "Título 3 implementacion de una base de datos para el rectorado izi",
-    reviewNumber: "30",
-    president: "Presidente 3",
-    secretary: "Secretario 3",
-    vocal: "Vocal 3",
-    status: "Pendiente",
-    statusColor: "estadoPlomo",
-  },
-]);
 
 // Filtrado y paginación
 const filteredTableData = computed(() => {
@@ -92,6 +50,37 @@ function goToPreviousPage() {
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
+
+// Datos actuales
+const tableData = ref([
+{
+    name: "Rodríguez Meléndez, Fabio",
+    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
+    reviewNumber: "10",
+    president: "Presidente 1",
+    secretary: "Secretario 1",
+    vocal: "Vocal 1",
+    status: "Corregido",
+  },
+  {
+    name: "Sulca Correa, Omar Iván",
+    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
+    reviewNumber: "20",
+    president: "Presidente 2",
+    secretary: "Secretario 2",
+    vocal: "Vocal 2",
+    status: "Terminado",
+  },
+  {
+    name: "Nuñez Vicente, José Antonio",
+    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
+    reviewNumber: "30",
+    president: "Presidente 3",
+    secretary: "Secretario 3",
+    vocal: "Vocal 3",
+    status: "Pendiente",
+  },
+]);
 </script>
 
 <template>
@@ -312,7 +301,7 @@ function goToNextPage() {
         </div>
       </div>
 
-      <!-- Modal de confirmación -->
+      <!-- Modal de aprobar tesis si no necesita mas correciones -->
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -354,7 +343,7 @@ function goToNextPage() {
         </div>
       </div>
 
-      <!-- Modal de rechazo -->
+      <!-- Modal para corregir los proyectos de tesis -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -418,17 +407,5 @@ function goToNextPage() {
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
-}
-
-.estadoVerde {
-  color: #38a169;
-}
-
-.estadoRojo {
-  color: #e53e3e;
-}
-
-.estadoPlomo {
-  color: #d6d6d6;
 }
 </style>

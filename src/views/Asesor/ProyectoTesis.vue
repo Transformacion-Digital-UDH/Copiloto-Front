@@ -1,17 +1,11 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 
-const activeDropdownIndex = ref<number | null>(null); // dropdown para generar y rechazar
 const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
 const selectedFilter = ref(""); // para seleccionar el estado
 const currentPage = ref(1); // página actual
 const showModal = ref(false); // modal no necesita más correcciones
 const showRejectModal = ref(false); // modal si falta más correcciones
-
-function toggleDropdown(index: number) {
-  activeDropdownIndex.value =
-    activeDropdownIndex.value === index ? null : index;
-}
 
 function openModal() {
   showModal.value = true;
@@ -34,31 +28,6 @@ function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// simulación de datos
-const tableData = ref([
-  {
-    name: "Estudiante 1",
-    title: "Título 1 implementacion de un sistema web para el estudio viable",
-    obs: "5",
-    status: "Corregido",
-    statusColor: "estadoVerde",
-  },
-  {
-    name: "Estudiante 2",
-    title: "Título 2",
-    obs: "15",
-    status: "Pendiente",
-    statusColor: "estadoPlomo",
-  },
-  {
-    name: "Estudiante 3",
-    title: "Título 3",
-    obs: "25",
-    status: "Terminado",
-    statusColor: "yellow",
-  },
-]);
-
 // para filtrar datos en base al filtro y paginación seleccionado
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
@@ -80,6 +49,28 @@ const totalPages = computed(() => {
     : tableData.value;
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
+
+// simulación de datos
+const tableData = ref([
+  {  
+    name: "Rodríguez Meléndez, Fabio",
+    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
+    obs: "10",
+    status: "Corregido",
+  },
+  {
+    name: "Sulca Correa, Omar Iván",
+    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
+    obs: "20",
+    status: "Terminado",
+  },
+  {
+    name: "Nuñez Vicente, José Antonio",
+    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
+    obs: "30",
+    status: "Pendiente",
+  },
+]);
 </script>
 
 <template>
@@ -324,7 +315,7 @@ const totalPages = computed(() => {
         </div>
       </div>
 
-      <!-- modal si falta más correcciones -->
+      <!-- modal para corregir proyecto de tesis -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"

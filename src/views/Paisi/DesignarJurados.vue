@@ -35,6 +35,43 @@ function closeModal() {
   showRejectModal.value = false; //cerrar ambos modales
 }
 
+// para filtrar datos segun el filtro y paginacion seleccionado
+const filteredTableData = computed(() => {
+  let filteredData = tableData.value;
+
+  if (selectedFilter.value) {
+    filteredData = filteredData.filter(
+      (data) => data.status === selectedFilter.value
+    );
+  }
+
+  // Paginar los datos filtrados
+  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
+  const endIndex = startIndex + rowsPerPage.value;
+  return filteredData.slice(startIndex, endIndex);
+});
+
+// Total de páginas
+const totalPages = computed(() => {
+  // Filtra los datos si hay un filtro seleccionado
+  const filteredData = selectedFilter.value
+    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    : tableData.value;
+  // Calcula el número total de páginas basadas en los datos filtrados y las filas por pagina
+  return Math.ceil(filteredData.length / rowsPerPage.value);
+});
+
+// Manejo de la página anterior y siguiente
+function goToPreviousPage() {
+  // decrementa la página actual si no es la última página
+  if (currentPage.value > 1) currentPage.value--;
+}
+
+function goToNextPage() {
+  // Incrementa la página actual si no es la última página
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
+
 // simulacion de datos
 const tableData = ref([
   {
@@ -80,43 +117,6 @@ const tableData = ref([
     status: "Pendiente",
   }
 ]);
-
-// para filtrar datos segun el filtro y paginacion seleccionado
-const filteredTableData = computed(() => {
-  let filteredData = tableData.value;
-
-  if (selectedFilter.value) {
-    filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
-    );
-  }
-
-  // Paginar los datos filtrados
-  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
-  const endIndex = startIndex + rowsPerPage.value;
-  return filteredData.slice(startIndex, endIndex);
-});
-
-// Total de páginas
-const totalPages = computed(() => {
-  // Filtra los datos si hay un filtro seleccionado
-  const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
-    : tableData.value;
-  // Calcula el número total de páginas basadas en los datos filtrados y las filas por pagina
-  return Math.ceil(filteredData.length / rowsPerPage.value);
-});
-
-// Manejo de la página anterior y siguiente
-function goToPreviousPage() {
-  // decrementa la página actual si no es la última página
-  if (currentPage.value > 1) currentPage.value--;
-}
-
-function goToNextPage() {
-  // Incrementa la página actual si no es la última página
-  if (currentPage.value < totalPages.value) currentPage.value++;
-}
 </script>
 
 <template>

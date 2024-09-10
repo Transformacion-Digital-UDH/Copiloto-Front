@@ -2,47 +2,9 @@
 import { ref, computed } from "vue";
 
 // Estados y propiedades
-const activeDropdownIndex = ref<number | null>(null);
-const showModal = ref(false);
-const showRejectModal = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
-
-// Funciones para manejar dropdown y modales
-function toggleDropdown(index: number) {
-  activeDropdownIndex.value =
-    activeDropdownIndex.value === index ? null : index;
-}
-
-function openModal() {
-  showModal.value = true;
-}
-
-function openRejectModal() {
-  showRejectModal.value = true;
-}
-
-function closeModal() {
-  showModal.value = false;
-  showRejectModal.value = false;
-}
-
-// Datos actuales
-const tableData = ref([
-  {
-    name: "Estudiante 1",
-    status: "Pendiente",
-  },
-  {
-    name: "Estudiante 2",
-    status: "Aprobado",
-  },
-  {
-    name: "Estudiante 3",
-    status: "Aprobado",
-  },
-]);
 
 // Filtrado y paginación
 const filteredTableData = computed(() => {
@@ -73,6 +35,22 @@ function goToPreviousPage() {
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
+
+// Datos actuales
+const tableData = ref([
+  {
+    name: "Estudiante 1",
+    status: "Pendiente",
+  },
+  {
+    name: "Estudiante 2",
+    status: "Aprobado",
+  },
+  {
+    name: "Estudiante 3",
+    status: "Aprobado",
+  },
+]);
 </script>
 
 <template>
@@ -110,8 +88,7 @@ function goToNextPage() {
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
-                  <option value="Terminado">Terminado</option>
-                  <option value="Corregido">Corregido</option>
+                  <option value="Aprobado">Aprobado</option>
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
@@ -188,10 +165,14 @@ function goToNextPage() {
                       {{ u.name }}
                     </td>
                     <td class="px-5 py-5 text-sm">
-                      <img src="/img/pdf.svg" alt="Icono pdf">
+                      <button>
+                        <img src="/img/pdf.svg" alt="Icono pdf">
+                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
-                      <img src="/img/pdf.svg" alt="Icono pdf">
+                      <button>
+                        <img src="/img/pdf.svg" alt="Icono pdf">
+                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
                     </td>
@@ -240,90 +221,6 @@ function goToNextPage() {
           </div>
         </div>
       </div>
-
-      <!-- Modal de confirmación -->
-      <div
-        v-if="showModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-              <img src="/img/cerrar.svg" alt="Icono cerrar">
-            </button>
-          </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-            </h5>
-          </div>
-          <div class="p-6">
-            <p class="text-gray-600 text-lg text-center">
-              ¿Está seguro que este proyecto de tesis no necesita más correciones?
-            </p>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base hover:bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Aceptar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal de rechazo -->
-      <div
-        v-if="showRejectModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-              <img src="/img/cerrar.svg" alt="Icono cerrar">
-            </button>
-          </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-            </h5>
-          </div>
-          <div class="p-6">
-            <p class="text-gray-600">
-              ¿Aún le falta correciones a este proyecto de tesis?
-            </p>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-              @click="closeModal"
-            >
-              Aceptar
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -336,30 +233,13 @@ function goToNextPage() {
   border-radius: 0.375rem;
 }
 
-.estado-terminado {
+.estado-aprobado {
   background-color: #48bb78;
-  color: #ffffff;
-}
-
-.estado-corregido {
-  background-color: #3B82F6;
   color: #ffffff;
 }
 
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
-}
-
-.estadoVerde {
-  color: #38a169;
-}
-
-.estadoRojo {
-  color: #e53e3e;
-}
-
-.estadoPlomo {
-  color: #d6d6d6;
 }
 </style>

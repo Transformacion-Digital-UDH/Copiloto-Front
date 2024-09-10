@@ -2,19 +2,12 @@
 import { ref, computed } from "vue";
 
 // Estados y propiedades
-const activeDropdownIndex = ref<number | null>(null);
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showSendModal = ref(false); //modal para enviar las revisiones de todos los jurados
-
-// Funciones para manejar dropdown y modales
-function toggleDropdown(index: number) {
-  activeDropdownIndex.value =
-    activeDropdownIndex.value === index ? null : index;
-}
 
 function openModal() {
   showModal.value = true;
@@ -27,50 +20,11 @@ function openSendModal(){
   showSendModal.value = true;
 }
 
-
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
   showSendModal.value = false;
 }
-
-// Datos actuales
-const tableData = ref([
-  {
-    name: "Estudiante 1",
-    title: "Título 1 implementacion de un sistema web para el estudio viable",
-    observations: "Observación 1",
-    reviewNumber: "10",
-    president: "Presidente 1",
-    secretary: "Secretario 1",
-    vocal: "Vocal 1",
-    status: "Corregido",
-    statusColor: "estadoVerde",
-  },
-  {
-    name: "Estudiante 2",
-    title:
-      "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
-    observations: "Observación 2",
-    reviewNumber: "20",
-    president: "Presidente 2",
-    secretary: "Secretario 2",
-    vocal: "Vocal 2",
-    status: "Terminado",
-    statusColor: "yellow",
-  },
-  {
-    name: "Estudiante 3",
-    title: "Título 3 implementacion de una base de datos para el rectorado izi",
-    observations: "Observación 3",
-    reviewNumber: "30",
-    president: "Presidente 3",
-    secretary: "Secretario 3",
-    vocal: "Vocal 3",
-    status: "Pendiente",
-    statusColor: "estadoPlomo",
-  },
-]);
 
 // Filtrado y paginación
 const filteredTableData = computed(() => {
@@ -101,6 +55,37 @@ function goToPreviousPage() {
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
+
+// Datos actuales
+const tableData = ref([
+  {
+    name: "Rodríguez Meléndez, Fabio",
+    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
+    reviewNumber: "10",
+    president: "Presidente 1",
+    secretary: "Secretario 1",
+    vocal: "Vocal 1",
+    status: "Corregido",
+  },
+  {
+    name: "Sulca Correa, Omar Iván",
+    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
+    reviewNumber: "20",
+    president: "Presidente 2",
+    secretary: "Secretario 2",
+    vocal: "Vocal 2",
+    status: "Terminado",
+  },
+  {
+    name: "Nuñez Vicente, José Antonio",
+    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
+    reviewNumber: "30",
+    president: "Presidente 3",
+    secretary: "Secretario 3",
+    vocal: "Vocal 3",
+    status: "Pendiente",
+  },
+]);
 </script>
 
 <template>
@@ -267,12 +252,12 @@ function goToNextPage() {
                       <button 
                         class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
-                      > Aceptar
+                      > Aprobar
                       </button>
                       <button
                         class="block w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
                         @click="openRejectModal"
-                        > Rechazar
+                        > Corregir
                       </button>
                       <button
                         class="block w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
@@ -324,7 +309,7 @@ function goToNextPage() {
         </div>
       </div>
 
-      <!-- Modal de confirmación -->
+      <!-- Modal de aprobar tesis si no necesita mas correciones -->
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -366,7 +351,7 @@ function goToNextPage() {
         </div>
       </div>
 
-      <!-- Modal de rechazo -->
+      <!-- Modal para corregir los proyectos de tesis -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -386,8 +371,7 @@ function goToNextPage() {
           </div>
           <div class="p-6">
             <p class="text-gray-600 text-lg text-center">
-              ¿Estás seguro de que quieres rechazar a ser el asesor de este
-              estudiante?
+              ¿Aún le falta correciones a este proyecto de tesis?
             </p>
           </div>
           <div
@@ -492,17 +476,5 @@ function goToNextPage() {
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
-}
-
-.estadoVerde {
-  color: #38a169;
-}
-
-.estadoRojo {
-  color: #e53e3e;
-}
-
-.estadoPlomo {
-  color: #d6d6d6;
 }
 </style>
