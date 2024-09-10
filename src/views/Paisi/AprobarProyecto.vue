@@ -8,6 +8,11 @@ const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const nroOficio = ref('');
+const showSendModal = ref(false);
+
+function openSendModal(){
+  showSendModal.value = true;
+}
 
 function openModal() {
   showModal.value = true;
@@ -20,6 +25,7 @@ function openRejectModal() {
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
+  showSendModal.value = false;
 }
 
 // Filtrado y paginación
@@ -73,7 +79,7 @@ const tableData = ref([
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Aprobacion de proyecto de tesis
+        Aprobacion de proyecto de tesis (PAISI)
       </h3>
 
       <div class="mt-8">
@@ -160,12 +166,12 @@ const tableData = ref([
                       VALIDAR TRÁMITE 
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-10 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ESTADO
                     </th>
@@ -203,6 +209,11 @@ const tableData = ref([
                       </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
+                      <button
+                        class="block w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
+                        @click="openSendModal"
+                        > Enviar
+                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
                       <span
@@ -267,13 +278,10 @@ const tableData = ref([
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-600 text-lg text-center">
-              Por favor escriba el número de oficio que va a autogenerar
+            <p class="text-gray-600 text-lg text-left mb-2">
+              Nro de Oficio:
             </p>
-            <div class="mt-4 text-center">
-              <label for="nroOficio" class="block text-gray-700">N° de Oficio</label>
-              <input type="text" id="nroOficio" v-model="nroOficio" class="mt-2 px-4 py-2 rounded-lg">
-            </div>
+            <input type="text" id="nroOficio" v-model="nroOficio" class=" px-10 py-1 rounded-xl bg-gray-100 focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -285,7 +293,7 @@ const tableData = ref([
               Generar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-black bg-gray-300 rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
@@ -294,7 +302,7 @@ const tableData = ref([
         </div>
       </div>
 
-      <!-- Modal de rechazo -->
+      <!-- Modal de observacion de tesis -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -309,28 +317,71 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Observación
+            </h5>
+          </div>
+          <div class="p-6 bg-white rounded-lg">
+            <p class="text-gray-600 text-lg text-center mb-4">
+              Por favor escriba el motivo de su observación
+            </p>
+            <textarea class="text-gray-950 bg-gray-100 rounded-lg w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal para enviar tramite a la facultad -->
+      <div
+        v-if="showSendModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-600">
-              ¿Aún le falta correciones a este proyecto de tesis?
+            <p class="text-gray-900 text-center text-lg mb-4">
+              ¿Desea enviar este trámite a la facultad?
             </p>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
             </button>
             <button
-              class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
               @click="closeModal"
             >
-              Aceptar
+              Confirmar
             </button>
           </div>
         </div>
