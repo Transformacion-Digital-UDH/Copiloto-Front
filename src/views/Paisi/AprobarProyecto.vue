@@ -6,7 +6,8 @@ const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showModal = ref(false);
-const showRejectModal = ref(false); 
+const showRejectModal = ref(false);
+const nroOficio = ref('');
 
 function openModal() {
   showModal.value = true;
@@ -144,12 +145,12 @@ const tableData = ref([
                       ESTUDIANTE
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       CONFORMIDAD ASESOR
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       CONFORMIDAD JURADO
                     </th>
@@ -179,12 +180,12 @@ const tableData = ref([
                     <td class="px-5 py-5 text-sm">
                       {{ u.name }}
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-5 py-5 text-sm text-center">
                       <button>
                         <img src="/img/pdf.svg" alt="Icono pdf">
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-5 py-5 text-sm text-center">
                       <button>
                         <img src="/img/pdf.svg" alt="Icono pdf">
                       </button>
@@ -269,7 +270,10 @@ const tableData = ref([
             <p class="text-gray-600 text-lg text-center">
               Por favor escriba el número de oficio que va a autogenerar
             </p>
-            <input type="text" placeholder="Nro de oficio">
+            <div class="mt-4 text-center">
+              <label for="nroOficio" class="block text-gray-700">N° de Oficio</label>
+              <input type="text" id="nroOficio" v-model="nroOficio" class="mt-2 px-4 py-2 rounded-lg">
+            </div>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
