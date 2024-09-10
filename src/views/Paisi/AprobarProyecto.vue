@@ -194,6 +194,16 @@ function goToNextPage() {
                       <img src="/img/pdf.svg" alt="Icono pdf">
                     </td>
                     <td class="px-5 py-5 text-sm">
+                      <button
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        @click="openModal"
+                        > Generar
+                      </button>
+                      <button
+                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                        > Observar
+                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
                     </td>
@@ -241,7 +251,7 @@ function goToNextPage() {
         </div>
       </div>
 
-      <!-- Modal de confirmación -->
+      <!-- Modal para generar un oficio al estudiante -->
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -256,28 +266,29 @@ function goToNextPage() {
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
+              Se autogenerará el oficio para este estudiante
             </h5>
           </div>
           <div class="p-6">
             <p class="text-gray-600 text-lg text-center">
-              ¿Está seguro que este proyecto de tesis no necesita más correciones?
+              Por favor escriba el número de oficio que va a autogenerar
             </p>
+            <input type="text" placeholder="Nro de oficio">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Generar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-black bg-gray-300 rounded-2xl"
               @click="closeModal"
             >
               Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base hover:bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Aceptar
             </button>
           </div>
         </div>

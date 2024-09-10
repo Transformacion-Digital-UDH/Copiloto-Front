@@ -180,6 +180,10 @@ export default defineComponent({
           { name: 'Aprobar proyecto',
             label: 'Aprobar proyecto',
             path: '/paisi/aprobar-proyecto'},
+
+          { name: 'Aprobar proyectoT',
+            label: 'Aprobar proyectoT',
+            path: '/facultad/aprobar-proyecto-tesis'},
         ]
       },
       {
