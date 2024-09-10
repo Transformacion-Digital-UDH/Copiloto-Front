@@ -46,7 +46,7 @@ const estadoClase = (estado: string) => {
 
 <template>
   <div class="flex-1 p-10 bg-gray-100 font-Roboto">
-    <h3 class="text-4xl font-semibold text-center text-azul">Aprobación de proyectos de tesis por la facultad</h3>
+    <h3 class="text-4xl font-semibold text-center text-azul">Aprobación del Informe Final por la facultad</h3>
 
     <div class="mt-6 space-y-10">
       <!-- Card 1: Inicio de Trámite -->

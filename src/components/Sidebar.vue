@@ -121,6 +121,7 @@ export default defineComponent({
       progreso: 30, // Valor inicial del progreso en porcentaje
     }
   },
+  
   setup() {
     const { isOpen } = useSidebar();
     const isDark = useDark();
@@ -209,6 +210,12 @@ export default defineComponent({
           { name: 'Conformidad de Informe Final por los Jurados', 
             label: 'Conformidad Jurados', 
             path: '/estudiante/conformidad-informe-jurado' },
+          { name: 'Aprobacion de Informe Final por los Jurados', 
+            label: 'Aprobacion del Informe ', 
+            path: '/estudiante/aprobacion-informe' },
+          { name: 'Conformidad por Integridad VRI', 
+            label: 'Conformidad por Integridad VRI', 
+            path: '/estudiante/conformidad-vri' },
 
           { name: 'Submenu2', label: 'Submenu 2', path: '/informe-final/submenu2' },
           { name: 'Submenu3', label: 'Submenu 3', path: '/informe-final/submenu3' },
@@ -229,7 +236,7 @@ export default defineComponent({
       },
       {
         name: 'Cierre',
-        label: 'Cierre',
+        label: 'Cierre de Proyecto',
         isOpen: false,
         icon: markRaw(IconClosed),
         submenus: [

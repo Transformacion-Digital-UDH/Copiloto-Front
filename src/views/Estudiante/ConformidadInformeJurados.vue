@@ -32,13 +32,13 @@ const puedeContinuar = computed(() => {
 </script>
 
 <template>
-  <div class="flex-1 p-10 bg-gray-100 font-roboto">
-    <h3 class="text-4xl font-bold text-center text-azul">Conformidad del Informe Final por los jurados</h3>
+  <div class="flex-1 p-10 bg-gray-100 font-roboto ">
+    <h3 class="text-4xl font-bold text-center text-azul mb-4">Conformidad del Informe Final por los jurados</h3>
 
     <!-- Información del Título de Tesis -->
-    <div class="mt-6 mb-4">
-      <p class="text-xl"><strong>Título de Tesis:</strong> Implementación de un algoritmo xxxxxxxxxxxxxxxxxxxxxxx</p>
-      <p class="text-xl">
+    <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white mb-4">
+      <p class="text-lg mb-2"><strong>Título de Tesis:</strong> Implementación de un algoritmo xxxxxxxxxxxxxxxxxxxxxxx</p>
+      <p class="text-lg break-words">
         <strong>Link de informe final:</strong> 
         <a href="https://docs.google.com/document/" class="text-blue-500 underline">https://docs.google.com/document/</a>
       </p>

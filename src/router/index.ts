@@ -16,6 +16,8 @@ import AprobarProyecto from '@/views/Paisi/AprobarProyecto.vue'
 import ConformidadInformeAsesor from '@/views/Estudiante/ConformidadInformeAsesor.vue'
 import DesignacionJuradoInforme from '@/views/Estudiante/DesignacionJuradoInforme.vue'
 import ConformidadInformeJurados from '@/views/Estudiante/ConformidadInformeJurados.vue'
+import AprobacionInforme from '@/views/Estudiante/AprobacionInforme.vue'
+import ConformidadVRI from '@/views/Estudiante/ConformidadVRI.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +44,8 @@ const router = createRouter({
         { path: 'conformidad-informe-asesor', name: 'ConformidadInformeAsesor', component: ConformidadInformeAsesor, meta: { title: 'Conformidad de Informe Final por el Asesor' } },
         { path: 'designacion-informe-jurado', name: 'DesignacionJuradoInforme', component: DesignacionJuradoInforme, meta: { title: 'Designacion de Jurado para el Informe Final' } },
         { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: { title: 'Conformidad de Informe Final por los Jurados' } },
+        { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: { title: 'Aprobacion de Informe por los Jurados' } },
+        { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: { title: 'Conformidad por Integridad VRI' } },
       ]
     },
     {

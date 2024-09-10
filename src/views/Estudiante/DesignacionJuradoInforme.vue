@@ -171,7 +171,7 @@ const puedeContinuar = computed(() => {
       <!-- Card 5: Solicitar cambio de jurado -->
       <div class="bg-white rounded-lg shadow-lg p-6">
         <div class="flex items-center">
-          <h2 class="text-2xl font-medium text-black">5. Solicitar cambio de jurado</h2>
+          <h2 class="text-2xl font-medium text-black">Solicitar cambio de jurado</h2>
           <span :class="estadoClase(procesos[4].estado)" class="estado-estilo ml-4">{{ procesos[4].estado }}</span>
         </div>
 

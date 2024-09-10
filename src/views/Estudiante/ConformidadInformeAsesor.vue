@@ -56,16 +56,16 @@ function estadoClase(estado: string) {
 </script>
 
 <template>
-  <div class="flex-1 p-10 bg-gray-100 font-roboto">
+  <div class="flex-1 p-10 border-s-2 bg-gray-100 font-roboto">
     <h3 class="text-4xl font-bold text-center text-azul">Conformidad de Informe Final por asesor</h3>
 
     <div class="mt-6 space-y-10">
 
       <!-- Sección 1: Solicitar link para cargar el Informe Final -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">1. Solicitar link para cargar su Informe final</h4>
+        <h4 class="text-2xl font-medium text-black mb-3">1. Solicitar link para cargar su Informe final</h4>
         <div class="flex items-center justify-between"> 
-        <p class="text-gray-500 mb-4">Haz click en el botón de Solicitar link para cargar el informe final</p>
+        <p class="text-gray-500 mb-3">Haz click en el botón de Solicitar link para cargar el informe final</p>
         <span :class="estadoClase(solicitudLinkEstado)" class="estado-estilo ml-4">{{ solicitudLinkEstado }}</span>
       </div>
      
@@ -86,9 +86,9 @@ function estadoClase(estado: string) {
 
       <!-- Sección 2: Observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">2. Observaciones</h4>
+        <h4 class="text-2xl font-medium text-black mb-3">2. Observaciones</h4>
         <div class="flex items-center justify-between">  
-        <p class="text-gray-500 mb-4">Haz click en el botón de Solicitar revisión</p> 
+        <p class="text-gray-500 mb-3">Haz click en el botón de Solicitar revisión</p> 
         <span :class="estadoClase(solicitudRevisionEstado)" class="estado-estilo ml-4">{{ solicitudRevisionEstado }}</span>
        </div>
         
@@ -130,7 +130,7 @@ function estadoClase(estado: string) {
       </div>
 
       <!-- Sección 4: Informe de conformidad de observaciones -->
-            <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="bg-white rounded-lg shadow-lg p-6">
             <div class="flex items-center">
                 <h2 class="text-2xl font-medium text-black">4. Documentos</h2>
                 <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
@@ -162,7 +162,7 @@ function estadoClase(estado: string) {
                 </div>
                 </div>
             </div>
-</div>
+      </div>
 
 
       <!-- Botón de siguiente -->
@@ -178,7 +178,7 @@ function estadoClase(estado: string) {
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 400;
   border-radius: 0.375rem;
   display: inline-block;
 }
