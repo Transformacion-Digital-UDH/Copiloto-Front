@@ -32,34 +32,15 @@ function closeModal() {
 const tableData = ref([
   {
     name: "Estudiante 1",
-    title: "Título 1 implementacion de un sistema web para el estudio viable",
-    reviewNumber: "10",
-    president: "Presidente 1",
-    secretary: "Secretario 1",
-    vocal: "Vocal 1",
-    status: "Terminado",
-    statusColor: "estadoVerde",
+    status: "Pendiente",
   },
   {
     name: "Estudiante 2",
-    title:
-      "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
-    reviewNumber: "20",
-    president: "Presidente 2",
-    secretary: "Secretario 2",
-    vocal: "Vocal 2",
-    status: "Corregido",
-    statusColor: "yellow",
+    status: "Aprobado",
   },
   {
     name: "Estudiante 3",
-    title: "Título 3 implementacion de una base de datos para el rectorado izi",
-    reviewNumber: "30",
-    president: "Presidente 3",
-    secretary: "Secretario 3",
-    vocal: "Vocal 3",
-    status: "Pendiente",
-    statusColor: "estadoPlomo",
+    status: "Aprobado",
   },
 ]);
 
@@ -173,32 +154,17 @@ function goToNextPage() {
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      TÍTULO
+                      CONFORMIDAD ASESOR
                     </th>
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      OBSERVACIONES
+                      CONFORMIDAD JURADO
                     </th>
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      N° REVISIÓN
-                    </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
-                      PRESIDENTE
-                    </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
-                      SECRETARIO
-                    </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
-                      VOCAL
+                      VALIDAR TRÁMITE 
                     </th>
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
@@ -221,52 +187,15 @@ function goToNextPage() {
                     <td class="px-5 py-5 text-sm">
                       {{ u.name }}
                     </td>
-                    <td class="px-5 py-5 text-sm text-wrap w-80">
-                      {{ u.title }}
-                    </td>
-                    <td class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative">
-                      <div class="text-center items-center">
-                        <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
-                          <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
-                            <div class="icon">
-                              <img
-                                src="/img/subirarchivo.svg"
-                                alt="Icono Subir archivo"
-                              />
-                            </div>
-                            <div class="text">
-                              <span>Subir archivo</span>
-                            </div>
-                            <input type="file" id="file" class="hidden" />
-                          </label>
-                        </button>
-                      </div>
+                    <td class="px-5 py-5 text-sm">
+                      <img src="/img/pdf.svg" alt="Icono pdf">
                     </td>
                     <td class="px-5 py-5 text-sm">
-                      {{ u.reviewNumber }}
+                      <img src="/img/pdf.svg" alt="Icono pdf">
                     </td>
                     <td class="px-5 py-5 text-sm">
-                      {{ u.president }}
                     </td>
                     <td class="px-5 py-5 text-sm">
-                      {{ u.secretary }}
-                    </td>
-                    <td class="px-5 py-5 text-sm">
-                      {{ u.vocal }}
-                    </td>
-                    <td
-                      class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative"
-                    >
-                      <button
-                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal"
-                      > Aprobar
-                      </button>
-                      <button 
-                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
-                        @click="openRejectModal"
-                      > Corregir
-                      </button>
                     </td>
                     <td class="px-5 py-5 text-sm">
                       <span

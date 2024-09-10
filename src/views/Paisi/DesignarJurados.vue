@@ -123,7 +123,7 @@ function goToNextPage() {
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Designación de Jurados
+        Designación de jurados (PAISI)
       </h3>
 
       <div class="mt-8">
@@ -153,9 +153,9 @@ function goToNextPage() {
                   class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
                 >
                   <option value="">Todos</option>
-                  <option value="Pendiente">Aceptado</option>
-                  <option value="Solicitud">Rechazado</option>
-                  <option value="Asignado">Pendiente</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Solicitud">Solicitud</option>
+                  <option value="Asignado">Asignado</option>
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
@@ -203,12 +203,7 @@ function goToNextPage() {
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      ASIGNAR
-                    </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
-                      ENVIAR
+                      ACCIÓN
                     </th>
                     <th
                       class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
@@ -233,16 +228,18 @@ function goToNextPage() {
                         {{ u.title }}
                       </p>
                     </td>
-                    <td class="px-11 py-4">
-                        <button class="focus:outline-none" @click="openModal">
-                            <img src="/img/asignar.svg" alt="Icono asignar jurado"/>
-                        </button>
-                      </td>
-                      <td class="px-10 py-4">
-                        <button class="focus:outline-none" @click="openRejectModal">
-                            <img src="/img/enviar.svg" alt="Icono asignar jurado"/>
-                        </button>
-                      </td>
+                    <td class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative">
+                      <button
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        @click="openModal"
+                        > Asignar
+                      </button>
+                      <button
+                        class="block w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                        > Enviar
+                      </button>
+                    </td>
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                     >
@@ -257,25 +254,40 @@ function goToNextPage() {
                 </tbody>
               </table>
 
-<!-- paginacion -->
-<div class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between">
-                                <span class="text-xs text-gray-900 xs:text-sm">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }}
-                                    al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}
-                                    entradas
-                                </span>
-                                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
-                                    <button :disabled="currentPage === 1" @click="goToPreviousPage" class="button">Anterior</button>
-                                    <button :disabled="currentPage === totalPages" @click="goToNextPage" class="button">Siguiente</button>
-                                </div>
-                            </div>
+              <!-- Paginación -->
+              <div
+                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
+              >
+                <span class="text-sm text-gray-900 xs:text-sm"
+                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
+                  {{ tableData.length }}</span
+                >
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                  <button
+                    :disabled="currentPage === 1"
+                    @click="goToPreviousPage"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    :disabled="currentPage === totalPages"
+                    @click="goToNextPage"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
+                  >
+                    Siguiente
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-<!-- modal para la designacion de jurados -->
-<div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-          <div class="relative max-w-screen-md w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
+        <!-- modal para la designacion de jurados -->
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+          <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
                 <img src="/img/cerrar.svg" alt="Icono cerrar">
