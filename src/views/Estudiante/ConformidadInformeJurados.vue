@@ -6,7 +6,7 @@ const solicitudEstado = ref<string>('Pendiente');
 
 // Estado del punto 3 (Informe de Conformidad de Observaciones)
 const documentos = ref([
-  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
+  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'Informe de conformidad.jpg' }
 ]);
 
 // Función para cambiar el estado del punto 1 a "Hecho"
@@ -32,26 +32,34 @@ const puedeContinuar = computed(() => {
 </script>
 
 <template>
-  <div class="flex-1 p-10 bg-gray-100 font-roboto">
-    <h3 class="text-4xl font-bold text-center text-azul">Conformidad de proyecto de tesis por los jurados</h3>
+  <div class="flex-1 p-10 bg-gray-100 font-roboto ">
+    <h3 class="text-4xl font-bold text-center text-azul mb-4">Conformidad del Informe Final por los Jurados</h3>
 
-    <div class="mt-6 space-y-10">
+    <!-- Información del Título de Tesis -->
+    <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white mb-4">
+      <p class="text-lg mb-2"><strong>Título de Tesis:</strong> Implementación de un algoritmo xxxxxxxxxxxxxxxxxxxxxxx</p>
+      <p class="text-lg break-words">
+        <strong>Link de informe final:</strong> 
+        <a href="https://docs.google.com/document/" class="text-blue-500 underline">https://docs.google.com/document/</a>
+      </p>
+    </div>
+
+    <div class="space-y-10">
       <!-- Punto 1: Observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
+        <h4 class="text-2xl font-medium text-black mb-4">1. Observaciones</h4>
         <div class="flex items-center justify-between">
           <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
         </div>
-        <div class="flex justify-center mt-3">
-          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
+        <div class="flex justify-center mt-4">
+          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar revisión</button>
         </div>
       </div>
 
       <!-- Punto 2: Solicitar revisión de levantamiento de observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
-        <!-- Hacemos la tabla responsiva con overflow-x-auto -->
+        <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión</h4>
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
             <thead>
@@ -92,7 +100,7 @@ const puedeContinuar = computed(() => {
 
       <!-- Punto 3: Documentos (Informe de Conformidad de Observaciones) -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">3. Documentos</h4>
+        <h4 class="text-2xl font-medium text-black mb-4">3. Informe de conformidad de observaciones</h4>
         <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
           <div class="flex flex-col md:flex-row justify-between md:items-center">
             <span class="flex-1">{{ documentos[0].nombre }}</span>
