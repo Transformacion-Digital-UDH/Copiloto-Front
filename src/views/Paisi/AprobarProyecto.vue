@@ -61,15 +61,15 @@ function goToNextPage() {
 // Datos actuales
 const tableData = ref([
   {
-    name: "Estudiante 1",
+    name: "Rodríguez Meléndez, Fabio",
     status: "Pendiente",
   },
   {
-    name: "Estudiante 2",
+    name: "Sulca Correa, Omar Iván",
     status: "Aprobado",
   },
   {
-    name: "Estudiante 3",
+    name: "Nuñez Vicente, José Antonio",
     status: "Aprobado",
   },
 ]);
@@ -144,34 +144,34 @@ const tableData = ref([
             >
               <table class="min-w-full leading-normal">
                 <thead>
-                  <tr>
+                  <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3 tracking-wider"
                     >
                       ESTUDIANTE
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4 tracking-wider"
                     >
                       CONFORMIDAD ASESOR
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4 tracking-wider"
                     >
                       CONFORMIDAD JURADO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4 tracking-wider"
                     >
                       VALIDAR TRÁMITE 
                     </th>
                     <th
-                      class="px-10 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4 tracking-wider"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4 tracking-wider"
                     >
                       ESTADO
                     </th>
@@ -181,41 +181,42 @@ const tableData = ref([
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="index"
-                    class="bg-white border-b border-gray-200"
+                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    class="border-b border-gray-200"
                   >
-                    <td class="px-5 py-5 text-sm">
-                      {{ u.name }}
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 text-wrap w-64">{{ u.name }}</p>
                     </td>
-                    <td class="px-5 py-5 text-sm text-center">
+                    <td class="px-3 py-5 text-center">
                       <button>
                         <img src="/img/pdf.svg" alt="Icono pdf">
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm text-center">
+                    <td class="px-3 py-5 text-center">
                       <button>
                         <img src="/img/pdf.svg" alt="Icono pdf">
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
-                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
                         > Generar
                       </button>
                       <button
-                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
                         @click="openRejectModal"
                         > Observar
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-3 py-5 text-center">
                       <button
-                        class="block w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
                         @click="openSendModal"
                         > Enviar
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-3 py-5 text-center">
                       <span
                         :class="`estado-estilo estado-${u.status
                           .toLowerCase()

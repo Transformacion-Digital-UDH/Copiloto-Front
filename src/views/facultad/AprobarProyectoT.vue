@@ -55,17 +55,20 @@ function goToNextPage() {
 const tableData = ref([
   {
     name: "Rodríguez Meléndez, Fabio",
-    title: "Diseño, desarrollo y evaluación de la usabilidad de un sistema de información para la ferretería Huánuco del distrito de Amarilis en el 2022",
+    title:
+      "Diseño, desarrollo y evaluación de la usabilidad de un sistema de información para la ferretería Huánuco del distrito de Amarilis en el 2022",
     status: "Pendiente",
   },
   {
     name: "Sulca Correa, Omar Iván",
-    title: "Auditoria informática y propuesta de mejora bajo la metodología cobit al área de compras y abastecimiento de la empresa chapacuete s.a.c de la ciudad de Huánuco en el 2019",
+    title:
+      "Auditoria informática y propuesta de mejora bajo la metodología cobit al área de compras y abastecimiento de la empresa chapacuete s.a.c de la ciudad de Huánuco en el 2019",
     status: "Tramitado",
   },
   {
     name: "Nuñez Vicente, José Antonio",
-    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2022",
+    title:
+      "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2022",
     status: "Tramitado",
   },
 ]);
@@ -140,40 +143,26 @@ const tableData = ref([
             >
               <table class="min-w-full leading-normal">
                 <thead>
-                  <tr>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                  <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
+                    <th class="py-2 px-3 tracking-wider">
                       ESTUDIANTE
                     </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                    <th class="py-2 px-3 tracking-wider">
                       TÍTULO
                     </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                    <th class="py-2 px-4 tracking-wider">
                       OFICIO PAISI
                     </th>
-                    <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                    <th class="py-2 px-4 tracking-wider">
                       JURADO
                     </th>
-                    <th
-                      class="px-10 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                    <th class="py-2 px-3 tracking-wider">
                       VALIDAR
                     </th>
-                    <th
-                      class="px-11 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                    <th class="py-2 px-3 tracking-wider">
                       ACCIÓN
                     </th>
-                    <th
-                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
-                    >
+                    <th class="py-2 px-3 tracking-wider">
                       ESTADO
                     </th>
                   </tr>
@@ -182,29 +171,30 @@ const tableData = ref([
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="index"
-                    class="bg-white border-b border-gray-200"
+                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    class="border-b border-gray-200"
                   >
-                    <td class="px-5 py-5 text-sm">
-                      {{ u.name }}
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 text-wrap w-64">
+                        {{ u.name }}
+                      </p>
                     </td>
-                    <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                    >
+                    <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-80">
                         {{ u.title }}
                       </p>
                     </td>
-                    <td class="px-5 py-5 text-sm text-center">
+                    <td class="text-center px-4">
                       <button>
                         <img src="/img/pdf.svg" alt="Icono pdf" />
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm text-center">
+                    <td class="text-center px-4">
                       <button>
                         <img src="/img/pdf.svg" alt="Icono pdf" />
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm ">
+                    <td class="px-3 py-5">
                       <button
                         class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
@@ -218,15 +208,15 @@ const tableData = ref([
                         Observar
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-3 py-5">
                       <button
-                        class="block w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        class="block w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
                         @click="openRejectModal"
                       >
                         Enviar
                       </button>
                     </td>
-                    <td class="px-5 py-5 text-sm">
+                    <td class="px-3 py-5">
                       <span
                         :class="`estado-estilo estado-${u.status
                           .toLowerCase()
@@ -333,7 +323,7 @@ const tableData = ref([
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1" >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
           </div>
