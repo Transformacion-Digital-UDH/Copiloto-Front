@@ -380,7 +380,7 @@ const tableData = ref([
             > Cancelar
             </button>
             <button
-              class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             > Aceptar
             </button>

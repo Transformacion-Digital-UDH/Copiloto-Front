@@ -14,6 +14,7 @@ import JuradoPresidente from '@/views/Jurado/JuradoPresidente.vue'
 import DesignarJurados from '@/views/Paisi/DesignarJurados.vue'
 import AprobarProyecto from '@/views/Paisi/AprobarProyecto.vue'
 import AprobarProyectoT from '@/views/facultad/AprobarProyectoT.vue'
+import DesignarAsesorP from '@/views/Paisi/DesignarAsesor.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -66,6 +67,7 @@ const router = createRouter({
       children: [
         { path: 'designar-jurado', name: 'Designar jurados', component: DesignarJurados, meta: { title: 'Designar Jurado' } },
         { path: 'aprobar-proyecto', name: 'Aprobacion proyecto', component: AprobarProyecto, meta: { title: 'Aprobacion proyecto' } },
+        { path: 'designar-asesoria', name: 'Designar asesorP', component: DesignarAsesorP, meta: {title: 'Designar asesorP'}},
       ]
     },
     {

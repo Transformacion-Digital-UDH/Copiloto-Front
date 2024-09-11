@@ -184,6 +184,10 @@ export default defineComponent({
           { name: 'Aprobacion proyectoT',
             label: 'Aprobacion proyectoT',
             path: '/facultad/aprobar-proyecto-tesis'},
+
+          { name: 'Designar AsesorP',
+            label: 'Designar AsesorP',
+            path: '/paisi/designar-asesoria'},
         ]
       },
       {
