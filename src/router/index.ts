@@ -107,16 +107,16 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'login' });
   }
 
-  // Si hay token, verificar el rol del usuario
-  // if (token && !to.meta.roles.includes(role)) {
-  //   // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
-  //   const routesByRole: Record<string, string> = {
-  //     estudiante: 'estudiante',
-  //     asesor: 'asesor',
-  //     jurado: 'jurado'
-  //   };
-  //   return next({ name: routesByRole[role] });
-  // }
+ // Si hay token, verificar el rol del usuario
+  if (token && !to.meta.roles.includes(role)) {
+    // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
+    const routesByRole: Record<string, string> = {
+      estudiante: 'estudiante',
+      asesor: 'asesor',
+      jurado: 'jurado'
+    };
+    return next({ name: routesByRole[role] });
+  }
 
   if ((to.name === 'login' || to.name === 'register') && token) {
     const routesByRole: Record<string, string> = {
