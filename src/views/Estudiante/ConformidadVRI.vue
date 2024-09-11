@@ -68,7 +68,7 @@ function estadoClase(estado: string) {
 
 <template>
   <div class="flex-1 p-4 sm:p-10 bg-gray-100 font-roboto">
-    <h3 class="text-2xl sm:text-4xl font-bold text-center text-azul mb-4">Conformidad del Informe Final por los jurados</h3>
+    <h3 class="text-2xl sm:text-4xl font-bold text-center text-azul mb-4">Conformidad por Integridad VRI</h3>
 
     <!-- Información del Título de Tesis -->
     <div class="bg-baseClarito text-white rounded-lg shadow-lg p-4 sm:p-6  mb-4">

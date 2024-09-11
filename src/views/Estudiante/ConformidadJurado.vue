@@ -38,12 +38,12 @@ const puedeContinuar = computed(() => {
     <div class="mt-6 space-y-10">
       <!-- Punto 1: Observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">1. Observaciones</h4>
+        <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
         <div class="flex items-center justify-between">
           <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
         </div>
-        <div class="flex justify-center mt-4">
+        <div class="flex justify-center mt-3">
           <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
         </div>
       </div>
