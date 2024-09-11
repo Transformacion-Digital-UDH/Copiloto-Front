@@ -1,17 +1,11 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 
-const activeDropdownIndex = ref<number | null>(null); // dropdown para generar y rechazar
 const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
 const selectedFilter = ref(""); // para seleccionar el estado
 const currentPage = ref(1); // página actual
 const showModal = ref(false); // modal no necesita más correcciones
 const showRejectModal = ref(false); // modal si falta más correcciones
-
-function toggleDropdown(index: number) {
-  activeDropdownIndex.value =
-    activeDropdownIndex.value === index ? null : index;
-}
 
 function openModal() {
   showModal.value = true;
@@ -34,31 +28,6 @@ function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// simulación de datos
-const tableData = ref([
-  {
-    name: "Estudiante 1",
-    title: "Título 1",
-    obs: "5",
-    status: "Completado",
-    statusColor: "estadoVerde",
-  },
-  {
-    name: "Estudiante 2",
-    title: "Título 2",
-    obs: "15",
-    status: "Pendiente",
-    statusColor: "estadoPlomo",
-  },
-  {
-    name: "Estudiante 3",
-    title: "Título 3",
-    obs: "25",
-    status: "En proceso",
-    statusColor: "yellow",
-  },
-]);
-
 // para filtrar datos en base al filtro y paginación seleccionado
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
@@ -80,13 +49,35 @@ const totalPages = computed(() => {
     : tableData.value;
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
+
+// simulación de datos
+const tableData = ref([
+  {  
+    name: "Rodríguez Meléndez, Fabio",
+    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
+    obs: "10",
+    status: "Corregido",
+  },
+  {
+    name: "Sulca Correa, Omar Iván",
+    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
+    obs: "20",
+    status: "Terminado",
+  },
+  {
+    name: "Nuñez Vicente, José Antonio",
+    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
+    obs: "30",
+    status: "Pendiente",
+  },
+]);
 </script>
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-medium text-center text-gray-800">
-        Pendientes de confirmación
+        Pendientes de corrección de tesis (A)
       </h3>
       <div class="mt-8">
         <div class="mt-6">
@@ -116,8 +107,8 @@ const totalPages = computed(() => {
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
-                  <option value="En proceso">En proceso</option>
-                  <option value="Completado">Completado</option>
+                  <option value="Corregido">Corregido</option>
+                  <option value="Terminado">Terminado</option>
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
@@ -163,7 +154,7 @@ const totalPages = computed(() => {
                       TÍTULO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       OBSERVACIONES
                     </th>
@@ -173,12 +164,12 @@ const totalPages = computed(() => {
                       N° REVISIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-12 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ESTADO
                     </th>
@@ -196,30 +187,27 @@ const totalPages = computed(() => {
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                     >
-                      <p class="text-gray-900 whitespace-nowrap">
+                      <p class="text-gray-900 text-wrap w-80">
                         {{ u.title }}
                       </p>
                     </td>
-                    <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative"
-                    >
-                      <button
-                        class="focus:outline-none"
-                        @click="toggleDropdown(index)"
-                      >
-                        <label class="custum-file-upload" for="file">
-                          <div class="icon">
-                            <img
-                              src="/img/subirarchivo.svg"
-                              alt="Icono Subir archivo"
-                            />
-                          </div>
-                          <div class="text">
-                            <span>Haga clic para subir su archivo</span>
-                          </div>
-                          <input type="file" id="file" class="hidden" />
-                        </label>
-                      </button>
+                    <td class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative">
+                      <div class="text-center items-center">
+                        <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
+                          <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
+                            <div class="icon">
+                              <img
+                                src="/img/subirarchivo.svg"
+                                alt="Icono Subir archivo"
+                              />
+                            </div>
+                            <div class="text">
+                              <span>Subir archivo</span>
+                            </div>
+                            <input type="file" id="file" class="hidden" />
+                          </label>
+                        </button>
+                      </div>
                     </td>
                     <td
                       class="px-10 py-5 text-sm bg-white border-b border-gray-200"
@@ -227,24 +215,19 @@ const totalPages = computed(() => {
                       <p class="text-gray-900 whitespace-nowrap">{{ u.obs }}</p>
                     </td>
                     <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                      class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative"
                     >
-                      <div class="flex items-center space-x-2">
-                        <button class="focus:outline-none" @click="openModal">
-                          <img src="/img/confirmar.svg" alt="Icono Confirmar" />
-                        </button>
-                        <button
-                          class="focus:outline-none"
-                          @click="openRejectModal"
-                        >
-                          <img
-                            src="/img/corregir.svg"
-                            alt="Icono No confirmar"
-                          />
-                        </button>
-                      </div>
+                      <button
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        @click="openModal"
+                      > Aprobar
+                      </button>
+                      <button 
+                        class="block w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                      > Corregir
+                      </button>
                     </td>
-
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                     >
@@ -261,26 +244,25 @@ const totalPages = computed(() => {
 
               <!-- paginacion -->
               <div
-                class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
               >
-                <span class="text-xs text-gray-900 xs:text-sm"
+                <span class="text-sm text-gray-900 xs:text-sm"
                   >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}
-                  entradas
-                </span>
-                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
+                  {{ tableData.length }}</span
+                >
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
                   >
                     Siguiente
                   </button>
@@ -297,46 +279,34 @@ const totalPages = computed(() => {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-lg font-light text-gray-900 text-center flex-1">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-900" @click="closeModal">
-              <svg
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
           </div>
           <div class="p-6">
-            <p class="text-gray-600">
-              ¿Está seguro que este proyecto de tesis no necesita más
-              correcciones?
+            <p class="text-gray-600 text-lg text-center">
+              ¿Está seguro que este proyecto de tesis no necesita más correcciones?
             </p>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Sí
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base hover:bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-2xl"
               @click="closeModal"
             >
               No
@@ -345,34 +315,23 @@ const totalPages = computed(() => {
         </div>
       </div>
 
-      <!-- modal si falta más correcciones -->
+      <!-- modal para corregir proyecto de tesis -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-lg font-light text-gray-900 text-center flex-1">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-900" @click="closeModal">
-              <svg
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
           </div>
           <div class="p-6">
             <p class="text-gray-600">
@@ -383,13 +342,13 @@ const totalPages = computed(() => {
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Sí
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base hover:bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-2xl"
               @click="closeModal"
             >
               No
@@ -409,13 +368,13 @@ const totalPages = computed(() => {
   border-radius: 0.375rem;
 }
 
-.estado-completado {
+.estado-terminado {
   background-color: #48bb78;
   color: #ffffff;
 }
 
-.estado-en-proceso {
-  background-color: #e89519;
+.estado-corregido {
+  background-color: #5dade2;
   color: #ffffff;
 }
 

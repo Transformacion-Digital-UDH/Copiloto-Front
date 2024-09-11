@@ -1,17 +1,11 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
 
-const activeDropdownIndex = ref<number | null>(null); // dropdown generar y rechazar
 const showModal = ref(false); // para ver el modal de aprobado
 const showRejectModal = ref(false); // para ver el modal de rechazado
 const selectedFilter = ref(""); // para seleccionar el estado
 const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
 const currentPage = ref(1); // pagina actual
-
-function toggleDropdown(index: number) {
-  activeDropdownIndex.value =
-    activeDropdownIndex.value === index ? null : index;
-}
 
 function openModal() {
   showModal.value = true;
@@ -25,28 +19,6 @@ function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; // cerrar ambos modales
 }
-
-// simulacion de datos
-const tableData = ref([
-  {
-    name: "Estudiante 1",
-    role: "Título 1 implementacion de un sistema web para el estudio viable",
-    status: "Completado",
-    statusColor: "estadoVerde",
-  },
-  {
-    name: "Estudiante 2",
-    role: "Título 2 implementacion de un algoritmo muy basico para el ingeniero",
-    status: "En Proceso",
-    statusColor: "yellow",
-  },
-  {
-    name: "Estudiante 3",
-    role: "Título 3 implementacion de una base de datos para el rectorado izi",
-    status: "Pendiente",
-    statusColor: "estadoPlomo",
-  },
-]);
 
 // para filtrar datos segun el filtro y paginacion seleccionado
 const filteredTableData = computed(() => {
@@ -84,6 +56,25 @@ function goToNextPage() {
   // Incrementa la página actual si no es la última página
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
+
+// simulacion de datos
+const tableData = ref([
+  {
+    name: "Rodríguez Meléndez, Fabio",
+    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
+    status: "Aceptado",
+  },
+  {
+    name: "Sulca Correa, Omar Iván",
+    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
+    status: "Rechazado",
+  },
+  {
+    name: "Nuñez Vicente, José Antonio",
+    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
+    status: "Pendiente",
+  },
+]);
 </script>
 
 <template>
@@ -120,9 +111,9 @@ function goToNextPage() {
                   class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
                 >
                   <option value="">Todos</option>
+                  <option value="Aceptado">Aceptado</option>
+                  <option value="Rechazado">Rechazado</option>
                   <option value="Pendiente">Pendiente</option>
-                  <option value="En Proceso">En Proceso</option>
-                  <option value="Completado">Completado</option>
                 </select>
                 <div
                   class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
@@ -168,12 +159,12 @@ function goToNextPage() {
                       TÍTULO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-12 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
                       ESTADO
                     </th>
@@ -191,53 +182,23 @@ function goToNextPage() {
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200"
                     >
-                      <p class="text-gray-900 whitespace-nowrap">
-                        {{ u.role }}
+                      <p class="text-gray-900 text-wrap w-80">
+                        {{ u.title }}
                       </p>
                     </td>
                     <td
                       class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative"
                     >
                       <button
-                        class="focus:outline-none"
-                        @click="toggleDropdown(index)"
-                      >
-                        <svg
-                          class="w-4 h-4 text-gray-500"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 6h16M4 12h16m-7 6h7"
-                          />
-                        </svg>
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        @click="openModal"
+                      > Aceptar
                       </button>
-                      <div
-                        v-if="activeDropdownIndex === index"
-                        class="absolute left-1/2 transform -translate-x-1/2 z-10 w-24 origin-top-center bg-white border border-gray-200 rounded-lg shadow-lg"
-                      >
-                        <div class="py-1">
-                          <a
-                            href="#"
-                            class="block px-4 py-2 text-sm text-estadoVerde font-Thin 100 hover:bg-green-100"
-                            @click="openModal"
-                          >
-                            Aceptar</a
-                          >
-                          <a
-                            href="#"
-                            class="block px-4 py-2 text-sm text-rojo font-Thin 100 hover:bg-green-100"
-                            @click="openRejectModal"
-                          >
-                            Rechazar</a
-                          >
-                        </div>
-                      </div>
+                      <button 
+                        class="block w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                      > Rechazar
+                      </button>
                     </td>
                     <td
                       class="px-5 py-5 text-sm bg-white border-b border-gray-200"
@@ -255,25 +216,25 @@ function goToNextPage() {
 
               <!-- Paginación -->
               <div
-                class="flex flex-col items-center px-5 py-5 bg-white border-t xs:flex-row xs:justify-between"
+                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
               >
-                <span class="text-xs text-gray-900 xs:text-sm"
+                <span class="text-sm text-gray-900 xs:text-sm"
                   >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }} entradas</span
+                  {{ tableData.length }}</span
                 >
-                <div class="inline-flex mt-2 xs:mt-0 space-x-8">
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
                   <button
                     :disabled="currentPage === 1"
                     @click="goToPreviousPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
                   >
                     Anterior
                   </button>
                   <button
                     :disabled="currentPage === totalPages"
                     @click="goToNextPage"
-                    class="button"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
                   >
                     Siguiente
                   </button>
@@ -289,31 +250,20 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-lg font-ligth text-gray-900 text-center flex-1">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-900" @click="closeModal">
-              <svg
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
           </div>
           <div class="p-6">
-            <p class="text-gray-600">
+            <p class="text-gray-600 text-lg text-center">
               ¿Estás seguro de que quieres generar una Carta de Aceptacion?
             </p>
           </div>
@@ -321,13 +271,13 @@ function goToNextPage() {
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base hover:bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
               Aceptar
@@ -342,46 +292,34 @@ function goToNextPage() {
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <img src="/img/cerrar.svg" alt="Icono cerrar">
+            </button>
+          </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-lg font-Thin 100 text-gray-900 text-center flex-1">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
-            <button class="text-gray-900" @click="closeModal">
-              <svg
-                class="w-5 h-5"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
           </div>
           <div class="p-6">
-            <p class="text-gray-600">
-              ¿Estás seguro de que quieres rechazar a ser el asesor de este
-              estudiante?
+            <p class="text-gray-600 text-lg text-center">
+              ¿Estás seguro de que quieres rechazar a ser el asesor de este estudiante?
             </p>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
             </button>
             <button
-              class="ml-2 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
               Aceptar
@@ -401,13 +339,13 @@ function goToNextPage() {
   border-radius: 0.375rem;
 }
 
-.estado-completado {
+.estado-aceptado {
   background-color: #48bb78;
   color: #ffffff;
 }
 
-.estado-en-proceso {
-  background-color: #e89519;
+.estado-rechazado {
+  background-color: #DC2626;
   color: #ffffff;
 }
 

@@ -12,10 +12,8 @@ export default {
         'baseClarito': '#A0D6C9 ',
         'azul': '#011B4B',
         'amarillo': '#F2A603',
-        'custom-green': '#2ebaa1',
-        'plomosidebar': '#222D32',
-        'barra': '#F2A603',
         'grisTabla': '#ECECEC',
+        'azulbajo': '#5d6d7e',
       },
       fontFamily: {
         Roboto: ["Roboto", "sans-serif"], // Corregido el formato aquí

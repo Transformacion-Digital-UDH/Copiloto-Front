@@ -13,6 +13,7 @@ import SolicitudJurado from '@/views/Jurado/SolicitudJurado.vue'
 import JuradoPresidente from '@/views/Jurado/JuradoPresidente.vue'
 import DesignarJurados from '@/views/Paisi/DesignarJurados.vue'
 import AprobarProyecto from '@/views/Paisi/AprobarProyecto.vue'
+import AprobarProyectoT from '@/views/facultad/AprobarProyectoT.vue'
 import ConformidadInformeAsesor from '@/views/Estudiante/ConformidadInformeAsesor.vue'
 import DesignacionJuradoInforme from '@/views/Estudiante/DesignacionJuradoInforme.vue'
 import ConformidadInformeJurados from '@/views/Estudiante/ConformidadInformeJurados.vue'
@@ -73,8 +74,15 @@ const router = createRouter({
       path: '/paisi',
       component: AdminLayout,
       children: [
-        { path: 'designar-jurado', name: 'Designar jurados', component: DesignarJurados},
-        { path: 'aprobar-proyecto', name: 'Aprobar proyecto', component: AprobarProyecto},
+        { path: 'designar-jurado', name: 'Designar jurados', component: DesignarJurados, meta: { title: 'Designar Jurado' } },
+        { path: 'aprobar-proyecto', name: 'Aprobacion proyecto', component: AprobarProyecto, meta: { title: 'Aprobacion proyecto' } },
+      ]
+    },
+    {
+      path: '/facultad',
+      component: AdminLayout,
+      children: [
+        { path: 'aprobar-proyecto-tesis', name: 'Aprobacion proyectoT', component: AprobarProyectoT, meta: { title: 'Aprobacion proyectoT' } },
       ]
     },
     {

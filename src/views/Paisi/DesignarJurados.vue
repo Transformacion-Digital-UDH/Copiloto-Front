@@ -35,35 +35,42 @@ function closeModal() {
   showRejectModal.value = false; //cerrar ambos modales
 }
 
-function goToPreviousPage() {
-  if (currentPage.value > 1) currentPage.value--;
-}
-
-function goToNextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-}
-
-// para filtrar datos en base al filtro y paginacion seleccionado
+// para filtrar datos segun el filtro y paginacion seleccionado
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
+
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
       (data) => data.status === selectedFilter.value
     );
   }
-  // paginar datos filtrados
+
+  // Paginar los datos filtrados
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
   const endIndex = startIndex + rowsPerPage.value;
   return filteredData.slice(startIndex, endIndex);
 });
 
-// el total de paginas
+// Total de páginas
 const totalPages = computed(() => {
+  // Filtra los datos si hay un filtro seleccionado
   const filteredData = selectedFilter.value
     ? tableData.value.filter((data) => data.status === selectedFilter.value)
     : tableData.value;
+  // Calcula el número total de páginas basadas en los datos filtrados y las filas por pagina
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
+
+// Manejo de la página anterior y siguiente
+function goToPreviousPage() {
+  // decrementa la página actual si no es la última página
+  if (currentPage.value > 1) currentPage.value--;
+}
+
+function goToNextPage() {
+  // Incrementa la página actual si no es la última página
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
 
 // simulacion de datos
 const tableData = ref([
@@ -113,145 +120,174 @@ const tableData = ref([
 </script>
 
 <template>
-    <div class="flex h-screen border-s-2 font-Roboto">
-      <div class="flex-1 p-8 overflow-auto">
-        <h3 class="text-4xl font-medium text-center text-gray-800">
-          Designación de Jurados
-        </h3>
-        <div class="mt-8">
-          <div class="mt-6">
-            <div class="flex flex-col mt-3 sm:flex-row font-Roboto mb-4">
-              <!-- Filtro de cantidad de entradas -->
-              <div class="w-full flex justify-end items-center space-x-3">
-                <!-- Búsqueda -->
-                <div class="relative block mt-2 sm:mt-0">
-                  <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-                    <img src="/img/buscar.svg" alt="Icono buscar">
-                  </span>
-                  <input
-                    placeholder="Buscar"
-                    class="block w-full py-2 pl-8 pr-6 text-base text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-full appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                  />
-                </div>
-                <div class="relative">
-                  <select
-                    v-model="rowsPerPage"
-                    class="block w-full h-full rounded px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                  >
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                  </select>
-                  <div
-                    class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
-                    <img src="/img/mayor_abajo.svg" alt="Icono mayor abajo">
-                  </div>
-                </div>
-                <!-- Filtro de estado -->
-                <div class="relative">
-                  <select
-                    v-model="selectedFilter"
-                    class="block w-full h-full rounded px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                  >
-                    <option value="">Todos</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Solicitud">Solicitud</option>
-                    <option value="Asignado">Asignado</option>
-                  </select>
-                  <div
-                    class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none">
-                    <img src="/img/mayor_abajo.svg" alt="Icono mayor abajo">
-                  </div>
-                </div>
+  <div class="flex h-screen border-s-2 font-Roboto">
+    <div class="flex-1 p-10 overflow-auto">
+      <h3 class="text-4xl font-medium text-center text-gray-800">
+        Designación de jurados (PAISI)
+      </h3>
+
+      <div class="mt-8">
+        <!-- Filtros de tabla -->
+        <div class="mt-6">
+          <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+            <!-- Filtro de cantidad de entradas -->
+            <div class="flex">
+              <div class="relative">
+                <select
+                  v-model="rowsPerPage"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                </select>
+                <div
+                  class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
+                ></div>
+              </div>
+
+              <!-- Filtro de estado -->
+              <div class="relative">
+                <select
+                  v-model="selectedFilter"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
+                >
+                  <option value="">Todos</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Solicitud">Solicitud</option>
+                  <option value="Asignado">Asignado</option>
+                </select>
+                <div
+                  class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
+                ></div>
               </div>
             </div>
-            <!-- Tabla de proyecto de tesis los pendientes por confirmar -->
-            <div class="p-1 relative overflow-x-auto">
-              <div class="inline-block min-w-full overflow-hidden border rounded-xl">
-                <table class="w-full text-lg text-left rtl:text-right text-white dark:text-black">
-                  <thead class="text-lg text-white uppercase dark:text-black">
-                    <tr class="border-b border-gray-400">
-                      <th scope="col" class="px-6 py-3">
-                        Estudiante
-                      </th>
-                      <th scope="col" class="px-6 py-3">
-                        Título
-                      </th>
-                      <th scope="col" class="px-6 py-3">
-                        Asignar
-                      </th>
-                      <th scope="col" class="px-6 py-3">
-                        Enviar
-                      </th>
-                      <th scope="col" class="px-6 py-3">
-                        Estado
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(u, index) in filteredTableData" :key="index" :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'" class="border-b border-gray-400" >
-                      <td class="px-6 py-4">
-                        {{ u.name }}
-                      </td>
-                      <td class="px-6 py-4">
-                          {{ u.title }}
-                      </td>
-                      <td class="px-11 py-4">
-                        <button class="focus:outline-none" @click="openModal">
-                            <img src="/img/asignar.svg" alt="Icono asignar jurado"/>
-                        </button>
-                      </td>
-                      <td class="px-10 py-4">
-                        <button class="focus:outline-none" @click="openRejectModal">
-                            <img src="/img/enviar.svg" alt="Icono asignar jurado"/>
-                        </button>
-                      </td>
-                      <td class="px-6 py-4 text-base">
-                        <span
-                          :class="`estado-${u.status
-                            .toLowerCase()
-                            .replace(' ', '-')} rounded-2xl px-2 py-2`"
-                          >{{ u.status }}</span
-                        >
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-  
-                <!-- paginacion -->
-                <div
-                  class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between "
+
+            <!-- Búsqueda -->
+            <div class="relative block mt-2 sm:mt-0">
+              <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="w-4 h-4 text-gray-500 fill-current"
                 >
-                  <span class="text-sm text-gray-900 xs:text-sm"
-                    >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                    {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                    {{ tableData.length }}
-                  </span>
-                  <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                    <button
-                      :enabled="currentPage === 1"
-                      @click="goToPreviousPage"
-                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
+                  <path
+                    d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
+                  />
+                </svg>
+              </span>
+              <input
+                placeholder="Buscar"
+                class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <!-- Tabla -->
+          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+            <div
+              class="inline-block min-w-full overflow-hidden rounded-lg shadow"
+            >
+              <table class="min-w-full leading-normal">
+                <thead>
+                  <tr>
+                    <th
+                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      Anterior
-                    </button>
-                    <button
-                      :enabled="currentPage === totalPages"
-                      @click="goToNextPage"
-                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
+                      ESTUDIANTE
+                    </th>
+                    <th
+                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
                     >
-                      Siguiente
-                    </button>
-                  </div>
+                      TÍTULO
+                    </th>
+                    <th
+                      class="px-12 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    >
+                      ACCIÓN
+                    </th>
+                    <th
+                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                    >
+                      ESTADO
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(u, index) in filteredTableData" :key="index">
+                    <td
+                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                    >
+                      <p class="text-gray-900 whitespace-nowrap">
+                        {{ u.name }}
+                      </p>
+                    </td>
+                    <td
+                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                    >
+                      <p class="text-gray-900 text-wrap w-80">
+                        {{ u.title }}
+                      </p>
+                    </td>
+                    <td class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative">
+                      <button
+                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        @click="openModal"
+                        > Asignar
+                      </button>
+                      <button
+                        class="block w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+                        @click="openRejectModal"
+                        > Enviar
+                      </button>
+                    </td>
+                    <td
+                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                    >
+                      <span
+                        :class="`estado-estilo estado-${u.status
+                          .toLowerCase()
+                          .replace(' ', '-')}`"
+                        >{{ u.status }}</span
+                      >
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- Paginación -->
+              <div
+                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
+              >
+                <span class="text-sm text-gray-900 xs:text-sm"
+                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
+                  {{ tableData.length }}</span
+                >
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                  <button
+                    :disabled="currentPage === 1"
+                    @click="goToPreviousPage"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    :disabled="currentPage === totalPages"
+                    @click="goToNextPage"
+                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
+                  >
+                    Siguiente
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
-  
+      </div>
+
         <!-- modal para la designacion de jurados -->
         <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-          <div class="relative max-w-screen-md w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
+          <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
                 <img src="/img/cerrar.svg" alt="Icono cerrar">
@@ -287,7 +323,7 @@ const tableData = ref([
                 </div>
               </div>
               <div class="flex items-center justify-center p-3">
-                <button class="px-4 py-2 text-base text-white bg-base hover:bg-gray-400 rounded-xl w-60"
+                <button class="px-4 py-2 text-base text-white bg-[#5d6d7e]  rounded-lg w-60"
                   @click="asignarJurado">Asignar
                 </button>
               </div>
@@ -332,19 +368,24 @@ const tableData = ref([
         </div>
   
         <!-- modal para editar la designacion de jurados -->
-
-      </div>
     </div>
-  </template>
+  </div>
+</template>
 
 <style scoped>
+.estado-estilo {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  border-radius: 0.375rem;
+}
 .estado-asignado {
   background-color: #48bb78;
   color: #ffffff;
 }
 
 .estado-solicitud {
-  background-color: #e89519;
+  background-color: #5dade2;
   color: #ffffff;
 }
 
