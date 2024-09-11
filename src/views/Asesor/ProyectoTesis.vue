@@ -142,56 +142,61 @@ const tableData = ref([
             >
               <table class="min-w-full leading-normal">
                 <thead>
-                  <tr>
+                  <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3"
                     >
                       ESTUDIANTE
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3"
                     >
                       TÍTULO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-center text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4"
                     >
                       OBSERVACIONES
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3"
                     >
                       N° REVISIÓN
                     </th>
                     <th
-                      class="px-12 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-7 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-4"
                     >
                       ESTADO
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(u, index) in filteredTableData" :key="index">
+                  <tr 
+                    v-for="(u, index) in filteredTableData" 
+                    :key="index"
+                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    class="border-b border-gray-200"
+                  >
                     <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                      class="px-3 py-5 text-base"
                     >
-                      <p class="text-gray-900 whitespace-nowrap">
+                      <p class="text-gray-900 whitespace-nowrap w-64">
                         {{ u.name }}
                       </p>
                     </td>
                     <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                      class="px-3 py-5 text-base"
                     >
                       <p class="text-gray-900 text-wrap w-80">
                         {{ u.title }}
                       </p>
                     </td>
-                    <td class="px-5 py-5 text-sm bg-white border-b border-gray-200 relative">
+                    <td class="px-3 py-5 text-center">
                       <div class="text-center items-center">
                         <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
                           <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
@@ -209,27 +214,25 @@ const tableData = ref([
                         </button>
                       </div>
                     </td>
-                    <td
-                      class="px-10 py-5 text-sm bg-white border-b border-gray-200"
-                    >
-                      <p class="text-gray-900 whitespace-nowrap">{{ u.obs }}</p>
+                    <td class="px-3 py-5 text-center">
+                      {{ u.obs }}
                     </td>
                     <td
-                      class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative"
+                      class="px-3 py-5 flex flex-col items-center justify-center"
                     >
                       <button
-                        class="block w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
                       > Aprobar
                       </button>
                       <button 
-                        class="block w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
                         @click="openRejectModal"
                       > Corregir
                       </button>
                     </td>
                     <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                      class="px-3 py-5 text-center"
                     >
                       <span
                         :class="`estado-estilo estado-${u.status
