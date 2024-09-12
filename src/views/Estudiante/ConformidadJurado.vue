@@ -29,6 +29,10 @@ function estadoClase(estado: string) {
 const puedeContinuar = computed(() => {
   return solicitudEstado.value === 'Hecho' && documentos.value[0].estado === 'Hecho';
 });
+
+// Estados separados para los modales
+const mostrarModalPunto2 = ref(false);
+const mostrarModalPunto3 = ref(false);
 </script>
 
 <template>
@@ -49,8 +53,20 @@ const puedeContinuar = computed(() => {
       </div>
 
       <!-- Punto 2: Solicitar revisión de levantamiento de observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+               @mouseover="mostrarModalPunto2 = true"
+               @mouseleave="mostrarModalPunto2 = false" />
+        </div>
+
+        <div v-show="mostrarModalPunto2" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Solicita la revisión de levantamiento de observaciones con los documentos necesarios.
+          </p>
+        </div>
+
         <!-- Hacemos la tabla responsiva con overflow-x-auto -->
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
@@ -91,8 +107,21 @@ const puedeContinuar = computed(() => {
       </div>
 
       <!-- Punto 3: Documentos (Informe de Conformidad de Observaciones) -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">3. Documentos</h4>
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h4 class="text-2xl font-medium text-black mb-4">3. Documentos</h4>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+               @mouseover="mostrarModalPunto3 = true"
+               @mouseleave="mostrarModalPunto3 = false" />
+        </div>
+
+        <div v-show="mostrarModalPunto3"
+          class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Espera la conformidad de los documentos para continuar con el proceso de tesis.
+          </p>
+        </div>
+
         <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
           <div class="flex flex-col md:flex-row justify-between md:items-center">
             <span class="flex-1">{{ documentos[0].nombre }}</span>
@@ -130,7 +159,7 @@ const puedeContinuar = computed(() => {
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 400;
   border-radius: 0.375rem;
   display: inline-block;
 }
