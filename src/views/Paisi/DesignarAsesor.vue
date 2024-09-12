@@ -145,7 +145,7 @@ const tableData = ref([
               <table class="min-w-full leading-normal">
                 <thead class="custom-thead font-Quicksand">
                   <tr
-                    class="text-base text-center text-black uppercase border-b-2 bg-gray-300"
+                    class="text-base text-center text-white uppercase border-b-2 bg-gray-400"
                   >
                     <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
@@ -447,7 +447,7 @@ const tableData = ref([
   color: #ffffff;
 }
 .custom-thead th {
-  font-weight: 500; /* Grosor delgado */
+  font-weight: 600; /* Grosor delgado */
   font-size: 16px;  /* Tamaño de la fuente */
   text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
