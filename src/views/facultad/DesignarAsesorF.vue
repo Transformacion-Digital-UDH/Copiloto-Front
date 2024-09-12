@@ -147,6 +147,7 @@ const tableData = ref([
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
                     <th class="py-2 px-14 text-left tracking-wider">FECHA</th>
+                    <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
                     <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
@@ -191,6 +192,8 @@ const tableData = ref([
                       >
                         Observar
                       </button>
+                    </td>
+                    <td class="px-3 py-5 text-center">
                       <button
                         class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
                         @click="openSendModal"
@@ -264,10 +267,10 @@ const tableData = ref([
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-left mb-2">
-              Por favor escriba el número de expediente correspondiente
+            <p class="text-gray-500 text-base text-left mb-2">
+              Escriba el número de expediente correspondiente
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="w-full px-10 py-1 rounded-xl bg-gray-100 focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -313,7 +316,7 @@ const tableData = ref([
             <p class="text-gray-600 text-lg text-center mb-4">
               Por favor escriba el motivo de su observación
             </p>
-            <textarea class="text-gray-950 bg-gray-100 rounded-lg w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
