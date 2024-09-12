@@ -2,6 +2,7 @@
 import { ref, computed } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconArchivo from "@/components/icons/IconArchivo.vue";
 // Estados y propiedades
 const showModal = ref(false);
 const showRejectModal = ref(false);
@@ -9,6 +10,7 @@ const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showSendModal = ref(false); //modal para enviar las revisiones de todos los jurados
+const showArchivoModal = ref(false);
 
 function openModal() {
   showModal.value = true;
@@ -22,10 +24,15 @@ function openSendModal(){
   showSendModal.value = true;
 }
 
+function openArchivoModal(){
+  showArchivoModal.value = true;
+}
+
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
   showSendModal.value = false;
+  showArchivoModal.value = true;
 }
 
 // Filtrado y paginación
@@ -146,12 +153,12 @@ const tableData = ref([
                 <thead>
                   <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
                     <th
-                      class="py-2 px-3"
+                      class="py-2 px-3 text-left"
                     >
                       ESTUDIANTE
                     </th>
                     <th
-                      class="py-2 px-3"
+                      class="py-2 px-3 text-left"
                     >
                       TÍTULO
                     </th>
@@ -208,22 +215,7 @@ const tableData = ref([
                       </p>
                     </td>
                     <td class="px-3 py-5 text-center">
-                      <div class="text-center items-center">
-                        <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
-                          <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
-                            <div class="icon">
-                              <img
-                                src="/img/subirarchivo.svg"
-                                alt="Icono Subir archivo"
-                              />
-                            </div>
-                            <div class="text">
-                              <span>Subir archivo</span>
-                            </div>
-                            <input type="file" id="file" class="hidden" />
-                          </label>
-                        </button>
-                      </div>
+                      <button @click="openArchivoModal" class="text-white bg-azulbajo w-25 px-4 py-1 text-sm rounded-xl focus:outline-none">Subir archivo</button>
                     </td>
                     <td class="px-3 py-5 text-center">
                       {{ u.reviewNumber }}
@@ -411,10 +403,7 @@ const tableData = ref([
               <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
                 <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
                   <div class="icon">
-                    <img
-                      src="/img/subirarchivo.svg"
-                      alt="Icono Subir archivo"
-                    />
+                    
                   </div>
                   <div class="text">
                     <span>Subir archivo</span>
@@ -442,6 +431,58 @@ const tableData = ref([
           </div>
         </div>
       </div>
+
+      <!-- Modal para archivo de observaciones -->
+      <div
+        v-if="showArchivoModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button
+              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+              @click="closeModal"
+            >
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Cargar archivo de observaciones
+            </h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-600 text-lg text-center mb-4">
+              Por favor suba las observaciones
+            </p>
+            <button class="focus:outline-none border rounded-s-full p-2 custum-file-upload mx-auto">
+              <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
+                <div class="icon">
+                  <IconArchivo />
+                </div>
+                <input type="file" id="file" class="hidden">
+              </label>
+            </button>
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>

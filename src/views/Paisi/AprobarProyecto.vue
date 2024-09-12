@@ -135,7 +135,7 @@ const tableData = ref([
                 <thead>
                   <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
                     <th
-                      class="py-2 px-3 tracking-wider"
+                      class="py-2 px-3 tracking-wider text-left"
                     >
                       ESTUDIANTE
                     </th>

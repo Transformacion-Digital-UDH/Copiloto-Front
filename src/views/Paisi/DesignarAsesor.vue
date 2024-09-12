@@ -10,8 +10,10 @@ const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
+const showLinkModal = ref(false);
 const showSendModal = ref(false);
 const nroOficio1 = ref('');
+const linkTesis = ref('');
 
 function openSendModal (){
   showSendModal.value = true;
@@ -25,10 +27,15 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
+function openModalLink (){
+  showLinkModal.value = true;
+}
+
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
   showSendModal.value = false;
+  showLinkModal.value = false;
 }
 
 // Filtrado y paginación
@@ -171,7 +178,11 @@ const tableData = ref([
                         <IconPdf />
                       </button>
                     </td>
-                    <td class="text-center px-4"></td>
+                    <td class="text-center px-4">
+                      <button @click="openModalLink" class="text-white bg-azulbajo w-24 px-4 py-1 text-sm rounded-xl focus:outline-none">
+                        Subir link
+                      </button>
+                    </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
@@ -260,10 +271,10 @@ const tableData = ref([
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-left mb-2">
-              Por favor escriba el número de oficio que se va autogenerar
+            <p class="text-gray-500 text-base text-left mb-2">
+              Escriba el número de oficio que se va autogenerar
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="w-full px-10 py-1 rounded-xl bg-gray-100 focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -309,7 +320,7 @@ const tableData = ref([
             <p class="text-gray-600 text-lg text-center mb-4">
               Por favor escriba el motivo de su observación
             </p>
-            <textarea class="text-gray-950 bg-gray-100 rounded-lg w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -366,6 +377,48 @@ const tableData = ref([
       </div>
 
       <!-- Modal para subir link de tesis -->
+      <div
+        v-if="showLinkModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button
+              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+              @click="closeModal"
+            >
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Cargar proyecto de tesis
+            </h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-600 text-lg text-left mb-2">
+              Por favor inserte el enlace
+            </p>
+            <input type="text" id="linkTesis" v-model="linkTesis" placeholder="Insertar aquí..." class="px-2 rounded-md w-full focus:border-gray-900 focus:ring-0 mb-4"/>
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>

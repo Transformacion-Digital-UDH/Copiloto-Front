@@ -143,8 +143,8 @@ const tableData = ref([
                   <tr
                     class="text-xs text-center text-black uppercase border-b-2 border-gray-300"
                   >
-                    <th class="py-2 px-3 tracking-wider">ESTUDIANTE</th>
-                    <th class="py-2 px-3 tracking-wider">TÍTULO</th>
+                    <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
+                    <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
                     <th class="py-2 px-4 tracking-wider">JURADO</th>
                     <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
