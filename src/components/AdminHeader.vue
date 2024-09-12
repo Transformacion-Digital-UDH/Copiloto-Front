@@ -23,6 +23,7 @@ const logout = async () => {
     localStorage.removeItem("full_name");
     localStorage.removeItem("role");
     localStorage.removeItem("email");
+    localStorage.removeItem("image_profile");
     router.push("/");
   })
 }
