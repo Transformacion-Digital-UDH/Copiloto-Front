@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<template>
 <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_15_152)">
 <rect width="24" height="24" fill="white"/>
@@ -11,3 +11,4 @@
 </clipPath>
 </defs>
 </svg>
+</template>

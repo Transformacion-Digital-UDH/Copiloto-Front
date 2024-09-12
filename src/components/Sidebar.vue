@@ -84,6 +84,10 @@ export default defineComponent({
           { name: 'Designar AsesorP',
             label: 'Designar AsesorP',
             path: '/paisi/designar-asesoria'},
+
+          { name: 'Designar AsesorF',
+            label: 'Designar AsesorF',
+            path: '/facultad/designar-asesoria-facu'},
         ]
       },
       {

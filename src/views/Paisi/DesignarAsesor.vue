@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
+import IconPdf from "@/components/icons/IconPdf.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
+import IconCerrar from "@/components/icons/IconCerrar.vue";
 
 // Estados y propiedades
 const selectedFilter = ref("");
@@ -90,54 +93,40 @@ const tableData = ref([
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
             <!-- Filtro de cantidad de entradas -->
-            <div class="flex">
+            <div class="w-full flex justify-end items-center space-x-2">
+              <!-- Búsqueda -->
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <IconBuscar />
+                </span>
+                <input
+                  placeholder="Buscar"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                />
+              </div>
               <div class="relative">
                 <select
                   v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="20">20</option>
                 </select>
-                <div
-                  class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                ></div>
               </div>
 
               <!-- Filtro de estado -->
               <div class="relative">
                 <select
                   v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
                   <option value="Observado">Observado</option>
                   <option value="Tramitado">Tramitado</option>
                 </select>
-                <div
-                  class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                ></div>
               </div>
-            </div>
-
-            <!-- Búsqueda -->
-            <div class="relative block mt-2 sm:mt-0">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  class="w-4 h-4 text-gray-500 fill-current"
-                >
-                  <path
-                    d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                  />
-                </svg>
-              </span>
-              <input
-                placeholder="Search"
-                class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-              />
             </div>
           </div>
 
@@ -155,7 +144,7 @@ const tableData = ref([
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
                     <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
-                    <th class="py-2 px-3 tracking-wider">VALIDAR</th>
+                    <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
                     <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
@@ -179,11 +168,10 @@ const tableData = ref([
                     </td>
                     <td class="text-center px-4">
                       <button>
-                        <img src="/img/pdf.svg" alt="Icono pdf" />
+                        <IconPdf />
                       </button>
                     </td>
-                    <td class="text-center px-4">
-                    </td>
+                    <td class="text-center px-4"></td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
@@ -261,7 +249,7 @@ const tableData = ref([
               class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
               @click="closeModal"
             >
-              <img src="/img/cerrar.svg" alt="Icono cerrar" />
+              <IconCerrar />
             </button>
           </div>
           <div
@@ -281,16 +269,16 @@ const tableData = ref([
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Generar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-black bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Generar
             </button>
           </div>
         </div>
@@ -307,7 +295,7 @@ const tableData = ref([
               class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
               @click="closeModal"
             >
-              <img src="/img/cerrar.svg" alt="Icono cerrar" />
+              <IconCerrar />
             </button>
           </div>
           <div
@@ -327,7 +315,7 @@ const tableData = ref([
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-gray-700 bg-gray-300 rounded-2xl"
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
@@ -343,46 +331,42 @@ const tableData = ref([
       </div>
 
       <!-- modal para enviar tramite a la facultad -->
-      <div
-          v-if="showSendModal"
-          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
-              <div class="flex justify-end items-start">
-                  <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                  <img src="/img/cerrar.svg" alt="Icono cerrar">
-                  </button>
-              </div>
-              <div
-                  class="flex items-start justify-between p-3 border-b border-gray-200"
-              >
-                  <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-                  Confirmación
-                  </h5>
-              </div>
-              <div class="p-6">
-                  <p class="text-gray-900 text-center text-lg mb-4">
-                  ¿Desea enviar este trámite a facultad?
-                  </p>
-              </div>
-              <div
-                  class="flex items-center justify-end p-3 border-t border-gray-200"
-              >
-                  <button
-                  class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-                  @click="closeModal"
-                  >
-                  Cancelar
-                  </button>
-                  <button
-                  class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-                  @click="closeModal"
-                  >
-                  Confirmar
-                  </button>
-              </div>
+      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
+          <div class="flex justify-end items-start">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
+                <IconCerrar />
+              </button>
           </div>
+          <div
+              class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Confirmación
+              </h5>
+          </div>
+          <div class="p-6">
+              <p class="text-gray-900 text-center text-lg mb-4">
+              ¿Desea enviar este trámite a facultad?
+              </p>
+          </div>
+          <div
+              class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal">
+              Cancelar
+              </button>
+              <button
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
+              @click="closeModal">
+              Confirmar
+              </button>
+          </div>
+        </div>
       </div>
+
+      <!-- Modal para subir link de tesis -->
+
     </div>
   </div>
 </template>

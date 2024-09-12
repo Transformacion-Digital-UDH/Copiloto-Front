@@ -20,6 +20,7 @@ import ConformidadInformeJurados from '@/views/Estudiante/ConformidadInformeJura
 import AprobacionInforme from '@/views/Estudiante/AprobacionInforme.vue'
 import ConformidadVRI from '@/views/Estudiante/ConformidadVRI.vue'
 import DesignarAsesorP from '@/views/Paisi/DesignarAsesor.vue'
+import DesignarAsesorF from '@/views/facultad/DesignarAsesorF.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -85,6 +86,7 @@ const router = createRouter({
       component: AdminLayout,
       children: [
         { path: 'aprobar-proyecto-tesis', name: 'Aprobacion proyectoT', component: AprobarProyectoT, meta: { title: 'Aprobacion proyectoT' } },
+        { path: 'designar-asesoria-facu', name: 'Designar AsesorF', component: DesignarAsesorF, meta: { title: 'Designar AsesorF' } },
       ]
     },
     {
