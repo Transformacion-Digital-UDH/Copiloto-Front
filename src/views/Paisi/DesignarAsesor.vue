@@ -89,9 +89,9 @@ const tableData = ref([
 </script>
 
 <template>
-  <div class="flex h-screen border-s-2 font-Roboto">
+  <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-medium text-center text-gray-800">
+      <h3 class="text-4xl font-semibold text-center text-azul">
         Designación de asesor (PAISI)
       </h3>
 
@@ -138,16 +138,16 @@ const tableData = ref([
           </div>
 
           <!-- Tabla -->
-          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
             <div
-              class="inline-block min-w-full overflow-hidden rounded-lg shadow"
+              class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
             >
               <table class="min-w-full leading-normal">
-                <thead>
+                <thead class="custom-thead font-Quicksand">
                   <tr
-                    class="text-xs text-center text-black uppercase border-b-2 border-gray-300"
+                    class="text-base text-center text-black uppercase border-b-2 bg-gray-300"
                   >
-                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
                     <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
@@ -160,7 +160,7 @@ const tableData = ref([
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="index"
-                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
@@ -445,5 +445,10 @@ const tableData = ref([
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
+}
+.custom-thead th {
+  font-weight: 500; /* Grosor delgado */
+  font-size: 16px;  /* Tamaño de la fuente */
+  text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
 </style>

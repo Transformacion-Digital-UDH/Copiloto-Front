@@ -87,7 +87,7 @@ const tableData = ref([
 <template>
   <div class="flex h-screen border-s-2 font-Roboto">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-medium text-center text-gray-800">
+      <h3 class="text-4xl font-semibold text-center text-azul">
         Designación de asesor (FACULTAD)
       </h3>
 
@@ -138,10 +138,11 @@ const tableData = ref([
             <div
               class="inline-block min-w-full overflow-hidden rounded-lg shadow"
             >
-              <table class="min-w-full leading-normal">
-                <thead>
+              <table class="min-w-full leading-normal ">
+                <thead class="bg-gray-400 text-black text-xm font-thin font-roboto">
+
                   <tr
-                    class="text-xs text-center text-black uppercase border-b-2 border-gray-300"
+                    class="text-center uppercase border-b-2 border-gray-300 "
                   >
                     <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
@@ -400,4 +401,8 @@ const tableData = ref([
   background-color: #8898aa;
   color: #ffffff;
 }
+.thin-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100; /* Esto es lo más delgado posible para Roboto */
+  }
 </style>
