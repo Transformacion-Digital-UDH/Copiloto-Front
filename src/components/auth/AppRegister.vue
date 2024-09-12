@@ -87,7 +87,7 @@
           <div class="text-center mt-6">
             <button
               type="button"
-              class="w-full bg-custom-green text-white py-3 rounded-lg hover:bg-azulOscuro transition duration-150"
+              class="w-full bg-base text-white py-3 rounded-lg hover:bg-azulOscuro transition duration-150"
             >
               CREA TU CUENTA
             </button>

@@ -10,31 +10,30 @@ interface Documento {
 interface Trámite {
   título: string;
   estado: string;
-  documentos?: Documento[]; // Lista de documentos opcional en los trámites
 }
 
 // Estado general del punto 2
 const estadoPunto2 = ref('Pendiente');  // Estados: Pendiente, En Proceso, Hecho
 
-// Trámites en el punto 1
 const trámites = ref<Trámite[]>([
-  { título: 'Trámite en el Sistema', estado: 'Pendiente' },  // Punto 1
-  { título: 'Pago de Trámite', estado: 'Pendiente' },        // Punto 1
+  { título: 'Trámite en el Sistema', estado: 'Hecho' }  // Punto 1
 ]);
 
 // Documentos para el punto 2 (Respuesta del asesor) y 3
-const documentos: Documento[] = [
+const documentos = ref<Documento[]>([
   { nombre: 'Respuesta del asesor', estado: 'Aceptado', documentoUrl: '' },  // Punto 2
   { nombre: 'Oficio de Secretaria PAISI', estado: 'Hecho', documentoUrl: '' },  // Punto 3
   { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' },  // Punto 3
-];
+]);
 
-// Título de tesis simulado como si viniera del backend
+// Simulación del título de tesis y asesor como si vinieran del backend
 const tituloTesis = ref('Implementación de un chatbot para el sistema de trámite');
-const mostrarModal = ref(false);
+const nombreAsesor = ref('Aldo Ramirez');  // Simulación del nombre del asesor desde el backend
 
-// Asesor seleccionado
-const asesorSeleccionado = ref('');
+// Estados separados para los modales
+const mostrarModalTramite = ref(false);
+const mostrarModalDocumentos = ref(false);
+const mostrarModalCambioJurado = ref(false);
 
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
@@ -52,37 +51,30 @@ const estadoClase = (estado: string) => {
   }
 };
 
-// Computed para habilitar el botón "Enviar" cuando el asesor esté seleccionado
-const puedeEnviar = computed(() => asesorSeleccionado.value !== '' && estadoPunto2.value !== 'Hecho');
+// Función para solicitar cambio de jurado
+const solicitarCambioJurado = (jurado: any) => {
+  alert(`Has solicitado el cambio del jurado: ${jurado.nombre}`);
+  // Aquí puedes agregar la lógica adicional para solicitar el cambio del jurado
+};
 
 // Computed para habilitar el botón "Siguiente" solo si todos los trámites y documentos están en "Hecho"
 const todosCompletos = computed(() => {
   const tramitesHechos = trámites.value.every(tramite => tramite.estado === 'Hecho');
-  const documentosHechos = documentos.every(documento => documento.estado === 'Hecho');
+  const documentosHechos = documentos.value.every(documento => documento.estado === 'Hecho');
   return tramitesHechos && documentosHechos && estadoPunto2.value === 'Hecho';
 });
-
-// Método para manejar el envío
-const enviarSolicitud = () => {
-  if (asesorSeleccionado.value) {
-    documentos[0].estado = 'Pendiente';  // Reiniciar el estado de la respuesta del asesor a "Pendiente"
-    estadoPunto2.value = 'En Proceso';  // Cambia a "En Proceso" cuando se selecciona un asesor
-    alert(`Has seleccionado a ${asesorSeleccionado.value}. Ahora debes esperar la respuesta del asesor.`);
-  }
-};
 
 // Simulación de la respuesta del asesor desde el backend
 const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
   if (respuesta === 'aceptar') {
-    documentos[0].estado = 'Aceptado'; // El asesor aceptó
-    documentos[0].documentoUrl = '/docs/respuesta_asesor.pdf'; // Documento disponible
+    documentos.value[0].estado = 'Aceptado'; // El asesor aceptó
+    documentos.value[0].documentoUrl = '/docs/respuesta_asesor.pdf'; // Documento disponible
     estadoPunto2.value = 'Hecho'; // Cambia el estado general del punto 2 a "Hecho"
     alert('El asesor ha aceptado. El documento está disponible para ver y descargar.');
   } else if (respuesta === 'rechazar') {
-    documentos[0].estado = 'Rechazado'; // El asesor rechazó
-    estadoPunto2.value = 'Pendiente';  // Vuelve a "Pendiente" para seleccionar otro asesor
-    asesorSeleccionado.value = '';  // Limpia la selección del asesor
-    alert('El asesor ha rechazado, por favor selecciona otro asesor.');
+    documentos.value[0].estado = 'Rechazado'; // El asesor rechazó
+    estadoPunto2.value = 'Pendiente';  // Vuelve a "Pendiente"
+    alert('El asesor ha rechazado, por favor espera otra respuesta.');
   }
 };
 </script>
@@ -91,22 +83,23 @@ const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
   <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
     <!-- Título principal -->
     <h3 class="text-4xl font-semibold text-center text-azul">Designación de Asesor</h3>
+    <br>
+    <p class="text-gray-500 text-center">Cada punto en este proceso debe estar en Hecho para que pueda continuar con el siguiente tramite | El pago de este tramite se sumara al pago del monto final de toda la Tesis </p>
 
     <div class="mt-6 space-y-10">
 
-      <!-- Card 1: Inicio de Trámite -->
+      <!-- Card 1: Inicio de Trámite (sin "Pago de Trámite") -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <h2 class="text-2xl font-medium text-black">1. Inicio de Trámite</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" @mouseover="mostrarModal = true"
-            @mouseleave="mostrarModal = false" />
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+               @mouseover="mostrarModalTramite = true"
+               @mouseleave="mostrarModalTramite = false" />
         </div>
 
-        <div v-show="mostrarModal"
-          class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+        <div v-show="mostrarModalTramite" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
           <p class="text-sm text-gray-600">
-            En esta sección se va a mostrar los estados de los trámites que debiste de haber hecho en el sistema de la
-            UDH.
+            Asegurate de haber realizado el tramite de Designacion de Asesor en el sistema de Login de la UDH.
           </p>
         </div>
 
@@ -122,7 +115,7 @@ const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
 
       <!-- Card 2: Solicitud de Asesor -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center ">
+        <div class="flex items-center">
           <h2 class="text-2xl font-medium text-black">2. Solicitud de Asesor</h2>
           <span :class="estadoClase(estadoPunto2)" class="estado-estilo ml-4">{{ estadoPunto2 }}</span>
         </div>
@@ -134,27 +127,11 @@ const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
             class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
             disabled>
 
-          <!-- Selección de Asesor -->
-          <label for="asesor" class="block text-lg font-medium text-gray-800 mb-2">Elige tu asesor</label>
-          <select id="asesor" v-model="asesorSeleccionado"
-            :disabled="estadoPunto2 === 'En Proceso' || estadoPunto2 === 'Hecho'"
-            class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
-            <option value="">Selecciona un asesor</option>
-            <option value="Aldo Ramirez">Aldo Ramirez</option>
-            <option value="Otra opción">Otra opción</option>
-          </select>
-
-          <!-- Botón de Enviar -->
-          <div class="flex justify-end mb-4">
-            <button @click="enviarSolicitud" 
-              :disabled="!puedeEnviar || estadoPunto2 === 'En Proceso' || estadoPunto2 === 'Hecho'"
-              :class="{
-                'bg-blue-500 cursor-pointer': puedeEnviar && estadoPunto2 !== 'En Proceso' && estadoPunto2 !== 'Hecho',
-                'bg-gray-300 cursor-not-allowed': !puedeEnviar || estadoPunto2 === 'En Proceso' || estadoPunto2 === 'Hecho'
-              }" class="px-4 py-2 text-white rounded-md">
-              Enviar
-            </button>
-          </div>
+          <!-- Nombre del Asesor -->
+          <label for="nombreAsesor" class="block text-lg font-medium text-gray-800 mb-2">Nombre del Asesor</label>
+          <input id="nombreAsesor" type="text" v-model="nombreAsesor"
+            class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+            disabled>
 
           <!-- Respuesta del asesor -->
           <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
@@ -187,10 +164,19 @@ const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
       </div>
 
       <!-- Card 3: Documentos -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center ">
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
           <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+               @mouseover="mostrarModalDocumentos = true"
+               @mouseleave="mostrarModalDocumentos = false" />
+        </div>
+
+        <div v-show="mostrarModalDocumentos"
+          class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Por favor espere  que se carguen los documentos que verifican su tramite de Designacion de Asesor para continuar con el siguiente paso.
+          </p>
         </div>
 
         <div class="mt-4 space-y-4">
@@ -234,6 +220,31 @@ const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
           :class="todosCompletos ? 'bg-green-600 hover:bg-base cursor-pointer' : 'bg-gray-300 cursor-not-allowed'">
           Siguiente
         </button>
+      </div>
+
+      <!-- Card 4: Solicitar cambio de jurado -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h2 class="text-2xl font-medium text-gray-500"> Solicitar cambio de asesor</h2>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+               @mouseover="mostrarModalCambioJurado = true"
+               @mouseleave="mostrarModalCambioJurado = false" />
+        </div>
+
+        <div v-show="mostrarModalCambioJurado" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Puedes solicitar el cambio de uno o más jurados si consideras necesario.
+          </p>
+        </div>
+
+        <div class="mt-4">
+          <p class="text-lg text-gray-800">Haz click en el botón para solicitar un cambio de jurado.</p>
+          <div class="flex justify-center mt-6">
+            <button class="px-4 py-2 bg-base text-white rounded-md" @click="solicitarCambioJurado">
+              SOLICITAR CAMBIO DE JURADO
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

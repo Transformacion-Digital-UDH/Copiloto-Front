@@ -6,7 +6,7 @@ const solicitudEstado = ref<string>('Pendiente');
 
 // Estado del punto 3 (Informe de Conformidad de Observaciones)
 const documentos = ref([
-  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
+  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'Informe de conformidad.jpg' }
 ]);
 
 // Función para cambiar el estado del punto 1 a "Hecho"
@@ -29,45 +29,37 @@ function estadoClase(estado: string) {
 const puedeContinuar = computed(() => {
   return solicitudEstado.value === 'Hecho' && documentos.value[0].estado === 'Hecho';
 });
-
-// Estados separados para los modales
-const mostrarModalPunto2 = ref(false);
-const mostrarModalPunto3 = ref(false);
 </script>
 
 <template>
-  <div class="flex-1 p-10 bg-gray-100 font-roboto">
-    <h3 class="text-4xl font-bold text-center text-azul">Conformidad de proyecto de tesis por los jurados</h3>
+  <div class="flex-1 p-10 bg-gray-100 font-roboto ">
+    <h3 class="text-4xl font-bold text-center text-azul mb-4">Conformidad del Informe Final por los Jurados</h3>
 
-    <div class="mt-6 space-y-10">
+    <!-- Información del Título de Tesis -->
+    <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white mb-4">
+      <p class="text-lg mb-2"><strong>Título de Tesis:</strong> Implementación de un algoritmo xxxxxxxxxxxxxxxxxxxxxxx</p>
+      <p class="text-lg break-words">
+        <strong>Link de informe final:</strong> 
+        <a href="https://docs.google.com/document/" class="text-blue-500 underline">https://docs.google.com/document/</a>
+      </p>
+    </div>
+
+    <div class="space-y-10">
       <!-- Punto 1: Observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
+        <h4 class="text-2xl font-medium text-black mb-4">1. Observaciones</h4>
         <div class="flex items-center justify-between">
           <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
         </div>
-        <div class="flex justify-center mt-3">
-          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
+        <div class="flex justify-center mt-4">
+          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar revisión</button>
         </div>
       </div>
 
       <!-- Punto 2: Solicitar revisión de levantamiento de observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
-          <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-               @mouseover="mostrarModalPunto2 = true"
-               @mouseleave="mostrarModalPunto2 = false" />
-        </div>
-
-        <div v-show="mostrarModalPunto2" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">
-            Solicita la revisión de levantamiento de observaciones con los documentos necesarios.
-          </p>
-        </div>
-
-        <!-- Hacemos la tabla responsiva con overflow-x-auto -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión</h4>
         <div class="overflow-x-auto">
           <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
             <thead>
@@ -107,21 +99,8 @@ const mostrarModalPunto3 = ref(false);
       </div>
 
       <!-- Punto 3: Documentos (Informe de Conformidad de Observaciones) -->
-      <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
-          <h4 class="text-2xl font-medium text-black mb-4">3. Documentos</h4>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-               @mouseover="mostrarModalPunto3 = true"
-               @mouseleave="mostrarModalPunto3 = false" />
-        </div>
-
-        <div v-show="mostrarModalPunto3"
-          class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">
-            Espera la conformidad de los documentos para continuar con el proceso de tesis.
-          </p>
-        </div>
-
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h4 class="text-2xl font-medium text-black mb-4">3. Informe de conformidad de observaciones</h4>
         <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
           <div class="flex flex-col md:flex-row justify-between md:items-center">
             <span class="flex-1">{{ documentos[0].nombre }}</span>
@@ -159,7 +138,7 @@ const mostrarModalPunto3 = ref(false);
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 400;
+  font-weight: 600;
   border-radius: 0.375rem;
   display: inline-block;
 }

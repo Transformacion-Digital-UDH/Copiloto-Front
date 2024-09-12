@@ -1,27 +1,15 @@
-import { ref, onMounted, onUnmounted } from "vue";
+// En tu archivo useSidebar.ts
+import { ref } from 'vue';
 
 const isOpen = ref(false);
 
-export function useSidebar() {
-  const checkScreenSize = () => {
-    if (window.innerWidth >= 1024) {
-      isOpen.value = true;  
-    } else {
-      isOpen.value = false; 
-    }
+export const useSidebar = () => {
+  const toggleSidebar = () => {
+    isOpen.value = !isOpen.value;
   };
-
-  onMounted(() => {
-    // Revisar el tamaño de la pantalla al cargar la página
-    checkScreenSize(); 
-    window.addEventListener("resize", checkScreenSize); 
-  });
-
-  onUnmounted(() => {
-    window.removeEventListener("resize", checkScreenSize); 
-  });
 
   return {
     isOpen,
+    toggleSidebar,  // Asegúrate de exportarlo
   };
-}
+};

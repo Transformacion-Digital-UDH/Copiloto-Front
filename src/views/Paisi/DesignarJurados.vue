@@ -1,5 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
+import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
 
 const rowsPerPage = ref(5); //cantidad para mostrar en la tabla
 const selectedFilter = ref(""); //para seleccionar el estado
@@ -131,54 +133,40 @@ const tableData = ref([
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
             <!-- Filtro de cantidad de entradas -->
-            <div class="flex">
+            <div class="w-full flex justify-end items-center space-x-2">
+              <!-- Búsqueda -->
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <IconBuscar />
+                </span>
+                <input
+                  placeholder="Buscar"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                />
+              </div>
               <div class="relative">
                 <select
                   v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-l appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="20">20</option>
                 </select>
-                <div
-                  class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                ></div>
               </div>
 
               <!-- Filtro de estado -->
               <div class="relative">
                 <select
                   v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin text-gray-700 bg-white border-t border-b border-r border-gray-400 rounded-r appearance-none sm:rounded-r-none sm:border-r-0 focus:outline-none focus:border-l focus:border-r focus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
                   <option value="Solicitud">Solicitud</option>
                   <option value="Asignado">Asignado</option>
                 </select>
-                <div
-                  class="absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 pointer-events-none"
-                ></div>
               </div>
-            </div>
-
-            <!-- Búsqueda -->
-            <div class="relative block mt-2 sm:mt-0">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  class="w-4 h-4 text-gray-500 fill-current"
-                >
-                  <path
-                    d="M10 4a6 6 0 100 12 6 6 0 000-12zm-8 6a8 8 0 1114.32 4.906l5.387 5.387a1 1 0 01-1.414 1.414l-5.387-5.387A8 8 0 012 10z"
-                  />
-                </svg>
-              </span>
-              <input
-                placeholder="Buscar"
-                class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-b border-gray-400 rounded-l rounded-r appearance-none sm:rounded-l-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-              />
             </div>
           </div>
 
@@ -189,59 +177,60 @@ const tableData = ref([
             >
               <table class="min-w-full leading-normal">
                 <thead>
-                  <tr>
+                  <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3 tracking-wider text-left"
                     >
                       ESTUDIANTE
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3 tracking-wider text-left"
                     >
                       TÍTULO
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3 tracking-wider"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="px-5 py-3 text-xs font-semibold tracking-wider text-left text-gray-600 uppercase bg-gray-100 border-b-2 border-gray-200"
+                      class="py-2 px-3 tracking-wider"
                     >
                       ESTADO
                     </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(u, index) in filteredTableData" :key="index">
-                    <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                    >
-                      <p class="text-gray-900 whitespace-nowrap">
+                  <tr 
+                    v-for="(u, index) in filteredTableData" 
+                    :key="index"
+                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    class="border-b border-gray-200"
+                  >
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 text-wrap w-64">
                         {{ u.name }}
                       </p>
                     </td>
-                    <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
-                    >
+                    <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-80">
                         {{ u.title }}
                       </p>
                     </td>
-                    <td class="px-8 py-5 text-sm bg-white border-b border-gray-200 relative">
+                    <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
-                        class="block w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        class="w-24 px-5 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
                         > Asignar
                       </button>
                       <button
-                        class="block w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
                         @click="openRejectModal"
                         > Enviar
                       </button>
                     </td>
                     <td
-                      class="px-5 py-5 text-sm bg-white border-b border-gray-200"
+                      class="px-3 py-5 text-center"
                     >
                       <span
                         :class="`estado-estilo estado-${u.status
@@ -290,7 +279,7 @@ const tableData = ref([
           <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                <img src="/img/cerrar.svg" alt="Icono cerrar">
+                <IconCerrar />
               </button>
             </div>
             <!-- Primera columna -->
@@ -323,7 +312,7 @@ const tableData = ref([
                 </div>
               </div>
               <div class="flex items-center justify-center p-3">
-                <button class="px-4 py-2 text-base text-white bg-base hover:bg-gray-400 rounded-xl w-60"
+                <button class="px-4 py-2 text-base text-white bg-[#5d6d7e]  rounded-lg w-60"
                   @click="asignarJurado">Asignar
                 </button>
               </div>
@@ -385,7 +374,7 @@ const tableData = ref([
 }
 
 .estado-solicitud {
-  background-color: #e89519;
+  background-color: #5dade2;
   color: #ffffff;
 }
 
