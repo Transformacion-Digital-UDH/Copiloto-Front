@@ -2,7 +2,6 @@ import { ref, onMounted, onUnmounted } from "vue";
 
 const isOpen = ref(false);
 
-
 export function useSidebar() {
   const checkScreenSize = () => {
     if (window.innerWidth >= 1024) {
