@@ -61,6 +61,8 @@ const handleLogin = async () => {
 const loginGoogle = () => {
   googleOneTap({ autoLogin: true })
     .then(async (response) => {
+      errorMessage.value = null;
+
       const user = decodeCredential(response.credential);
       if (user.hd !== "udh.edu.pe") {
         errorMessage.value =

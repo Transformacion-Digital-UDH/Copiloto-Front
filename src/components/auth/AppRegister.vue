@@ -47,6 +47,8 @@ const handleRegister = async () => {
 const registerGoogle = () => {
   googleOneTap({ autoLogin: true })
     .then(async (response) => {
+      errorMessage.value = null;
+
       const user = decodeCredential(response.credential)
       if(user.hd !== 'udh.edu.pe'){
         errorMessage.value = ['No puedes registrarte con esta cuenta, elige una cuenta de udh.edu.pe'];
