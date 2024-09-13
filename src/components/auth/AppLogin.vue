@@ -22,27 +22,33 @@ const roleRoutes: Record<string, string> = {
 
 // Manejo del inicio de sesión
 const handleLogin = async () => {
+  errorMessage.value = null;
   try {
     loading.value = true;
-    const response = await axios.post("/api/login", {
-      email: email.value,
-      password: password.value,
-    });
+    if(!email.value.includes('@udh.edu.pe')){
+      errorMessage.value = ['No puedes registrarte con esta cuenta, elige una cuenta de udh.edu.pe'];
+    }else{
+      const response = await axios.post("/api/login", {
+        email: email.value,
+        password: password.value,
+      });
 
-    // Procesar la respuesta, guardar el token y redirigir al usuario
-    localStorage.setItem("token", response.data.token);
-    localStorage.setItem("full_name", response.data.data.nombre);
-    localStorage.setItem("email", response.data.data.correo);
-    localStorage.setItem("role", response.data.data.rol);
+      // Procesar la respuesta, guardar el token y redirigir al usuario
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("full_name", response.data.data.nombre);
+      localStorage.setItem("email", response.data.data.correo);
+      localStorage.setItem("role", response.data.data.rol);
 
-    // Aquí podrías redirigir al usuario segun su rol
-    const userRole = response.data.data.rol;
-    const route: string = roleRoutes[userRole];
+      // Aquí podrías redirigir al usuario segun su rol
+      const userRole = response.data.data.rol;
+      const route: string = roleRoutes[userRole];
 
-    if (route) {
-      router.push(route);
+      if (route) {
+        router.push(route);
+      }
+      errorMessage.value = null;
     }
-    errorMessage.value = null;
+
   } catch (error: any) {
     //manejar validacion del backend
     errorMessage.value = error.response.data.error;
@@ -58,7 +64,7 @@ const loginGoogle = () => {
       const user = decodeCredential(response.credential);
       if (user.hd !== "udh.edu.pe") {
         errorMessage.value =
-          "No puedes iniciar sesión con esta cuenta, elige una cuenta de udh.edu.pe";
+          ["No puedes iniciar sesión con esta cuenta, elige una cuenta de udh.edu.pe"];
       } else {
         const response = await axios.post("/api/login/google", {
           email: user.email,
@@ -76,10 +82,11 @@ const loginGoogle = () => {
         if (route) {
           router.push(route);
         }
-        message.value = null;
+        errorMessage.value = null;
       }
     })
     .catch((error) => {
+      errorMessage.value = error.response.data.error;
       console.log("Handle the error", error);
     });
 };
@@ -127,9 +134,18 @@ const loginGoogle = () => {
       <!-- Formulario de inicio de sesión -->
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700" for="email">Correo electrónico</label>
-          <input type="email" id="email" placeholder="Correo electrónico" v-model="email" class="input-field"
-            required />
+          <label class="block text-sm font-medium text-gray-700" for="email"
+            >Correo electrónico</label
+          >
+          <input
+            type="email"
+            id="email"
+            placeholder="Correo electrónico"
+            v-model="email"
+            class="input-field"
+            required
+            autofocus
+          />
         </div>
 
         <!-- Modificación aquí para alinear el enlace "Olvidó su contraseña" -->
@@ -140,8 +156,15 @@ const loginGoogle = () => {
               ¿Olvidó su contraseña?
             </router-link>
           </div>
-          <input type="password" id="password" placeholder="Contraseña" v-model="password" class="input-field"
-            required />
+          <input
+            type="password"
+            id="password"
+            placeholder="Contraseña"
+            v-model="password"
+            class="input-field"
+            required
+            autocomplete
+          />
         </div>
         <div class="flex justify-between items-center mb-4">
           <label class="inline-flex items-center">
