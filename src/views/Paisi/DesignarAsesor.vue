@@ -138,7 +138,7 @@ const tableData = ref([
           </div>
 
           <!-- Tabla -->
-          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
             <div
               class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
             >
@@ -147,7 +147,7 @@ const tableData = ref([
                   <tr
                     class="text-center text-black border-b-2 bg-gray-300"
                   >
-                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
                     <th class="py-2 px-4 tracking-wider">LINK TESIS</th>

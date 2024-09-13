@@ -400,4 +400,8 @@ const tableData = ref([
   background-color: #8898aa;
   color: #ffffff;
 }
+.thin-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100; /* Esto es lo más delgado posible para Roboto */
+  }
 </style>

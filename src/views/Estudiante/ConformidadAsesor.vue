@@ -44,6 +44,11 @@ function estadoClase(estado: string) {
     default: return '';
   }
 }
+
+// Estados para los modales
+const mostrarModalRevision = ref(false);
+const mostrarModalObservaciones = ref(false);
+const mostrarModalDocumentos = ref(false);
 </script>
 
 <template>
@@ -63,8 +68,22 @@ function estadoClase(estado: string) {
       </div>
 
       <!-- Observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center justify-between">
+          <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
+          <div class="relative">
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                 @mouseover="mostrarModalRevision = true"
+                 @mouseleave="mostrarModalRevision = false" />
+            <!-- Modal informativo del punto 1 -->
+            <div v-if="mostrarModalRevision" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+              <p class="text-sm text-gray-600">
+                Asegúrate de revisar todas las observaciones antes de solicitar una nueva revisión.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div class="flex items-center justify-between">
           <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
@@ -75,10 +94,26 @@ function estadoClase(estado: string) {
       </div>
 
       <!-- Revisión de levantamiento de observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
-        <!-- Hacemos la tabla responsiva con overflow-x-auto -->
-        <div class="overflow-x-auto">
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h4 class="text-2xl font-medium text-black">2. Solicitar revisión de levantamiento de observaciones</h4>
+          <div class="relative">
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                 @mouseover="mostrarModalObservaciones = true"
+                 @mouseleave="mostrarModalObservaciones = false" />
+            <!-- Modal informativo del punto 2 -->
+            <div v-show="mostrarModalObservaciones" 
+                 class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 modal-pos">
+              <p class="text-sm text-gray-600">
+                Aquí podrás solicitar la revisión de las observaciones levantadas para la tesis. 
+                Asegúrate de que todos los documentos están en orden antes de continuar.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla de observaciones -->
+        <div class="overflow-x-auto mt-4">
           <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
             <thead>
               <tr>
@@ -86,11 +121,10 @@ function estadoClase(estado: string) {
                 <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISIÓN</th>
                 <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA</th>
                 <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">Estado</th>
+                <th class="px-4 py-2 text-left text-gray-600 border-b">ESTADO</th>
               </tr>
             </thead>
             <tbody>
-              <!-- observaciones es un reactive, así que NO usamos .value para las propiedades internas -->
               <tr v-for="(obs, index) in observaciones" :key="index">
                 <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">{{ obs.descripcion }}</a></td>
                 <td class="px-4 py-2 border-b">{{ obs.revision }}</td>
@@ -98,7 +132,9 @@ function estadoClase(estado: string) {
                 <td class="px-4 py-2 border-b">
                   <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>{{ obs.accion }}</button>
                 </td>
-                <td class="px-4 py-2 border-b"><span :class="estadoClase(obs.estado)" class="estado-estilo">{{ obs.estado }}</span></td>
+                <td class="px-4 py-2 border-b">
+                  <span :class="estadoClase(obs.estado)" class="estado-estilo">{{ obs.estado }}</span>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -106,10 +142,19 @@ function estadoClase(estado: string) {
       </div>
 
       <!-- Documentos -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+               @mouseover="mostrarModalDocumentos = true"
+               @mouseleave="mostrarModalDocumentos = false" />
+        </div>
+
+        <!-- Modal informativo del punto 3 -->
+        <div v-if="mostrarModalDocumentos" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Asegúrate de revisar el documento para verificar las observaciones antes de continuar.
+          </p>
         </div>
 
         <div class="mt-4 space-y-4">
@@ -164,6 +209,18 @@ function estadoClase(estado: string) {
 .break-all {
   word-break: break-all;
 }
-</style>
 
- 
+/* Estilos para hacer que el modal se ajuste en pantallas móviles */
+.modal-pos {
+  right: 0;
+  top: 100%;
+}
+
+@media (max-width: 640px) {
+  .modal-pos {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 120%;
+  }
+}
+</style>

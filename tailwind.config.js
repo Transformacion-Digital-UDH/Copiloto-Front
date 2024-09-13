@@ -22,10 +22,7 @@ export default {
       fontWeight: {
         Medium: 500,
         SemiBold: 600,
-      },
-      width: {
-        '7/10': '75%',
-        '3/10': '25%',
+        thin1:200,
       },
     },
   },

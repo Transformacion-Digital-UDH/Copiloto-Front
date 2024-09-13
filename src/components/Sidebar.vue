@@ -12,7 +12,6 @@ import cierre from '@/components/icons/cierre.vue';
 export default defineComponent({
   data() {
     return {
-      avatar: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=296&q=80',
       progreso: 30, // Valor inicial del progreso en porcentaje
     }
   },
@@ -23,6 +22,7 @@ export default defineComponent({
 
     const role = ref('');
     const full_name = ref('');
+    const image_profile = ref('');
     const route = useRoute();
 
     // Definición de secciones con submenús
@@ -194,6 +194,7 @@ export default defineComponent({
     onMounted(() => {
       full_name.value = localStorage.getItem('full_name') || '';
       role.value = localStorage.getItem('role') || '';
+      image_profile.value = localStorage.getItem('image_profile') || `https://ui-avatars.com/api/?name=${full_name.value}`;
       openSectionIfActive();
 
     })
@@ -205,7 +206,8 @@ export default defineComponent({
       isDark,
       full_name,
       role,
-      isActive
+      isActive,
+      image_profile
     };
   }
 });
@@ -235,7 +237,7 @@ export default defineComponent({
       <!-- INFO DEL ESTUDIANTE COMO EL NOMBRE -->
       <div class="flex flex-col items-center justify-center mt-6">
         <div class="w-24 h-24 mb-4 overflow-hidden rounded-full shadow-lg">
-          <img class="object-cover w-full h-full" :src="avatar" alt="Avatar" />
+          <img class="object-cover w-full h-full" :src="image_profile" alt="Avatar" />
         </div>
         <div class="w-full text-center max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>
