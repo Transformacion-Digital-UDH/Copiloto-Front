@@ -53,41 +53,41 @@ export default defineComponent({
             label: 'Aprobación del proyecto', 
             path: '/estudiante/aprobacion-proyecto' },
 
-          { name: 'Solicitud asesoria', 
-            label: 'Solicitud asesoria', 
-            path: '/asesor/solicitud-asesoria' },
+          { name: 'Solicitar asesor', 
+            label: 'Solicitar asesor', 
+            path: '/asesor/solicitar-asesor' },
+            
+          { name: 'Designar asesor',
+            label: 'Designar asesor',
+            path: '/paisi/designar-asesor'},
 
-          { name: 'Proyecto Tesis', 
-            label: 'Proyecto tesis', 
-            path: '/asesor/proyecto-tesis' },
+          { name: 'Resolución asesor',
+            label: 'Resolución asesor',
+            path: '/facultad/resolucion-asesor'},
 
-          { name: 'Solicitud Jurado',
-            label: 'Solicitud Jurado',
-            path: '/jurado/solicitud-jurado'},
-
-          { name: 'Jurado Presidente',
-            label: 'Jurado Presidente',
-            path: '/jurado/solicitud-presidente'},
+          { name: 'Solicitar revisión', 
+            label: 'Solicitar revisión', 
+            path: '/asesor/solicitar-revision' },
 
           { name: 'Designar jurados',
             label: 'Designar jurados',
             path: '/paisi/designar-jurado'},
+
+          { name: 'Revisión jurado',
+            label: 'Revisión jurado',
+            path: '/jurado/revision-jurado'},
+
+          { name: 'Revisión presidente',
+            label: 'Revisión presidente',
+            path: '/jurado/revision-presidente'},
           
-          { name: 'Aprobacion proyecto',
+          { name: 'Aprobar proyecto',
             label: 'Aprobacion proyecto',
             path: '/paisi/aprobar-proyecto'},
 
-          { name: 'Aprobacion proyectoT',
-            label: 'Aprobacion proyectoT',
-            path: '/facultad/aprobar-proyecto-tesis'},
-
-          { name: 'Designar AsesorP',
-            label: 'Designar AsesorP',
-            path: '/paisi/designar-asesoria'},
-
-          { name: 'Designar AsesorF',
-            label: 'Designar AsesorF',
-            path: '/facultad/designar-asesoria-facu'},
+          { name: 'Resolución proyecto',
+            label: 'Resolución proyecto',
+            path: '/facultad/resolucion-proyecto'},
         ]
       },
       {
@@ -106,20 +106,48 @@ export default defineComponent({
         icon: markRaw(informe),
         submenus: [
           { name: 'Conformidad del Informe Final por el Asesor', 
-              label: 'Conformidad por el asesor', 
-              path: '/estudiante/conformidad-informe-asesor' },
+            label: 'Conformidad por el asesor', 
+            path: '/estudiante/conformidad-informe-asesor' },
+
           { name: 'Designacion de Jurado para el Informe Final', 
             label: 'Designacion de Jurado', 
             path: '/estudiante/designacion-informe-jurado' },
+
           { name: 'Conformidad de Informe Final por los Jurados', 
             label: 'Conformidad Jurados', 
             path: '/estudiante/conformidad-informe-jurado' },
+
           { name: 'Aprobacion de Informe Final por los Jurados', 
             label: 'Aprobacion del Informe ', 
             path: '/estudiante/aprobacion-informe' },
+
           { name: 'Conformidad por Integridad VRI', 
             label: 'Conformidad por Integridad VRI', 
             path: '/estudiante/conformidad-vri' },
+
+          { name: 'Revisión informe', 
+            label: 'Revisión informe', 
+            path: '/asesor/revision-informe' },
+          
+          { name: 'Designar jurado', 
+            label: 'Designar jurado', 
+            path: '/paisi/designarJurado-informe' },
+
+          { name: 'Revisión jurado', 
+            label: 'Revisión jurado', 
+            path: '/jurado/revisionJurado-informe' },
+            
+          { name: 'Revisión presidente', 
+            label: 'Revisión presidente', 
+            path: '/jurado/revisionJuradoPresidente-informe' },
+
+          { name: 'Aprobar informe',
+            label: 'Aprobacion informe',
+            path: '/paisi/aprobar-informe'},
+
+          { name: 'Resolución informe',
+            label: 'Resolución informe',
+            path: '/facultad/resolucion-informe'},
 
         ]
       },

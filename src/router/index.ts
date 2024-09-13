@@ -3,24 +3,30 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
 import AppLogin from '@/components/auth/AppLogin.vue'
 import AppRegister from '@/components/auth/AppRegister.vue'
 import DesignacionAsesor from '@/views/Estudiante/DesignacionAsesor.vue'
-import SolicitudAsesoria from '@/views/Asesor/SolicitudAsesoria.vue'
+import SolicitarAsesor from '@/views/Asesor/SolicitarAsesor.vue'
 import ConformidadAsesor from '@/views/Estudiante/ConformidadAsesor.vue'
-import ProyectoTesis from '@/views/Asesor/ProyectoTesis.vue'
+import SolicitarRevisión from '@/views/Asesor/SolicitarRevisión.vue'
 import DesignacionJurado from '@/views/Estudiante/DesignacionJurado.vue'
 import ConformidadJurado from '@/views/Estudiante/ConformidadJurado.vue'
 import AprobacionProyecto from '@/views/Estudiante/AprobacionProyecto.vue'
-import SolicitudJurado from '@/views/Jurado/SolicitudJurado.vue'
-import JuradoPresidente from '@/views/Jurado/JuradoPresidente.vue'
+import RevisionJurado from '@/views/Jurado/RevisionJurado.vue'
+import RevisionJuradoPresidente from '@/views/Jurado/RevisionJuradoPresidente.vue'
 import DesignarJurados from '@/views/Paisi/DesignarJurados.vue'
 import AprobarProyecto from '@/views/Paisi/AprobarProyecto.vue'
-import AprobarProyectoT from '@/views/facultad/AprobarProyectoT.vue'
+import ResolucionProyecto from '@/views/facultad/ResolucionProyecto.vue'
 import ConformidadInformeAsesor from '@/views/Estudiante/ConformidadInformeAsesor.vue'
 import DesignacionJuradoInforme from '@/views/Estudiante/DesignacionJuradoInforme.vue'
 import ConformidadInformeJurados from '@/views/Estudiante/ConformidadInformeJurados.vue'
 import AprobacionInforme from '@/views/Estudiante/AprobacionInforme.vue'
 import ConformidadVRI from '@/views/Estudiante/ConformidadVRI.vue'
-import DesignarAsesorP from '@/views/Paisi/DesignarAsesor.vue'
-import DesignarAsesorF from '@/views/facultad/DesignarAsesorF.vue'
+import DesignarAsesor from '@/views/Paisi/DesignarAsesor.vue'
+import ResolucionAsesor from '@/views/facultad/ResolucionAsesor.vue'
+import RevisionInforme from '@/views/Asesor/RevisionInforme.vue'
+import DesignarJuradosInforme from '@/views/Paisi/DesignarJuradosInforme.vue'
+import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
+import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
+import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
+import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,8 +63,9 @@ const router = createRouter({
       meta: { roles: ['asesor'], title: 'Asesor' },
       component: AdminLayout,
       children: [
-        { path: 'solicitud-asesoria', name: 'SolicitudAsesoria', component: SolicitudAsesoria, meta: { title: 'Solicitud de asesoria' } },
-        { path: 'proyecto-tesis', name: 'ProyectoTesis', component: ProyectoTesis, meta: { title: 'Proyecto de tesis' } },
+        { path: 'solicitar-asesor', name: 'SolicitarAsesor', component: SolicitarAsesor, meta: { title: 'Solicitar asesor' } },
+        { path: 'solicitar-revision', name: 'SolicitarRevision', component: SolicitarRevisión, meta: { title: 'Solicitar revisión' } },
+        { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
       ]
     },
     {
@@ -67,8 +74,10 @@ const router = createRouter({
       meta: { roles: ['jurado'], title: 'Jurado' },
       component: AdminLayout,
       children: [
-        { path: 'solicitud-jurado', name: 'SolicitudJurado', component: SolicitudJurado, meta: { title: 'Solicitud de jurado' } },
-        { path: 'solicitud-presidente', name: 'JuradoPresidente', component: JuradoPresidente, meta: { title: 'Solicitud de jurado presidente' } },
+        { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { title: 'Revision jurado' } },
+        { path: 'revision-presidente', name: 'RevisionPresidente', component: RevisionJuradoPresidente, meta: { title: 'Revisión presidente' } },
+        { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { title: 'Revisión jurado' } },
+        { path: 'revisionJuradoPresidente-informe', name: 'RevisionPresidenteInforme', component: RevisionJuradoPresidenteInforme, meta: { title: 'Revisión presidente' } },
 
       ]
     },
@@ -76,17 +85,20 @@ const router = createRouter({
       path: '/paisi',
       component: AdminLayout,
       children: [
-        { path: 'designar-jurado', name: 'Designar jurados', component: DesignarJurados, meta: { title: 'Designar Jurado' } },
-        { path: 'aprobar-proyecto', name: 'Aprobacion proyecto', component: AprobarProyecto, meta: { title: 'Aprobacion proyecto' } },
-        { path: 'designar-asesoria', name: 'Designar asesorP', component: DesignarAsesorP, meta: {title: 'Designar asesorP'}},
+        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { title: 'Designar Jurados' } },
+        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { title: 'Aprobar proyecto' } },
+        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: {title: 'Designar asesor'}},
+        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignarJuradosInforme, meta: {title: 'Designar jurado'}},
+        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { title: 'Aprobar informe' } },
       ]
     },
     {
       path: '/facultad',
       component: AdminLayout,
       children: [
-        { path: 'aprobar-proyecto-tesis', name: 'Aprobacion proyectoT', component: AprobarProyectoT, meta: { title: 'Aprobacion proyectoT' } },
-        { path: 'designar-asesoria-facu', name: 'Designar AsesorF', component: DesignarAsesorF, meta: { title: 'Designar AsesorF' } },
+        { path: 'resolucion-proyecto', name: 'ResolucionProyecto', component: ResolucionProyecto, meta: { title: 'Resolucion proyecto' } },
+        { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { title: 'Resolución asesor' } },
+        { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { title: 'Resolucion informe' } },
       ]
     },
     {

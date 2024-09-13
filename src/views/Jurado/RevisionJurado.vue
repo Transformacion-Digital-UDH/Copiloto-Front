@@ -3,13 +3,13 @@ import { ref, computed } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconArchivo from "@/components/icons/IconArchivo.vue";
+
 // Estados y propiedades
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
-const showSendModal = ref(false); //modal para enviar las revisiones de todos los jurados
 const showArchivoModal = ref(false);
 
 function openModal() {
@@ -20,10 +20,6 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-function openSendModal(){
-  showSendModal.value = true;
-}
-
 function openArchivoModal(){
   showArchivoModal.value = true;
 }
@@ -31,8 +27,7 @@ function openArchivoModal(){
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
-  showSendModal.value = false;
-  showArchivoModal.value = true;
+  showArchivoModal.value = false;
 }
 
 // Filtrado y paginación
@@ -67,7 +62,7 @@ function goToNextPage() {
 
 // Datos actuales
 const tableData = ref([
-  {
+{
     name: "Rodríguez Meléndez, Fabio",
     title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
     reviewNumber: "10",
@@ -98,10 +93,10 @@ const tableData = ref([
 </script>
 
 <template>
-  <div class="flex h-screen border-s-2 font-Roboto">
+  <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-medium text-center text-gray-800">
-        Pendientes de corrección de tesis (J)
+      <h3 class="text-4xl font-semibold text-center text-azul">
+        Pendientes de correción de tesis
       </h3>
 
       <div class="mt-8">
@@ -148,52 +143,54 @@ const tableData = ref([
 
           <!-- Tabla -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
-            <div class="inline-block min-w-full overflow-hidden rounded-lg shadow">
+            <div
+              class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
+            >
               <table class="min-w-full leading-normal">
-                <thead>
-                  <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
+                <thead class="custom-thead font-Quicksand">
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
                     <th
-                      class="py-2 px-3 text-left"
+                      class="py-2 px-3 text-left tracking-wider"
                     >
                       ESTUDIANTE
                     </th>
                     <th
-                      class="py-2 px-3 text-left"
+                      class="py-2 px-3 text-left tracking-wider"
                     >
                       TÍTULO
                     </th>
                     <th
-                      class="py-2 px-4"
+                      class="py-2 px-4 tracking-wider"
                     >
                       OBSERVACIONES
                     </th>
                     <th
-                      class="py-2 px-3"
+                      class="py-2 px-3 tracking-wider"
                     >
                       N° REVISIÓN
                     </th>
                     <th
-                      class="py-2 px-3"
+                      class="py-2 px-3 tracking-wider"
                     >
                       PRESIDENTE
                     </th>
                     <th
-                      class="py-2 px-3"
+                      class="py-2 px-3 tracking-wider"
                     >
                       SECRETARIO
                     </th>
                     <th
-                      class="py-2 px-3"
+                      class="py-2 px-3 tracking-wider"
                     >
                       VOCAL
                     </th>
                     <th
-                      class="py-2 px-4"
+                      class="py-2 px-4 tracking-wider"
                     >
                       ACCIÓN
                     </th>
                     <th
-                      class="py-2 px-4"
+                      class="py-2 px-4 tracking-wider"
                     >
                       ESTADO
                     </th>
@@ -203,11 +200,13 @@ const tableData = ref([
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="index"
-                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">{{ u.name }}</p>
+                      <p class="text-gray-900 text-wrap w-64">
+                        {{ u.name }}
+                      </p>
                     </td>
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-80">
@@ -232,20 +231,15 @@ const tableData = ref([
                     <td
                       class="px-3 py-5 flex flex-col items-center justify-center"
                     >
-                      <button 
+                      <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
                       > Aprobar
                       </button>
-                      <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                      <button 
+                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
                         @click="openRejectModal"
-                        > Corregir
-                      </button>
-                      <button
-                        class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
-                        @click="openSendModal"
-                        > Enviar
+                      > Corregir
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
@@ -312,7 +306,7 @@ const tableData = ref([
           </div>
           <div class="p-6">
             <p class="text-gray-600 text-lg text-center">
-              ¿Estás seguro que este proyecto de tesis no necesita más correciones?
+              ¿Está seguro que este proyecto de tesis no necesita más correciones?
             </p>
           </div>
           <div
@@ -363,77 +357,19 @@ const tableData = ref([
             <button
               class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
-            >
-              Cancelar
+            > Cancelar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
-            >
-              Aceptar
+            > Aceptar
             </button>
           </div>
         </div>
       </div>
 
-      <!-- modal enviar el proyecto corregido por todos los jurados -->
-      <div
-        v-if="showSendModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-lg p-4 bg-white rounded-lg shadow-lg">            
-          <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-              <IconCerrar />
-            </button>
-          </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              ¿Está seguro que todo el proyecto de tesis esta corregido por los jurados?
-            </h5>
-
-          </div>
-          <div class="p-6">
-            <p class="text-gray-900 text-center text-lg mb-4">
-              Por favor suba el Informe de Conformidad
-            </p>
-            <div class="text-center">
-              <button class="focus:outline-none border rounded-3xl p-2 custum-file-upload mx-auto">
-                <label class="custom-file-upload flex items-center space-x-2 cursor-pointer" for="file">
-                  <div class="icon">
-                    
-                  </div>
-                  <div class="text">
-                    <span>Subir archivo</span>
-                  </div>
-                  <input type="file" id="file" class="hidden" />
-                </label>
-              </button>
-            </div>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal para archivo de observaciones -->
-      <div
+            <!-- Modal para archivo de observaciones -->
+            <div
         v-if="showArchivoModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
@@ -482,7 +418,7 @@ const tableData = ref([
           </div>
         </div>
       </div>
-
+      
     </div>
   </div>
 </template>
@@ -508,5 +444,11 @@ const tableData = ref([
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
+}
+
+.custom-thead th {
+  font-weight: 700; /* Grosor delgado */
+  font-size: 16px;  /* Tamaño de la fuente */
+  text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
 </style>

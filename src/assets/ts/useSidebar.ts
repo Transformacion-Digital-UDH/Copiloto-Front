@@ -1,7 +1,7 @@
 // En tu archivo useSidebar.ts
-import { ref } from 'vue';
+import { ref } from "vue";
 
-const isOpen = ref(false);
+const isOpen = ref(true);
 
 export const useSidebar = () => {
   const toggleSidebar = () => {
@@ -10,6 +10,6 @@ export const useSidebar = () => {
 
   return {
     isOpen,
-    toggleSidebar,  // Asegúrate de exportarlo
+    toggleSidebar, // Asegúrate de exportarlo
   };
 };

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
+import IconPdf from "@/components/icons/IconPdf.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 
 // Estados y propiedades
@@ -10,10 +10,8 @@ const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
-const showLinkModal = ref(false);
 const showSendModal = ref(false);
-const nroOficio1 = ref('');
-const linkTesis = ref('');
+const nroExpediente = ref('');
 
 function openSendModal (){
   showSendModal.value = true;
@@ -27,15 +25,10 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-function openModalLink (){
-  showLinkModal.value = true;
-}
-
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
   showSendModal.value = false;
-  showLinkModal.value = false;
 }
 
 // Filtrado y paginación
@@ -72,17 +65,20 @@ function goToNextPage() {
 const tableData = ref([
   {
     name: "Rodríguez Meléndez, Fabio",
-    advisor: "Renzo Paolo, Luciano Estela",
+    title:
+      "Diseño, desarrollo y evaluación de la usabilidad de un sistema de información para la ferretería Huánuco del distrito de Amarilis en el 2022",
     status: "Pendiente",
   },
   {
     name: "Sulca Correa, Omar Iván",
-    advisor: "Juan Manual, Vicente Rojas",
+    title:
+      "Auditoria informática y propuesta de mejora bajo la metodología cobit al área de compras y abastecimiento de la empresa chapacuete s.a.c de la ciudad de Huánuco en el 2019",
     status: "Observado",
   },
   {
     name: "Nuñez Vicente, José Antonio",
-    advisor: "Enrique Carlos, Murga Cespedes",
+    title:
+      "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2022",
     status: "Tramitado",
   },
 ]);
@@ -92,7 +88,7 @@ const tableData = ref([
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Designación de asesor
+        Resolución de informe final
       </h3>
 
       <div class="mt-8">
@@ -147,10 +143,10 @@ const tableData = ref([
                   <tr
                     class="text-center text-black border-b-2 bg-gray-300"
                   >
-                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                    <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                    <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
-                    <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
+                    <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
+                    <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
+                    <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
+                    <th class="py-2 px-4 tracking-wider">JURADO</th>
                     <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
                     <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
@@ -169,8 +165,8 @@ const tableData = ref([
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
-                        {{ u.advisor }}
+                      <p class="text-gray-900 text-wrap w-80">
+                        {{ u.title }}
                       </p>
                     </td>
                     <td class="text-center px-4">
@@ -179,8 +175,8 @@ const tableData = ref([
                       </button>
                     </td>
                     <td class="text-center px-4">
-                      <button @click="openModalLink" class="text-white bg-azulbajo w-24 px-4 py-1 text-sm rounded-xl focus:outline-none">
-                        Subir link
+                      <button>
+                        <IconPdf />
                       </button>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
@@ -249,7 +245,7 @@ const tableData = ref([
         </div>
       </div>
 
-      <!-- Modal para generar un oficio al estudiante -->
+      <!-- Modal para generar la resolucion de aprobacion de tesis -->
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -267,14 +263,14 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará el oficio para este estudiante
+              Se autogenerará la resolución del informe final
             </h5>
           </div>
           <div class="p-6">
             <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de oficio que se va autogenerar
+              Escriba el número de expediente correspondiente
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroExpediente" v-model="nroExpediente" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -295,7 +291,7 @@ const tableData = ref([
         </div>
       </div>
 
-      <!-- Modal de observacion -->
+      <!-- Modal de observacion de tesis -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -332,85 +328,6 @@ const tableData = ref([
               Cancelar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- modal para enviar tramite a la facultad -->
-      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
-          <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
-                <IconCerrar />
-              </button>
-          </div>
-          <div
-              class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-              </h5>
-          </div>
-          <div class="p-6">
-              <p class="text-gray-900 text-center text-lg mb-4">
-              ¿Desea enviar este trámite a facultad?
-              </p>
-          </div>
-          <div
-              class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button
-              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal">
-              Cancelar
-              </button>
-              <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal">
-              Confirmar
-              </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal para subir link de tesis -->
-      <div
-        v-if="showLinkModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
-              <IconCerrar />
-            </button>
-          </div>
-          <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Cargar proyecto de tesis
-            </h5>
-          </div>
-          <div class="p-6">
-            <p class="text-gray-600 text-lg text-left mb-2">
-              Por favor inserte el enlace
-            </p>
-            <input type="text" id="linkTesis" v-model="linkTesis" placeholder="Insertar aquí..." class="px-2 rounded-md w-full focus:border-gray-900 focus:ring-0 mb-4"/>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
@@ -420,6 +337,47 @@ const tableData = ref([
         </div>
       </div>
 
+      <!-- modal para enviar tramite a la facultad -->
+      <div
+        v-if="showSendModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Confirmación
+            </h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-900 text-center text-lg mb-4">
+              ¿Desea enviar la resolución al estudiante y asesor?
+            </p>
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
+              @click="closeModal"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
