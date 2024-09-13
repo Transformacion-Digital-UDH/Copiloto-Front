@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isVisible"
-    :class="`fixed top-4 right-4 p-4 rounded-lg shadow-lg bg-white text-black w-96`"
+    :class="`fixed top-4 right-4 p-4 rounded-lg shadow-lg bg-azul text-white w-96`"
   >
     <div class="flex items-center">
       <!-- Ícono basado en el tipo de alerta -->
@@ -49,9 +49,11 @@
           />
         </svg>
       </div>
-      <ol v-for="msg in message" :key="message" class="flex flex-col">
-        <li> - {{ msg }}</li>
-      </ol>
+     <div class="flex flex-col">
+      <p v-for="msg in message" :key="msg">
+        <span class="block"> - {{ msg }} </span>
+      </p>
+    </div>
     </div>
   </div>
 </template>
@@ -62,7 +64,7 @@ import { ref, onMounted, computed } from "vue";
 // Props
 const props = defineProps({
   message: {
-    type: String,
+    type: Array,
     required: true,
   },
   type: {
