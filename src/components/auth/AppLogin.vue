@@ -22,27 +22,33 @@ const roleRoutes: Record<string, string> = {
 
 // Manejo del inicio de sesión
 const handleLogin = async () => {
+  errorMessage.value = null;
   try {
     loading.value = true;
-    const response = await axios.post("/api/login", {
-      email: email.value,
-      password: password.value,
-    });
+    if(!email.value.includes('@udh.edu.pe')){
+      errorMessage.value = ['No puedes registrarte con esta cuenta, elige una cuenta de udh.edu.pe'];
+    }else{
+      const response = await axios.post("/api/login", {
+        email: email.value,
+        password: password.value,
+      });
 
-    // Procesar la respuesta, guardar el token y redirigir al usuario
-    localStorage.setItem("token", response.data.token);
-    localStorage.setItem("full_name", response.data.data.nombre);
-    localStorage.setItem("email", response.data.data.correo);
-    localStorage.setItem("role", response.data.data.rol);
+      // Procesar la respuesta, guardar el token y redirigir al usuario
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("full_name", response.data.data.nombre);
+      localStorage.setItem("email", response.data.data.correo);
+      localStorage.setItem("role", response.data.data.rol);
 
-    // Aquí podrías redirigir al usuario segun su rol
-    const userRole = response.data.data.rol;
-    const route: string = roleRoutes[userRole];
+      // Aquí podrías redirigir al usuario segun su rol
+      const userRole = response.data.data.rol;
+      const route: string = roleRoutes[userRole];
 
-    if (route) {
-      router.push(route);
+      if (route) {
+        router.push(route);
+      }
+      errorMessage.value = null;
     }
-    errorMessage.value = null;
+
   } catch (error: any) {
     //manejar validacion del backend
     errorMessage.value = error.response.data.error;
@@ -80,6 +86,7 @@ const loginGoogle = () => {
       }
     })
     .catch((error) => {
+      errorMessage.value = error.response.data.error;
       console.log("Handle the error", error);
     });
 };
