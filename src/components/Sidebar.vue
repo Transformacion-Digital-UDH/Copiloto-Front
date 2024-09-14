@@ -53,17 +53,17 @@ export default defineComponent({
             label: 'Aprobación del proyecto', 
             path: '/estudiante/aprobacion-proyecto' },
 
-          { name: 'Solicitar asesor', 
-            label: 'Solicitar asesor', 
-            path: '/asesor/solicitar-asesor' },
+          { name: 'Solicitudes de asesoría', 
+            label: 'Solicitudes de asesoría', 
+            path: '/asesor/solicitud-asesoria' },
             
-          { name: 'Designar asesor',
-            label: 'Designar asesor',
-            path: '/paisi/designar-asesor'},
+          { name: 'Designación de asesores (PAISI)',
+            label: 'Designación de asesores (PAISI)',
+            path: '/paisi/designacionPaisi-asesor'},
 
-          { name: 'Resolución asesor',
-            label: 'Resolución asesor',
-            path: '/facultad/resolucion-asesor'},
+          { name: 'Designación de asesores (Facultad)',
+            label: 'Designación de asesores (Facultad)',
+            path: '/facultad/designacionFacultad-asesor'},
 
           { name: 'Solicitar revisión', 
             label: 'Solicitar revisión', 
@@ -148,6 +148,18 @@ export default defineComponent({
           { name: 'Resolución informe',
             label: 'Resolución informe',
             path: '/facultad/resolucion-informe'},
+
+          { name: 'Primer Filtro',
+            label: 'Primer Filtro',
+            path: '/vri/primer-filtro'},
+          
+          { name: 'Segundo Filtro',
+            label: 'Segundo Filtro',
+            path: '/vri/segundo-filtro'},
+          
+          { name: 'Tercer Filtro',
+            label: 'Tercer Filtro',
+            path: '/vri/tercer-filtro'},
 
         ]
       },

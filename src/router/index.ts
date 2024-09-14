@@ -27,6 +27,9 @@ import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
 import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
 import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
+import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
+import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
+import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -63,7 +66,7 @@ const router = createRouter({
       meta: { roles: ['asesor'], title: 'Asesor' },
       component: AdminLayout,
       children: [
-        { path: 'solicitar-asesor', name: 'SolicitarAsesor', component: SolicitarAsesor, meta: { title: 'Solicitar asesor' } },
+        { path: 'solicitud-asesoria', name: 'SolicitudesAsesoria', component: SolicitarAsesor, meta: { title: 'Solicitudes de asesoría' } },
         { path: 'solicitar-revision', name: 'SolicitarRevision', component: SolicitarRevisión, meta: { title: 'Solicitar revisión' } },
         { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
       ]
@@ -87,7 +90,7 @@ const router = createRouter({
       children: [
         { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { title: 'Designar Jurados' } },
         { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { title: 'Aprobar proyecto' } },
-        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: {title: 'Designar asesor'}},
+        { path: 'designacionPaisi-asesor', name: 'DesignacionAsesorPaisi ', component: DesignarAsesor, meta: {title: 'Designación de asesores (PAISI)'}},
         { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignarJuradosInforme, meta: {title: 'Designar jurado'}},
         { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { title: 'Aprobar informe' } },
       ]
@@ -97,8 +100,17 @@ const router = createRouter({
       component: AdminLayout,
       children: [
         { path: 'resolucion-proyecto', name: 'ResolucionProyecto', component: ResolucionProyecto, meta: { title: 'Resolucion proyecto' } },
-        { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { title: 'Resolución asesor' } },
+        { path: 'designacionFacultad-asesor', name: 'DesignacionAsesorFacultad', component: ResolucionAsesor, meta: { title: 'Designación de asesores (Facultad)' } },
         { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { title: 'Resolucion informe' } },
+      ]
+    },
+    {
+      path: '/vri',
+      component: AdminLayout,
+      children: [
+        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { title: 'Primer Filtro' } },
+        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { title: 'Segundo Filtro' } },
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { title: 'Tercer Filtro' } },
       ]
     },
     {
