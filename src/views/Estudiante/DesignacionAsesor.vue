@@ -13,7 +13,7 @@ interface Trámite {
 }
 
 // Estado general del punto 2
-const estadoPunto2 = ref('Pendiente');  // Estados: Pendiente, En Proceso, Hecho
+const estadoPunto2 = ref('En Proceso');  // Estados: Pendiente, En Proceso, Hecho
 
 const trámites = ref<Trámite[]>([
   { título: 'Trámite en el Sistema', estado: 'Hecho' }  // Punto 1
@@ -21,7 +21,7 @@ const trámites = ref<Trámite[]>([
 
 // Documentos para el punto 2 (Respuesta del asesor) y 3
 const documentos = ref<Documento[]>([
-  { nombre: 'Respuesta del asesor', estado: 'Aceptado', documentoUrl: '' },  // Punto 2
+  { nombre: 'Respuesta del asesor', estado: 'Rechazado', documentoUrl: '' },  // Punto 2
   { nombre: 'Oficio de Secretaria PAISI', estado: 'Hecho', documentoUrl: '' },  // Punto 3
   { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' },  // Punto 3
 ]);
