@@ -1,99 +1,156 @@
-<script></script>
-<template>
-  <div
-    class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-5"
-  >
-    <div
-      class="relative w-full max-w-lg p-6 bg-white rounded-lg shadow-2xl border border-gray-200"
-    >
-      <!-- Logo copiloto -->
-      <div class="flex justify-center py-6">
-        <img src="/img/logo_light.svg" alt="Logo" class="h-12 w-auto" />
-      </div>
+  <script setup lang="ts">
+import { ref } from "vue";
+import axios from "axios";
+import router from "@/router";
+import { decodeCredential, googleOneTap } from "vue3-google-login"
+import Alert from "@/components/Alert.vue";
+import IconLoading from "@/components/icons/IconLoading.vue";
 
-      <!-- Encabezado -->
+// Refs para los campos del formulario
+const email = ref("");
+const password = ref("");
+const message = ref<string | null>(null);
+const errorMessage = ref<string | null>(null);
+const acceptTerms = ref(false);
+const loading = ref(false);
+
+// Manejo del registro
+const handleRegister = async () => {
+  errorMessage.value = null;
+  try {
+    loading.value = true
+    if(!email.value.includes('@udh.edu.pe')){
+      errorMessage.value = ['No puedes registrarte con esta cuenta, elige una cuenta de udh.edu.pe'];
+    }else{
+      const response = await axios.post("/api/register", {
+        email: email.value,
+        password: password.value,
+      });
+  
+      // Procesar la respuesta, guardar el token y redirigir al usuario
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("email", response.data.data.correo);
+      localStorage.setItem("role", response.data.data.rol);
+    
+      router.push('/estudiante');
+
+      errorMessage.value = null;
+    }
+  } catch (error: any) {
+    errorMessage.value = error.response.data.error;
+  } finally {
+    loading.value = false;
+  }
+};
+
+// Manejo del inicio de sesión con google
+const registerGoogle = () => {
+  googleOneTap({ autoLogin: true })
+    .then(async (response) => {
+      errorMessage.value = null;
+
+      const user = decodeCredential(response.credential)
+      if(user.hd !== 'udh.edu.pe'){
+        errorMessage.value = ['No puedes registrarte con esta cuenta, elige una cuenta de udh.edu.pe'];
+      }else{
+        const code = user.email.split('@')[0];
+        console.log(code)
+        const response = await axios.post("/api/register/google", {
+          email: user.email,
+          pasword: code,
+        });
+
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("full_name", response.data.data.nombre);
+        localStorage.setItem("email", response.data.data.correo);
+        localStorage.setItem("role", response.data.data.rol);
+        localStorage.setItem("image_profile", user.picture);
+
+        router.push('/estudiante');
+        
+        errorMessage.value = null;
+      }
+    })
+    .catch((error) => {
+      errorMessage.value = error.response.data.error;
+      console.log("Handle the error", error)
+    })
+}
+</script>
+
+<template>
+  <Alert v-if="errorMessage" :message="errorMessage" type="error" :duration="6000" />
+
+  <div class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md bg-white shadow-lg rounded-lg px-8 py-6">
       <div class="text-center mb-6">
-        <h6 class="text-2xl text-azul font-semibold">Regístrate</h6>
-        <p>
+        <img src="/img/logo_light.svg" alt="Logo" class="mx-auto mb-6 w-48" />
+        <h6 class="text-2xl text-azul font-semibold">Registrate</h6>
+        <p class="text-sm text-gray-600">
           ¿Ya tienes una cuenta?
-          <router-link to="/login" class="text-base hover:underline"
-            >Inicia sesión aquí</router-link
-          >
+          <router-link to="/" class="text-base hover:underline">Inicia sesión aquí</router-link>
         </p>
       </div>
-
+      
       <!-- Botón de Google -->
       <div class="mb-4">
-        <button
-          type="button"
-          class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150"
-        >
-          <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
-          Continuar con Google
-        </button>
+          <button type="button" @click="registerGoogle"
+            class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150">
+            <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
+            Continuar con Google
+          </button>
       </div>
 
-      <!-- Separador -->
       <div class="relative mb-4 text-center">
         <hr class="border-t border-gray-300" />
-        <span
-          class="absolute bg-white px-2 text-gray-500 text-sm"
-          style="top: -0.75rem; left: 50%; transform: translateX(-50%)"
-        >
-          o
+        <span class="absolute bg-white px-2 text-gray-500 text-sm"
+          style="top: -0.75rem; left: 50%; transform: translateX(-50%)">
+          O
         </span>
       </div>
-      <!-- Formulario de Registro -->
-      <div class="px-6 lg:px-10 py-4">
-        <form>
-          <div class="mb-4">
-            <label
-              class="block text-sm font-medium text-gray-900 mb-2"
-              for="email"
-              >Correo electrónico</label
-            >
-            <input
-              type="email"
-              id="email"
-              placeholder="Correo electrónico"
-              class="input-field"
-            />
+
+      <!-- Formulario de registro -->
+      <form @submit.prevent="handleRegister">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700" for="email">Correo electrónico</label>
+          <input type="email" id="email" placeholder="Correo electrónico" v-model="email" class="input-field"
+            required  autofocus/>
+        </div>
+
+        <!-- Modificación aquí para alinear el enlace "Olvidó su contraseña" -->
+        <div class="mb-4">
+          <div class="flex justify-between items-center">
+            <label class="block text-sm font-medium text-gray-700" for="password">Contraseña</label>
+            <router-link to="/forgot-password" class="text-sm text-base hover:underline">
+              ¿Olvidó su contraseña?
+            </router-link>
           </div>
-          <div class="mb-4">
-            <label
-              class="block text-sm font-medium text-gray-900 mb-2"
-              for="password"
-              >Contraseña</label
-            >
-            <input
-              type="password"
-              id="password"
-              placeholder="Contraseña"
-              class="input-field"
-            />
-          </div>
-          <div class="flex items-center mb-4">
+          <input type="password" id="password" placeholder="Contraseña" v-model="password" class="input-field"
+            required autocomplete/>
+        </div>
+      <div class="flex items-center mb-4">
             <label class="inline-flex items-center">
               <input
                 type="checkbox"
+                v-model="acceptTerms"
                 class="form-checkbox rounded text-blue-600"
               />
               <span class="ml-2 text-sm text-gray-600"
                 >Estoy de acuerdo con la
-                <a href="#" class="text-[#ba2e2e]">Política de Privacidad</a>
+                <a href="#" class="text-[#E79E38]">Política de Privacidad</a>
               </span>
             </label>
           </div>
-          <div class="text-center mt-6">
-            <button
-              type="button"
-              class="w-full bg-base text-white py-3 rounded-lg hover:bg-azulOscuro transition duration-150"
-            >
-              CREA TU CUENTA
-            </button>
-          </div>
-        </form>
-      </div>
+        <div class="text-center mt-6">
+          <button type="submit"       
+            class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150 disabled:opacity-50 disabled:bg-base flex items-center justify-center"
+           :disabled="loading">
+             <IconLoading v-if="loading" />
+            REGISTRAR
+          </button>
+        </div>
+        
+      </form>
     </div>
   </div>
 </template>
@@ -101,8 +158,8 @@
 <style scoped>
 .input-field {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #114491;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
   border-radius: 0.375rem;
   transition: border-color 0.2s;
 }
@@ -112,7 +169,13 @@
   border-color: #2563eb;
 }
 
+.form-checkbox {
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 0.25rem;
+}
+
 .bg-azulOscuro {
-  background-color: #1e3a8a; /* Color oscuro para el botón al pasar el cursor */
+  background-color: #1e3a8a;
 }
 </style>

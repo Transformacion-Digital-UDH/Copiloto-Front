@@ -79,10 +79,10 @@ const tableData = ref([
 </script>
 
 <template>
-  <div class="flex h-screen border-s-2 font-Roboto">
+  <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-medium text-center text-gray-800">
-        Aprobacion de proyecto de tesis (PAISI)
+      <h3 class="text-4xl font-semibold text-center text-azul">
+        Aprobacion de proyecto de tesis
       </h3>
 
       <div class="mt-8">
@@ -129,11 +129,11 @@ const tableData = ref([
           <!-- Tabla -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div
-              class="inline-block min-w-full overflow-hidden rounded-lg shadow"
+              class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
             >
               <table class="min-w-full leading-normal">
-                <thead>
-                  <tr class="text-xs text-center text-black uppercase border-b-2 border-gray-300">
+                <thead class="custom-thead font-Quicksand">
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
                     <th
                       class="py-2 px-3 tracking-wider text-left"
                     >
@@ -170,7 +170,7 @@ const tableData = ref([
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="index"
-                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
@@ -268,10 +268,10 @@ const tableData = ref([
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-left mb-2">
+            <p class="text-gray-500 text-base text-left mb-2">
               Por favor escriba el número de oficio que se va autogenerar
             </p>
-            <input type="text" id="nroOficio" v-model="nroOficio" class="w-full px-10 py-1 rounded-xl bg-gray-100 focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroOficio" v-model="nroOficio" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -311,10 +311,10 @@ const tableData = ref([
             </h5>
           </div>
           <div class="p-6 bg-white rounded-lg">
-            <p class="text-gray-600 text-lg text-center mb-4">
+            <p class="text-gray-600 text-base text-center mb-4">
               Por favor escriba el motivo de su observación
             </p>
-            <textarea class="text-gray-950 bg-gray-100 rounded-lg w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -396,5 +396,11 @@ const tableData = ref([
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
+}
+
+.custom-thead th {
+  font-weight: 700; /* Grosor delgado */
+  font-size: 16px;  /* Tamaño de la fuente */
+  text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
 </style>

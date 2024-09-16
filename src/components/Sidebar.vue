@@ -12,7 +12,6 @@ import cierre from '@/components/icons/cierre.vue';
 export default defineComponent({
   data() {
     return {
-      avatar: 'https://images.unsplash.com/photo-1528892952291-009c663ce843?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=296&q=80',
       progreso: 30, // Valor inicial del progreso en porcentaje
     }
   },
@@ -23,6 +22,7 @@ export default defineComponent({
 
     const role = ref('');
     const full_name = ref('');
+    const image_profile = ref('');
     const route = useRoute();
 
     // Definición de secciones con submenús
@@ -53,41 +53,41 @@ export default defineComponent({
             label: 'Aprobación del proyecto', 
             path: '/estudiante/aprobacion-proyecto' },
 
-          { name: 'Solicitud asesoria', 
-            label: 'Solicitud asesoria', 
-            path: '/asesor/solicitud-asesoria' },
+          { name: 'Solicitar asesor', 
+            label: 'Solicitar asesor', 
+            path: '/asesor/solicitar-asesor' },
+            
+          { name: 'Designar asesor',
+            label: 'Designar asesor',
+            path: '/paisi/designar-asesor'},
 
-          { name: 'Proyecto Tesis', 
-            label: 'Proyecto tesis', 
-            path: '/asesor/proyecto-tesis' },
+          { name: 'Resolución asesor',
+            label: 'Resolución asesor',
+            path: '/facultad/resolucion-asesor'},
 
-          { name: 'Solicitud Jurado',
-            label: 'Solicitud Jurado',
-            path: '/jurado/solicitud-jurado'},
-
-          { name: 'Jurado Presidente',
-            label: 'Jurado Presidente',
-            path: '/jurado/solicitud-presidente'},
+          { name: 'Solicitar revisión', 
+            label: 'Solicitar revisión', 
+            path: '/asesor/solicitar-revision' },
 
           { name: 'Designar jurados',
             label: 'Designar jurados',
             path: '/paisi/designar-jurado'},
+
+          { name: 'Revisión jurado',
+            label: 'Revisión jurado',
+            path: '/jurado/revision-jurado'},
+
+          { name: 'Revisión presidente',
+            label: 'Revisión presidente',
+            path: '/jurado/revision-presidente'},
           
-          { name: 'Aprobacion proyecto',
+          { name: 'Aprobar proyecto',
             label: 'Aprobacion proyecto',
             path: '/paisi/aprobar-proyecto'},
 
-          { name: 'Aprobacion proyectoT',
-            label: 'Aprobacion proyectoT',
-            path: '/facultad/aprobar-proyecto-tesis'},
-
-          { name: 'Designar AsesorP',
-            label: 'Designar AsesorP',
-            path: '/paisi/designar-asesoria'},
-
-          { name: 'Designar AsesorF',
-            label: 'Designar AsesorF',
-            path: '/facultad/designar-asesoria-facu'},
+          { name: 'Resolución proyecto',
+            label: 'Resolución proyecto',
+            path: '/facultad/resolucion-proyecto'},
         ]
       },
       {
@@ -106,20 +106,48 @@ export default defineComponent({
         icon: markRaw(informe),
         submenus: [
           { name: 'Conformidad del Informe Final por el Asesor', 
-              label: 'Conformidad por el asesor', 
-              path: '/estudiante/conformidad-informe-asesor' },
+            label: 'Conformidad por el asesor', 
+            path: '/estudiante/conformidad-informe-asesor' },
+
           { name: 'Designacion de Jurado para el Informe Final', 
             label: 'Designacion de Jurado', 
             path: '/estudiante/designacion-informe-jurado' },
+
           { name: 'Conformidad de Informe Final por los Jurados', 
             label: 'Conformidad Jurados', 
             path: '/estudiante/conformidad-informe-jurado' },
+
           { name: 'Aprobacion de Informe Final por los Jurados', 
             label: 'Aprobacion del Informe ', 
             path: '/estudiante/aprobacion-informe' },
+
           { name: 'Conformidad por Integridad VRI', 
             label: 'Conformidad por Integridad VRI', 
             path: '/estudiante/conformidad-vri' },
+
+          { name: 'Revisión informe', 
+            label: 'Revisión informe', 
+            path: '/asesor/revision-informe' },
+          
+          { name: 'Designar jurado', 
+            label: 'Designar jurado', 
+            path: '/paisi/designarJurado-informe' },
+
+          { name: 'Revisión jurado', 
+            label: 'Revisión jurado', 
+            path: '/jurado/revisionJurado-informe' },
+            
+          { name: 'Revisión presidente', 
+            label: 'Revisión presidente', 
+            path: '/jurado/revisionJuradoPresidente-informe' },
+
+          { name: 'Aprobar informe',
+            label: 'Aprobacion informe',
+            path: '/paisi/aprobar-informe'},
+
+          { name: 'Resolución informe',
+            label: 'Resolución informe',
+            path: '/facultad/resolucion-informe'},
 
         ]
       },
@@ -166,6 +194,7 @@ export default defineComponent({
     onMounted(() => {
       full_name.value = localStorage.getItem('full_name') || '';
       role.value = localStorage.getItem('role') || '';
+      image_profile.value = localStorage.getItem('image_profile') || `https://ui-avatars.com/api/?name=${full_name.value}`;
       openSectionIfActive();
 
     })
@@ -177,7 +206,8 @@ export default defineComponent({
       isDark,
       full_name,
       role,
-      isActive
+      isActive,
+      image_profile
     };
   }
 });
@@ -207,7 +237,7 @@ export default defineComponent({
       <!-- INFO DEL ESTUDIANTE COMO EL NOMBRE -->
       <div class="flex flex-col items-center justify-center mt-6">
         <div class="w-24 h-24 mb-4 overflow-hidden rounded-full shadow-lg">
-          <img class="object-cover w-full h-full" :src="avatar" alt="Avatar" />
+          <img class="object-cover w-full h-full" :src="image_profile" alt="Avatar" />
         </div>
         <div class="w-full text-center max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>

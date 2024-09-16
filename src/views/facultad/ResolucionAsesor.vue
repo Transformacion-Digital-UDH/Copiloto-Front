@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconPdf from "@/components/icons/IconPdf.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 
 // Estados y propiedades
@@ -11,7 +11,7 @@ const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const showSendModal = ref(false);
-const nroExpediente = ref('');
+const nroOficio1 = ref('');
 
 function openSendModal (){
   showSendModal.value = true;
@@ -65,30 +65,30 @@ function goToNextPage() {
 const tableData = ref([
   {
     name: "Rodríguez Meléndez, Fabio",
-    title:
-      "Diseño, desarrollo y evaluación de la usabilidad de un sistema de información para la ferretería Huánuco del distrito de Amarilis en el 2022",
+    advisor: "Renzo Paolo, Luciano Estela",
     status: "Pendiente",
+    date: "31-02-2024",
   },
   {
     name: "Sulca Correa, Omar Iván",
-    title:
-      "Auditoria informática y propuesta de mejora bajo la metodología cobit al área de compras y abastecimiento de la empresa chapacuete s.a.c de la ciudad de Huánuco en el 2019",
+    advisor: "Juan Manual, Vicente Rojas",
     status: "Observado",
+    date: "15-08-2023",
   },
   {
     name: "Nuñez Vicente, José Antonio",
-    title:
-      "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2022",
+    advisor: "Enrique Carlos, Murga Cespedes",
     status: "Tramitado",
+    date: "19-10-2022",
   },
 ]);
 </script>
 
 <template>
-  <div class="flex h-screen border-s-2 font-Roboto">
+  <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-medium text-center text-gray-800">
-        Aprobacion de proyecto de tesis (Facultad)
+      <h3 class="text-4xl font-semibold text-center text-azul">
+        Designación de asesor
       </h3>
 
       <div class="mt-8">
@@ -136,17 +136,17 @@ const tableData = ref([
           <!-- Tabla -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div
-              class="inline-block min-w-full overflow-hidden rounded-lg shadow"
+              class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
             >
               <table class="min-w-full leading-normal">
-                <thead>
+                <thead class="custom-thead font-Quicksand">
                   <tr
-                    class="text-xs text-center text-black uppercase border-b-2 border-gray-300"
+                    class="text-center text-black border-b-2 bg-gray-300"
                   >
-                    <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
-                    <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
+                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
-                    <th class="py-2 px-4 tracking-wider">JURADO</th>
+                    <th class="py-2 px-14 text-left tracking-wider">FECHA</th>
                     <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
                     <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
@@ -156,17 +156,17 @@ const tableData = ref([
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="index"
-                    :class="index % 2 === 0 ? 'bg-grisTabla' : 'bg-white'"
+                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
+                      <p class="text-gray-900 text-wrap w-32">
                         {{ u.name }}
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">
-                        {{ u.title }}
+                      <p class="text-gray-900 text-wrap w-32">
+                        {{ u.advisor }}
                       </p>
                     </td>
                     <td class="text-center px-4">
@@ -174,10 +174,10 @@ const tableData = ref([
                         <IconPdf />
                       </button>
                     </td>
-                    <td class="text-center px-4">
-                      <button>
-                        <IconPdf />
-                      </button>
+                    <td class="px-3 py-5 text-base text-center">
+                      <p class="text-gray-900 text-wrap w-32">
+                        {{ u.date }}
+                      </p>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
@@ -187,7 +187,7 @@ const tableData = ref([
                         Generar
                       </button>
                       <button
-                        class="w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
                         @click="openRejectModal"
                       >
                         Observar
@@ -245,7 +245,7 @@ const tableData = ref([
         </div>
       </div>
 
-      <!-- Modal para generar la resolucion de aprobacion de tesis -->
+      <!-- Modal para generar un oficio al estudiante -->
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -263,14 +263,14 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará la resolución de aprobación del proyecto de tesis
+              Se autogenerará la resolucion de asesor para este estudiante
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-left mb-2">
-              Por favor escriba el número de expediente correspondiente
+            <p class="text-gray-500 text-base text-left mb-2">
+              Escriba el número de expediente correspondiente
             </p>
-            <input type="text" id="nroExpediente" v-model="nroExpediente" class="w-full px-10 py-1 rounded-xl bg-gray-100 focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -291,7 +291,7 @@ const tableData = ref([
         </div>
       </div>
 
-      <!-- Modal de observacion de tesis -->
+      <!-- Modal de observacion -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
@@ -316,7 +316,7 @@ const tableData = ref([
             <p class="text-gray-600 text-lg text-center mb-4">
               Por favor escriba el motivo de su observación
             </p>
-            <textarea class="text-gray-950 bg-gray-100 rounded-lg w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -328,7 +328,7 @@ const tableData = ref([
               Cancelar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
               @click="closeModal"
             >
               Confirmar
@@ -338,46 +338,42 @@ const tableData = ref([
       </div>
 
       <!-- modal para enviar tramite a la facultad -->
-      <div
-        v-if="showSendModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
+      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
           <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-              <IconCerrar />
-            </button>
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
+                <IconCerrar />
+              </button>
           </div>
           <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
-            </h5>
+              </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-900 text-center text-lg mb-4">
+              <p class="text-gray-900 text-center text-lg mb-4">
               ¿Desea enviar la resolución al estudiante y asesor?
-            </p>
+              </p>
           </div>
           <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
+              class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button
               class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
+              @click="closeModal">
               Cancelar
-            </button>
-            <button
+              </button>
+              <button
               class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal"
-            >
+              @click="closeModal">
               Confirmar
-            </button>
+              </button>
           </div>
         </div>
       </div>
+
+      <!-- Modal para subir link de tesis -->
+
     </div>
   </div>
 </template>
@@ -404,4 +400,8 @@ const tableData = ref([
   background-color: #8898aa;
   color: #ffffff;
 }
+.thin-text {
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100; /* Esto es lo más delgado posible para Roboto */
+  }
 </style>

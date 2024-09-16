@@ -1,13 +1,18 @@
-  <script setup lang="ts">
+<script setup lang="ts">
 import { ref } from "vue";
 import axios from "axios";
 import router from "@/router";
+import { decodeCredential, googleOneTap } from "vue3-google-login";
+import Alert from "@/components/Alert.vue";
+import IconLoading from "@/components/icons/IconLoading.vue";
 
 // Refs para los campos del formulario
 const email = ref("");
 const password = ref("");
+const message = ref<string | null>(null);
 const errorMessage = ref<string | null>(null);
 const rememberMe = ref(false);
+const loading = ref(false);
 
 const roleRoutes: Record<string, string> = {
   estudiante: "/estudiante",
@@ -17,39 +22,88 @@ const roleRoutes: Record<string, string> = {
 
 // Manejo del inicio de sesión
 const handleLogin = async () => {
+  errorMessage.value = null;
   try {
-    const response = await axios.post("/api/login", {
-      email: email.value,
-      password: password.value,
-    });
+    loading.value = true;
+    if(!email.value.includes('@udh.edu.pe')){
+      errorMessage.value = ['No puedes registrarte con esta cuenta, elige una cuenta de udh.edu.pe'];
+    }else{
+      const response = await axios.post("/api/login", {
+        email: email.value,
+        password: password.value,
+      });
 
-    // Procesar la respuesta, por ejemplo, guardar el token y redirigir al usuario
-    localStorage.setItem("token", response.data.token);
-    localStorage.setItem("full_name", response.data.data.nombre);
-    localStorage.setItem("email", response.data.data.correo);
-    localStorage.setItem("role", response.data.data.rol);
+      // Procesar la respuesta, guardar el token y redirigir al usuario
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("full_name", response.data.data.nombre);
+      localStorage.setItem("email", response.data.data.correo);
+      localStorage.setItem("role", response.data.data.rol);
 
-    console.log("Lo que devuelve la peticion", response.data);
+      // Aquí podrías redirigir al usuario segun su rol
+      const userRole = response.data.data.rol;
+      const route: string = roleRoutes[userRole];
 
-    // Aquí podrías redirigir al usuario segun su rol
-
-    const userRole = response.data.data.rol;
-    const route: string = roleRoutes[userRole];
-
-    if (route) {
-      router.push(route);
+      if (route) {
+        router.push(route);
+      }
+      errorMessage.value = null;
     }
 
-    // Asegúrate de limpiar el mensaje de error en caso de éxito
-    errorMessage.value = null;
   } catch (error: any) {
-    console.log("Lo que devuelve la peticion", error.response?.data);
-    errorMessage.value = error.response?.data.error;
+    //manejar validacion del backend
+    errorMessage.value = error.response.data.error;
+  } finally {
+    loading.value = false;
   }
+};
+
+// Manejo del inicio de sesión con google
+const loginGoogle = () => {
+  console.log("entro aqui login");
+  
+  googleOneTap({ autoLogin: false })
+    .then(async (response) => {
+      errorMessage.value = null;
+
+      const user = decodeCredential(response.credential);
+      if (user.hd !== "udh.edu.pe") {
+        errorMessage.value =
+          ["No puedes iniciar sesión con esta cuenta, elige una cuenta de udh.edu.pe"];
+      } else {
+        const response = await axios.post("/api/login/google", {
+          email: user.email,
+        });
+
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("full_name", response.data.data.nombre);
+        localStorage.setItem("email", response.data.data.correo);
+        localStorage.setItem("role", response.data.data.rol);
+        localStorage.setItem("image_profile", user.picture);
+
+        const userRole = response.data.data.rol;
+        const route: string = roleRoutes[userRole];
+
+        if (route) {
+          router.push(route);
+        }
+        errorMessage.value = null;
+      }
+    })
+    .catch((error) => {
+      errorMessage.value = error.response.data.error;
+      console.log("Handle the error", error);
+    });
 };
 </script>
 
 <template>
+  <Alert
+    v-if="errorMessage"
+    :message="errorMessage"
+    type="error"
+    :duration="8000"
+  />
+
   <div class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg px-8 py-6">
       <div class="text-center mb-6">
@@ -63,8 +117,11 @@ const handleLogin = async () => {
 
       <!-- Botón de Google -->
       <div class="mb-4">
-        <button type="button"
-          class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150">
+        <button
+          type="button"
+          @click="loginGoogle"
+          class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150"
+        >
           <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
           Continuar con Google
         </button>
@@ -81,9 +138,18 @@ const handleLogin = async () => {
       <!-- Formulario de inicio de sesión -->
       <form @submit.prevent="handleLogin">
         <div class="mb-4">
-          <label class="block text-sm font-medium text-gray-700" for="email">Correo electrónico</label>
-          <input type="email" id="email" placeholder="Correo electrónico" v-model="email" class="input-field"
-            required />
+          <label class="block text-sm font-medium text-gray-700" for="email"
+            >Correo electrónico</label
+          >
+          <input
+            type="email"
+            id="email"
+            placeholder="Correo electrónico"
+            v-model="email"
+            class="input-field"
+            required
+            autofocus
+          />
         </div>
 
         <!-- Modificación aquí para alinear el enlace "Olvidó su contraseña" -->
@@ -94,8 +160,15 @@ const handleLogin = async () => {
               ¿Olvidó su contraseña?
             </router-link>
           </div>
-          <input type="password" id="password" placeholder="Contraseña" v-model="password" class="input-field"
-            required />
+          <input
+            type="password"
+            id="password"
+            placeholder="Contraseña"
+            v-model="password"
+            class="input-field"
+            required
+            autocomplete
+          />
         </div>
         <div class="flex justify-between items-center mb-4">
           <label class="inline-flex items-center">
@@ -104,14 +177,14 @@ const handleLogin = async () => {
           </label>
         </div>
         <div class="text-center mt-6">
-          <button type="submit" class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150">
+          <button
+            type="submit"
+            class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150 disabled:opacity-50 disabled:bg-base flex items-center justify-center"
+            :disabled="loading"
+          >
+            <IconLoading v-if="loading" />
             INICIAR SESIÓN
           </button>
-        </div>
-        <div v-if="errorMessage" class="mt-4 text-red-600 ">
-          <ol v-for="error in errorMessage" :key="errorMessage">
-            <li> - {{ error }}</li>
-          </ol>
         </div>
       </form>
     </div>

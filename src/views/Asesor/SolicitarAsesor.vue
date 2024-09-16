@@ -1,23 +1,13 @@
 <script lang="ts" setup>
 import { ref, computed } from "vue";
-import IconPdf from "@/components/icons/IconPdf.vue";
-import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
 
-// Estados y propiedades
-const selectedFilter = ref("");
-const rowsPerPage = ref(5);
-const currentPage = ref(1);
-const showModal = ref(false);
-const showRejectModal = ref(false);
-const showLinkModal = ref(false);
-const showSendModal = ref(false);
-const nroOficio1 = ref('');
-const linkTesis = ref('');
-
-function openSendModal (){
-  showSendModal.value = true;
-}
+const showModal = ref(false); // para ver el modal de aprobado
+const showRejectModal = ref(false); // para ver el modal de rechazado
+const selectedFilter = ref(""); // para seleccionar el estado
+const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
+const currentPage = ref(1); // pagina actual
 
 function openModal() {
   showModal.value = true;
@@ -27,18 +17,12 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-function openModalLink (){
-  showLinkModal.value = true;
-}
-
 function closeModal() {
   showModal.value = false;
-  showRejectModal.value = false; //cerrar ambos modales
-  showSendModal.value = false;
-  showLinkModal.value = false;
+  showRejectModal.value = false; // cerrar ambos modales
 }
 
-// Filtrado y paginación
+// para filtrar datos segun el filtro y paginacion seleccionado
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
@@ -48,42 +32,49 @@ const filteredTableData = computed(() => {
     );
   }
 
+  // Paginar los datos filtrados
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
   const endIndex = startIndex + rowsPerPage.value;
   return filteredData.slice(startIndex, endIndex);
 });
 
+// Total de páginas
 const totalPages = computed(() => {
+  // Filtra los datos si hay un filtro seleccionado
   const filteredData = selectedFilter.value
     ? tableData.value.filter((data) => data.status === selectedFilter.value)
     : tableData.value;
+  // Calcula el número total de páginas basadas en los datos filtrados y las filas por pagina
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
+// Manejo de la página anterior y siguiente
 function goToPreviousPage() {
+  // decrementa la página actual si no es la última página
   if (currentPage.value > 1) currentPage.value--;
 }
 
 function goToNextPage() {
+  // Incrementa la página actual si no es la última página
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// Datos actuales
+// simulacion de datos
 const tableData = ref([
   {
     name: "Rodríguez Meléndez, Fabio",
-    advisor: "Renzo Paolo, Luciano Estela",
-    status: "Pendiente",
+    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
+    status: "Aceptado",
   },
   {
     name: "Sulca Correa, Omar Iván",
-    advisor: "Juan Manual, Vicente Rojas",
-    status: "Observado",
+    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
+    status: "Rechazado",
   },
   {
     name: "Nuñez Vicente, José Antonio",
-    advisor: "Enrique Carlos, Murga Cespedes",
-    status: "Tramitado",
+    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
+    status: "Pendiente",
   },
 ]);
 </script>
@@ -92,7 +83,7 @@ const tableData = ref([
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Designación de asesor
+        Solicitud de asesor
       </h3>
 
       <div class="mt-8">
@@ -130,89 +121,86 @@ const tableData = ref([
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
-                  <option value="Observado">Observado</option>
-                  <option value="Tramitado">Tramitado</option>
+                  <option value="Aceptado">Aceptado</option>
+                  <option value="Rechazado">Rechazado</option>
                 </select>
               </div>
             </div>
           </div>
 
           <!-- Tabla -->
-          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
+          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div
               class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
             >
               <table class="min-w-full leading-normal">
                 <thead class="custom-thead font-Quicksand">
-                  <tr
-                    class="text-center text-black border-b-2 bg-gray-300"
-                  >
-                    <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
-                    <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                    <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
-                    <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
-                    <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
-                    <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
-                    <th class="py-2 px-3 tracking-wider">ESTADO</th>
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <th
+                      class="py-2 px-3 text-left tracking-wider"
+                    >
+                      ESTUDIANTE
+                    </th>
+                    <th
+                      class="py-2 px-3 text-left tracking-wider"
+                    >
+                      TÍTULO
+                    </th>
+                    <th
+                      class="py-2 px-4 tracking-wider"
+                    >
+                      ACCIÓN
+                    </th>
+                    <th
+                      class="py-2 px-4 tracking-wider"
+                    >
+                      ESTADO
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr
-                    v-for="(u, index) in filteredTableData"
-                    :key="index"
+                  <tr 
+                    v-for="(u, index) in filteredTableData" :key="index"
                     :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
-                    <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
+                    <td
+                      class="px-3 py-5 text-base"
+                    >
+                      <p class="text-gray-900 whitespace-nowrap w-64">
                         {{ u.name }}
                       </p>
                     </td>
-                    <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
-                        {{ u.advisor }}
+                    <td
+                      class="px-3 py-5 text-base"
+                    >
+                      <p class="text-gray-900 text-wrap w-80">
+                        {{ u.title }}
                       </p>
                     </td>
-                    <td class="text-center px-4">
-                      <button>
-                        <IconPdf />
-                      </button>
-                    </td>
-                    <td class="text-center px-4">
-                      <button @click="openModalLink" class="text-white bg-azulbajo w-24 px-4 py-1 text-sm rounded-xl focus:outline-none">
-                        Subir link
-                      </button>
-                    </td>
-                    <td class="px-3 py-5 flex flex-col items-center justify-center">
+                    <td
+                      class="px-3 py-5 flex flex-col items-center justify-center"
+                    >
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
-                      >
-                        Generar
+                      > Aceptar
                       </button>
-                      <button
-                        class="w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                      <button 
+                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
                         @click="openRejectModal"
-                      >
-                        Observar
+                      > Rechazar
                       </button>
                     </td>
-                    <td class="px-3 py-5 text-center">
-                      <button
-                        class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
-                        @click="openSendModal"
-                      >
-                        Enviar
-                      </button>
-                    </td>
-                    <td class="px-3 py-5 text-center">
+                    <td
+                      class="px-3 py-5 text-center"
+                    >
                       <span
                         :class="`estado-estilo estado-${u.status
                           .toLowerCase()
                           .replace(' ', '-')}`"
+                        >{{ u.status }}</span
                       >
-                        {{ u.status }}
-                      </span>
                     </td>
                   </tr>
                 </tbody>
@@ -248,18 +236,14 @@ const tableData = ref([
           </div>
         </div>
       </div>
-
-      <!-- Modal para generar un oficio al estudiante -->
+      <!-- Modal de confirmación -->
       <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
               <IconCerrar />
             </button>
           </div>
@@ -267,14 +251,13 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará el oficio para este estudiante
+              Confirmación
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de oficio que se va autogenerar
+            <p class="text-gray-600 text-lg text-center">
+              ¿Estás seguro de que quieres generar una Carta de Aceptacion?
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -289,23 +272,20 @@ const tableData = ref([
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
-              Generar
+              Aceptar
             </button>
           </div>
         </div>
       </div>
 
-      <!-- Modal de observacion -->
+      <!-- Modal de rechazo -->
       <div
         v-if="showRejectModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
               <IconCerrar />
             </button>
           </div>
@@ -313,93 +293,13 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Observación
-            </h5>
-          </div>
-          <div class="p-6 bg-white rounded-lg">
-            <p class="text-gray-600 text-base text-center mb-4">
-              Por favor escriba el motivo de su observación
-            </p>
-            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- modal para enviar tramite a la facultad -->
-      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
-          <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
-                <IconCerrar />
-              </button>
-          </div>
-          <div
-              class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
-              </h5>
-          </div>
-          <div class="p-6">
-              <p class="text-gray-900 text-center text-lg mb-4">
-              ¿Desea enviar este trámite a facultad?
-              </p>
-          </div>
-          <div
-              class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button
-              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal">
-              Cancelar
-              </button>
-              <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal">
-              Confirmar
-              </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal para subir link de tesis -->
-      <div
-        v-if="showLinkModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
-              <IconCerrar />
-            </button>
-          </div>
-          <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Cargar proyecto de tesis
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-600 text-lg text-left mb-2">
-              Por favor inserte el enlace
+            <p class="text-gray-600 text-lg text-center">
+              ¿Estás seguro de que quieres rechazar a ser el asesor de este estudiante?
             </p>
-            <input type="text" id="linkTesis" v-model="linkTesis" placeholder="Insertar aquí..." class="px-2 rounded-md w-full focus:border-gray-900 focus:ring-0 mb-4"/>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -414,12 +314,11 @@ const tableData = ref([
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
-              Confirmar
+              Aceptar
             </button>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -432,13 +331,13 @@ const tableData = ref([
   border-radius: 0.375rem;
 }
 
-.estado-tramitado {
+.estado-aceptado {
   background-color: #48bb78;
   color: #ffffff;
 }
 
-.estado-observado {
-  background-color: #e79e38;
+.estado-rechazado {
+  background-color: #DC2626;
   color: #ffffff;
 }
 
