@@ -138,7 +138,9 @@ router.beforeEach((to, from, next) => {
     const routesByRole: Record<string, string> = {
       estudiante: 'estudiante',
       asesor: 'asesor',
-      jurado: 'jurado'
+      jurado: 'jurado',
+      paisi: 'paisi',
+      facultad: 'facultad'
     };
     return next({ name: routesByRole[role] });
   }

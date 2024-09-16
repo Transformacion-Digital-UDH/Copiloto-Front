@@ -18,6 +18,8 @@ const roleRoutes: Record<string, string> = {
   estudiante: "/estudiante",
   asesor: "/asesor",
   jurado: "/jurado",
+  paisi: '/paisi',
+  facultad: '/facultad'
 }
 
 // Manejo del inicio de sesión
