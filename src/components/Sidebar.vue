@@ -114,7 +114,7 @@ export default defineComponent({
         // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
         allSections[0].submenus.push(
           { name: 'Solicitar asesor', label: 'Pendientes de Aceptar', path: '/asesor/solicitar-asesor' },
-          { name: 'Revisión de proyecto', label: 'Revisión de Proyectos', path: '/asesor/revision-proyecto' }
+          { name: 'Revisión de proyecto', label: 'Revisión de Proyectos', path: '/asesor/solicitar-revision' }
         );
         allSections[1].submenus.push(
           { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
@@ -128,6 +128,23 @@ export default defineComponent({
           section.name === 'Ejecucion' || 
           section.name === 'InformeFinal'
         );
+      } else if (role.value === 'jurado') {
+        // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
+        allSections[0].submenus.push(
+          { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
+          { name: 'revision presidente proyecto', label: 'Revision Presidente Proyecto', path: '/jurado/revision-presidente' }
+        );
+        allSections[2].submenus.push(
+          { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
+          { name: 'revision presidente informe', label: 'Revision Presidente Informe', path: '/jurado/revisionJuradoPresidente-informe' }
+        );
+        // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' || 
+          section.name === 'InformeFinal'
+        );
+
+
       } else if (role.value === 'paisi') {
         // Paisi solo tiene Proyecto Tesis, Informe Final y Sustentación
         allSections[0].submenus.push(
@@ -154,7 +171,7 @@ export default defineComponent({
           { name: 'Resolución aprobación proyecto', label: 'Resolución Aprobación Proyecto', path: '/facultad/resolucion-proyecto' }
         );
         allSections[2].submenus.push(
-          { name: 'Designar jurado', label: 'Designar Jurados', path: '/facultad/designar-jurado' },
+          { name: 'Designar jurado', label: 'Designar Jurados', path: '/facultad/designarJurado-informe' },
           { name: 'Resolución informe', label: 'Resolución Informe', path: '/facultad/resolucion-informe' }
         );
         allSections[3].submenus.push(

@@ -22,11 +22,12 @@ import ConformidadVRI from '@/views/Estudiante/ConformidadVRI.vue'
 import DesignarAsesor from '@/views/Paisi/DesignarAsesor.vue'
 import ResolucionAsesor from '@/views/facultad/ResolucionAsesor.vue'
 import RevisionInforme from '@/views/Asesor/RevisionInforme.vue'
-import DesignarJuradosInforme from '@/views/Paisi/DesignarJuradosInforme.vue'
 import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
 import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
 import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
+import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -88,7 +89,7 @@ const router = createRouter({
         { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { title: 'Designar Jurados' } },
         { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { title: 'Aprobar proyecto' } },
         { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: {title: 'Designar asesor'}},
-        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignarJuradosInforme, meta: {title: 'Designar jurado'}},
+        
         { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { title: 'Aprobar informe' } },
       ]
     },
@@ -98,7 +99,9 @@ const router = createRouter({
       children: [
         { path: 'resolucion-proyecto', name: 'ResolucionProyecto', component: ResolucionProyecto, meta: { title: 'Resolucion proyecto' } },
         { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { title: 'Resolución asesor' } },
+        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: {title: 'Designar jurados'}},
         { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { title: 'Resolucion informe' } },
+
       ]
     },
     {
