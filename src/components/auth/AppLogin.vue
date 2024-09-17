@@ -58,9 +58,7 @@ const handleLogin = async () => {
 };
 
 // Manejo del inicio de sesión con google
-const loginGoogle = () => {
-  console.log("entro aqui login");
-  
+const loginGoogle = () => {  
   googleOneTap({ autoLogin: false })
     .then(async (response) => {
       errorMessage.value = null;

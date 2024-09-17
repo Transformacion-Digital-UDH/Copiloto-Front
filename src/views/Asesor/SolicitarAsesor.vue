@@ -182,9 +182,13 @@ const tableData = ref([
                       class="px-3 py-5 flex flex-col items-center justify-center"
                     >
                       <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        class="w-24 px-4 py-1 text-sm mb-2 text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal"
                       > Aceptar
+                      </button>
+                      <button 
+                        class="w-24 px-4 py-1 text-sm mb-2 text-white bg-orange-400 rounded-xl focus:outline-none"
+                      > Declinar
                       </button>
                       <button 
                         class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
