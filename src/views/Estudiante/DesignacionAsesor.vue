@@ -25,7 +25,7 @@ interface HistorialAccion {
 }
 
 // Estado general del punto 2
-const estadoPunto2 = ref('Pendiente'); // Estados: Pendiente, En Proceso, Hecho
+const estadoPunto2 = ref('En Proceso'); // Estados: Pendiente, En Proceso, Hecho
 
 const trámites = ref<Trámite[]>([
   { título: 'Solicitud de Asesor', estado: 'Pendiente' }
