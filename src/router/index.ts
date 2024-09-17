@@ -30,6 +30,7 @@ import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
 import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
+import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -58,6 +59,7 @@ const router = createRouter({
         { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: { title: 'Conformidad de Informe Final por los Jurados' } },
         { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: { title: 'Aprobacion de Informe por los Jurados' } },
         { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: { title: 'Conformidad por Integridad VRI' } },
+        { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: { title: 'progreso' } },
       ]
     },
     {

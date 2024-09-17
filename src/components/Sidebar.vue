@@ -96,7 +96,7 @@ export default defineComponent({
         isOpen: false,
         icon: markRaw(ejecucion),
         submenus: [
-          { name: 'Submenu1', label: 'Submenu 1', path: '/ejecucion/submenu1' },
+          { name: 'progreso', label: 'progreso', path: '/estudiante/progreso' },
         ]
       },
       {
