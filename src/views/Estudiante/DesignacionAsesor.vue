@@ -1,6 +1,15 @@
 <script lang="ts" setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import Swal from 'sweetalert2';
+import axios from 'axios';
+
+const habilitado = ref(false);
+const asesores = ref<Asesor[]>([])
+
+// Función para habilitar el formulario
+const habilitarTramite = () => {
+  habilitado.value = true;
+};
 
 // Definir tipos para trámites, documentos y acciones del historial
 interface Documento {
@@ -10,12 +19,41 @@ interface Documento {
 }
 
 interface Asesor {
-  id: number;
-  nombre: string;
+  _id: string;
+  adv_name: string;
 }
 
+// Función para obtener los asesores desde el backend
+const obtenerAsesores = async () => {
+  try {
+    const response = await axios.get('/api/get-select', {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      }
+    }).then((response) => {
+      console.log(response)
+      asesores.value = response.data; // Asume que la respuesta es un array de asesores
+  })
+    
+  } catch (error) {
+    console.error('Error al obtener los asesores:', error);
+    Swal.fire({
+      title: 'Error',
+      text: 'No se puede obtener los asesores',
+      icon: 'error',
+      confirmButtonText: 'Aceptar',
+      customClass: {
+        confirmButton: 'bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700'
+      }
+    });
+  }
+};
+onMounted(() => {
+  obtenerAsesores();
+});
+
 interface Trámite {
-  título: string;
+  titulo: string;
   estado: string;
 }
 
@@ -28,7 +66,7 @@ interface HistorialAccion {
 const estadoPunto2 = ref('En Proceso'); // Estados: Pendiente, En Proceso, Hecho
 
 const trámites = ref<Trámite[]>([
-  { título: 'Solicitud de Asesor', estado: 'Pendiente' }
+  { titulo: 'Solicitud de Asesor', estado: 'Pendiente' }
 ]);
 
 // Historial de acciones
@@ -44,11 +82,6 @@ const documentos = ref<Documento[]>([
 // Simulación del título de tesis y asesores
 const tituloTesis = ref(localStorage.getItem('tituloTesis') || '');
 const nombreAsesor = ref(localStorage.getItem('nombreAsesor') || '');
-const asesores = ref<Asesor[]>([
-  { id: 1, nombre: 'Aldo Ramírez' },
-  { id: 2, nombre: 'María Pérez' },
-  { id: 3, nombre: 'José García' }
-]);
 
 // Botón de enviar deshabilitado si ya está en proceso o hecho
 const enviado = ref(false);
@@ -169,6 +202,11 @@ const puedeContinuar = computed(() => {
 
     <!-- Card 1: Solicitud de Asesor -->
     <div class="bg-white rounded-lg shadow-lg p-6">
+      <!-- Botón de Solicitar Trámite -->
+      <button @click="habilitarTramite" 
+              class="px-3 py-2 text-white bg-base rounded-md focus:outline-none mb-4">
+        Solicitar trámite
+      </button>
       <div class="flex items-center">
         <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
         <span :class="estadoClase(estadoPunto2)" class="estado-estilo ml-4">{{ estadoPunto2 }}</span>
@@ -178,16 +216,16 @@ const puedeContinuar = computed(() => {
         <!-- Título de tesis -->
         <label for="tituloTesis" class="block text-lg font-medium text-gray-800 mb-2">Título de Tesis</label>
         <input id="tituloTesis" type="text" v-model="tituloTesis" 
-               :disabled="enviado"
+               :disabled="!habilitado"
                class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
                placeholder="Escribe tu título de tesis aquí...">
 
         <!-- Select para elegir asesor -->
         <label for="nombreAsesor" class="block text-lg font-medium text-gray-800 mb-2">Elige a tu Asesor</label>
-        <select id="nombreAsesor" v-model="nombreAsesor" :disabled="enviado"
+        <select id="nombreAsesor" v-model="nombreAsesor" :disabled="!habilitado"
                 class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
           <option disabled value="">Selecciona un asesor...</option>
-          <option v-for="asesor in asesores" :key="asesor.id" :value="asesor.nombre">{{ asesor.nombre }}</option>
+          <option v-for="asesor in asesores" :key="asesor._id" :value="asesor._id">{{ asesor.adv_name }}</option>
         </select>
 
         <!-- Botón de enviar -->

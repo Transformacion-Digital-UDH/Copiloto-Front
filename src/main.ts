@@ -10,7 +10,9 @@ import router from '@/router'
 import axios from 'axios';
 import vue3GoogleLogin from 'vue3-google-login'
 
-axios.defaults.baseURL = 'https://titulacion-back.abimaelfv.site';
+// axios.defaults.baseURL = 'https://titulacion-back.abimaelfv.site';
+axios.defaults.baseURL = 'http://127.0.0.1:8000/';
+
 
 const app = createApp(App)
 
