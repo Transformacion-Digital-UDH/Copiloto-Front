@@ -44,7 +44,7 @@ const googleLogin = async (response) => {
       <div class="mb-4">
         <GoogleLogin
           :callback="googleLogin"
-          prompt="Continuar con google"
+          prompt
           class="w-full"
         >
           <button
