@@ -1,32 +1,31 @@
-<script setup>
-import { ref } from "vue";
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
 import { useDark, useToggle } from "@vueuse/core";
 import { useSidebar } from "@/assets/ts/useSidebar.ts";
 import IconMoon from "@/components/icons/IconMoon.vue";
 import IconSun from "@/components/icons/IconSun.vue";
 import router from "@/router";
 import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
+const authStore = useAuthStore();
+const image_profile = ref("");
 
 const dropdownOpen = ref(false);
 const { isOpen } = useSidebar();
+axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.token}`;
 
 const logout = async () => {
-  await axios.get("/api/logout", {
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("token"),
-    }
-  }).then(() => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("full_name");
-    localStorage.removeItem("role");
-    localStorage.removeItem("email");
-    localStorage.removeItem("image_profile");
-    router.push("/");
+  await axios.post("/api/logout").then(() => {
+    authStore.handleLogout();
   })
 }
+
+onMounted(() => {
+  image_profile.value = authStore.image || `https://ui-avatars.com/api/?name=${authStore.fullName}`;
+})
 </script>
 
 <template>
@@ -101,8 +100,8 @@ const logout = async () => {
         >
           <img
             class="object-cover w-full h-full"
-            src="https://images.unsplash.com/photo-1528892952291-009c663ce843?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=296&q=80"
-            alt="Avatar Estudiante"
+            :src="image_profile"
+            alt="Avatar"
           />
         </button>
 
@@ -130,7 +129,7 @@ const logout = async () => {
               >Perfil</a
             >
             <button
-              @click="logout()"
+              @click="logout"
               class="block w-full text-start px-4 py-2 text-sm text-gray-900 hover:bg-base hover:text-white"
             >
               Cerrar sesión
