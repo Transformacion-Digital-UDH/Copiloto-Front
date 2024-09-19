@@ -29,6 +29,7 @@ import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
 
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -118,8 +119,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role') || '';
+  const authStore = useAuthStore();
+  const token = authStore.token;
+  const role = authStore.role;
   const title = to.meta?.title as String;
   document.title = title as string;
 
@@ -131,23 +133,27 @@ router.beforeEach((to, from, next) => {
  // Si hay token, verificar el rol del usuario
   // if (token && !to.meta.roles.includes(role)) {
   //   // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
-  //   const routesByRole: Record<string, string> = {
-  //     estudiante: 'estudiante',
-  //     asesor: 'asesor',
-  //     jurado: 'jurado'
+  //   const roleRoutes: Record<string, string> = {
+        // estudiante: "/estudiante",
+        // asesor: "/asesor",
+        // jurado: "/jurado",
+        // paisi: "/paisi",
+        // facultad: "/facultad",
+        // admin: "/admin",
   //   };
-  //   return next({ name: routesByRole[role] });
+  //   return next({ name: roleRoutes[role] });
   // }
 
-  if ((to.name === 'login' || to.name === 'register') && token) {
-    const routesByRole: Record<string, string> = {
-      estudiante: 'estudiante',
-      asesor: 'asesor',
-      jurado: 'jurado',
-      paisi: 'paisi',
-      facultad: 'facultad'
+  if ((to.name === 'login' || to.name === 'register') && token && role !== null) {
+    const roleRoutes: Record<string, string> = {
+      estudiante: "/estudiante",
+      asesor: "/asesor",
+      jurado: "/jurado",
+      paisi: "/paisi",
+      facultad: "/facultad",
+      admin: "/admin",
     };
-    return next({ name: routesByRole[role] });
+    return next({ name: roleRoutes[role] });
   }
 
 
