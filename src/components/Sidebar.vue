@@ -94,7 +94,7 @@ export default defineComponent({
           { name: 'Aprobacion del proyecto', label: 'Aprobación del Proyecto', path: '/estudiante/aprobacion-proyecto' }
         );
         allSections[1].submenus.push(
-          { name: 'SubmenuEjecutar', label: 'Ejecución Submenu', path: '/ejecucion/estudiante' }
+          { name: 'Progreso', label: 'Progreso', path: '/estudiante/progreso' }
         );
         allSections[2].submenus.push(
           { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
