@@ -22,7 +22,6 @@ import ConformidadVRI from '@/views/Estudiante/ConformidadVRI.vue'
 import DesignarAsesor from '@/views/Paisi/DesignarAsesor.vue'
 import ResolucionAsesor from '@/views/facultad/ResolucionAsesor.vue'
 import RevisionInforme from '@/views/Asesor/RevisionInforme.vue'
-import DesignarJuradosInforme from '@/views/Paisi/DesignarJuradosInforme.vue'
 import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
 import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
 import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
@@ -30,7 +29,10 @@ import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
 import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
+import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
+
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
+import { useAuthStore } from '@/stores/auth'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -92,8 +94,8 @@ const router = createRouter({
       children: [
         { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { title: 'Designar Jurados' } },
         { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { title: 'Aprobar proyecto' } },
-        { path: 'designacionPaisi-asesor', name: 'DesignacionAsesorPaisi ', component: DesignarAsesor, meta: {title: 'Designación de asesores (PAISI)'}},
-        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignarJuradosInforme, meta: {title: 'Designar jurado'}},
+        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: {title: 'Designar asesor'}},
+        
         { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { title: 'Aprobar informe' } },
       ]
     },
@@ -102,8 +104,10 @@ const router = createRouter({
       component: AdminLayout,
       children: [
         { path: 'resolucion-proyecto', name: 'ResolucionProyecto', component: ResolucionProyecto, meta: { title: 'Resolucion proyecto' } },
-        { path: 'designacionFacultad-asesor', name: 'DesignacionAsesorFacultad', component: ResolucionAsesor, meta: { title: 'Designación de asesores (Facultad)' } },
+        { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { title: 'Resolución asesor' } },
+        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: {title: 'Designar jurados'}},
         { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { title: 'Resolucion informe' } },
+
       ]
     },
     {
@@ -127,8 +131,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role') || '';
+  const authStore = useAuthStore();
+  const token = authStore.token;
+  const role = authStore.role;
   const title = to.meta?.title as String;
   document.title = title as string;
 
@@ -140,21 +145,27 @@ router.beforeEach((to, from, next) => {
  // Si hay token, verificar el rol del usuario
   // if (token && !to.meta.roles.includes(role)) {
   //   // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
-  //   const routesByRole: Record<string, string> = {
-  //     estudiante: 'estudiante',
-  //     asesor: 'asesor',
-  //     jurado: 'jurado'
+  //   const roleRoutes: Record<string, string> = {
+        // estudiante: "/estudiante",
+        // asesor: "/asesor",
+        // jurado: "/jurado",
+        // paisi: "/paisi",
+        // facultad: "/facultad",
+        // admin: "/admin",
   //   };
-  //   return next({ name: routesByRole[role] });
+  //   return next({ name: roleRoutes[role] });
   // }
 
-  if ((to.name === 'login' || to.name === 'register') && token) {
-    const routesByRole: Record<string, string> = {
-      estudiante: 'estudiante',
-      asesor: 'asesor',
-      jurado: 'jurado'
+  if ((to.name === 'login' || to.name === 'register') && token && role !== null) {
+    const roleRoutes: Record<string, string> = {
+      estudiante: "/estudiante",
+      asesor: "/asesor",
+      jurado: "/jurado",
+      paisi: "/paisi",
+      facultad: "/facultad",
+      admin: "/admin",
     };
-    return next({ name: routesByRole[role] });
+    return next({ name: roleRoutes[role] });
   }
 
 

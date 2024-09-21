@@ -8,6 +8,7 @@ const showRejectModal = ref(false); // para ver el modal de rechazado
 const selectedFilter = ref(""); // para seleccionar el estado
 const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
 const currentPage = ref(1); // pagina actual
+const nroCarta = ref('');
 
 function openModal() {
   showModal.value = true;
@@ -247,36 +248,43 @@ const tableData = ref([
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+            <button
+              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+              @click="closeModal"
+            >
               <IconCerrar />
             </button>
           </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">
               Confirmación
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-600 text-lg text-center">
-              ¿Estás seguro de que quieres generar una Carta de Aceptacion?
+            <p class="text-gray-500 text-base text-left mb-2">
+              Porfavor escribe el N° de Oficio para la Carta de Aceptación
             </p>
+            <input type="text" id="nroCarta" v-model="nroCarta" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <br>
+            <br>
+            <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              class="ml-5 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
-              Aceptar
+              Generar
             </button>
           </div>
         </div>
@@ -289,40 +297,44 @@ const tableData = ref([
       >
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+            <button
+              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+              @click="closeModal"
+            >
               <IconCerrar />
             </button>
           </div>
           <div
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
+            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">
+              Observación
             </h5>
           </div>
-          <div class="p-6">
-            <p class="text-gray-600 text-lg text-center">
-              ¿Estás seguro de que quieres rechazar a ser el asesor de este estudiante?
+          <div class="p-6 bg-white rounded-lg">
+            <p class="text-gray-600 text-base mb-4">
+              Por favor escriba el motivo de su rechazo
             </p>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí su observación..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
             <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
               @click="closeModal"
             >
               Cancelar
             </button>
             <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              class="ml-4 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
               @click="closeModal"
             >
-              Aceptar
+              Confirmar
             </button>
           </div>
         </div>
-      </div>
+      </div>  
     </div>
   </div>
 </template>

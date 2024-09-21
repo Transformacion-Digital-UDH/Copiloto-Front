@@ -2,7 +2,7 @@
 export default {
   data() {
     const startDate = "2024-07-16"; // Fecha de inicio en formato YYYY-MM-DD
-    const endDate = "2022-07-16"; // Fecha de finalización en formato YYYY-MM-DD
+    const endDate = "2025-07-16"; // Fecha de finalización en formato YYYY-MM-DD
     const progressValue = 45; // Progreso en porcentaje
 
     // Calcular los días restantes

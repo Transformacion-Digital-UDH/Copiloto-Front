@@ -6,8 +6,24 @@ import { useRoute } from 'vue-router';
 import proyecto from '@/components/icons/proyecto.vue';
 import ejecucion from '@/components/icons/ejecucion.vue';
 import informe from '@/components/icons/informe.vue';
-import sustentacion from  '@/components/icons/sustentacion.vue';
+import sustentacion from '@/components/icons/sustentacion.vue';
 import cierre from '@/components/icons/cierre.vue';
+import { useAuthStore } from '@/stores/auth'
+
+// Definir tipos para las secciones y submenús
+interface Submenu {
+  name: string;
+  label: string;
+  path: string;
+}
+
+interface Section {
+  name: string;
+  label: string;
+  isOpen: boolean;
+  icon: any;
+  submenus: Submenu[];
+}
 
 export default defineComponent({
   data() {
@@ -15,186 +31,176 @@ export default defineComponent({
       progreso: 30, // Valor inicial del progreso en porcentaje
     }
   },
-  
+
   setup() {
     const { isOpen } = useSidebar();
     const isDark = useDark();
+    const authStore = useAuthStore();
 
-    const role = ref('');
-    const full_name = ref('');
-    const image_profile = ref('');
+    const role = ref<string>('');  // Tipado explícito para role
+    const full_name = ref<string>('');
+    const image_profile = ref<string>('');
     const route = useRoute();
 
-    // Definición de secciones con submenús
-    const sections = ref([
-      {
-        name: 'ProyectoDeTesis',
-        label: 'Proyecto Tesis',
-        isOpen: false,
-        icon: markRaw(proyecto),
-        submenus: [
-          { name: 'Designacion de asesor', 
-            label: 'Designación de asesor', 
-            path: '/estudiante/designacion-asesor' },
+    // Definir el tipo explícito para `sections`
+    const sections = ref<Section[]>([]);
 
-          { name: 'Conformidad por el asesor', 
-            label: 'Conformidad por el asesor', 
-            path: '/estudiante/conformidad-asesor' },
+    const setupSectionsForRole = () => {
+      // Todas las secciones base, pero se mostrarán dependiendo del rol.
+      const allSections: Section[] = [
+        {
+          name: 'ProyectoDeTesis',
+          label: 'Proyecto Tesis',
+          isOpen: false,
+          icon: markRaw(proyecto),
+          submenus: [] // Se llenará según el rol
+        },
+        {
+          name: 'Ejecucion',
+          label: 'Ejecución',
+          isOpen: false,
+          icon: markRaw(ejecucion),
+          submenus: [] // Se llenará según el rol
+        },
+        {
+          name: 'InformeFinal',
+          label: 'Informe Final',
+          isOpen: false,
+          icon: markRaw(informe),
+          submenus: [] // Se llenará según el rol
+        },
+        {
+          name: 'Sustentacion',
+          label: 'Sustentación',
+          isOpen: false,
+          icon: markRaw(sustentacion),
+          submenus: [] // Se llenará según el rol
+        },
+        {
+          name: 'Cierre',
+          label: 'Cierre de Trámites',
+          isOpen: false,
+          icon: markRaw(cierre),
+          submenus: [] // Se llenará según el rol
+        }
+      ];
 
-          { name: 'Designacion de jurados', 
-            label: 'Designación de jurados', 
-            path: '/estudiante/designacion-jurado' },
+      // Aquí ajustamos qué secciones mostrar según el rol
+      if (role.value === 'estudiante') {
+        // Estudiante tiene acceso a todas las secciones
+        allSections[0].submenus.push(
+          { name: 'Designacion de asesor', label: 'Designación de Asesor', path: '/estudiante/designacion-asesor' },
+          { name: 'Conformidad por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-asesor' },
+          { name: 'Designacion de jurados', label: 'Designación de Jurados', path: '/estudiante/designacion-jurado' },
+          { name: 'Conformidad por los jurados', label: 'Conformidad por los Jurados', path: '/estudiante/conformidad-jurado' },
+          { name: 'Aprobacion del proyecto', label: 'Aprobación del Proyecto', path: '/estudiante/aprobacion-proyecto' }
+        );
+        allSections[1].submenus.push(
+          { name: 'Progreso', label: 'Progreso', path: '/estudiante/progreso' }
+        );
+        allSections[2].submenus.push(
+          { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
+          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurado', path: '/estudiante/designacion-informe-jurado' },
+          { name: 'Conformidad del informe final por los jurados', label: 'Conformidad del Informe Final', path: '/estudiante/conformidad-informe-jurado' },
+          { name: 'Aprobacion del informe final', label: 'Aprobación del Informe Final', path: '/estudiante/aprobacion-informe' },
+          { name: 'Conformidad por integridad VRI', label: 'Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' }
+        );
+        allSections[3].submenus.push(
+          { name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' }
+        );
+        allSections[4].submenus.push(
+          { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }
+        );
+        sections.value = allSections; // Mostrar todas las secciones.
+      } else if (role.value === 'asesor') {
+        // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
+        allSections[0].submenus.push(
+          { name: 'Solicitar asesor', label: 'Pendientes de Aceptar', path: '/asesor/solicitar-asesor' },
+          { name: 'Revisión de proyecto', label: 'Revisión de Proyectos', path: '/asesor/solicitar-revision' }
+        );
+        allSections[1].submenus.push(
+          { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
+        );
+        allSections[2].submenus.push(
+          { name: 'Revisión informe', label: 'Revisión de Informes', path: '/asesor/revision-informe' }
+        );
+        // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' || 
+          section.name === 'Ejecucion' || 
+          section.name === 'InformeFinal'
+        );
+      } else if (role.value === 'jurado') {
+        // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
+        allSections[0].submenus.push(
+          { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
+          { name: 'revision presidente proyecto', label: 'Revision Presidente Proyecto', path: '/jurado/revision-presidente' }
+        );
+        allSections[2].submenus.push(
+          { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
+          { name: 'revision presidente informe', label: 'Revision Presidente Informe', path: '/jurado/revisionJuradoPresidente-informe' }
+        );
+        // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' || 
+          section.name === 'InformeFinal'
+        );
 
-          { name: 'Conformidad por el jurado', 
-            label: 'Conformidad por el jurado', 
-            path: '/estudiante/conformidad-jurado' },
 
-          { name: 'Aprobacion del proyecto', 
-            label: 'Aprobación del proyecto', 
-            path: '/estudiante/aprobacion-proyecto' },
-
-          { name: 'Solicitudes de asesoría', 
-            label: 'Solicitudes de asesoría', 
-            path: '/asesor/solicitud-asesoria' },
-            
-          { name: 'Designación de asesores (PAISI)',
-            label: 'Designación de asesores (PAISI)',
-            path: '/paisi/designacionPaisi-asesor'},
-
-          { name: 'Designación de asesores (Facultad)',
-            label: 'Designación de asesores (Facultad)',
-            path: '/facultad/designacionFacultad-asesor'},
-
-          { name: 'Solicitar revisión', 
-            label: 'Solicitar revisión', 
-            path: '/asesor/solicitar-revision' },
-
-          { name: 'Designar jurados',
-            label: 'Designar jurados',
-            path: '/paisi/designar-jurado'},
-
-          { name: 'Revisión jurado',
-            label: 'Revisión jurado',
-            path: '/jurado/revision-jurado'},
-
-          { name: 'Revisión presidente',
-            label: 'Revisión presidente',
-            path: '/jurado/revision-presidente'},
-          
-          { name: 'Aprobar proyecto',
-            label: 'Aprobacion proyecto',
-            path: '/paisi/aprobar-proyecto'},
-
-          { name: 'Resolución proyecto',
-            label: 'Resolución proyecto',
-            path: '/facultad/resolucion-proyecto'},
-        ]
-      },
-      {
-        name: 'Ejecucion',
-        label: 'Ejecución',
-        isOpen: false,
-        icon: markRaw(ejecucion),
-        submenus: [
-          { name: 'progreso', label: 'progreso', path: '/estudiante/progreso' },
-        ]
-      },
-      {
-        name: 'InformeFinal',
-        label: 'Informe Final',
-        isOpen: false,
-        icon: markRaw(informe),
-        submenus: [
-          { name: 'Conformidad del Informe Final por el Asesor', 
-            label: 'Conformidad por el asesor', 
-            path: '/estudiante/conformidad-informe-asesor' },
-
-          { name: 'Designacion de Jurado para el Informe Final', 
-            label: 'Designacion de Jurado', 
-            path: '/estudiante/designacion-informe-jurado' },
-
-          { name: 'Conformidad de Informe Final por los Jurados', 
-            label: 'Conformidad Jurados', 
-            path: '/estudiante/conformidad-informe-jurado' },
-
-          { name: 'Aprobacion de Informe Final por los Jurados', 
-            label: 'Aprobacion del Informe ', 
-            path: '/estudiante/aprobacion-informe' },
-
-          { name: 'Conformidad por Integridad VRI', 
-            label: 'Conformidad por Integridad VRI', 
-            path: '/estudiante/conformidad-vri' },
-
-          { name: 'Revisión informe', 
-            label: 'Revisión informe', 
-            path: '/asesor/revision-informe' },
-          
-          { name: 'Designar jurado', 
-            label: 'Designar jurado', 
-            path: '/paisi/designarJurado-informe' },
-
-          { name: 'Revisión jurado', 
-            label: 'Revisión jurado', 
-            path: '/jurado/revisionJurado-informe' },
-            
-          { name: 'Revisión presidente', 
-            label: 'Revisión presidente', 
-            path: '/jurado/revisionJuradoPresidente-informe' },
-
-          { name: 'Aprobar informe',
-            label: 'Aprobacion informe',
-            path: '/paisi/aprobar-informe'},
-
-          { name: 'Resolución informe',
-            label: 'Resolución informe',
-            path: '/facultad/resolucion-informe'},
-
-          { name: 'Primer Filtro',
-            label: 'Primer Filtro',
-            path: '/vri/primer-filtro'},
-          
-          { name: 'Segundo Filtro',
-            label: 'Segundo Filtro',
-            path: '/vri/segundo-filtro'},
-          
-          { name: 'Tercer Filtro',
-            label: 'Tercer Filtro',
-            path: '/vri/tercer-filtro'},
-
-        ]
-      },
-      {
-        name: 'Sustentacion',
-        label: 'Sustentación',
-        isOpen: false,
-        icon: markRaw(sustentacion),
-        submenus: [
-          { name: 'Submenu1', label: 'Submenu 1', path: '/sustentacion/submenu1' },
-        ]
-      },
-      {
-        name: 'Cierre',
-        label: 'Cierre de Tramites',
-        isOpen: false,
-        icon: markRaw(cierre),
-        submenus: [
-          { name: 'Submenu1', label: 'Submenu 1', path: '/cierre/submenu1' },
-        ]
+      } else if (role.value === 'paisi') {
+        // Paisi solo tiene Proyecto Tesis, Informe Final y Sustentación
+        allSections[0].submenus.push(
+          { name: 'Designar asesor', label: 'Designar Asesor', path: '/paisi/designar-asesor' },
+          { name: 'Designar jurados', label: 'Designar Jurados', path: '/paisi/designar-jurado' },
+          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/paisi/aprobar-proyecto' }
+        );
+        allSections[2].submenus.push(
+          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' }
+        );
+        allSections[3].submenus.push(
+          { name: 'SustentacionPaisi', label: 'Sustentación Paisi', path: '/sustentacion/paisi' }
+        );
+        // Filtramos las secciones de Proyecto, Informe, y Sustentación
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' || 
+          section.name === 'InformeFinal' || 
+          section.name === 'Sustentacion'
+        );
+      } else if (role.value === 'facultad') {
+        // Facultad tiene acceso a Proyecto Tesis, Informe Final, Sustentación y Cierre
+        allSections[0].submenus.push(
+          { name: 'Resolución designación asesor', label: 'Resolución Designación Asesor', path: '/facultad/resolucion-asesor' },
+          { name: 'Resolución aprobación proyecto', label: 'Resolución Aprobación Proyecto', path: '/facultad/resolucion-proyecto' }
+        );
+        allSections[2].submenus.push(
+          { name: 'Designar jurado', label: 'Designar Jurados', path: '/facultad/designarJurado-informe' },
+          { name: 'Resolución informe', label: 'Resolución Informe', path: '/facultad/resolucion-informe' }
+        );
+        allSections[3].submenus.push(
+          { name: 'SustentacionFacultad', label: 'Sustentación Facultad', path: '/sustentacion/facultad' }
+        );
+        allSections[4].submenus.push(
+          { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
+        );
+        // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' || 
+          section.name === 'InformeFinal' || 
+          section.name === 'Sustentacion' || 
+          section.name === 'Cierre'
+        );
       }
-    ]);
+    };
 
-    // Función para alternar la visibilidad de los submenús
     const toggleSubmenu = (name: string) => {
       const section = sections.value.find(section => section.name === name);
       if (section) {
         section.isOpen = !section.isOpen;
       }
-      };
-      
-      
-    const isActive = (submenu: any) => {
-      // compara la ruta actual con la sección seleccionada.
-      return route.path.includes(submenu.path); 
+    };
+
+    const isActive = (submenu: Submenu) => {
+      return route.path.includes(submenu.path);
     };
 
     const openSectionIfActive = () => {
@@ -204,12 +210,12 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      full_name.value = localStorage.getItem('full_name') || '';
-      role.value = localStorage.getItem('role') || '';
-      image_profile.value = localStorage.getItem('image_profile') || `https://ui-avatars.com/api/?name=${full_name.value}`;
+      role.value = authStore.role;
+      full_name.value =  authStore.fullName;
+      image_profile.value = authStore.image || `https://ui-avatars.com/api/?name=${full_name.value}`;
+      setupSectionsForRole();
       openSectionIfActive();
-
-    })
+    });
 
     return {
       isOpen,
@@ -224,6 +230,9 @@ export default defineComponent({
   }
 });
 </script>
+ 
+
+
 
 <template>
   <div :class="[isOpen ? 'w-0 lg:w-64' : '', 'flex bg-white dark:bg-gray-800']">
