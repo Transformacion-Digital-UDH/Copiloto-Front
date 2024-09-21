@@ -7,6 +7,7 @@ import IconSun from "@/components/icons/IconSun.vue";
 import router from "@/router";
 import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
+import { googleLogout } from "vue3-google-login";
 
 const isDark = useDark();
 const toggleDark = useToggle(isDark);
@@ -20,6 +21,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.token}`;
 const logout = async () => {
   await axios.post("/api/logout").then(() => {
     authStore.handleLogout();
+    googleLogout();
   })
 }
 
