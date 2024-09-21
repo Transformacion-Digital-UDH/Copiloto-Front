@@ -37,7 +37,7 @@ export const useAuthStore = defineStore("auth", () => {
         });
 
         // Almacenar datos en Pinia
-        id.value = response.data.data.estudiante_id;
+        id.value = response.data.data.id;
         token.value = response.data.token;
         fullName.value = response.data.data.nombre;
         email.value = response.data.data.correo;
@@ -47,7 +47,7 @@ export const useAuthStore = defineStore("auth", () => {
         const userRole = role.value;
         const route = roleRoutes[userRole!];
 
-        alertToast('Has iniciado sesión exitosamente', 'Bienvenido de nuevo' + ' ' + fullName.value , 'success')
+        alertToast('', 'Bienvenido de nuevo' + ' ' + fullName.value , 'success')
         setTimeout(() => {
           if (route) {
             router.push(route);
@@ -80,7 +80,7 @@ export const useAuthStore = defineStore("auth", () => {
         console.log(response.data)
 
         // Almacenar datos en Pinia
-        id.value = response.data.data.estudiante_id;
+        id.value = response.data.data.id;
         token.value = response.data.token;
         email.value = response.data.data.correo;
         role.value = response.data.data.rol;
@@ -122,7 +122,7 @@ export const useAuthStore = defineStore("auth", () => {
         });
     
         // Almacenar datos en Pinia
-        id.value = response.data.data.estudiante_id;
+        id.value = response.data.data.id;
         token.value = response.data.token;
         email.value = response.data.data.correo;
         role.value = response.data.data.rol;
@@ -158,7 +158,7 @@ export const useAuthStore = defineStore("auth", () => {
           password: code,
         });
 
-        id.value = response.data.data.estudiante_id;
+        id.value = response.data.data.id;
         token.value = response.data.token;
         email.value = response.data.data.correo;
         role.value = response.data.data.rol;
@@ -183,6 +183,7 @@ export const useAuthStore = defineStore("auth", () => {
 
   // Acción de cierre de sesión
   const handleLogout = () => {
+    id.value = null;
     token.value = null;
     fullName.value = null;
     email.value = null;
@@ -192,6 +193,7 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   return {
+    id,
     token,
     fullName,
     email,
