@@ -8,6 +8,7 @@ import ejecucion from '@/components/icons/ejecucion.vue';
 import informe from '@/components/icons/informe.vue';
 import sustentacion from '@/components/icons/sustentacion.vue';
 import cierre from '@/components/icons/cierre.vue';
+import { useAuthStore } from '@/stores/auth'
 
 // Definir tipos para las secciones y submenús
 interface Submenu {
@@ -34,6 +35,7 @@ export default defineComponent({
   setup() {
     const { isOpen } = useSidebar();
     const isDark = useDark();
+    const authStore = useAuthStore();
 
     const role = ref<string>('');  // Tipado explícito para role
     const full_name = ref<string>('');
@@ -208,9 +210,9 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      full_name.value = localStorage.getItem('full_name') || '';
-      role.value = localStorage.getItem('role') || '';
-      image_profile.value = localStorage.getItem('image_profile') || `https://ui-avatars.com/api/?name=${full_name.value}`;
+      role.value = authStore.role;
+      full_name.value =  authStore.fullName;
+      image_profile.value = authStore.image || `https://ui-avatars.com/api/?name=${full_name.value}`;
       setupSectionsForRole();
       openSectionIfActive();
     });
