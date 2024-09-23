@@ -1,7 +1,6 @@
 import Swal, { type SweetAlertIcon } from 'sweetalert2';
 import { useAuthStore } from './stores/auth';
 import axios from 'axios';
-import confetti from 'canvas-confetti';
 
 export const alertToast = (message: string, title: string, icon: string = 'question') => {
     const toast = Swal.mixin({
@@ -22,7 +21,7 @@ export const alertToast = (message: string, title: string, icon: string = 'quest
     })
 }
 
-export const alertConfirmation = (message: string, title: string, icon: string = 'question', params: any, url: string, redirect: string, method: string) => {
+export const alertConfirmation = (message: string, title: string, icon: string = 'question', params: any, url: string, method: string, onSuccess: Function) => {
     const alert = Swal.mixin({buttonsStyling: true})
     alert.fire({
         title: title,
@@ -38,32 +37,23 @@ export const alertConfirmation = (message: string, title: string, icon: string =
         cancelButtonText: 'No',
     }).then((result) => {
         if(result.isConfirmed){
-            sendRequest(method, url, params, redirect);
+            sendRequest(method, url, params, onSuccess);
         }
     })
 }
 
-export const sendRequest = async (method: string, url: string, params: any, redirect: string = '') => {
+export const sendRequest = async (method: string, url: string, params: any, onSuccess: Function) => {
     const authStore = useAuthStore();
     axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.token}`;
-    let res = '';
-    console.log(method, url, params);
     
     await axios({
         method: method,
         url: url,
         data: params
     }).then((response) => {
-        res = response.data.status;
-        confetti({
-              particleCount: 300,
-              spread: 1010,
-              origin: { y: 0.6 }
-            });
         alertToast(response.data.message, 'Éxito', 'success');
-        setTimeout(() => {
-            redirect !== '' ? window.location.href = redirect : '';
-        }, 3000);
+        onSuccess(response.data);
+
     }).catch((error) => {
         let description = '';
         error.response.data.error.map((e: any) => {
@@ -71,5 +61,4 @@ export const sendRequest = async (method: string, url: string, params: any, redi
         })
         alertToast(description, 'error', 'error');
     });
-    return res;
 }
