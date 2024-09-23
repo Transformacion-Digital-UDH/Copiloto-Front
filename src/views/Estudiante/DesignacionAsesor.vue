@@ -4,37 +4,13 @@ import Swal from 'sweetalert2';
 import { useAuthStore }from '@/stores/auth';
 import axios from 'axios';
 import { alertToast, alertConfirmation } from '@/functions';
-// Definir tipos para trámites, documentos y acciones del historial
+import confetti from 'canvas-confetti';
+
 interface Documento {
   nombre: string;
   estado: string;
   documentoUrl: string;
 }
-
-interface Asesor {
-  id: number;
-  nombre: string;
-}
-
-interface Trámite {
-  título: string;
-  estado: string;
-}
-
-interface HistorialAccion {
-  fecha: Date;
-  descripcion: string;
-}
-
-// Estado general del punto 2
-const estadoPunto2 = ref('En Proceso'); // Estados: Pendiente, En Proceso, Hecho
-
-const trámites = ref<Trámite[]>([
-  { título: 'Solicitud de Asesor', estado: 'Pendiente' }
-]);
-
-// Historial de acciones
-const historial = ref<HistorialAccion[]>([]);
 
 // Documentos para el punto 2 (Respuesta del asesor) y 3 (Documentos adicionales)
 const documentos = ref<Documento[]>([
@@ -43,99 +19,16 @@ const documentos = ref<Documento[]>([
   { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' }  // Punto 3
 ]);
 
-// Simulación del título de tesis y asesores
-const tituloTesis = ref(localStorage.getItem('tituloTesis') || '');
-const nombreAsesor = ref(localStorage.getItem('nombreAsesor') || '');
-const asesores = ref<Asesor[]>([
-  { id: 1, nombre: 'Aldo Ramírez' },
-  { id: 2, nombre: 'María Pérez' },
-  { id: 3, nombre: 'José García' }
-]);
-
 // Modal de confirmación
 const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
 const mostrarModalCambioAsesor = ref(false); // Controla el modal de cambio de asesor
 const mostrarModalConfirmacion = ref(false); // Modal de confirmación para cambio de asesor
 
-// Watch para guardar automáticamente en localStorage
-watch([tituloTesis, nombreAsesor], ([nuevoTitulo, nuevoAsesor]) => {
-  localStorage.setItem('tituloTesis', nuevoTitulo);
-  localStorage.setItem('nombreAsesor', nuevoAsesor);
-});
-
 // Computed para habilitar el botón "Enviar" solo si se han completado los campos
-const puedeEnviar = computed(() => tituloTesis.value && nombreAsesor.value && !enviado.value);
-
-// Función para enviar los datos
-const enviarSolicitud = () => {
-  if (puedeEnviar.value) {
-    estadoPunto2.value = 'En Proceso';
-    enviado.value = true; // Deshabilitar botón y campos
-    agregarHistorial('Solicitud de asesor enviada, esperando respuesta.');
-
-    // SweetAlert para mostrar mensaje de éxito
-    Swal.fire({
-      title: 'Solicitud Enviada',
-      text: 'Tu solicitud ha sido enviada. Ahora debes esperar la respuesta del asesor.',
-      icon: 'success',
-      confirmButtonText: 'Aceptar',
-      customClass: {
-        confirmButton: 'bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700'
-      }
-    });
-  }
-};
-
-// Función para solicitar cambio de asesor
-const solicitarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = true; // Mostrar modal de confirmación
-};
-
-// Confirmar cambio de asesor con SweetAlert2
-const confirmarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = false; // Cerrar modal
-  agregarHistorial('Se ha solicitado un cambio de asesor. Todo el proceso debe repetirse.');
-
-  Swal.fire({
-    title: 'Cambio de asesor solicitado',
-    text: 'Debes repetir todo el proceso nuevamente.',
-    icon: 'success', // Puedes usar 'success', 'error', 'warning', 'info'
-    confirmButtonText: 'Aceptar',
-    customClass: {
-      confirmButton: 'bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700'
-    }
-  });
-};
-
-// Función para agregar eventos al historial
-const agregarHistorial = (descripcion: string) => {
-  historial.value.push({
-    fecha: new Date(),
-    descripcion
-  });
-};
-
-// Función para simular respuesta del asesor
-const respuestaAsesor = (respuesta: 'aceptar' | 'rechazar') => {
-  if (respuesta === 'aceptar') {
-    documentos.value[0].estado = 'Aceptado'; // El asesor aceptó
-    estadoPunto2.value = 'Hecho'; // Cambia el estado general del punto 2 a "Hecho"
-    agregarHistorial('El asesor ha aceptado la solicitud.');
-    alert('El asesor ha aceptado. El documento está disponible para ver y descargar.');
-  } else if (respuesta === 'rechazar') {
-    documentos.value[0].estado = 'Rechazado'; // El asesor rechazó
-    estadoPunto2.value = 'En Proceso'; // Mantener en "En Proceso"
-    enviado.value = false; // Habilitar nuevamente el botón y los campos
-    agregarHistorial('El asesor ha rechazado la solicitud.');
-    alert('El asesor ha rechazado, por favor elige un nuevo asesor y vuelve a enviar la solicitud.');
-  }
-};
 
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
   switch (estado) {
-    case 'Hecho':
-      return 'bg-green-500 text-white';
     case 'en progreso':
       return 'bg-orange-500 text-white';
     case 'pendiente':
@@ -159,10 +52,9 @@ const puedeContinuar = computed(() => {
 const authStore = useAuthStore();
 const initSolicitude = ref(false);
 const solicitude = ref({ estudiante_id:'', titulo: '', asesor_id: '', estado:'', solicitud_id: '' });
-const advisers = ref({ _id: '', adv_name: '' });
+const advisers = ref({ id: '', nombre: '' });
 const load = ref(false)
 const enviado = ref(false);
-
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.token}`;
 onMounted(() => {
@@ -171,36 +63,24 @@ onMounted(() => {
 })
 
 const getInfoStudent = async () => {
-  try {
-    load.value = true
-    const res = await axios.get('/api/me')
-    solicitude.value.estudiante_id = res.data.data.estudiante_id
-    await axios.get(`/api/student/getInfo/${res.data.data.estudiante_id}`).then((response) => {
-      if(response.data.status) {
-        initSolicitude.value = true
-        solicitude.value.solicitud_id = response.data.solicitude_pendiente.id
-        solicitude.value.titulo = response.data.solicitude_pendiente.titulo
-        solicitude.value.asesor_id = response.data.solicitude_pendiente.asesor_id
-        solicitude.value.estado = response.data.solicitude_pendiente.estado
-      }else{
-        initSolicitude.value = false
-      }
-    }).catch((error) => {
-      alertToast(error.response.data.message, 'Error', 'error')
-    }).finally(() => {
-      load.value = false
-    })
-  } catch (error: any) {
-    let description = ''
-    error.response.data.error.map((e: any) => {
-      description = description + ' ' + e 
-    })
-    alertToast(description, 'Error', 'error')
-  }
+  load.value = true
+  await axios.get(`/api/student/getInfo/${authStore.id}`).then((response) => {
+    console.log(response.data)
+    if(response.data.status) {
+      solicitude.value.solicitud_id = response.data.solicitude_pendiente.id
+      solicitude.value.titulo = response.data.solicitude_pendiente.titulo
+      solicitude.value.asesor_id = response.data.solicitude_pendiente.asesor_id || ''
+      solicitude.value.estado = response.data.solicitude_pendiente.estado
+    }
+  }).catch((error) => {
+    alertToast(error.response.data.message, 'Error', 'error')
+  }).finally(() => {
+    load.value = false
+  })
 }
 const getAdvisers = async () => {
   const res = await axios.get('/api/adviser/get-select')
-  advisers.value = res.data
+  advisers.value = res.data.data
 }
 
 const sendSolicitude = async (student_id: string) => {
@@ -208,7 +88,24 @@ const sendSolicitude = async (student_id: string) => {
     const params = {
       student_id: student_id
     }
-    const res = alertConfirmation('Estás seguro de iniciar este trámite?', 'Iniciar trámite', 'question', params, '/api/solicitudes-store', '/estudiante/designacion-asesor', 'POST')
+    alertConfirmation(
+      'Estás seguro de iniciar este trámite?',
+      'Iniciar trámite', 
+      'question', 
+      params, 
+      '/api/solicitudes-store', 
+      'POST',
+      (response) => {
+        solicitude.value.titulo = response.data.sol_title_inve;
+        solicitude.value.asesor_id = response.data.adviser_id;
+        solicitude.value.estado = response.data.sol_status;
+      }
+    )
+    confetti({
+      particleCount: 500,
+      spread: 1010,
+      origin: { y: 0.6 }
+    });
   } catch (error: any) {
     let description = ''
     error.response.data.error.map((e: any) => {
@@ -225,7 +122,20 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
       adviser_id: asesor_id,
       sol_status: 'pendiente'
     }
-    const res = alertConfirmation('Asegurate de ingresar los datos correctos. Todo ok?', 'Solicitar asesor', 'question', params, `/api/solicitudes/${solicitud_id}`, '/estudiante/designacion-asesor', 'PUT')
+    alertConfirmation(
+      'Asegurate de ingresar los datos correctos. Todo ok?', 
+      'Solicitar asesor', 
+      'question', 
+      params, 
+      `/api/solicitudes/${solicitud_id}`, 
+      'PUT',
+      (response) => {
+        // Aquí actualizamos los datos locales con la respuesta del servidor
+        solicitude.value.titulo = response.data.sol_title_inve;
+        solicitude.value.asesor_id = response.data.adviser_id;
+        solicitude.value.estado = response.data.sol_status;
+      }
+    );
   } catch (error: any) {
     let description = ''
     error.response.data.error.map((e: any) => {
@@ -272,28 +182,8 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
     </div>
   </template>
   
-  <!-- Muestra si no hay una solicitud -->
-  <!-- <template v-if="load && !initSolicitude">
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
-      <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center animate-pulse">
-        
-        <div class="bg-gray-200 h-10 w-3/4 mx-auto rounded-md"></div>
-        
-        <div class="bg-gray-200 h-6 w-1/2 mx-auto rounded-md"></div>
-
-        <div class="flex justify-center">
-          <div class="bg-gray-200 w-[40%] h-96 rounded-md shadow-md"></div>
-        </div>
-
-        <div class="flex justify-center">
-          <div class="bg-gray-200 h-12 w-40 rounded-md"></div>
-        </div>
-      </div>
-    </div>
-  </template> -->
-  
   <template v-else>
-    <template v-if="!initSolicitude">
+    <template v-if="!solicitude.estado">
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
         <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center">
           <h3 class="text-4xl font-semibold text-azul">Usted no ha iniciado un trámite</h3>
@@ -307,7 +197,7 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
 
           <div class="flex justify-center">
             <button class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-950 transition duration-300"
-                    @click="sendSolicitude(solicitude.estudiante_id)">
+                    @click="sendSolicitude(authStore.id)">
               Iniciar trámite
             </button>
           </div>
@@ -333,28 +223,35 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
             <!-- Título de tesis -->
             <label for="tituloTesis" class="block text-lg font-medium text-gray-800 mb-2">Título de Tesis</label>
             <input id="tituloTesis" type="text" v-model="solicitude.titulo" 
-                
-                  class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-                  placeholder="Escribe tu título de tesis aquí...">
+              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+              placeholder="Escribe tu título de tesis aquí...">
 
             <!-- Select para elegir asesor -->
             <label for="nombreAsesor" class="block text-lg font-medium text-gray-800 mb-2">Elige a tu Asesor</label>
             <select id="nombreAsesor" v-model="solicitude.asesor_id"
-                    class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
               <option disabled value="">Selecciona un asesor...</option>
-              <option v-for="asesor in advisers" :key="asesor._id" :value="asesor._id">{{ asesor.adv_name }}</option>
+              <option v-for="asesor in advisers" :key="asesor.id" :value="asesor.id">{{ asesor.nombre }}</option>
             </select>
 
             <!-- Botón de enviar -->
             <button @click="updateSolicitude(solicitude.solicitud_id, solicitude.titulo, solicitude.asesor_id)"
-              class="px-3 py-2 text-white bg-base rounded-md hover:bg-green-500 focus:outline-none">
+              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
+              :class="[
+                'px-3 py-2 text-white rounded-md focus:outline-none', 
+                ['pendiente', 'aceptado'].includes(solicitude.estado) 
+                  ? 'bg-gray-400 cursor-not-allowed' 
+                  : 'bg-green-500 hover:bg-green-600'
+              ]">
               Enviar
             </button>
 
           </div>
 
           <!-- Respuesta del asesor -->
-          <div class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md">
+          <div class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md" v-if="solicitude.estado !== 'en progreso'">
             <div class="flex justify-between items-center">
               <h4 class="text-black">Respuesta del asesor</h4>
               <span  :class="estadoClase(solicitude.estado)" class="estado-estilo">{{ solicitude.estado }}</span>
@@ -362,7 +259,7 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
           </div>
           <br>
 
-          <!-- Mensaje de espera o rechazo según el estado -->
+          <!-- Mensaje de espera según el estado -->
           <span v-if="solicitude.estado === 'pendiente'" class="text-gray-500 italic">Esperando la respuesta del asesor...</span>
           <span v-else-if="solicitude.estado === 'rechazado'" class="text-red-500 italic">El asesor ha rechazado la solicitud, porfavor vuelve a seleccionar tu asesor.</span>
           <span v-else-if="solicitude.estado === 'aceptado'" class="text-green-500 italic">El asesor ha aceptado tu solicitud, puedes pasar el punto 2.</span>
@@ -428,7 +325,16 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
         </div>
 
         <!-- Card 3: Solicitar Cambio de Asesor -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative mt-6">
+        <div 
+          class=" " 
+          :disabled="['pendiente', 'en progreso'].includes(solicitude.estado)"
+          :class="[
+                'rounded-lg shadow-lg p-6 relative mt-6', 
+                ['pendiente', 'en progreso'].includes(solicitude.estado) 
+                  ? 'opacity-70 cursor-not-allowed' 
+                  : 'bg-white'
+              ]"
+        >
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-gray-600">Cambio de Asesor</h2>
             <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
@@ -439,7 +345,7 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
           <p class="text-gray-400"> Si consideras que necesitas un cambio de asesor, puedes solicitarlo en cualquier momento.</p>
 
           <div v-show="mostrarModalCambioAsesor"
-              class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+              class="absolute left-0 mt-1 top-16 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-500">
               Si consideras que necesitas un cambio de asesor, puedes solicitarlo en cualquier momento.
             </p>
@@ -456,7 +362,7 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
         </div>
 
         <!-- Historial de Acciones -->
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6">
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" v-if="solicitude.estado === 'rechazado'">
           <h2 class="text-2xl font-medium text-white">Historial de Acciones</h2>
           <ul class="mt-4 space-y-2">
             <li v-for="(accion, index) in historial" :key="index" class="border p-3 rounded-md bg-gray-50">
