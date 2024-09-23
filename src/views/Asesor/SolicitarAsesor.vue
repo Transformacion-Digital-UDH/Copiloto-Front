@@ -1,39 +1,122 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 
-const showModal = ref(false); // para ver el modal de aprobado
-const showRejectModal = ref(false); // para ver el modal de rechazado
-const selectedFilter = ref(""); // para seleccionar el estado
-const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
-const currentPage = ref(1); // pagina actual
-const nroCarta = ref('');
+// Estado de los modales y datos
+const showModal = ref(false);  // Modal de aceptación
+const showRejectModal = ref(false);  // Modal de rechazo
+const nroCarta = ref("");  // Número de oficio para la carta
+const motivoRechazo = ref(""); // Motivo de rechazo
 
-function openModal() {
+const selectedFilter = ref("");  // Filtro por estado
+const rowsPerPage = ref(5);  // Número de filas por página
+const currentPage = ref(1);  // Página actual
+const tableData = ref([]);  // Datos obtenidos del backend
+const load = ref(false);  // Estado de carga
+const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
+let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
+
+// Función para abrir y cerrar modales
+function openModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
   showModal.value = true;
 }
 
-function openRejectModal() {
+function openRejectModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
   showRejectModal.value = true;
 }
 
 function closeModal() {
   showModal.value = false;
-  showRejectModal.value = false; // cerrar ambos modales
+  showRejectModal.value = false;
+  nroCarta.value = "";  // Limpiar el campo de número de carta
+  motivoRechazo.value = "";  // Limpiar el campo de motivo de rechazo
 }
 
-// para filtrar datos segun el filtro y paginacion seleccionado
+// Función para obtener las solicitudes del backend
+const fetchSolicitudes = async () => {
+  load.value = true;
+
+  try {
+    // Verifica si el ID del asesor está definido
+    if (!authStore.id) {
+      throw new Error("El ID del asesor no está definido.");
+    }
+
+    // Hacer la petición con el id del asesor desde el authStore
+    const response = await axios.get(`/api/adviser/getSolicitude/${authStore.id}`);
+
+    // Extraer los datos de la respuesta
+    const solicitudes = response.data.data;
+    tableData.value = solicitudes;
+
+  } catch (error) {
+    console.error('Error al cargar las solicitudes:', error);
+  } finally {
+    load.value = false;  // Quitar el indicador de carga
+  }
+};
+
+// Función para aceptar la solicitud
+const acceptSolicitude = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value;
+    const params = {
+      sol_status: 'aceptado',
+      nro_oficio: nroCarta.value,  // Número de carta de aceptación
+    };
+
+    const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
+
+    if (response.data.message === "OK") {
+      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
+      if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal después de la actualización
+    }
+
+  } catch (error) {
+    console.error('Error al aceptar la solicitud:', error);
+  }
+};
+
+// Función para rechazar la solicitud
+const rejectSolicitude = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value;
+    const params = {
+      sol_status: 'rechazado',
+      motivo: motivoRechazo.value,  // Motivo de rechazo
+    };
+
+    const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
+
+    if (response.data.message === "OK") {
+      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
+      if (solicitud) solicitud.estado = 'rechazado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal después de la actualización
+    }
+
+  } catch (error) {
+    console.error('Error al rechazar la solicitud:', error);
+  }
+};
+
+// Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
+  // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => data.estado === selectedFilter.value.toLowerCase()
     );
   }
 
-  // Paginar los datos filtrados
+  // Paginación
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
   const endIndex = startIndex + rowsPerPage.value;
   return filteredData.slice(startIndex, endIndex);
@@ -41,57 +124,67 @@ const filteredTableData = computed(() => {
 
 // Total de páginas
 const totalPages = computed(() => {
-  // Filtra los datos si hay un filtro seleccionado
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
     : tableData.value;
-  // Calcula el número total de páginas basadas en los datos filtrados y las filas por pagina
+
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
-// Manejo de la página anterior y siguiente
+// Navegación de paginación
 function goToPreviousPage() {
-  // decrementa la página actual si no es la última página
   if (currentPage.value > 1) currentPage.value--;
 }
 
 function goToNextPage() {
-  // Incrementa la página actual si no es la última página
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// simulacion de datos
-const tableData = ref([
-  {
-    name: "Rodríguez Meléndez, Fabio",
-    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
-    status: "Aceptado",
-  },
-  {
-    name: "Sulca Correa, Omar Iván",
-    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
-    status: "Rechazado",
-  },
-  {
-    name: "Nuñez Vicente, José Antonio",
-    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
-    status: "Pendiente",
-  },
-]);
+// Llama a la función cuando el componente se monta
+onMounted(() => {
+  fetchSolicitudes();
+});
+
+// Estado de los modales y documentos
+const showDocumentModal = ref(false);  // Modal de documentos
+const documents = ref([]);  // Documentos obtenidos del backend
+
+function openDocumentModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
+  fetchDocuments(solicitudId);  // Cargar los documentos del backend
+  showDocumentModal.value = true;  // Mostrar el modal
+}
+
+function closeDocumentModal() {
+  showDocumentModal.value = false;  // Cerrar el modal
+}
+const fetchDocuments = async (solicitudId: string) => {
+  try {
+    // Hacer la petición al backend para obtener los documentos
+    const response = await axios.get(`/api/documents/${solicitudId}`);
+    documents.value = response.data.documents;  // Guardar los documentos en la variable `documents`
+  } catch (error) {
+    console.error('Error al cargar los documentos:', error);
+  }
+};
+
 </script>
+
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-semibold text-center text-azul">
-        Solicitud de asesor
-      </h3>
-
+      <h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>
+    
       <div class="mt-8">
+        <!-- Mostrar un spinner mientras se cargan los datos -->
+        <div v-if="load" class="flex justify-center">
+          <span>Cargando solicitudes...</span>
+        </div>
+
         <!-- Filtros de tabla -->
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
-            <!-- Filtro de cantidad de entradas -->
             <div class="w-full flex justify-end items-center space-x-2">
               <!-- Búsqueda -->
               <div class="relative">
@@ -100,7 +193,7 @@ const tableData = ref([
                 </span>
                 <input
                   placeholder="Buscar"
-                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none"
                 />
               </div>
               <div class="relative">
@@ -118,7 +211,7 @@ const tableData = ref([
               <div class="relative">
                 <select
                   v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
@@ -131,206 +224,132 @@ const tableData = ref([
 
           <!-- Tabla -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
-            <div
-              class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
-            >
+            <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal">
                 <thead class="custom-thead font-Quicksand">
                   <tr class="text-center text-black border-b-2 bg-gray-300">
-                    <th
-                      class="py-2 px-3 text-left tracking-wider"
-                    >
-                      ESTUDIANTE
-                    </th>
-                    <th
-                      class="py-2 px-3 text-left tracking-wider"
-                    >
-                      TÍTULO
-                    </th>
-                    <th
-                      class="py-2 px-4 tracking-wider"
-                    >
-                      ACCIÓN
-                    </th>
-                    <th
-                      class="py-2 px-4 tracking-wider"
-                    >
-                      ESTADO
-                    </th>
+                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
+                    <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
+                    <th class="py-2 px-3 tracking-wider">DOCUMENTOS</th>
+                    <th class="py-2 px-4 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr 
-                    v-for="(u, index) in filteredTableData" :key="index"
+                  <tr
+                    v-for="(u, index) in filteredTableData"
+                    :key="u._id"
                     :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
-                    <td
-                      class="px-3 py-5 text-base"
-                    >
-                      <p class="text-gray-900 whitespace-nowrap w-64">
-                        {{ u.name }}
-                      </p>
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.estudiante?.nombre_completo || 'Nombre desconocido' }}</p>
                     </td>
-                    <td
-                      class="px-3 py-5 text-base"
-                    >
-                      <p class="text-gray-900 text-wrap w-80">
-                        {{ u.title }}
-                      </p>
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 text-wrap w-80">{{ u.titulo || 'Título no disponible' }}</p>
                     </td>
-                    <td
-                      class="px-3 py-5 flex flex-col items-center justify-center"
-                    >
-                      <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal"
-                      > Aceptar
-                      </button>
-                      <button 
-                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-                        @click="openRejectModal"
-                      > Rechazar
-                      </button>
+                    <td class="px-3 py-5 flex flex-col items-center justify-center">
+                      <button class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u._id)">Aceptar</button>
+                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u._id)">Rechazar</button>
                     </td>
-                    <td
-                      class="px-3 py-5 text-center"
-                    >
-                      <span
-                        :class="`estado-estilo estado-${u.status
-                          .toLowerCase()
-                          .replace(' ', '-')}`"
-                        >{{ u.status }}</span
-                      >
+                    <td class="px-3 py-5 text-center">
+                    <button @click="openDocumentModal(u._id)" class="focus:outline-none">
+                      <!-- Icono centrado -->
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656L5.414 9.172a6 6 0 108.485 8.485l.293-.293"/>
+                      </svg>
+                    </button>
+                  </td>
+
+
+                    <td class="px-3 py-5 text-center">
+                      <span :class="`estado-estilo estado-${u.estado ? u.estado.toLowerCase().replace(' ', '-') : ''}`">{{ u.estado || 'Estado desconocido' }}</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
 
               <!-- Paginación -->
-              <div
-                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
-              >
-                <span class="text-sm text-gray-900 xs:text-sm"
-                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}</span
-                >
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-900 xs:text-sm">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button
-                    :disabled="currentPage === 1"
-                    @click="goToPreviousPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    :disabled="currentPage === totalPages"
-                    @click="goToNextPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
-                  >
-                    Siguiente
-                  </button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <!-- Modal de confirmación -->
-      <div
-        v-if="showModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
               <IconCerrar />
             </button>
           </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-            </h5>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">Confirmación</h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-500 text-base text-left mb-2">
-              Porfavor escribe el N° de Oficio para la Carta de Aceptación
-            </p>
-            <input type="text" id="nroCarta" v-model="nroCarta" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
-            <br>
-            <br>
+            <p class="text-gray-500 text-base text-left mb-2">Porfavor escribe el N° de Oficio para la Carta de Aceptación</p>
+            <input type="text" v-model="nroCarta" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <br><br>
             <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
           </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-5 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Generar
-            </button>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-5 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl" @click="acceptSolicitude">Generar</button>
           </div>
         </div>
       </div>
 
       <!-- Modal de rechazo -->
-      <div
-        v-if="showRejectModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
+      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
               <IconCerrar />
             </button>
           </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">
-              Observación
-            </h5>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">Observación</h5>
           </div>
           <div class="p-6 bg-white rounded-lg">
-            <p class="text-gray-600 text-base mb-4">
-              Por favor escriba el motivo de su rechazo
-            </p>
-            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí su observación..."></textarea>
+            <p class="text-gray-600 text-base mb-4">Por favor escriba el motivo de su rechazo</p>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0" v-model="motivoRechazo" placeholder="Escriba aquí su observación..."></textarea>
           </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectSolicitude">Confirmar</button>
           </div>
         </div>
-      </div>  
+      </div>
+
+      <!-- Modal de documentos -->
+      <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="p-6">
+            <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
+            <ul>
+              <li v-for="(doc, index) in documents" :key="index" class="mb-2">
+                <a :href="doc.url" target="_blank" class="text-blue-600 underline">{{ doc.name }}</a>
+              </li>
+            </ul>
+          </div>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -359,8 +378,8 @@ const tableData = ref([
 }
 
 .custom-thead th {
-  font-weight: 700; /* Grosor delgado */
-  font-size: 16px;  /* Tamaño de la fuente */
-  text-transform: uppercase; /* Todo el texto en mayúsculas */
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
 }
 </style>
