@@ -133,6 +133,7 @@ export default defineComponent({
       } else if (role.value === 'jurado') {
         // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
         allSections[0].submenus.push(
+          { name: 'Designacion de asesor', label: 'Designación de Asesor', path: '/estudiante/designacion-asesor' },
           { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
           { name: 'revision presidente proyecto', label: 'Revision Presidente Proyecto', path: '/jurado/revision-presidente' }
         );

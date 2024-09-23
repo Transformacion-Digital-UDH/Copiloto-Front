@@ -24,7 +24,7 @@ const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
 const mostrarModalCambioAsesor = ref(false); // Controla el modal de cambio de asesor
 const mostrarModalConfirmacion = ref(false); // Modal de confirmación para cambio de asesor
 
-// Computed para habilitar el botón "Enviar" solo si se han completado los campos
+
 
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
