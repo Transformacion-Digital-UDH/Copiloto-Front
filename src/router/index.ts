@@ -70,7 +70,7 @@ const router = createRouter({
       meta: { roles: ['asesor'], title: 'Asesor' },
       component: AdminLayout,
       children: [
-        { path: 'solicitud-asesoria', name: 'SolicitudesAsesoria', component: SolicitarAsesor, meta: { title: 'Solicitudes de asesoría' } },
+        { path: 'solicitar-asesor', name: 'SolicitudesAsesoria', component: SolicitarAsesor, meta: { title: 'Solicitudes de asesoría' } },
         { path: 'solicitar-revision', name: 'SolicitarRevision', component: SolicitarRevisión, meta: { title: 'Solicitar revisión' } },
         { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
       ]
