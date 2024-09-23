@@ -42,16 +42,9 @@ const estadoClase = (estado: string) => {
   }
 };
 
-// Computed para habilitar el botón "Siguiente"
-const puedeContinuar = computed(() => {
-  const estadoPunto1Hecho = estadoPunto2.value === 'Hecho';
-  const documentosCompletos = documentos.value.slice(1).every(doc => doc.estado === 'Hecho');
-  return estadoPunto1Hecho && documentosCompletos;
-});
-
 const authStore = useAuthStore();
 const initSolicitude = ref(false);
-const solicitude = ref({ estudiante_id:'', titulo: '', asesor_id: '', estado:'', solicitud_id: '' });
+const solicitude = ref({ estudiante_id:'', titulo: '', asesor_id: '', estado: '', solicitud_id: '' });
 const advisers = ref({ id: '', nombre: '' });
 const load = ref(false)
 const enviado = ref(false);
@@ -99,13 +92,13 @@ const sendSolicitude = async (student_id: string) => {
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id;
         solicitude.value.estado = response.data.sol_status;
+        confetti({
+          particleCount: 500,
+          spread: 1010,
+          origin: { y: 0.6 }
+        });
       }
     )
-    confetti({
-      particleCount: 500,
-      spread: 1010,
-      origin: { y: 0.6 }
-    });
   } catch (error: any) {
     let description = ''
     error.response.data.error.map((e: any) => {
@@ -318,8 +311,8 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
 
         <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
-          <button :disabled="!puedeContinuar" class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed"
-            :class="puedeContinuar ? 'bg-green-600 hover:bg-base cursor-pointer' : 'bg-gray-300 cursor-not-allowed'">
+          <button  class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed"
+            >
             Siguiente
           </button>
         </div>
