@@ -12,9 +12,10 @@ interface Documento {
 }
 
 interface Asesor {
-  id: number;
-  nombre: string;
+  _id: string;
+  adv_name: string;
 }
+
 
 interface Trámite {
   título: string;
@@ -46,11 +47,7 @@ const documentos = ref<Documento[]>([
 // Simulación del título de tesis y asesores
 const tituloTesis = ref(localStorage.getItem('tituloTesis') || '');
 const nombreAsesor = ref(localStorage.getItem('nombreAsesor') || '');
-const asesores = ref<Asesor[]>([
-  { id: 1, nombre: 'Aldo Ramírez' },
-  { id: 2, nombre: 'María Pérez' },
-  { id: 3, nombre: 'José García' }
-]);
+
 
 // Modal de confirmación
 const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
@@ -159,7 +156,7 @@ const puedeContinuar = computed(() => {
 const authStore = useAuthStore();
 const initSolicitude = ref(false);
 const solicitude = ref({ estudiante_id:'', titulo: '', asesor_id: '', estado:'', solicitud_id: '' });
-const advisers = ref({ _id: '', adv_name: '' });
+const advisers = ref<Asesor[]>([]);
 const load = ref(false)
 const enviado = ref(false);
 
@@ -199,9 +196,14 @@ const getInfoStudent = async () => {
   }
 }
 const getAdvisers = async () => {
-  const res = await axios.get('/api/adviser/get-select')
-  advisers.value = res.data
-}
+  try {
+    const res = await axios.get('/api/adviser/get-select');
+    advisers.value = res.data;  // Asegúrate de que `res.data` sea un array de objetos con las propiedades `id` y `nombre`
+  } catch (error) {
+    alertToast('Error al cargar los asesores', 'Error', 'error');
+  }
+};
+
 
 const sendSolicitude = async (student_id: string) => {
   try {
