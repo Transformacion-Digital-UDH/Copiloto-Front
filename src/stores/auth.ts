@@ -52,7 +52,7 @@ export const useAuthStore = defineStore("auth", () => {
           if (route) {
             router.push(route);
           }
-        }, 1000);
+        }, 500);
       }
     } catch (error: any) {
       let description = ''
@@ -80,7 +80,7 @@ export const useAuthStore = defineStore("auth", () => {
         console.log(response.data)
 
         // Almacenar datos en Pinia
-        id.value = response.data.data.id;
+        id.value = response.data.data.id; 
         token.value = response.data.token;
         email.value = response.data.data.correo;
         role.value = response.data.data.rol;
@@ -95,7 +95,7 @@ export const useAuthStore = defineStore("auth", () => {
           if (route) {
             router.push(route);
           }
-        }, 1000);
+        }, 500);
       }
     } catch (error: any) {
       let description = ''
@@ -130,7 +130,7 @@ export const useAuthStore = defineStore("auth", () => {
         alertToast('Te has registrado exitosamente', 'Bienvenido' + ' ' + fullName.value, 'success')
         setTimeout(() => {
           router.push('/estudiante');  
-        }, 1000);
+        }, 500);
       }
     } catch (error: any) {
       let description = ''
@@ -168,7 +168,7 @@ export const useAuthStore = defineStore("auth", () => {
         alertToast('Te has registrado exitosamente', 'Bienvenido' + ' ' + fullName.value, 'success')
         setTimeout(() => {
           router.push('/estudiante');  
-        }, 1000);
+        }, 500);
       }
     } catch (error: any) {
       let description = ''
