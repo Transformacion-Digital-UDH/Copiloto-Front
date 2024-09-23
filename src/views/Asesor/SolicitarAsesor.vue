@@ -30,6 +30,7 @@ function openRejectModal(solicitudId: string) {
   showRejectModal.value = true;
 }
 
+// Función para cerrar ambos modales
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
@@ -122,7 +123,7 @@ const filteredTableData = computed(() => {
   return filteredData.slice(startIndex, endIndex);
 });
 
-// Total de páginas
+// Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
@@ -222,7 +223,7 @@ const fetchDocuments = async (solicitudId: string) => {
             </div>
           </div>
 
-          <!-- Tabla -->
+          <!-- Tabla de solicitudes -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal">
