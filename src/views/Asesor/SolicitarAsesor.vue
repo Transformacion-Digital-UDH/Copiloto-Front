@@ -203,60 +203,62 @@ const fetchDocuments = async (solicitudId: string) => {
             <div class="w-full flex justify-end items-center space-x-2">
               <!-- Búsqueda -->
               <div class="relative">
-                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-                  <IconBuscar />
-                </span>
-                <input
-                  placeholder="Buscar"
-                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none"
-                />
-              </div>
-              <div class="relative">
-                <select
-                  v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                >
-                  <option value="5">5</option>
-                  <option value="10">10</option>
-                  <option value="20">20</option>
-                </select>
+              <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-base">
+                <IconBuscar />
+              </span>
+
+              <input
+                placeholder="Buscar"
+                class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
+              />
               </div>
 
-              <!-- Filtro de estado -->
+              <!-- Select para número de filas por página -->
               <div class="relative">
-                <select
-                  v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                >
-                  <option value="">Todos</option>
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Aceptado">Aceptado</option>
-                  <option value="Rechazado">Rechazado</option>
-                </select>
+                  <select
+                    v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                  >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                  </select>
               </div>
+
+                <!-- Select para filtro por estado -->
+                <div class="relative">
+                  <select
+                    v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                  >
+                    <option value="">Todos</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Aceptado">Aceptado</option>
+                    <option value="Rechazado">Rechazado</option>
+                  </select>
+                </div>
             </div>
           </div>
 
           <!-- Tabla de solicitudes -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
-              <table class="min-w-full leading-normal">
-                <thead class="custom-thead font-Quicksand">
-                  <tr class="text-center text-black border-b-2 bg-gray-300">
-                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                    <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
-                    <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
-                    <th class="py-2 px-3 tracking-wider">DOCUMENTOS</th>
-                    <th class="py-2 px-4 tracking-wider">ESTADO</th>
+              <table class="min-w-full leading-normal sm:table md:table lg:table">
+                <thead class="custom-thead font-Quicksand border-b-5">
+                  <tr class="text-center text-white  bg-baseClarito">
+                    <th class="py-3 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-3 px-3 text-left tracking-wider">TÍTULO</th>
+                    <th class="py-3 px-4 tracking-wider">ACCIÓN</th>
+                    <th class="py-3 px-3 tracking-wider">DOCUMENTOS</th>
+                    <th class="py-3 px-4 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="u._id"
-                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
-                    class="border-b border-gray-200"
-                  >
+                    
+                    class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 whitespace-nowrap w-64">{{ u.estudiante?.nombre_completo || 'Nombre desconocido' }}</p>
                     </td>
@@ -264,15 +266,24 @@ const fetchDocuments = async (solicitudId: string) => {
                       <p class="text-gray-900 text-wrap w-80">{{ u.titulo || 'Título no disponible' }}</p>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
-                      <button class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u._id)">Aceptar</button>
-                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u._id)">Rechazar</button>
+                      <button
+                        class="w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none hover:bg-green-600 transform active:translate-y-1 transition-transform duration-150"
+                        @click="openModal(u._id)"
+                      >
+                        Aceptar
+                      </button>
+
+                      <button
+                        class="w-20 px-3 py-1 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none hover:bg-red-600 transform active:translate-y-1 transition-transform duration-150"
+                        @click="openRejectModal(u._id)"
+                      >
+                        Rechazar
+                      </button>
                     </td>
                     <td class="px-3 py-5 text-center">
                     <button @click="openDocumentModal(u._id)" class="focus:outline-none">
                       <!-- Icono centrado -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656L5.414 9.172a6 6 0 108.485 8.485l.293-.293"/>
-                      </svg>
+                      <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                     </button>
                   </td>
 
@@ -285,11 +296,11 @@ const fetchDocuments = async (solicitudId: string) => {
               </table>
 
               <!-- Paginación -->
-              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-900 xs:text-sm">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+              <div class="flex flex-col items-center px-5 py-4 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-gray-800 bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-black bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
@@ -383,7 +394,7 @@ const fetchDocuments = async (solicitudId: string) => {
 }
 
 .estado-rechazado {
-  background-color: #DC2626;
+  background-color: #dd4e4e;
   color: #ffffff;
 }
 
@@ -397,4 +408,15 @@ const fetchDocuments = async (solicitudId: string) => {
   font-size: 16px;
   text-transform: uppercase;
 }
+
+select {
+  border-color: #39B49E; /* Color del borde por defecto */
+  color: #39B49E; /* Color del texto */
+}
+
+select:focus {
+  outline: none; /* Quitar borde azul del navegador */
+  border-color: #39B49E; /* Borde al hacer foco */
+}
+
 </style>

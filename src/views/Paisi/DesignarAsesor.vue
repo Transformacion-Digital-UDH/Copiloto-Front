@@ -387,6 +387,11 @@ onMounted(() => {
 }
 
 .estado-tramitado {
+  background-color: #39B49E;
+  color: #ffffff;
+}
+
+.estado-aceptado {
   background-color: #48bb78;
   color: #ffffff;
 }
