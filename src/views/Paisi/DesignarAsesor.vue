@@ -13,11 +13,9 @@ const showModal = ref(false);
 const showRejectModal = ref(false);
 const showLinkModal = ref(false);
 const nroOficio1 = ref('');
-const linkTesis = ref('');
 const motivoObservacion = ref("");
 
-
-function openModal() {
+function openModal () {
   showModal.value = true;
 }
 
@@ -25,8 +23,9 @@ function openRejectModal() {
   showRejectModal.value = true;
 }
 
-function openModalLink (){
+const openModalLink = (solicitude) => {
   showLinkModal.value = true;
+  selectedSolicitude.value = solicitude;
 }
 
 function closeModal() {
@@ -72,13 +71,15 @@ function goToNextPage() {
  
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 const tableData = ref([]);
-const load = ref(false); 
+const load = ref(false);
+const selectedSolicitude = ref('');
 
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
     const response = await axios.get('/api/paisi/getSolicitude');
     tableData.value = response.data.data;
+    console.log(response.data)
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   } finally {
@@ -88,6 +89,24 @@ const fetchSolicitudes = async () => {
 onMounted(() => {
   fetchSolicitudes();
 });
+
+const createGoogleDoc = async (solicitudeId) => {
+  try {
+    const response = await axios.post("/api/create-document", {
+      solicitude_id: solicitudeId,
+    });
+    console.log(response);
+
+    const link = response.data.link;
+    if (link) {
+      selectedSolicitude.value.link = link;
+      closeModal();
+    }
+  } catch (error) {
+    console.error("Error al crear el documento:", error);
+    alert("No se pudo crear el documento");
+  }
+};
 
 </script>
 
@@ -181,9 +200,10 @@ onMounted(() => {
                       </button>
                     </td>
                     <td class="text-center px-4">
-                      <button @click="openModalLink" class="text-white bg-azulbajo w-24 px-4 py-1 text-sm rounded-xl focus:outline-none">
-                        Subir link
+                      <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azulbajo w-32 px-4 py-1 text-sm rounded-xl focus:outline-none">
+                        Generar docs
                       </button>
+                      <a v-else :href="solicitude.link" target="_blank" class="text-blue-600" >Ver enlace</a>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
@@ -329,7 +349,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Modal para subir link de tesis -->
+      <!-- Modal para generar link de tesis -->
       <div v-if="showLinkModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
@@ -339,20 +359,19 @@ onMounted(() => {
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Cargar proyecto de tesis
+              Generar enlace de documento
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-600 text-lg text-left mb-2">
-              Por favor inserte el enlace
+            <p class="text-gray-500 text-base text-center mb-2">
+              ¿Está seguro de que desea generar el documento?
             </p>
-            <p v-if="linkTesis" class="mt-4">Enlace Generado: <a :href="linkTesis" target="_blank" class="text-blue-600 underline">{{ linkTesis }}</a></p>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
             <button class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
               Cancelar
             </button>
-            <button @click="closeModal" class="bg-blue-500 text-white px-4 py-2 rounded">Generar Enlace</button>
+            <button v-if="!selectedSolicitude.link" @click="createGoogleDoc(selectedSolicitude.id)" class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl">Crear documento</button>
           </div>
         </div>
       </div>
