@@ -36,7 +36,7 @@ const load = ref(false);  // Estado de carga
 const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
 let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
 
-// Función para abrir y cerrar modales
+//Función para abrir y cerrar modales
 function openModal(solicitudId: string) {
   solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
   showModal.value = true;
@@ -80,48 +80,48 @@ const fetchSolicitudes = async () => {
 };
 
 // Función para aceptar la solicitud
-const acceptSolicitude = async () => {
-  try {
-    const solicitudId = solicitudSeleccionada.value;
-    const params = {
-      sol_status: 'aceptado',
-      nro_oficio: nroCarta.value,  // Número de carta de aceptación
-    };
+// const acceptSolicitude = async () => {
+//   try {
+//     const solicitudId = solicitudSeleccionada.value;
+//     const params = {
+//       sol_status: 'aceptado',
+//       nro_oficio: nroCarta.value,  // Número de carta de aceptación
+//     };
 
-    const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
+//     const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
 
-    if (response.data.message === "OK") {
-      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
-      if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
-      closeModal();  // Cerrar el modal después de la actualización
-    }
+//     if (response.data.message === "OK") {
+//       const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
+//       if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
+//       closeModal();  // Cerrar el modal después de la actualización
+//     }
 
-  } catch (error) {
-    console.error('Error al aceptar la solicitud:', error);
-  }
-};
+//   } catch (error) {
+//     console.error('Error al aceptar la solicitud:', error);
+//   }
+// };
 
-// Función para rechazar la solicitud
-const rejectSolicitude = async () => {
-  try {
-    const solicitudId = solicitudSeleccionada.value;
-    const params = {
-      sol_status: 'rechazado',
-      motivo: motivoRechazo.value,  // Motivo de rechazo
-    };
+// // Función para rechazar la solicitud
+// const rejectSolicitude = async () => {
+//   try {
+//     const solicitudId = solicitudSeleccionada.value;
+//     const params = {
+//       sol_status: 'rechazado',
+//       motivo: motivoRechazo.value,  // Motivo de rechazo
+//     };
 
-    const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
+//     const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
 
-    if (response.data.message === "OK") {
-      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
-      if (solicitud) solicitud.estado = 'rechazado';  // Actualizar la tabla localmente
-      closeModal();  // Cerrar el modal después de la actualización
-    }
+//     if (response.data.message === "OK") {
+//       const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
+//       if (solicitud) solicitud.estado = 'rechazado';  // Actualizar la tabla localmente
+//       closeModal();  // Cerrar el modal después de la actualización
+//     }
 
-  } catch (error) {
-    console.error('Error al rechazar la solicitud:', error);
-  }
-};
+//   } catch (error) {
+//     console.error('Error al rechazar la solicitud:', error);
+//   }
+// };
 
 // Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
@@ -167,11 +167,11 @@ onMounted(() => {
 const showDocumentModal = ref(false);  // Modal de documentos
 const documents = ref([]);  // Documentos obtenidos del backend
 
-function openDocumentModal(solicitudId: string) {
-  solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
-  fetchDocuments(solicitudId);  // Cargar los documentos del backend
-  showDocumentModal.value = true;  // Mostrar el modal
-}
+// function openDocumentModal(solicitudId: string) {
+//   solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
+//   fetchDocuments(solicitudId);  // Cargar los documentos del backend
+//   showDocumentModal.value = true;  // Mostrar el modal
+// }
 
 function closeDocumentModal() {
   showDocumentModal.value = false;  // Cerrar el modal
