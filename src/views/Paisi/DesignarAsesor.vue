@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+import axios from "axios";
 
 // Estados y propiedades
 const selectedFilter = ref("");
@@ -11,13 +12,10 @@ const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const showLinkModal = ref(false);
-const showSendModal = ref(false);
 const nroOficio1 = ref('');
 const linkTesis = ref('');
+const motivoObservacion = ref("");
 
-function openSendModal (){
-  showSendModal.value = true;
-}
 
 function openModal() {
   showModal.value = true;
@@ -34,29 +32,33 @@ function openModalLink (){
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
-  showSendModal.value = false;
   showLinkModal.value = false;
+  motivoObservacion.value = "";
 }
 
-// Filtrado y paginación
+// Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
+  // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => data.estado === selectedFilter.value.toLowerCase()
     );
   }
 
+  // Paginación
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
   const endIndex = startIndex + rowsPerPage.value;
   return filteredData.slice(startIndex, endIndex);
 });
 
+// Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
     : tableData.value;
+
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
@@ -67,25 +69,26 @@ function goToPreviousPage() {
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
+ 
+//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+const tableData = ref([]);
+const load = ref(false); 
 
-// Datos actuales
-const tableData = ref([
-  {
-    name: "Rodríguez Meléndez, Fabio",
-    advisor: "Renzo Paolo, Luciano Estela",
-    status: "Pendiente",
-  },
-  {
-    name: "Sulca Correa, Omar Iván",
-    advisor: "Juan Manual, Vicente Rojas",
-    status: "Observado",
-  },
-  {
-    name: "Nuñez Vicente, José Antonio",
-    advisor: "Enrique Carlos, Murga Cespedes",
-    status: "Tramitado",
-  },
-]);
+const fetchSolicitudes = async () => {
+  load.value = true;
+  try {
+    const response = await axios.get('/api/paisi/getSolicitude');
+    tableData.value = response.data.data;
+  } catch (error) {
+    console.error('Error al cargar las solicitudes:', error);
+  } finally {
+    load.value = false;
+  }
+};
+onMounted(() => {
+  fetchSolicitudes();
+});
+
 </script>
 
 <template>
@@ -152,25 +155,24 @@ const tableData = ref([
                     <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
                     <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
                     <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
-                    <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(u, index) in filteredTableData"
+                    v-for="(solicitude, index) in filteredTableData"
                     :key="index"
                     :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-64">
-                        {{ u.name }}
+                        {{ solicitude.estudiante.nombre_completo}}
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-64">
-                        {{ u.advisor }}
+                        {{ solicitude.asesor.nombre_completo}}
                       </p>
                     </td>
                     <td class="text-center px-4">
@@ -198,21 +200,7 @@ const tableData = ref([
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                      <button
-                        class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
-                        @click="openSendModal"
-                      >
-                        Enviar
-                      </button>
-                    </td>
-                    <td class="px-3 py-5 text-center">
-                      <span
-                        :class="`estado-estilo estado-${u.status
-                          .toLowerCase()
-                          .replace(' ', '-')}`"
-                      >
-                        {{ u.status }}
-                      </span>
+                      <span :class="`estado-estilo estado-${solicitude.estado ? solicitude.estado.toLowerCase().replace(' ', '-') : ''}`">{{ solicitude.estado || 'Estado desconocido' }}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -320,7 +308,7 @@ const tableData = ref([
             <p class="text-gray-600 text-base text-center mb-4">
               Por favor escriba el motivo de su observación
             </p>
-            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -341,52 +329,11 @@ const tableData = ref([
         </div>
       </div>
 
-      <!-- modal para enviar tramite a la facultad -->
-      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
-          <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
-                <IconCerrar />
-              </button>
-          </div>
-          <div
-              class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-              </h5>
-          </div>
-          <div class="p-6">
-              <p class="text-gray-900 text-center text-lg mb-4">
-              ¿Desea enviar este trámite a facultad?
-              </p>
-          </div>
-          <div
-              class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button
-              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal">
-              Cancelar
-              </button>
-              <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal">
-              Confirmar
-              </button>
-          </div>
-        </div>
-      </div>
-
       <!-- Modal para subir link de tesis -->
-      <div
-        v-if="showLinkModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
+      <div v-if="showLinkModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
               <IconCerrar />
             </button>
           </div>
@@ -399,23 +346,13 @@ const tableData = ref([
             <p class="text-gray-600 text-lg text-left mb-2">
               Por favor inserte el enlace
             </p>
-            <input type="text" id="linkTesis" v-model="linkTesis" placeholder="Insertar aquí..." class="px-2 rounded-md w-full focus:border-gray-900 focus:ring-0 mb-4"/>
+            <p v-if="linkTesis" class="mt-4">Enlace Generado: <a :href="linkTesis" target="_blank" class="text-blue-600 underline">{{ linkTesis }}</a></p>
           </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
               Cancelar
             </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
+            <button @click="closeModal" class="bg-blue-500 text-white px-4 py-2 rounded">Generar Enlace</button>
           </div>
         </div>
       </div>
