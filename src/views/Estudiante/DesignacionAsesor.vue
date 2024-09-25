@@ -6,6 +6,22 @@ import axios from 'axios';
 import { alertToast, alertConfirmation } from '@/functions';
 import confetti from 'canvas-confetti';
 
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Designacion de Asesor</h3>`;
+const typedText = ref(''); 
+let index = 0; 
+const typeWriter = () => {
+  if (index < text.length) {
+    typedText.value += text.charAt(index); 
+    index++;
+    setTimeout(typeWriter, 30); 
+  }
+};
+
+onMounted(() => {
+  typeWriter(); // Llamamos la función al montar el componente
+});
+
 interface Documento {
   nombre: string;
   estado: string;
@@ -23,8 +39,6 @@ const documentos = ref<Documento[]>([
 const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
 const mostrarModalCambioAsesor = ref(false); // Controla el modal de cambio de asesor
 const mostrarModalConfirmacion = ref(false); // Modal de confirmación para cambio de asesor
-
-
 
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
@@ -55,6 +69,8 @@ onMounted(() => {
   getAdvisers();
 })
 
+
+
 const getInfoStudent = async () => {
   load.value = true
   await axios.get(`/api/student/getInfo/${authStore.id}`).then((response) => {
@@ -68,7 +84,7 @@ const getInfoStudent = async () => {
   }).catch((error) => {
     alertToast(error.response.data.message, 'Error', 'error')
   }).finally(() => {
-    load.value = false
+    load.value = false;
   })
 }
 const getAdvisers = async () => {
@@ -199,10 +215,11 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100" >
-        <!-- Título principal -->
-        <h3 class="text-4xl font-semibold text-center text-azul">Designación de Asesor</h3>
-        <br>
-        <p class="text-gray-500 text-center">Cada punto en este proceso debe estar en Hecho para que pueda continuar con el siguiente tramite | El pago de este tramite se sumara al pago del monto final de toda la Tesis.</p>
+        <div v-html="typedText"></div> 
+       <!-- Mostrar un spinner mientras se cargan los datos -->
+       <div v-if="load" class="flex justify-center text-xl text-base">
+          <span>Cargando datos...</span>
+        </div>
         <br>
 
         <!-- Card 1: Solicitud de Asesor -->
@@ -377,7 +394,6 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
             </div>
           </div>
         </div>
-
       </div>
     </template>
   </template>

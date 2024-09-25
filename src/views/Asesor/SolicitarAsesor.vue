@@ -9,7 +9,6 @@ import IconBuscar from "@/components/icons/IconBuscar.vue";
 const text = `<h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>`;
 const typedText = ref(''); // Inicializamos el texto como vacío
 let index = 0; // Índice para controlar la posición en el texto
-
 const typeWriter = () => {
   if (index < text.length) {
     typedText.value += text.charAt(index); // Agrega cada letra al texto mostrado
@@ -27,7 +26,6 @@ const showModal = ref(false);  // Modal de aceptación
 const showRejectModal = ref(false);  // Modal de rechazo
 const nroCarta = ref("");  // Número de oficio para la carta
 const motivoRechazo = ref(""); // Motivo de rechazo
-
 const selectedFilter = ref("");  // Filtro por estado
 const rowsPerPage = ref(5);  // Número de filas por página
 const currentPage = ref(1);  // Página actual
@@ -75,7 +73,7 @@ const fetchSolicitudes = async () => {
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   } finally {
-    load.value = false;  // Quitar el indicador de carga
+    load.value = false;  
   }
 };
 
@@ -167,11 +165,11 @@ onMounted(() => {
 const showDocumentModal = ref(false);  // Modal de documentos
 const documents = ref([]);  // Documentos obtenidos del backend
 
-// function openDocumentModal(solicitudId: string) {
-//   solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
-//   fetchDocuments(solicitudId);  // Cargar los documentos del backend
-//   showDocumentModal.value = true;  // Mostrar el modal
-// }
+function openDocumentModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
+  fetchDocuments(solicitudId);  // Cargar los documentos del backend
+  showDocumentModal.value = true;  // Mostrar el modal
+}
 
 function closeDocumentModal() {
   showDocumentModal.value = false;  // Cerrar el modal
@@ -192,12 +190,10 @@ const fetchDocuments = async (solicitudId: string) => {
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-    <div v-html="typedText"></div>
-
-    
+    <div v-html="typedText"></div>    
       <div class="mt-8">
         <!-- Mostrar un spinner mientras se cargan los datos -->
-        <div v-if="load" class="flex justify-center">
+        <div v-if="load" class="flex justify-center text-xl text-base ">
           <span>Cargando solicitudes...</span>
         </div>
 

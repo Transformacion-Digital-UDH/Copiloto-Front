@@ -5,6 +5,20 @@ import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 
+
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Resoluciones para Designacion de Asesor</h3>`;
+const typedText = ref(''); // Inicializamos el texto como vacío
+let index = 0; // Índice para controlar la posición en el texto
+
+const typeWriter = () => {
+  if (index < text.length) {
+    typedText.value += text.charAt(index); 
+    index++;
+    setTimeout(typeWriter, 30); 
+  }
+};
+
 // Estados y propiedades
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
@@ -14,6 +28,7 @@ const showRejectModal = ref(false);
 const showSendModal = ref(false);
 const nroOficio1 = ref('');
 const isLoading = ref(false); // Indicador de carga
+const load = ref(false);  // Estado de carga
 
 // Estado de la tabla que almacenará los datos de la API
 const tableData = ref([]);
@@ -42,8 +57,9 @@ const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   if (selectedFilter.value) {
+    // Filtrar por la propiedad "estado", ya que así es como la API lo devuelve
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => data.estado === selectedFilter.value
     );
   }
 
@@ -69,16 +85,13 @@ function goToNextPage() {
 
 // Función para obtener los datos desde la API
 const fetchOffices = async () => {
-  isLoading.value = true; // Mostrar indicador de carga
+  isLoading.value = true;
 
   try {
     // Llamada a la API para obtener los datos
-    const response = await axios.get('/faculty/getOffices');
+    const response = await axios.get('api/faculty/getOffices');
     console.log(response.data);
-    
-    // Asignar los datos obtenidos al estado de la tabla
-    tableData.value = response.data;
-
+    tableData.value = response.data.data; 
   } catch (error) {
     console.error("Error al cargar las solicitudes:", error);
   } finally {
@@ -89,19 +102,17 @@ const fetchOffices = async () => {
 // Cargar los datos cuando el componente se monta
 onMounted(() => {
   fetchOffices();
+  typeWriter();
 });
 </script>
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-semibold text-center text-azul">
-        Resolución de designación de asesor
-      </h3>
-
-      <!-- Mostrar indicador de carga si se están obteniendo datos -->
-      <div v-if="isLoading" class="flex justify-center">
-        <span>Cargando solicitudes...</span>
+      <div v-html="typedText"></div> 
+      <!-- Mostrar un spinner mientras se cargan los datos -->
+      <div v-if="isLoading" class="flex justify-center text-xl text-base">
+          <span>Cargando solicitudes...</span>
       </div>
 
       <!-- Tabla de datos -->
@@ -165,18 +176,18 @@ onMounted(() => {
                 <tbody>
                   <tr
                     v-for="(u, index) in filteredTableData"
-                    :key="u._id"
+                    :key="u.id"
                     :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-32">
-                        {{ u.estudiante?.nombre_completo || 'Nombre desconocido' }}
+                        {{ u.estudiante_nombre || 'Nombre desconocido' }}
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-32">
-                        {{ u.asesor.nombre_completo || 'Asesor desconocido' }}
+                        {{ u.asesor_nombre || 'Asesor desconocido' }}
                       </p>
                     </td>
                     <td class="text-center px-4">
@@ -186,7 +197,7 @@ onMounted(() => {
                     </td>
                     <td class="px-3 py-5 text-base text-center">
                       <p class="text-gray-900 text-wrap w-32">
-                        {{ u.fecha || 'Fecha no disponible' }}
+                        {{ u.fecha_creado || 'Fecha no disponible' }}
                       </p>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
@@ -248,6 +259,134 @@ onMounted(() => {
           </div>
         </div>
       </div>
+        <!-- Modal para generar un oficio al estudiante -->
+        <div
+        v-if="showModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button
+              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+              @click="closeModal"
+            >
+              <IconCerrar />
+            </button>
+          </div>
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Se autogenerará la resolucion de asesor para este estudiante
+            </h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-500 text-base text-left mb-2">
+              Escriba el número de expediente correspondiente
+            </p>
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
+              @click="closeModal"
+            >
+              Generar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de observacion -->
+      <div
+        v-if="showRejectModal"
+        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
+      >
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button
+              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+              @click="closeModal"
+            >
+              <IconCerrar />
+            </button>
+          </div>
+          <div
+            class="flex items-start justify-between p-3 border-b border-gray-200"
+          >
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Observación
+            </h5>
+          </div>
+          <div class="p-6 bg-white rounded-lg">
+            <p class="text-gray-600 text-lg text-center mb-4">
+              Por favor escriba el motivo de su observación
+            </p>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+          </div>
+          <div
+            class="flex items-center justify-end p-3 border-t border-gray-200"
+          >
+            <button
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+              @click="closeModal"
+            >
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- modal para enviar tramite a la facultad -->
+      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
+          <div class="flex justify-end items-start">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
+                <IconCerrar />
+              </button>
+          </div>
+          <div
+              class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              Confirmación
+              </h5>
+          </div>
+          <div class="p-6">
+              <p class="text-gray-900 text-center text-lg mb-4">
+              ¿Desea enviar la resolución al estudiante y asesor?
+              </p>
+          </div>
+          <div
+              class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button
+              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
+              @click="closeModal">
+              Cancelar
+              </button>
+              <button
+              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
+              @click="closeModal">
+              Confirmar
+              </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para subir link de tesis -->
     </div>
   </div>
 </template>
