@@ -5,6 +5,23 @@ import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>`;
+const typedText = ref(''); // Inicializamos el texto como vacío
+let index = 0; // Índice para controlar la posición en el texto
+
+const typeWriter = () => {
+  if (index < text.length) {
+    typedText.value += text.charAt(index); // Agrega cada letra al texto mostrado
+    index++;
+    setTimeout(typeWriter, 40); // Controla la velocidad del efecto
+  }
+};
+
+onMounted(() => {
+  typeWriter(); // Llamamos la función al montar el componente
+});
+
 // Estado de los modales y datos
 const showModal = ref(false);  // Modal de aceptación
 const showRejectModal = ref(false);  // Modal de rechazo
@@ -196,7 +213,8 @@ const fetchDocuments = async (solicitudId: string) => {
   <template v-else>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>
+    <div v-html="typedText"></div>
+
     
       <div class="mt-8">
         <!-- Filtros de tabla -->

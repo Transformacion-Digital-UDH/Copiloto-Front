@@ -26,6 +26,9 @@ import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
 import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
 import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
+import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
+import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
+import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
 
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
@@ -67,7 +70,7 @@ const router = createRouter({
       meta: { roles: ['asesor'], title: 'Asesor' },
       component: AdminLayout,
       children: [
-        { path: 'solicitar-asesor', name: 'SolicitarAsesor', component: SolicitarAsesor, meta: { title: 'Solicitar asesor' } },
+        { path: 'solicitar-asesor', name: 'SolicitudesAsesoria', component: SolicitarAsesor, meta: { title: 'Solicitudes de asesoría' } },
         { path: 'solicitar-revision', name: 'SolicitarRevision', component: SolicitarRevisión, meta: { title: 'Solicitar revisión' } },
         { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
       ]
@@ -105,6 +108,15 @@ const router = createRouter({
         { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: {title: 'Designar jurados'}},
         { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { title: 'Resolucion informe' } },
 
+      ]
+    },
+    {
+      path: '/vri',
+      component: AdminLayout,
+      children: [
+        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { title: 'Primer Filtro' } },
+        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { title: 'Segundo Filtro' } },
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { title: 'Tercer Filtro' } },
       ]
     },
     {
