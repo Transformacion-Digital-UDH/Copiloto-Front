@@ -51,6 +51,10 @@ const estadoClase = (estado: string) => {
       return 'bg-red-500 text-white';
     case 'aceptado':
       return 'bg-green-500 text-white';
+    case 'tramitado':
+      return 'bg-green-500 text-white';
+    case 'observado':
+      return 'bg-orange-500 text-white';
     default:
       return '';
   }
@@ -65,8 +69,8 @@ const enviado = ref(false);
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${authStore.token}`;
 onMounted(() => {
-  getInfoStudent();
   getAdvisers();
+  getInfoStudent();
 })
 
 
@@ -82,7 +86,7 @@ const getInfoStudent = async () => {
       solicitude.value.estado = response.data.solicitude_pendiente.estado
     }
   }).catch((error) => {
-    alertToast(error.response.data.message, 'Error', 'error')
+    // alertToast(error.response.data.message, 'Error', 'error')
   }).finally(() => {
     load.value = false;
   })
@@ -105,8 +109,9 @@ const sendSolicitude = async (student_id: string) => {
       '/api/solicitudes-store', 
       'POST',
       (response) => {
+        solicitude.value.solicitud_id = response.data._id;
         solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id;
+        solicitude.value.asesor_id = response.data.adviser_id  || '';
         solicitude.value.estado = response.data.sol_status;
         confetti({
           particleCount: 500,
@@ -139,9 +144,8 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
       `/api/solicitudes/${solicitud_id}`, 
       'PUT',
       (response) => {
-        // Aquí actualizamos los datos locales con la respuesta del servidor
         solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id;
+        solicitude.value.asesor_id = response.data.adviser_id  || '';
         solicitude.value.estado = response.data.sol_status;
       }
     );
@@ -160,32 +164,31 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-[70%] animate-pulse rounded-lg duration-200"></h3>
-        <p class="bg-gray-200 text-center w-[70%] h-8 rounded-lg mt-5 animate-pulse duration-200"></p>
+        <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
       </div>
       <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
        <div class="block space-y-5">
-          <h2 class="bg-gray-200 h-10 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 mt-4 w-full rounded-md animate-pulse duration-200"></h2>
+          <h2 class="bg-gray-200 h-10 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"></h2>
         </div>
       </div>
       <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
        <div class="block space-y-5">
-          <h2 class="bg-gray-200 h-7 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 w-full rounded-md animate-pulse duration-200"></h2>
+          <h2 class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
         </div>
       </div>
       <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
        <div class="block space-y-5">
-          <h2 class="bg-gray-200 h-7 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 w-full rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 mt-1 w-15 rounded-md animate-pulse duration-200"></h2>
-          <h2 class="bg-gray-200 h-14 mt-4 w-full rounded-md animate-pulse duration-200"></h2>
+          <h2 class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 mt-1 w-15 rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"></h2>
         </div>
       </div>
     </div>
@@ -277,7 +280,15 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
         </div>
 
         <!-- Card 2: Documentos -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative mt-6">
+        <div
+          :disabled="['en progreso', 'pendiente', 'rechazado'].includes(solicitude.estado)"
+          :class="[
+            'bg-white rounded-lg shadow-lg p-6 relative mt-6', 
+            ['en progreso', 'pendiente', 'rechazado'].includes(solicitude.estado) 
+              ? 'cursor-not-allowed' 
+              : ''
+          ]"
+        >
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
             <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
@@ -305,11 +316,13 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
                   <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
                     <a :href="documento.documentoUrl" target="_blank"
+                      :disabled="['en progreso', 'pendiente', 'rechazado'].includes(solicitude.estado)"
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
                     <!-- Botón de Descargar -->
                     <a :href="documento.documentoUrl" download
+                      :disabled="['en progreso', 'pendiente', 'rechazado'].includes(solicitude.estado)"
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
@@ -336,14 +349,8 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
 
         <!-- Card 3: Solicitar Cambio de Asesor -->
         <div 
-          class=" " 
+          class="bg-white rounded-lg shadow-lg p-6 relative mt-6" 
           :disabled="['pendiente', 'en progreso'].includes(solicitude.estado)"
-          :class="[
-                'rounded-lg shadow-lg p-6 relative mt-6', 
-                ['pendiente', 'en progreso'].includes(solicitude.estado) 
-                  ? 'opacity-70 cursor-not-allowed' 
-                  : 'bg-white'
-              ]"
         >
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-gray-600">Cambio de Asesor</h2>
@@ -372,12 +379,12 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
         </div>
 
         <!-- Historial de Acciones -->
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" v-if="solicitude.estado === 'rechazado'">
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" >
           <h2 class="text-2xl font-medium text-white">Historial de Acciones</h2>
           <ul class="mt-4 space-y-2">
-            <li v-for="(accion, index) in historial" :key="index" class="border p-3 rounded-md bg-gray-50">
+            <!-- <li v-for="(accion, index) in historial" :key="index" class="border p-3 rounded-md bg-gray-50">
               <span class="font-light">{{ new Date(accion.fecha).toLocaleString() }}:</span> {{ accion.descripcion }}
-            </li>
+            </li> -->
           </ul>
         </div>
 

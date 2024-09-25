@@ -65,7 +65,7 @@ const fetchSolicitudes = async () => {
 
     // Hacer la petición con el id del asesor desde el authStore
     const response = await axios.get(`/api/adviser/getSolicitude/${authStore.id}`);
-
+    console.log(response.data)
     // Extraer los datos de la respuesta
     const solicitudes = response.data.data;
     tableData.value = solicitudes;
@@ -78,43 +78,42 @@ const fetchSolicitudes = async () => {
 };
 
 // Función para aceptar la solicitud
-// const acceptSolicitude = async () => {
-//   try {
-//     const solicitudId = solicitudSeleccionada.value;
-//     const params = {
-//       sol_status: 'aceptado',
-//       nro_oficio: nroCarta.value,  // Número de carta de aceptación
-//     };
+const acceptSolicitude = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value;
+    const params = {
+      sol_status: 'aceptado',
+      sol_num: nroCarta.value,  // Número de carta de aceptación
+    };
+    const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);  // URL y request body
 
-//     const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
-
-//     if (response.data.message === "OK") {
-//       const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
-//       if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
-//       closeModal();  // Cerrar el modal después de la actualización
-//     }
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal después de la actualización
+    }
 
 //   } catch (error) {
 //     console.error('Error al aceptar la solicitud:', error);
 //   }
 // };
 
-// // Función para rechazar la solicitud
-// const rejectSolicitude = async () => {
-//   try {
-//     const solicitudId = solicitudSeleccionada.value;
-//     const params = {
-//       sol_status: 'rechazado',
-//       motivo: motivoRechazo.value,  // Motivo de rechazo
-//     };
+// Función para rechazar la solicitud
+const rejectSolicitude = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value;
+    const params = {
+      sol_status: 'rechazado',
+      sol_observation: motivoRechazo.value,  // Motivo de rechazo
+    };
 
-//     const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
+    const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);  // URL y request body
 
-//     if (response.data.message === "OK") {
-//       const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
-//       if (solicitud) solicitud.estado = 'rechazado';  // Actualizar la tabla localmente
-//       closeModal();  // Cerrar el modal después de la actualización
-//     }
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      if (solicitud) solicitud.estado = 'rechazado';
+      closeModal();  // Cerrar el modal después de la actualización
+    }
 
 //   } catch (error) {
 //     console.error('Error al rechazar la solicitud:', error);
@@ -167,7 +166,7 @@ const documents = ref([]);  // Documentos obtenidos del backend
 
 function openDocumentModal(solicitudId: string) {
   solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
-  fetchDocuments(solicitudId);  // Cargar los documentos del backend
+  // fetchDocuments(solicitudId);  // Cargar los documentos del backend
   showDocumentModal.value = true;  // Mostrar el modal
 }
 
@@ -175,19 +174,41 @@ function closeDocumentModal() {
   showDocumentModal.value = false;  // Cerrar el modal
 }
 const fetchDocuments = async (solicitudId: string) => {
-  try {
-    // Hacer la petición al backend para obtener los documentos
-    const response = await axios.get(`/api/documents/${solicitudId}`);
-    documents.value = response.data.documents;  // Guardar los documentos en la variable `documents`
-  } catch (error) {
-    console.error('Error al cargar los documentos:', error);
-  }
+  // try {
+  //   // Hacer la petición al backend para obtener los documentos
+  //   const response = await axios.get(`/api/document/view/${solicitudId}`);
+  //   documents.value = response.data.documents;  // Guardar los documentos en la variable `documents`
+  // } catch (error) {
+  //   console.error('Error al cargar los documentos:', error);
+  // }
 };
 
 </script>
 
 
 <template>
+  <template v-if="load">
+    <div class="flex h-screen bg-gray-100">
+      <div class="flex-1 p-10 border-s-2 bg-gray-100">
+        <div class="flex justify-center items-center content-center px-14 flex-col">
+          <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
+        </div>
+        <div class="mt-8">
+          <div class="mt-4">
+            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+              <div class="w-full flex justify-end items-center space-x-2">
+                <h3 class="bg-gray-200 h-12 w-[30%] rounded-lg duration-200 skeleton-loader"></h3>
+              </div>
+            </div>
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
+                <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template v-else>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
     <div v-html="typedText"></div>    
@@ -281,7 +302,7 @@ const fetchDocuments = async (solicitudId: string) => {
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                    <button @click="openDocumentModal(u._id)" class="focus:outline-none">
+                    <button @click="openDocumentModal(u.id)" class="focus:outline-none">
                       <!-- Icono centrado -->
                       <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                     </button>
@@ -364,11 +385,13 @@ const fetchDocuments = async (solicitudId: string) => {
           </div>
           <div class="p-6">
             <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
-            <ul>
+            <!-- <ul>
               <li v-for="(doc, index) in documents" :key="index" class="mb-2">
                 <a :href="doc.url" target="_blank" class="text-blue-600 underline">{{ doc.name }}</a>
               </li>
-            </ul>
+            </ul> -->
+        <!-- Componente en Vue -->
+          <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver carta de aceptación</a>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
             <button class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cerrar</button>
@@ -378,6 +401,7 @@ const fetchDocuments = async (solicitudId: string) => {
 
     </div>
   </div>
+  </template>
 </template>
 
 <style scoped>
