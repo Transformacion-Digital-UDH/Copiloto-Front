@@ -67,7 +67,7 @@ const fetchSolicitudes = async () => {
 
     // Hacer la petición con el id del asesor desde el authStore
     const response = await axios.get(`/api/adviser/getSolicitude/${authStore.id}`);
-
+    console.log(response.data)
     // Extraer los datos de la respuesta
     const solicitudes = response.data.data;
     tableData.value = solicitudes;
@@ -85,13 +85,12 @@ const acceptSolicitude = async () => {
     const solicitudId = solicitudSeleccionada.value;
     const params = {
       sol_status: 'aceptado',
-      nro_oficio: nroCarta.value,  // Número de carta de aceptación
+      sol_num: nroCarta.value,  // Número de carta de aceptación
     };
+    const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);  // URL y request body
 
-    const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
-
-    if (response.data.message === "OK") {
-      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
       if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal después de la actualización
     }
@@ -107,14 +106,14 @@ const rejectSolicitude = async () => {
     const solicitudId = solicitudSeleccionada.value;
     const params = {
       sol_status: 'rechazado',
-      motivo: motivoRechazo.value,  // Motivo de rechazo
+      sol_observation: motivoRechazo.value,  // Motivo de rechazo
     };
 
-    const response = await axios.put(`/api/solicitude/${solicitudId}`, params);  // URL y request body
+    const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);  // URL y request body
 
-    if (response.data.message === "OK") {
-      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
-      if (solicitud) solicitud.estado = 'rechazado';  // Actualizar la tabla localmente
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      if (solicitud) solicitud.estado = 'rechazado';
       closeModal();  // Cerrar el modal después de la actualización
     }
 
@@ -169,7 +168,7 @@ const documents = ref([]);  // Documentos obtenidos del backend
 
 function openDocumentModal(solicitudId: string) {
   solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
-  fetchDocuments(solicitudId);  // Cargar los documentos del backend
+  // fetchDocuments(solicitudId);  // Cargar los documentos del backend
   showDocumentModal.value = true;  // Mostrar el modal
 }
 
@@ -177,30 +176,47 @@ function closeDocumentModal() {
   showDocumentModal.value = false;  // Cerrar el modal
 }
 const fetchDocuments = async (solicitudId: string) => {
-  try {
-    // Hacer la petición al backend para obtener los documentos
-    const response = await axios.get(`/api/documents/${solicitudId}`);
-    documents.value = response.data.documents;  // Guardar los documentos en la variable `documents`
-  } catch (error) {
-    console.error('Error al cargar los documentos:', error);
-  }
+  // try {
+  //   // Hacer la petición al backend para obtener los documentos
+  //   const response = await axios.get(`/api/document/view/${solicitudId}`);
+  //   documents.value = response.data.documents;  // Guardar los documentos en la variable `documents`
+  // } catch (error) {
+  //   console.error('Error al cargar los documentos:', error);
+  // }
 };
 
 </script>
 
 
 <template>
+  <template v-if="load">
+    <div class="flex h-screen bg-gray-100">
+      <div class="flex-1 p-10 border-s-2 bg-gray-100">
+        <div class="flex justify-center items-center content-center px-14 flex-col">
+          <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
+        </div>
+        <div class="mt-8">
+          <div class="mt-4">
+            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+              <div class="w-full flex justify-end items-center space-x-2">
+                <h3 class="bg-gray-200 h-12 w-[30%] rounded-lg duration-200 skeleton-loader"></h3>
+              </div>
+            </div>
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
+                <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template v-else>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
     <div v-html="typedText"></div>
 
     
       <div class="mt-8">
-        <!-- Mostrar un spinner mientras se cargan los datos -->
-        <div v-if="load" class="flex justify-center">
-          <span>Cargando solicitudes...</span>
-        </div>
-
         <!-- Filtros de tabla -->
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
@@ -257,7 +273,7 @@ const fetchDocuments = async (solicitudId: string) => {
                 <tbody>
                   <tr
                     v-for="(u, index) in filteredTableData"
-                    :key="u._id"
+                    :key="u.id"
                     :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
@@ -268,15 +284,17 @@ const fetchDocuments = async (solicitudId: string) => {
                       <p class="text-gray-900 text-wrap w-80">{{ u.titulo || 'Título no disponible' }}</p>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
-                      <button class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u._id)">Aceptar</button>
-                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u._id)">Rechazar</button>
+                      <button class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u.id)" v-if="u.estado === 'pendiente'">Aceptar</button>
+                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u.id)" v-if="u.estado === 'pendiente'">Rechazar</button>
+                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openDeclineModal(u.id)" v-if="u.estado === 'aceptado'">Declinar</button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                    <button @click="openDocumentModal(u._id)" class="focus:outline-none">
+                    <button @click="openDocumentModal(u.id)" class="focus:outline-none">
                       <!-- Icono centrado -->
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg v-if="u.estado === 'aceptado'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656L5.414 9.172a6 6 0 108.485 8.485l.293-.293"/>
                       </svg>
+                      <p v-else>En espera</p>
                     </button>
                   </td>
 
@@ -357,11 +375,13 @@ const fetchDocuments = async (solicitudId: string) => {
           </div>
           <div class="p-6">
             <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
-            <ul>
+            <!-- <ul>
               <li v-for="(doc, index) in documents" :key="index" class="mb-2">
                 <a :href="doc.url" target="_blank" class="text-blue-600 underline">{{ doc.name }}</a>
               </li>
-            </ul>
+            </ul> -->
+        <!-- Componente en Vue -->
+          <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver carta de aceptación</a>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
             <button class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cerrar</button>
@@ -371,6 +391,7 @@ const fetchDocuments = async (solicitudId: string) => {
 
     </div>
   </div>
+  </template>
 </template>
 
 <style scoped>
