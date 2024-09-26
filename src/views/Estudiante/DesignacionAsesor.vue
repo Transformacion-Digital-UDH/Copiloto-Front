@@ -6,6 +6,22 @@ import axios from 'axios';
 import { alertToast, alertConfirmation } from '@/functions';
 import confetti from 'canvas-confetti';
 
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Designacion de Asesor</h3>`;
+const typedText = ref(''); 
+let index = 0; 
+const typeWriter = () => {
+  if (index < text.length) {
+    typedText.value += text.charAt(index); 
+    index++;
+    setTimeout(typeWriter, 30); 
+  }
+};
+
+onMounted(() => {
+  typeWriter(); // Llamamos la función al montar el componente
+});
+
 interface Documento {
   nombre: string;
   estado: string;
@@ -57,6 +73,8 @@ onMounted(() => {
   getInfoStudent();
 })
 
+
+
 const getInfoStudent = async () => {
   load.value = true
   await axios.get(`/api/student/getInfo/${authStore.id}`).then((response) => {
@@ -70,7 +88,7 @@ const getInfoStudent = async () => {
   }).catch((error) => {
     // alertToast(error.response.data.message, 'Error', 'error')
   }).finally(() => {
-    load.value = false
+    load.value = false;
   })
 }
 const getAdvisers = async () => {
@@ -200,8 +218,12 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100" >
-        <!-- Título principal -->
-        <h3 class="text-4xl font-semibold text-center text-azul mb-5">Designación de Asesor</h3>
+        <div v-html="typedText"></div> 
+       <!-- Mostrar un spinner mientras se cargan los datos -->
+       <div v-if="load" class="flex justify-center text-xl text-base">
+          <span>Cargando datos...</span>
+        </div>
+        <br>
 
         <!-- Card 1: Solicitud de Asesor -->
         <div class="bg-white rounded-lg shadow-lg p-6">
@@ -379,7 +401,6 @@ const updateSolicitude = async (solicitud_id: string, titulo: string, asesor_id:
             </div>
           </div>
         </div>
-
       </div>
     </template>
   </template>

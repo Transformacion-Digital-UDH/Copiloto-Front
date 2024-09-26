@@ -5,6 +5,21 @@ import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 
+
+
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Oficio para Designacion de Asesor</h3>`;
+const typedText = ref(''); // Inicializamos el texto como vacío
+let index = 0; // Índice para controlar la posición en el texto
+
+const typeWriter = () => {
+  if (index < text.length) {
+    typedText.value += text.charAt(index); 
+    index++;
+    setTimeout(typeWriter, 30); 
+  }
+};
+
 // Estados y propiedades
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
@@ -89,6 +104,7 @@ const fetchSolicitudes = async () => {
 };
 onMounted(() => {
   fetchSolicitudes();
+  typeWriter();
 });
 
 const createGoogleDoc = async (solicitudeId) => {
@@ -114,11 +130,12 @@ const createGoogleDoc = async (solicitudeId) => {
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-semibold text-center text-azul">
-        Resolución de designación de asesor
-      </h3>
-
+      <div v-html="typedText"></div> 
       <div class="mt-8">
+      <!-- Mostrar un spinner mientras se cargan los datos -->
+      <div v-if="load" class="flex justify-center text-xl text-base">
+          <span>Cargando solicitudes...</span>
+      </div>
         <!-- Filtros de tabla -->
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
@@ -186,12 +203,12 @@ const createGoogleDoc = async (solicitudeId) => {
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
+                      <p class="text-black text-wrap w-64">
                         {{ solicitude.estudiante.nombre_completo}}
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
+                      <p class="text-black text-wrap w-64">
                         {{ solicitude.asesor.nombre_completo}}
                       </p>
                     </td>
@@ -395,6 +412,11 @@ const createGoogleDoc = async (solicitudeId) => {
 }
 
 .estado-tramitado {
+  background-color: #39B49E;
+  color: #ffffff;
+}
+
+.estado-aceptado {
   background-color: #48bb78;
   color: #ffffff;
 }
@@ -414,4 +436,6 @@ const createGoogleDoc = async (solicitudeId) => {
   font-size: 16px;  /* Tamaño de la fuente */
   text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
+
+
 </style>
