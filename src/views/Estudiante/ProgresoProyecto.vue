@@ -1,139 +1,87 @@
 <script>
 export default {
   data() {
-    const startDate = "2024-07-16"; // Fecha de inicio en formato YYYY-MM-DD
-    const endDate = "2025-07-16"; // Fecha de finalización en formato YYYY-MM-DD
-    const progressValue = 45; // Progreso en porcentaje
-
-    // Calcular los días restantes
-    const currentDate = new Date(); // Fecha actual
-    const end = new Date(endDate); // Convertimos la fecha de finalización a objeto Date
-    const timeDiff = end - currentDate; // Diferencia en milisegundos entre la fecha actual y la de finalización
-    const daysLeft = Math.ceil(timeDiff / (1000 * 60 * 60 * 24)); // Convertimos los milisegundos a días
+    const startDate = "2024-07-16";
+    const endDate = "2024-11-16";
+    const progressValue = 45;
 
     return {
-      progressValue,
       startDate,
       endDate,
-      daysLeft, // Días restantes calculados
+      progressValue
     };
-  },
+  }
 };
 </script>
 
 <template>
-    <div class="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-50 to-gray-100 p-4">
-      <div class="bg-white shadow-xl rounded-2xl p-6 sm:p-8 w-full max-w-lg md:max-w-2xl lg:max-w-3xl transition-all duration-300 hover:shadow-2xl hover:scale-105">
-        <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-6 tracking-wide text-gray-800">Progreso de tu Proyecto de Tesis</h2>
-  
-        <!-- Barra de progreso circular -->
-        <div class="relative mb-6 flex justify-center">
-          <div class="radial-progress" :style="{ '--value': progressValue }">
-            <div class="text-center absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-xl md:text-3xl lg:text-4xl font-bold text-gray-700">
-              {{ progressValue }}%
+  <div class="min-h-screen bg-gray-50 p-8">
+    <div class="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-x-16 w-full max-w-7xl mx-auto">
+
+      <!-- Imagen SVG a la izquierda -->
+      <div class="w-72 h-72 lg:w-96 lg:h-96 flex-shrink-0">
+        <img src="/img/p4.svg" alt="Descripción de la imagen" class="w-full h-full object-contain" />
+      </div>
+
+      <!-- Contenido central -->
+      <div class="flex-grow flex flex-col space-y-8 items-center lg:items-center text-center lg:text-center">
+        <h2 class="text-4xl text-base md:text-4xl lg:text-6xl font-bold">Progreso de tu Proyecto de Tesis</h2>
+        <br>
+        <br>
+
+        <div class="flex justify-around w-full space-x-8">
+          <!-- Tarjeta de Fecha de Inicio -->
+          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-64">
+            <div class="text-lg font-semibold text-gray-600">Inicio</div>
+            <div class="text-2xl font-bold">{{ startDate }}</div>
+          </div>
+
+          <!-- Circular Progress -->
+          <div class="flex items-center justify-center">
+            <div class="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 lg:w-64 lg:h-64">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="text-3xl sm:text-4xl md:text-5xl font-medium">{{ progressValue }}%</div>
+              </div>
+              <svg class="transform -rotate-90 w-full h-full" viewBox="0 0 42 42">
+                <circle cx="21" cy="21" r="15.91549431" fill="transparent" stroke="#e5e7eb" stroke-width="3"></circle>
+                <circle cx="21" cy="21" r="15.91549431" fill="transparent" stroke="#10b981" stroke-width="3" stroke-dasharray="100" :stroke-dashoffset="100 - progressValue"></circle>
+              </svg>
             </div>
           </div>
-        </div>
-  
-        <!-- Fechas de inicio y finalización -->
-        <div class="flex justify-between text-sm md:text-lg lg:text-xl text-gray-600 mb-4">
-          <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z"></path>
-            </svg>
-            <span>Inicio: {{ startDate }}</span>
-          </div>
-          <div class="flex items-center space-x-2">
-            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V9a2 2 0 012-2z"></path>
-            </svg>
-            <span>Fin: {{ endDate }}</span>
+
+          <!-- Tarjeta de Fecha de Fin -->
+          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-64">
+            <div class="text-lg font-semibold text-gray-600">Fin</div>
+            <div class="text-2xl font-bold">{{ endDate }}</div>
           </div>
         </div>
-  
-        <!-- Barra de progreso horizontal -->
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
-          <div class="bg-green-500 h-2 rounded-full transition-all duration-500" :style="{ width: progressValue + '%' }"></div>
+
+        <!-- Mensaje -->
+        <div class="text-yellow-600 text-lg md:text-xl">
+          Aún no puedes presentar tu informe.
         </div>
-  
-        <!-- Mensaje de alerta con los días faltantes -->
-        <div v-if="daysLeft > 0" class="text-center text-yellow-600 font-semibold bg-yellow-100 p-3 rounded mb-4 text-sm md:text-lg lg:text-xl">
-          Aún no puedes presentar tu informe final. Faltan {{ daysLeft }} días.
-        </div>
-        <div v-else class="text-center text-green-600 font-semibold bg-green-100 p-3 rounded mb-4 text-sm md:text-lg lg:text-xl">
-          ¡Puedes presentar tu informe final!
-        </div>
-  
-        <!-- Botones de acción -->
-        <div class="flex justify-center gap-4">
-          <button class="flex items-center bg-green-500 text-white font-semibold py-2 px-4 rounded hover:bg-green-400 text-sm md:text-lg lg:text-xl transition-all duration-300">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
+
+        <!-- Botones debajo del circular progress -->
+        <div class="flex justify-center gap-6">
+          <button class="px-8 py-4 bg-baseClarito text-white rounded-lg hover:bg-blue-700 transition text-lg md:text-xl">
             Ver más detalles
           </button>
-          <button class="flex items-center bg-gray-100 border border-gray-300 text-gray-700 font-semibold py-2 px-4 rounded hover:bg-gray-200 text-sm md:text-lg lg:text-xl transition-all duration-300">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v16c0 .55.45 1 1 1h14a1 1 0 001-1V4a1 1 0 00-1-1H5a1 1 0 00-1 1z"></path>
-            </svg>
-            Subir borrador
+          <button class="px-8 py-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition text-lg md:text-xl">
+            Ir a Informe Final
           </button>
         </div>
       </div>
     </div>
-  </template>
-  
+  </div>
+</template>
 
-  
-  <style scoped>
-  /* Estilo para la barra de progreso circular */
-  .radial-progress {
-    --size: 150px; /* Tamaño base */
-    --thickness: 12px;
-    --color: #4ade80; /* Color verde de Tailwind */
-    position: relative;
-    width: var(--size);
-    height: var(--size);
-    border-radius: 50%;
-    background: conic-gradient(var(--color) calc(var(--value) * 1%), #e5e7eb 0%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #374151; /* Texto en gris oscuro */
-    animation: progress-animation 2s ease-out;
-  }
-  @keyframes progress-animation {
-    from {
-      --value: 0;
-    }
-    to {
-      --value: calc(var(--value));
-    }
-  }
-  
-  @media (min-width: 768px) {
-    /* Ajustamos el tamaño de la barra circular en pantallas medianas */
-    .radial-progress {
-      --size: 200px;
-    }
-  }
-  
-  @media (min-width: 1024px) {
-    /* Ajustamos el tamaño de la barra circular en pantallas grandes */
-    .radial-progress {
-      --size: 250px;
-    }
-  }
-  
-  .radial-progress::before {
-    content: '';
-    position: absolute;
-    width: calc(var(--size) - var(--thickness) * 2);
-    height: calc(var(--size) - var(--thickness) * 2);
-    border-radius: 50%;
-    background-color: white;
-  }
-  </style>
-  
+<style scoped>
+svg {
+  overflow: visible;
+}
+circle {
+  transition: stroke-dashoffset 0.35s;
+  transform: rotate(90deg);
+  transform-origin: 50% 50%;
+}
+</style>

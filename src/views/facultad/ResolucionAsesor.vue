@@ -1,8 +1,23 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
 import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+
+
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Resoluciones para Designacion de Asesor</h3>`;
+const typedText = ref(''); // Inicializamos el texto como vacío
+let index = 0; // Índice para controlar la posición en el texto
+
+const typeWriter = () => {
+  if (index < text.length) {
+    typedText.value += text.charAt(index); 
+    index++;
+    setTimeout(typeWriter, 30); 
+  }
+};
 
 // Estados y propiedades
 const selectedFilter = ref("");
@@ -12,8 +27,14 @@ const showModal = ref(false);
 const showRejectModal = ref(false);
 const showSendModal = ref(false);
 const nroOficio1 = ref('');
+const isLoading = ref(false); // Indicador de carga
+const load = ref(false);  // Estado de carga
 
-function openSendModal (){
+// Estado de la tabla que almacenará los datos de la API
+const tableData = ref([]);
+
+// Función para abrir y cerrar modales
+function openSendModal() {
   showSendModal.value = true;
 }
 
@@ -27,7 +48,7 @@ function openRejectModal() {
 
 function closeModal() {
   showModal.value = false;
-  showRejectModal.value = false; //cerrar ambos modales
+  showRejectModal.value = false; // cerrar ambos modales
   showSendModal.value = false;
 }
 
@@ -36,8 +57,9 @@ const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   if (selectedFilter.value) {
+    // Filtrar por la propiedad "estado", ya que así es como la API lo devuelve
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => data.estado === selectedFilter.value
     );
   }
 
@@ -48,7 +70,7 @@ const filteredTableData = computed(() => {
 
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    ? tableData.value.filter((data) => data.estado === selectedFilter.value)
     : tableData.value;
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
@@ -61,37 +83,40 @@ function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// Datos actuales
-const tableData = ref([
-  {
-    name: "Rodríguez Meléndez, Fabio",
-    advisor: "Renzo Paolo, Luciano Estela",
-    status: "Pendiente",
-    date: "31-02-2024",
-  },
-  {
-    name: "Sulca Correa, Omar Iván",
-    advisor: "Juan Manual, Vicente Rojas",
-    status: "Observado",
-    date: "15-08-2023",
-  },
-  {
-    name: "Nuñez Vicente, José Antonio",
-    advisor: "Enrique Carlos, Murga Cespedes",
-    status: "Tramitado",
-    date: "19-10-2022",
-  },
-]);
+// Función para obtener los datos desde la API
+const fetchOffices = async () => {
+  isLoading.value = true;
+
+  try {
+    // Llamada a la API para obtener los datos
+    const response = await axios.get('api/faculty/getOffices');
+    console.log(response.data);
+    tableData.value = response.data.data; 
+  } catch (error) {
+    console.error("Error al cargar las solicitudes:", error);
+  } finally {
+    isLoading.value = false; // Ocultar indicador de carga
+  }
+};
+
+// Cargar los datos cuando el componente se monta
+onMounted(() => {
+  fetchOffices();
+  typeWriter();
+});
 </script>
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-semibold text-center text-azul">
-        Resolución de designación de asesor
-      </h3>
+      <div v-html="typedText"></div> 
+      <!-- Mostrar un spinner mientras se cargan los datos -->
+      <div v-if="isLoading" class="flex justify-center text-xl text-base">
+          <span>Cargando solicitudes...</span>
+      </div>
 
-      <div class="mt-8">
+      <!-- Tabla de datos -->
+      <div v-else>
         <!-- Filtros de tabla -->
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
@@ -125,24 +150,20 @@ const tableData = ref([
                   class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
                 >
                   <option value="">Todos</option>
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Observado">Observado</option>
-                  <option value="Tramitado">Tramitado</option>
+                  <option value="pendiente">Pendiente</option>
+                  <option value="observado">Observado</option>
+                  <option value="tramitado">Tramitado</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- Tabla -->
+          <!-- Tabla de datos -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
-            <div
-              class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
-            >
+            <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal">
                 <thead class="custom-thead font-Quicksand">
-                  <tr
-                    class="text-center text-black border-b-2 bg-gray-300"
-                  >
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
                     <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
@@ -155,18 +176,18 @@ const tableData = ref([
                 <tbody>
                   <tr
                     v-for="(u, index) in filteredTableData"
-                    :key="index"
+                    :key="u.id"
                     :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-32">
-                        {{ u.name }}
+                        {{ u.estudiante_nombre || 'Nombre desconocido' }}
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-32">
-                        {{ u.advisor }}
+                        {{ u.asesor_nombre || 'Asesor desconocido' }}
                       </p>
                     </td>
                     <td class="text-center px-4">
@@ -176,7 +197,7 @@ const tableData = ref([
                     </td>
                     <td class="px-3 py-5 text-base text-center">
                       <p class="text-gray-900 text-wrap w-32">
-                        {{ u.date }}
+                        {{ u.fecha_creado || 'Fecha no disponible' }}
                       </p>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
@@ -202,12 +223,8 @@ const tableData = ref([
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                      <span
-                        :class="`estado-estilo estado-${u.status
-                          .toLowerCase()
-                          .replace(' ', '-')}`"
-                      >
-                        {{ u.status }}
+                      <span :class="`estado-estilo estado-${u.estado.toLowerCase().replace(' ', '-')}`">
+                        {{ u.estado || 'Estado desconocido' }}
                       </span>
                     </td>
                   </tr>
@@ -215,14 +232,12 @@ const tableData = ref([
               </table>
 
               <!-- Paginación -->
-              <div
-                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
-              >
-                <span class="text-sm text-gray-900 xs:text-sm"
-                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-900 xs:text-sm">
+                  Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}</span
-                >
+                  {{ tableData.length }}
+                </span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
                   <button
                     :disabled="currentPage === 1"
@@ -244,9 +259,8 @@ const tableData = ref([
           </div>
         </div>
       </div>
-
-      <!-- Modal para generar un oficio al estudiante -->
-      <div
+        <!-- Modal para generar un oficio al estudiante -->
+        <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
@@ -373,7 +387,6 @@ const tableData = ref([
       </div>
 
       <!-- Modal para subir link de tesis -->
-
     </div>
   </div>
 </template>
@@ -400,8 +413,4 @@ const tableData = ref([
   background-color: #8898aa;
   color: #ffffff;
 }
-.thin-text {
-    font-family: 'Roboto', sans-serif;
-    font-weight: 100; /* Esto es lo más delgado posible para Roboto */
-  }
 </style>

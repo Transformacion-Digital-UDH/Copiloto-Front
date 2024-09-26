@@ -18,6 +18,7 @@ export default {
       fontFamily: {
         Roboto: ["Roboto", "sans-serif"], // Corregido el formato aquí
         Quicksand: ["Quicksand", "sans-serif"],
+        Poppins: ["Poppins", "sans-serif"], 
       },
       fontWeight: {
         Medium: 500,
