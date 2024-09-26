@@ -213,9 +213,11 @@ const createGoogleDoc = async (solicitudeId) => {
                       </p>
                     </td>
                     <td class="text-center px-4">
-                      <button>
-                        <IconPdf />
-                      </button>
+                      <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${ solicitude.id }`" target="_blank">
+                        <button>
+                          <IconPdf />
+                        </button>
+                      </a>
                     </td>
                     <td class="text-center px-4">
                       <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azulbajo w-32 px-4 py-1 text-sm rounded-xl focus:outline-none">
