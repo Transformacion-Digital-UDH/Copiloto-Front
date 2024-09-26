@@ -92,11 +92,10 @@ const acceptSolicitude = async () => {
       if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal después de la actualización
     }
-
-//   } catch (error) {
-//     console.error('Error al aceptar la solicitud:', error);
-//   }
-// };
+  } catch (error) {
+    console.error('Error al aceptar la solicitud:', error);
+  }
+};
 
 // Función para rechazar la solicitud
 const rejectSolicitude = async () => {
@@ -114,6 +113,11 @@ const rejectSolicitude = async () => {
       if (solicitud) solicitud.estado = 'rechazado';
       closeModal();  // Cerrar el modal después de la actualización
     }
+  } catch (error) {
+    console.error('Error al rechazar la solicitud:', error);
+  }
+};
+
 
 //   } catch (error) {
 //     console.error('Error al rechazar la solicitud:', error);
@@ -266,7 +270,7 @@ const fetchDocuments = async (solicitudId: string) => {
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal sm:table md:table lg:table">
                 <thead class="custom-thead font-Quicksand border-b-5">
-                  <tr class="text-center text-white  bg-baseClarito">
+                  <tr class="text-center text-black  bg-baseClarito">
                     <th class="py-3 px-3 text-left tracking-wider">ESTUDIANTE</th>
                     <th class="py-3 px-3 text-left tracking-wider">TÍTULO</th>
                     <th class="py-3 px-4 tracking-wider">ACCIÓN</th>
@@ -376,29 +380,54 @@ const fetchDocuments = async (solicitudId: string) => {
       </div>
 
       <!-- Modal de documentos -->
-      <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
-              <IconCerrar />
-            </button>
-          </div>
-          <div class="p-6">
-            <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
-            <!-- <ul>
-              <li v-for="(doc, index) in documents" :key="index" class="mb-2">
-                <a :href="doc.url" target="_blank" class="text-blue-600 underline">{{ doc.name }}</a>
-              </li>
-            </ul> -->
-        <!-- Componente en Vue -->
-          <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver carta de aceptación</a>
-          </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cerrar</button>
+      <transition name="fade">
+        <div
+          v-if="showDocumentModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 transition-opacity duration-300 ease-in-out"
+        >
+          <div
+            class="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl transform transition-all duration-300 ease-out scale-100"
+            @click.stop
+          >
+            <!-- Botón cerrar con diseño flotante -->
+            <div class="absolute top-0 right-0 p-2">
+              <button
+                class="text-gray-500 bg-gray-100 p-2 rounded-full shadow-lg hover:shadow-xl hover:text-red-500 hover:bg-red-100 transition-all duration-200"
+                @click="closeDocumentModal"
+              >
+                <IconCerrar />
+              </button>
+            </div>
+
+            <!-- Contenido del modal -->
+            <div class="p-4">
+              <h5 class="text-2xl font-bold text-center text-gray-800 mb-4">Documentos Adjuntos</h5>
+              
+              <!-- Separador sutil debajo del título -->
+              <hr class="my-4 border-gray-200">
+
+              <!-- Enlace personalizado con efecto hover -->
+              <a
+                :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${solicitudSeleccionada}`"
+                target="_blank"
+                class="block text-center text-lg text-blue-600 underline hover:text-blue-800 transition-colors duration-200"
+              >
+                Ver carta de aceptación
+              </a>
+            </div>
+
+            <!-- Footer con botón de cerrar mejorado -->
+            <div class="flex items-center justify-end p-4 mt-4 border-t border-gray-100">
+              <button
+                class="px-6 py-2 font-semibold text-white bg-gradient-to-r from-base to-green-500 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out"
+                @click="closeDocumentModal"
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-
+      </transition>
     </div>
   </div>
   </template>
@@ -428,7 +457,7 @@ const fetchDocuments = async (solicitudId: string) => {
 }
 
 .custom-thead th {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 16px;
   text-transform: uppercase;
 }
@@ -441,6 +470,20 @@ select {
 select:focus {
   outline: none; /* Quitar borde azul del navegador */
   border-color: #39B49E; /* Borde al hacer foco */
+}
+
+/*modal documento*/
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+/* Ajuste para eliminar el scroll mientras el modal está activo */
+body {
+  overflow: hidden;
 }
 
 </style>
