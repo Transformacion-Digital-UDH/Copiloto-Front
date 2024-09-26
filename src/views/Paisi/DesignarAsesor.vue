@@ -5,20 +5,21 @@ import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 
-
-
-// Texto que queremos escribir automáticamente
-const text = `<h3 class="text-4xl font-semibold text-center text-azul">Oficio para Designacion de Asesor</h3>`;
-const typedText = ref(''); // Inicializamos el texto como vacío
-let index = 0; // Índice para controlar la posición en el texto
-
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Oficio para designación de asesor";
+const textoTipiado1 = ref('');
+let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    typedText.value += text.charAt(index); 
+    textoTipiado1.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 30); 
+    setTimeout(typeWriter, 40);
   }
 };
+onMounted(() => {
+  typeWriter();
+});
+// *******************************************************
 
 // Estados y propiedades
 const selectedFilter = ref("");
@@ -130,7 +131,7 @@ const createGoogleDoc = async (solicitudeId) => {
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <div v-html="typedText"></div> 
+      <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
       <div class="mt-8">
       <!-- Mostrar un spinner mientras se cargan los datos -->
       <div v-if="load" class="flex justify-center text-xl text-base">

@@ -5,22 +5,21 @@ import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 
-// Texto que queremos escribir automáticamente
-const text = `<h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>`;
-const typedText = ref(''); // Inicializamos el texto como vacío
-let index = 0; // Índice para controlar la posición en el texto
-
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Pendientes de confirmar, rechazar o declinar";
+const textoTipiado = ref('');
+let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    typedText.value += text.charAt(index); // Agrega cada letra al texto mostrado
+    textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 40); // Controla la velocidad del efecto
+    setTimeout(typeWriter, 40);
   }
 };
-
 onMounted(() => {
-  typeWriter(); // Llamamos la función al montar el componente
+  typeWriter();
 });
+// *******************************************************
 
 // Estado de los modales y datos
 const showModal = ref(false);  // Modal de aceptación
@@ -213,9 +212,8 @@ const fetchDocuments = async (solicitudId: string) => {
   <template v-else>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-    <div v-html="typedText"></div>
+    <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
-    
       <div class="mt-8">
         <!-- Filtros de tabla -->
         <div class="mt-6">
@@ -289,13 +287,22 @@ const fetchDocuments = async (solicitudId: string) => {
                       <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openDeclineModal(u.id)" v-if="u.estado === 'aceptado'">Declinar</button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                    <button @click="openDocumentModal(u.id)" class="focus:outline-none">
-                      <!-- Icono centrado -->
-                      <svg v-if="u.estado === 'aceptado'" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656L5.414 9.172a6 6 0 108.485 8.485l.293-.293"/>
-                      </svg>
-                      <p v-else>En espera</p>
-                    </button>
+                      <button @click="openDocumentModal(u.id)" class="focus:outline-none">
+                        <div v-if="u.estado === 'aceptado'" class="flex flex-col items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600 hover:text-gray-900 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a4 4 0 00-5.656-5.656L5.414 9.172a6 6 0 108.485 8.485l.293-.293"/>
+                          </svg>
+                          <p class="text-center mt-2 text-[#5d6d7e]">Ver</p>
+                        </div>
+
+                        <div v-else class="flex justify-center items-center">
+                          <svg class="animate-spin h-5 w-5 text-gray-700 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                          </svg>
+                          <p class="text-gray-600">En espera...</p>
+                        </div>
+                      </button>
                   </td>
 
 
