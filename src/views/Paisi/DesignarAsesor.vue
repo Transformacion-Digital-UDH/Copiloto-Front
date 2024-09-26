@@ -13,6 +13,7 @@ const showModal = ref(false);
 const showRejectModal = ref(false);
 const showLinkModal = ref(false);
 const nroOficio1 = ref('');
+const nroExped1 = ref('');
 const motivoObservacion = ref("");
 
 function openModal () {
@@ -173,7 +174,7 @@ const createGoogleDoc = async (solicitudeId) => {
                     <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                     <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
                     <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
-                    <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
+                    <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
@@ -203,7 +204,7 @@ const createGoogleDoc = async (solicitudeId) => {
                       <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azulbajo w-32 px-4 py-1 text-sm rounded-xl focus:outline-none">
                         Generar docs
                       </button>
-                      <a v-else :href="solicitude.link" target="_blank" class="text-blue-600" >Ver enlace</a>
+                      <a v-else :href="solicitude.link" target="_blank" class="text-blue-600 underline" >Ver documento</a>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
@@ -280,9 +281,14 @@ const createGoogleDoc = async (solicitudeId) => {
           </div>
           <div class="p-6">
             <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de oficio que se va autogenerar
+              Dígite el N° de oficio
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
+
+            <p class="text-gray-500 text-base text-left mb-2">
+              Dígite el N° de expediente
+            </p>
+            <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -297,7 +303,7 @@ const createGoogleDoc = async (solicitudeId) => {
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
-              Generar
+              Enviar
             </button>
           </div>
         </div>

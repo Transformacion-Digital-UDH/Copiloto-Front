@@ -11,7 +11,7 @@ const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
 const showSendModal = ref(false);
-const nroOficio1 = ref('');
+const nroExpedi = ref('');
 
 function openSendModal (){
   showSendModal.value = true;
@@ -268,9 +268,9 @@ const tableData = ref([
           </div>
           <div class="p-6">
             <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de expediente correspondiente
+              Dígite el N° de expediente
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroExpedi" v-model="nroExpedi" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="4" inputmode="numeric" pattern="[0-9]*" >
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
