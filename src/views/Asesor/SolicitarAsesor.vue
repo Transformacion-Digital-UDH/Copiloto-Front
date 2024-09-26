@@ -21,6 +21,18 @@ onMounted(() => {
   typeWriter(); // Llamamos la función al montar el componente
 });
 
+// Definir la interfaz de los datos de solicitud
+interface Estudiante {
+  nombre_completo: string;
+}
+
+interface Solicitud {
+  _id: string;
+  estudiante: Estudiante;
+  titulo: string;
+  estado: string;
+}
+
 // Estado de los modales y datos
 const showModal = ref(false);  // Modal de aceptación
 const showRejectModal = ref(false);  // Modal de rechazo
@@ -29,10 +41,10 @@ const motivoRechazo = ref(""); // Motivo de rechazo
 const selectedFilter = ref("");  // Filtro por estado
 const rowsPerPage = ref(5);  // Número de filas por página
 const currentPage = ref(1);  // Página actual
-const tableData = ref([]);  // Datos obtenidos del backend
+const tableData = ref<Solicitud[]>([]);  // Datos obtenidos del backend (tipado)
 const load = ref(false);  // Estado de carga
 const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
-let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
+let solicitudSeleccionada = ref<string | null>(null);  // Almacena la solicitud seleccionada para los modales
 
 //Función para abrir y cerrar modales
 function openModal(solicitudId: string) {
@@ -67,7 +79,7 @@ const fetchSolicitudes = async () => {
     const response = await axios.get(`/api/adviser/getSolicitude/${authStore.id}`);
     console.log(response.data)
     // Extraer los datos de la respuesta
-    const solicitudes = response.data.data;
+    const solicitudes: Solicitud[] = response.data.data;
     tableData.value = solicitudes;
 
   } catch (error) {
@@ -88,7 +100,7 @@ const acceptSolicitude = async () => {
     const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);  // URL y request body
 
     if (response.data.status) {
-      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
       if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal después de la actualización
     }
@@ -109,7 +121,7 @@ const rejectSolicitude = async () => {
     const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);  // URL y request body
 
     if (response.data.status) {
-      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
       if (solicitud) solicitud.estado = 'rechazado';
       closeModal();  // Cerrar el modal después de la actualización
     }
@@ -118,12 +130,6 @@ const rejectSolicitude = async () => {
   }
 };
 
-
-//   } catch (error) {
-//     console.error('Error al rechazar la solicitud:', error);
-//   }
-// };
-
 // Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
@@ -131,7 +137,7 @@ const filteredTableData = computed(() => {
   // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.estado === selectedFilter.value.toLowerCase()
+      (data) => data.estado.toLowerCase() === selectedFilter.value.toLowerCase()
     );
   }
 
@@ -144,7 +150,7 @@ const filteredTableData = computed(() => {
 // Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
+    ? tableData.value.filter((data) => data.estado.toLowerCase() === selectedFilter.value.toLowerCase())
     : tableData.value;
 
   return Math.ceil(filteredData.length / rowsPerPage.value);
@@ -186,9 +192,7 @@ const fetchDocuments = async (solicitudId: string) => {
   //   console.error('Error al cargar los documentos:', error);
   // }
 };
-
 </script>
-
 
 <template>
   <template v-if="load">
@@ -212,6 +216,7 @@ const fetchDocuments = async (solicitudId: string) => {
       </div>
     </div>
   </template>
+
   <template v-else>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
@@ -282,13 +287,12 @@ const fetchDocuments = async (solicitudId: string) => {
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="u._id"
-                    
                     class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 whitespace-nowrap w-64">{{ u.estudiante?.nombre_completo || 'Nombre desconocido' }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">{{ u.titulo || 'Título no disponible' }}</p>
+                      <p class="text-gray-900 text-wrap w-90">{{ u.titulo || 'Título no disponible' }}</p>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
@@ -306,13 +310,11 @@ const fetchDocuments = async (solicitudId: string) => {
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                    <button @click="openDocumentModal(u.id)" class="focus:outline-none">
+                    <button @click="openDocumentModal(u._id)" class="focus:outline-none">
                       <!-- Icono centrado -->
                       <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                     </button>
                   </td>
-
-
                     <td class="px-3 py-5 text-center">
                       <span :class="`estado-estilo estado-${u.estado ? u.estado.toLowerCase().replace(' ', '-') : ''}`">{{ u.estado || 'Estado desconocido' }}</span>
                     </td>

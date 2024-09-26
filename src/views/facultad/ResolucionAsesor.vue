@@ -5,7 +5,6 @@ import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 
-
 // Texto que queremos escribir automáticamente
 const text = `<h3 class="text-4xl font-semibold text-center text-azul">Resoluciones para Designacion de Asesor</h3>`;
 const typedText = ref(''); // Inicializamos el texto como vacío
@@ -19,6 +18,15 @@ const typeWriter = () => {
   }
 };
 
+// Definimos una interfaz para tipar los elementos de `tableData`
+interface Resolucion {
+  id: string;
+  estudiante_nombre: string;
+  asesor_nombre: string;
+  fecha_creado: string;
+  estado: string;
+}
+
 // Estados y propiedades
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
@@ -28,15 +36,9 @@ const showRejectModal = ref(false);
 const showSendModal = ref(false);
 const nroOficio1 = ref('');
 const isLoading = ref(false); // Indicador de carga
-const load = ref(false);  // Estado de carga
 
-// Estado de la tabla que almacenará los datos de la API
-const tableData = ref([]);
-
-// Función para abrir y cerrar modales
-function openSendModal() {
-  showSendModal.value = true;
-}
+// Estado de la tabla que almacenará los datos de la API, tipada con `Resolucion[]`
+const tableData = ref<Resolucion[]>([]);
 
 function openModal() {
   showModal.value = true;
@@ -49,7 +51,6 @@ function openRejectModal() {
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; // cerrar ambos modales
-  showSendModal.value = false;
 }
 
 // Filtrado y paginación
@@ -57,7 +58,7 @@ const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   if (selectedFilter.value) {
-    // Filtrar por la propiedad "estado", ya que así es como la API lo devuelve
+    // Filtrar por la propiedad "estado"
     filteredData = filteredData.filter(
       (data) => data.estado === selectedFilter.value
     );
@@ -89,9 +90,9 @@ const fetchOffices = async () => {
 
   try {
     // Llamada a la API para obtener los datos
-    const response = await axios.get('api/faculty/getOffices');
+    const response = await axios.get<{ data: Resolucion[] }>('api/faculty/getOffices');
     console.log(response.data);
-    tableData.value = response.data.data; 
+    tableData.value = response.data.data;
   } catch (error) {
     console.error("Error al cargar las solicitudes:", error);
   } finally {
@@ -129,14 +130,14 @@ onMounted(() => {
                 </span>
                 <input
                   placeholder="Buscar"
-                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
                 />
-              </div>
+                </div>
               <div class="relative">
                 <select
-                  v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                >
+                    v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                  >
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="20">20</option>
@@ -146,9 +147,9 @@ onMounted(() => {
               <!-- Filtro de estado -->
               <div class="relative">
                 <select
-                  v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
-                >
+                    v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                  >
                   <option value="">Todos</option>
                   <option value="pendiente">Pendiente</option>
                   <option value="observado">Observado</option>
@@ -161,38 +162,35 @@ onMounted(() => {
           <!-- Tabla de datos -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
-              <table class="min-w-full leading-normal">
-                <thead class="custom-thead font-Quicksand">
-                  <tr class="text-center text-black border-b-2 bg-gray-300">
-                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                    <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                    <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
-                    <th class="py-2 px-14 text-left tracking-wider">FECHA</th>
-                    <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
-                    <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
-                    <th class="py-2 px-3 tracking-wider">ESTADO</th>
+              <table class="min-w-full leading-normal sm:table md:table lg:table">
+                <thead class="custom-thead font-Quicksand border-b-5">
+                  <tr class="text-center text-black  bg-baseClarito">
+                    <th class="py-3 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-3 px-3 text-left tracking-wider">ASESOR</th>
+                    <th class="py-3 px-4 tracking-wider">OFICIO PAISI</th>
+                    <th class="py-3 px-14 text-left tracking-wider">FECHA</th>
+                    <th class="py-3 px-3 tracking-wider">VALIDAR TRÁMITE</th>
+                    <th class="py-3 px-3 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
                     v-for="(u, index) in filteredTableData"
                     :key="u.id"
-                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
-                    class="border-b border-gray-200"
-                  >
+                    class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-32">
+                      <p class="text-gray-900 text-wrap w-42">
                         {{ u.estudiante_nombre || 'Nombre desconocido' }}
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-32">
+                      <p class="text-gray-900 text-wrap w-42">
                         {{ u.asesor_nombre || 'Asesor desconocido' }}
                       </p>
                     </td>
                     <td class="text-center px-4">
                       <button>
-                        <IconPdf />
+                        <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                       </button>
                     </td>
                     <td class="px-3 py-5 text-base text-center">
@@ -202,24 +200,16 @@ onMounted(() => {
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
+                        class="w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none hover:bg-green-600 transform active:translate-y-1 transition-transform duration-150"
                         @click="openModal"
                       >
                         Generar
                       </button>
                       <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
+                        class="w-20 px-3 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none hover:bg-orange-400 transform active:translate-y-1 transition-transform duration-150"
                         @click="openRejectModal"
                       >
                         Observar
-                      </button>
-                    </td>
-                    <td class="px-3 py-5 text-center">
-                      <button
-                        class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
-                        @click="openSendModal"
-                      >
-                        Enviar
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
@@ -233,34 +223,19 @@ onMounted(() => {
 
               <!-- Paginación -->
               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-900 xs:text-sm">
-                  Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}
-                </span>
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button
-                    :disabled="currentPage === 1"
-                    @click="goToPreviousPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    :disabled="currentPage === totalPages"
-                    @click="goToNextPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
-                  >
-                    Siguiente
-                  </button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-gray-800 bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-black bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-        <!-- Modal para generar un oficio al estudiante -->
-        <div
+
+      <!-- Modal para generar un oficio al estudiante -->
+      <div
         v-if="showModal"
         class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
       >
@@ -277,7 +252,7 @@ onMounted(() => {
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará la resolucion de asesor para este estudiante
+              Se autogenerará la resolución de asesor para este estudiante
             </h5>
           </div>
           <div class="p-6">
@@ -347,41 +322,6 @@ onMounted(() => {
             >
               Confirmar
             </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- modal para enviar tramite a la facultad -->
-      <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
-          <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
-                <IconCerrar />
-              </button>
-          </div>
-          <div
-              class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-              </h5>
-          </div>
-          <div class="p-6">
-              <p class="text-gray-900 text-center text-lg mb-4">
-              ¿Desea enviar la resolución al estudiante y asesor?
-              </p>
-          </div>
-          <div
-              class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button
-              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal">
-              Cancelar
-              </button>
-              <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal">
-              Confirmar
-              </button>
           </div>
         </div>
       </div>
