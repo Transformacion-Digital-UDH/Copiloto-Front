@@ -24,7 +24,7 @@ const typeWriter = () => {
   if (index < text.length) {
     textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 40);
+    setTimeout(typeWriter, 80);
   }
 };
 onMounted(() => {
@@ -43,8 +43,10 @@ const currentPage = ref(1);  // Página actual
 const tableData = ref<Solicitud[]>([]);  // Datos obtenidos del backend, con el tipo definido como un array de `Solicitud`
 const load = ref(false);  // Estado de carga
 const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
-const solicitudSeleccionada = ref<number | null>(null);  // Almacena la solicitud seleccionada para los modales
-const URL_VIEW_OFFICE = "https://titulacion-back.abimaelfv.site/api/view-office";
+let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
+
+//VARIABLES DE ENTORNO
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER
 
 // Función para abrir y cerrar modales
 function openModal(solicitudId: number) {
@@ -340,26 +342,65 @@ function closeDocumentModal() {
           </div>
         </div>
 
-        <!-- Modal de confirmación -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                <IconCerrar />
-              </button>
-            </div>
-            <div class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">Confirmación</h5>
-            </div>
-            <div class="p-6">
-              <p class="text-gray-500 text-base text-left mb-2">Por favor escribe el N° de Oficio para la Carta de Aceptación</p>
-              <input type="text" v-model="nroCarta" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
-              <br><br>
-              <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
-            </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button class="ml-5 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl" @click="acceptSolicitude">Generar</button>
+      <!-- Modal de confirmación -->
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">Confirmación</h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-500 text-base text-left mb-2">Porfavor escribe el N° de Oficio para la Carta de Aceptación</p>
+            <input type="text" v-model="nroCarta" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <br><br>
+            <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
+          </div>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-5 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl" @click="acceptSolicitude">Generar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de rechazo -->
+      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-3xl font-ligth text-gray-900 text-center flex-1">Observación</h5>
+          </div>
+          <div class="p-6 bg-white rounded-lg">
+            <p class="text-gray-600 text-base mb-4">Por favor escriba el motivo de su rechazo</p>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0" v-model="motivoRechazo" placeholder="Escriba aquí su observación..."></textarea>
+          </div>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-3 text-sl font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-3 text-sl font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectSolicitude">Confirmar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal de documentos -->
+      <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="p-6">
+            <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
+            <div class="flex justify-between">
+              <p>Carta de aceptación</p>
+              <a :href="`${VIEW_LETTER}/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver</a>
             </div>
           </div>
         </div>
