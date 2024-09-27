@@ -27,6 +27,14 @@ const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
 const mostrarModalCambioAsesor = ref(false); // Controla el modal de cambio de asesor
 const mostrarModalConfirmacion = ref(false); // Modal de confirmación para cambio de asesor
 
+//VARIABLES DE ENTORNO
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER
+const DOWNLOAD_LETTER = import.meta.env.VITE_URL_DOWNLOAD_LETTER
+const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE
+const DOWNLOAD_OFFICE = import.meta.env.VITE_URL_DOWNLOAD_OFFICE
+const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION
+const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION
+
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
   switch (estado) {
@@ -68,8 +76,6 @@ const oficio = ref({
 });
 const resolucion = ref({ id: "", nombre: "", fecha_creado: "", estado: "" });
 const historial = ref([]);
-const URL_VIEW_OFFICE = "https://titulacion-back.abimaelfv.site/api/view-office";
-const URL_VIEW_RESOLUTION = "https://titulacion-back.abimaelfv.site/api/view-resolution";
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 onMounted(() => {
   getAdvisers();
@@ -476,7 +482,7 @@ const confirmarCambioAsesor = () => {
                   >
                     <!-- Botón de Ver -->
                     <a
-                      :href="`${URL_VIEW_OFFICE}/${oficio.id}`"
+                      :href="`${VIEW_OFFICE}/${oficio.id}`"
                       target="_blank"
                       :disabled="
                         ['en progreso', 'pendiente', 'rechazado'].includes(
@@ -489,7 +495,7 @@ const confirmarCambioAsesor = () => {
                     </a>
                     <!-- Botón de Descargar -->
                     <a
-                      :href="`${URL_VIEW_OFFICE}/${oficio.id}`"
+                      :href="`${DOWNLOAD_OFFICE}/${oficio.id}`"
                       download
                       :disabled="
                         ['en progreso', 'pendiente', 'rechazado'].includes(
@@ -537,7 +543,7 @@ const confirmarCambioAsesor = () => {
                   >
                     <!-- Botón de Ver -->
                     <a
-                      :href="`${URL_VIEW_RESOLUTION}/${resolucion.id}`"
+                      :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
                       target="_blank"
                       :disabled="
                         ['en progreso', 'pendiente', 'rechazado'].includes(
@@ -550,7 +556,7 @@ const confirmarCambioAsesor = () => {
                     </a>
                     <!-- Botón de Descargar -->
                     <a
-                      :href="`${URL_VIEW_RESOLUTION}/${resolucion.id}`"
+                      :href="`${DOWNLOAD_RESOLUTION}/${resolucion.id}`"
                       download
                       :disabled="
                         ['en progreso', 'pendiente', 'rechazado'].includes(

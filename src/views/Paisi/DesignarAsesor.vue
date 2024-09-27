@@ -35,6 +35,11 @@ const motivoObservacion = ref("");
 let oficio_id = ref(null);
 const createdoc = ref(false);
 
+//VARIABLES DE ENTORNO
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER
+const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE
+
+
 function openModal (oficioId: string) {
   showModal.value = true;
   oficio_id.value = oficioId
@@ -135,8 +140,8 @@ const createGoogleDoc = async (solicitudeId) => {
 };
 
 
-// Función para actualizar oficio 
-const actualizarOficio = async () => {
+// Función para actualizar o generar oficio
+const updateOffice = async () => {
   try {
     const oficioId = oficio_id.value;
     const params = {
@@ -146,7 +151,7 @@ const actualizarOficio = async () => {
     };
     const response = await axios.put(`/api/offices/${oficioId}/update-status-paisi`, params);  // URL y request body
 
-if (response.data.status) {
+    if (response.data.status) {
       const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
       if (oficio) oficio.oficio_estado = 'tramitado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal después de la actualización
@@ -157,6 +162,29 @@ if (response.data.status) {
     alertToast('Error al generar oficio', 'Error', 'error');
   }
 };
+
+// función para observar la solicitud
+const rejectSolicitude = async () => {
+  try {
+    const oficioId = oficio_id.value;
+    const params = {
+      of_status: 'observado',
+      of_observation: motivoObservacion.value,  // Motivo de rechazo
+    };
+    const response = await axios.put(`/api/offices/${oficioId}/update-status-paisi`, params);  // URL y request body
+
+    if (response.data.status) {
+      const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
+      if (oficio) oficio.oficio_estado = 'observado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal   de la actualización
+      alertToast('La solicitud ha sido observada', 'Éxito', 'success');
+    }
+
+  } catch (error) {
+    alertToast('Error al observada la solicitud', 'Error', 'error');
+  }
+};
+
 </script>
 
 <template>
@@ -262,7 +290,7 @@ if (response.data.status) {
                         </p>
                       </td>
                       <td class="text-center px-4">
-                        <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${ solicitude.id }`" target="_blank">
+                        <a :href="`${VIEW_LETTER}/${ solicitude.id }`" target="_blank">
                           <button>
                             <IconPdf />
                           </button>
@@ -276,7 +304,7 @@ if (response.data.status) {
                       </td>
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button
-                          v-if="['pendiente', 'observado', 'tramitado'].includes(solicitude.oficio_estado)"
+                          v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
                           :class="['w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado) 
                               ? 'cursor-not-allowed' 
@@ -288,7 +316,7 @@ if (response.data.status) {
                           Generar
                         </button>
                         <button
-                          v-if="['pendiente', 'observado', 'tramitado'].includes(solicitude.oficio_estado)"
+                          v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
                           :class="['w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado) 
                               ? 'cursor-not-allowed' 
@@ -299,6 +327,14 @@ if (response.data.status) {
                         >
                           Observar
                         </button>
+
+                        <a
+                          :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" target="_blank"
+                          v-if="['tramitado'].includes(solicitude.oficio_estado)"
+                          class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
+                        >
+                          Ver oficio
+                        </a>
                       </td>
                       <td class="px-3 py-5 text-center">
                         <span :class="`estado-estilo estado-${solicitude.oficio_estado ? solicitude.oficio_estado.toLowerCase().replace(' ', '-') : ''}`">{{ solicitude.oficio_estado || 'Estado desconocido' }}</span>
@@ -381,7 +417,7 @@ if (response.data.status) {
               </button>
               <button
                 class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-                @click="actualizarOficio"
+                @click="updateOffice"
               >
                 Enviar
               </button>
@@ -427,7 +463,7 @@ if (response.data.status) {
               </button>
               <button
                 class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-                @click="closeModal"
+                @click="rejectSolicitude"
               >
                 Confirmar
               </button>
