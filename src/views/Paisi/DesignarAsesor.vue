@@ -5,20 +5,21 @@ import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 
-
-
-// Texto que queremos escribir automáticamente
-const text = `<h3 class="text-4xl font-semibold text-center text-azul">Oficio para Designacion de Asesor</h3>`;
-const typedText = ref(''); // Inicializamos el texto como vacío
-let index = 0; // Índice para controlar la posición en el texto
-
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Oficio para designación de asesor";
+const textoTipiado1 = ref('');
+let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    typedText.value += text.charAt(index); 
+    textoTipiado1.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 30); 
+    setTimeout(typeWriter, 40);
   }
 };
+onMounted(() => {
+  typeWriter();
+});
+// *******************************************************
 
 // Estados y propiedades
 const selectedFilter = ref("");
@@ -28,6 +29,7 @@ const showModal = ref(false);
 const showRejectModal = ref(false);
 const showLinkModal = ref(false);
 const nroOficio1 = ref('');
+const nroExped1 = ref('');
 const motivoObservacion = ref("");
 
 function openModal () {
@@ -129,7 +131,7 @@ const createGoogleDoc = async (solicitudeId) => {
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <div v-html="typedText"></div> 
+      <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
       <div class="mt-8">
       <!-- Mostrar un spinner mientras se cargan los datos -->
       <div v-if="load" class="flex justify-center text-xl text-base">
@@ -187,11 +189,11 @@ const createGoogleDoc = async (solicitudeId) => {
                     class="text-center text-black border-b-2 bg-gray-300"
                   >
                     <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
-                    <th class="py-2 px-3 text-left font-thin tracking-wider">ASESOR</th>
-                    <th class="py-2 px-4 font-thin tracking-wider">CARTA ACEPTACIÓN</th>
-                    <th class="py-2 px-4 font-thin tracking-wider">LINK TESIS</th>
-                    <th class="py-2 px-3 font-thin tracking-wider">VALIDAR TRÁMITE</th>
-                    <th class="py-2 px-3 font-thin tracking-wider">ESTADO</th>
+                    <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
+                    <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
+                    <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
+                    <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
+                    <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -212,15 +214,17 @@ const createGoogleDoc = async (solicitudeId) => {
                       </p>
                     </td>
                     <td class="text-center px-4">
-                      <button>
-                        <IconPdf />
-                      </button>
+                      <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${ solicitude.id }`" target="_blank">
+                        <button>
+                          <IconPdf />
+                        </button>
+                      </a>
                     </td>
                     <td class="text-center px-4">
                       <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azulbajo w-32 px-4 py-1 text-sm rounded-xl focus:outline-none">
                         Generar docs
                       </button>
-                      <a v-else :href="solicitude.link" target="_blank" class="text-blue-600" >Ver enlace</a>
+                      <a v-else :href="solicitude.link" target="_blank" class="text-blue-600 underline" >Ver documento</a>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
@@ -297,9 +301,14 @@ const createGoogleDoc = async (solicitudeId) => {
           </div>
           <div class="p-6">
             <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de oficio que se va autogenerar
+              Dígite el N° de oficio
             </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
+
+            <p class="text-gray-500 text-base text-left mb-2">
+              Dígite el N° de expediente
+            </p>
+            <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -314,7 +323,7 @@ const createGoogleDoc = async (solicitudeId) => {
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               @click="closeModal"
             >
-              Generar
+              Enviar
             </button>
           </div>
         </div>

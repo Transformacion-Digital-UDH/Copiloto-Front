@@ -6,27 +6,28 @@ import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import { alertToast } from "@/functions";
 
-// Texto que queremos escribir automáticamente
-const text = `<h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>`;
-const typedText = ref(''); // Inicializamos el texto como vacío
-let index = 0; // Índice para controlar la posición en el texto
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Pendientes de confirmar, rechazar o declinar";
+const textoTipiado = ref('');
+let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    typedText.value += text.charAt(index); // Agrega cada letra al texto mostrado
+    textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 40); // Controla la velocidad del efecto
+    setTimeout(typeWriter, 40);
   }
 };
-
 onMounted(() => {
-  typeWriter(); // Llamamos la función al montar el componente
+  typeWriter();
 });
+// *******************************************************
 
 // Estado de los modales y datos
 const showModal = ref(false);  // Modal de aceptación
 const showRejectModal = ref(false);  // Modal de rechazo
 const nroCarta = ref("");  // Número de oficio para la carta
 const motivoRechazo = ref(""); // Motivo de rechazo
+
 const selectedFilter = ref("");  // Filtro por estado
 const rowsPerPage = ref(5);  // Número de filas por página
 const currentPage = ref(1);  // Página actual
@@ -36,7 +37,7 @@ const authStore = useAuthStore();  // Accedemos al authStore para obtener el id 
 let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
 const URL_VIEW_OFFICE = "https://titulacion-back.abimaelfv.site/api/view-office";
 
-//Función para abrir y cerrar modales
+// Función para abrir y cerrar modales
 function openModal(solicitudId: string) {
   solicitudSeleccionada.value = solicitudId;  // Guardar la solicitud seleccionada
   showModal.value = true;
@@ -75,7 +76,7 @@ const fetchSolicitudes = async () => {
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   } finally {
-    load.value = false;  
+    load.value = false;  // Quitar el indicador de carga
   }
 };
 
@@ -215,67 +216,60 @@ const fetchDocuments = async (solicitudId: string) => {
   <template v-else>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-    <div v-html="typedText"></div>    
-      <div class="mt-8">
-        <!-- Mostrar un spinner mientras se cargan los datos -->
-        <div v-if="load" class="flex justify-center text-xl text-base ">
-          <span>Cargando solicitudes...</span>
-        </div>
+    <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
+      <div class="mt-8">
         <!-- Filtros de tabla -->
         <div class="mt-6">
           <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
             <div class="w-full flex justify-end items-center space-x-2">
               <!-- Búsqueda -->
               <div class="relative">
-              <span class="absolute inset-y-0 left-0 flex items-center pl-2 text-base">
-                <IconBuscar />
-              </span>
-
-              <input
-                placeholder="Buscar"
-                class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
-              />
+                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <IconBuscar />
+                </span>
+                <input
+                  placeholder="Buscar"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none"
+                />
               </div>
-
-              <!-- Select para número de filas por página -->
               <div class="relative">
-                  <select
-                    v-model="rowsPerPage"
-                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                  >
-                    <option value="5">5</option>
-                    <option value="10">10</option>
-                    <option value="20">20</option>
-                  </select>
+                <select
+                  v-model="rowsPerPage"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                </select>
               </div>
 
-                <!-- Select para filtro por estado -->
-                <div class="relative">
-                  <select
-                    v-model="selectedFilter"
-                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                  >
-                    <option value="">Todos</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Aceptado">Aceptado</option>
-                    <option value="Rechazado">Rechazado</option>
-                  </select>
-                </div>
+              <!-- Filtro de estado -->
+              <div class="relative">
+                <select
+                  v-model="selectedFilter"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                >
+                  <option value="">Todos</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Aceptado">Aceptado</option>
+                  <option value="Rechazado">Rechazado</option>
+                </select>
+              </div>
             </div>
           </div>
 
           <!-- Tabla de solicitudes -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
-              <table class="min-w-full leading-normal sm:table md:table lg:table">
-                <thead class="custom-thead font-Quicksand border-b-5">
-                  <tr class="text-center text-white  bg-baseClarito">
-                    <th class="py-3 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                    <th class="py-3 px-3 text-left tracking-wider">TÍTULO</th>
-                    <th class="py-3 px-4 tracking-wider">ACCIÓN</th>
-                    <th class="py-3 px-3 tracking-wider">DOCUMENTOS</th>
-                    <th class="py-3 px-4 tracking-wider">ESTADO</th>
+              <table class="min-w-full leading-normal">
+                <thead class="custom-thead font-Quicksand">
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
+                    <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
+                    <th class="py-2 px-3 tracking-wider">DOCUMENTOS</th>
+                    <th class="py-2 px-4 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -342,11 +336,11 @@ const fetchDocuments = async (solicitudId: string) => {
               </table>
 
               <!-- Paginación -->
-              <div class="flex flex-col items-center px-5 py-4 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-900 xs:text-sm">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-gray-800 bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-black bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
@@ -440,7 +434,7 @@ const fetchDocuments = async (solicitudId: string) => {
 }
 
 .estado-rechazado {
-  background-color: #dd4e4e;
+  background-color: #DC2626;
   color: #ffffff;
 }
 
@@ -454,15 +448,4 @@ const fetchDocuments = async (solicitudId: string) => {
   font-size: 16px;
   text-transform: uppercase;
 }
-
-select {
-  border-color: #39B49E; /* Color del borde por defecto */
-  color: #39B49E; /* Color del texto */
-}
-
-select:focus {
-  outline: none; /* Quitar borde azul del navegador */
-  border-color: #39B49E; /* Borde al hacer foco */
-}
-
 </style>
