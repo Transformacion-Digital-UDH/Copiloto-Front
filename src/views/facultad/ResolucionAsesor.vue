@@ -31,6 +31,10 @@ const nroResolution = ref('');
 const load = ref(false); 
 const motivoObservacion = ref("");
 
+// Variables de entorno
+const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE
+const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION
+
 // Estado de la tabla que almacenará los datos de la API
 const tableData = ref([]);
 
@@ -256,7 +260,7 @@ const rejectResolution = async () => {
                         </p>
                       </td>
                       <td class="text-center px-4">
-                        <a :href="`https://titulacion-back.abimaelfv.site/api/view-office/${ u.id }`" target="_blank">
+                        <a :href="`${VIEW_OFFICE}/${ u.id }`" target="_blank">
                           <button>
                             <IconPdf />
                           </button>
@@ -294,11 +298,11 @@ const rejectResolution = async () => {
                         </button>
 
                         <a
-                          :href="`https://titulacion-back.abimaelfv.site/api/view-resolution/${ u.resolucion_id }`" target="_blank"
+                          :href="`${VIEW_RESOLUTION}/${ u.resolucion_id }`" target="_blank"
                           v-if="['tramitado'].includes(u.resolucion_estado)"
                           class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none text-center"
                         >
-                          Ver resolucion
+                          Ver resolución
                         </a>
                       </td>
                       <td class="px-3 py-5 text-center">
