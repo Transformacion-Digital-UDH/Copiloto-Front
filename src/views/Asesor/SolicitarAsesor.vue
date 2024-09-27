@@ -14,7 +14,7 @@ const typeWriter = () => {
   if (index < text.length) {
     textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 40);
+    setTimeout(typeWriter, 80);
   }
 };
 onMounted(() => {
