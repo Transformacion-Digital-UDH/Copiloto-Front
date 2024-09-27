@@ -14,7 +14,7 @@ const typeWriter = () => {
   if (index < text.length) {
     textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 40);
+    setTimeout(typeWriter, 80);
   }
 };
 onMounted(() => {
@@ -35,7 +35,9 @@ const tableData = ref([]);  // Datos obtenidos del backend
 const load = ref(false);  // Estado de carga
 const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
 let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
-const URL_VIEW_OFFICE = "https://titulacion-back.abimaelfv.site/api/view-office";
+
+//VARIABLES DE ENTORNO
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER
 
 // Función para abrir y cerrar modales
 function openModal(solicitudId: string) {
@@ -406,7 +408,7 @@ const fetchDocuments = async (solicitudId: string) => {
             <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
             <div class="flex justify-between">
               <p>Carta de aceptación</p>
-              <a :href="`${URL_VIEW_OFFICE}/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver</a>
+              <a :href="`${VIEW_LETTER}/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver</a>
             </div>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
