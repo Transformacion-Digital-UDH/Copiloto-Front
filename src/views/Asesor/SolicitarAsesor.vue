@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
+import { alertToast } from "@/functions";
 
 // Texto que queremos escribir automáticamente
 const text = `<h3 class="text-4xl font-semibold text-center text-azul">Pendientes de Confirmar</h3>`;
@@ -33,6 +34,7 @@ const tableData = ref([]);  // Datos obtenidos del backend
 const load = ref(false);  // Estado de carga
 const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
 let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
+const URL_VIEW_OFFICE = "https://titulacion-back.abimaelfv.site/api/view-office";
 
 //Función para abrir y cerrar modales
 function openModal(solicitudId: string) {
@@ -91,12 +93,13 @@ const acceptSolicitude = async () => {
       const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
       if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal después de la actualización
+      alertToast('La solicitud ha sido aceptada', 'Éxito', 'success');
     }
 
-//   } catch (error) {
-//     console.error('Error al aceptar la solicitud:', error);
-//   }
-// };
+  } catch (error) {
+    alertToast('Error al aceptar la solicitud', 'Error', 'error');
+  }
+};
 
 // Función para rechazar la solicitud
 const rejectSolicitude = async () => {
@@ -113,12 +116,13 @@ const rejectSolicitude = async () => {
       const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
       if (solicitud) solicitud.estado = 'rechazado';
       closeModal();  // Cerrar el modal después de la actualización
+      alertToast('La solicitud ha sido rechazada', 'Éxito', 'success');
     }
 
-//   } catch (error) {
-//     console.error('Error al rechazar la solicitud:', error);
-//   }
-// };
+  } catch (error) {
+    console.error('Error al rechazar la solicitud:', error);
+  }
+};
 
 // Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
@@ -142,7 +146,7 @@ const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
     : tableData.value;
-
+  
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
@@ -277,7 +281,7 @@ const fetchDocuments = async (solicitudId: string) => {
                 <tbody>
                   <tr
                     v-for="(u, index) in filteredTableData"
-                    :key="u._id"
+                    :key="u.id"
                     
                     class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base">
@@ -288,24 +292,45 @@ const fetchDocuments = async (solicitudId: string) => {
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
-                        class="w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none hover:bg-green-600 transform active:translate-y-1 transition-transform duration-150"
-                        @click="openModal(u._id)"
+                        v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                        :class="['w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78]  rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150', 
+                          ['rechazado'].includes(u.estado) 
+                            ? 'cursor-not-allowed' 
+                            : 'hover:bg-green-600'
+                        ]"
+                        :disabled="['rechazado'].includes(u.estado)"
+                        @click="openModal(u.id)"
                       >
                         Aceptar
                       </button>
 
                       <button
-                        class="w-20 px-3 py-1 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none hover:bg-red-600 transform active:translate-y-1 transition-transform duration-150"
-                        @click="openRejectModal(u._id)"
+                        v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                        :class="['w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150', 
+                          ['rechazado'].includes(u.estado) 
+                            ? 'cursor-not-allowed' 
+                            : 'hover:bg-red-600'
+                        ]"
+                        :disabled="['rechazado'].includes(u.estado)"
+                        @click="openRejectModal(u.id)"
                       >
                         Rechazar
                       </button>
+
+                      <button
+                        v-if="['aceptado'].includes(u.estado)"
+                        class="w-20 px-3 py-1 text-sm text-white bg-slate-600 rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
+                        @click="openRejectModal(u.id)"
+                      >
+                        Declinar
+                      </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                    <button @click="openDocumentModal(u.id)" class="focus:outline-none">
+                    <button v-if="u.estado === 'aceptado'" @click="openDocumentModal(u.id)" class="focus:outline-none">
                       <!-- Icono centrado -->
-                      <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
+                      <svg  fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                     </button>
+                      <p v-else>no generado</p>
                   </td>
 
 
@@ -385,13 +410,10 @@ const fetchDocuments = async (solicitudId: string) => {
           </div>
           <div class="p-6">
             <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
-            <!-- <ul>
-              <li v-for="(doc, index) in documents" :key="index" class="mb-2">
-                <a :href="doc.url" target="_blank" class="text-blue-600 underline">{{ doc.name }}</a>
-              </li>
-            </ul> -->
-        <!-- Componente en Vue -->
-          <a :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver carta de aceptación</a>
+            <div class="flex justify-between">
+              <p>Carta de aceptación</p>
+              <a :href="`${URL_VIEW_OFFICE}/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver</a>
+            </div>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
             <button class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cerrar</button>
