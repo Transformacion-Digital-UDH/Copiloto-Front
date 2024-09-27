@@ -150,11 +150,11 @@ const rejectResolution = async () => {
       const oficio = tableData.value.find((of) => of.id === oficioId);
       if (oficio) oficio.resolucion_estado = 'observado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal   de la actualización
-      alertToast('La solicitud ha sido observada', 'Éxito', 'success');
+      alertToast('El oficio ha sido observada', 'Éxito', 'success');
     }
 
   } catch (error) {
-    alertToast('Error al observada la solicitud', 'Error', 'error');
+    alertToast('Error al observar el oficio', 'Error', 'error');
   }
 };
 </script>
