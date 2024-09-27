@@ -5,6 +5,7 @@ import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 import { alertToast, alertConfirmation } from "@/functions";
 import confetti from "canvas-confetti";
+import router from "@/router";
 
 // Texto que queremos escribir automáticamente
 const text = `<h3 class="text-4xl font-semibold text-center text-azul">Designación de Asesor</h3>`;
@@ -81,6 +82,10 @@ onMounted(() => {
   getAdvisers();
   getInfoStudent();
 });
+
+const goToNextPage = () =>{
+    router.push('/estudiante/conformidad-asesor')
+}
 
 const getInfoStudent = async () => {
   load.value = true;
@@ -389,7 +394,10 @@ const confirmarCambioAsesor = () => {
             v-if="solicitude.estado !== 'en progreso'"
           >
             <div class="flex justify-between items-center">
-              <h4 class="text-black">Respuesta del asesor</h4>
+              <h4 class="text-black">
+              Respuesta del asesor: <span v-if="solicitude.estado === 'rechazado'" class="text-red-500 italic"> "{{ solicitude.observacion }}"</span>
+              </h4>
+              
               <div>
                 <span
                   :class="estadoClase(solicitude.estado)"
@@ -588,17 +596,17 @@ const confirmarCambioAsesor = () => {
 
         <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
-          <a
-            :disabled="!resolucion.estado"
-            href="/estudiante/conformidad-asesor"
+          <button
+            :disabled="['pendiente'].includes(resolucion.estado)"
+            @click="goToNextPage"
             :class="['px-4 py-2 text-white rounded-md bg-[#48bb78]', 
-              !resolucion.estado 
+              ['pendiente'].includes(resolucion.estado) 
                 ? 'bg-gray-400 cursor-not-allowed' 
                 : 'hover:bg-green-600 '
             ]"
           >
             Siguiente
-          </a>
+          </button>
         </div>
 
         <!-- Card 3: Solicitar Cambio de Asesor -->
