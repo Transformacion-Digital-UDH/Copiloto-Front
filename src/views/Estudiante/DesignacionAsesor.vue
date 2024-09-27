@@ -582,17 +582,17 @@ const confirmarCambioAsesor = () => {
 
         <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
-          <router-link
-            to="/estudiante/conformidad-asesor"
-            :disabled="['pendiente'].includes(resolucion.estado)"
+          <a
+            :disabled="!resolucion.estado"
+            href="/estudiante/conformidad-asesor"
             :class="['px-4 py-2 text-white rounded-md bg-[#48bb78]', 
-              ['pendiente'].includes(resolucion.estado) 
+              !resolucion.estado 
                 ? 'bg-gray-400 cursor-not-allowed' 
                 : 'hover:bg-green-600 '
             ]"
           >
             Siguiente
-          </router-link>
+          </a>
         </div>
 
         <!-- Card 3: Solicitar Cambio de Asesor -->
