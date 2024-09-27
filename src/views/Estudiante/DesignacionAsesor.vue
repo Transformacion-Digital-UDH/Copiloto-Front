@@ -74,8 +74,9 @@ const oficio = ref({
   estado: "",
   fecha_creado: "",
   nombre_de_oficio: "",
+  observacion: "",
 });
-const resolucion = ref({ id: "", nombre: "", fecha_creado: "", estado: "" });
+const resolucion = ref({ id: "", nombre: "", fecha_creado: "", estado: "", observacion: "" });
 const historial = ref([]);
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 onMounted(() => {
@@ -104,10 +105,12 @@ const getInfoStudent = async () => {
         resolucion.value.nombre = response.data.resolucion.nombre;
         resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
         resolucion.value.estado = response.data.resolucion.estado;
+        resolucion.value.observacion = response.data.resolucion.observacion;
         oficio.value.id = response.data.oficio.id;
         oficio.value.estado = response.data.oficio.estado;
         oficio.value.fecha_creado = response.data.oficio.fecha_creado;
         oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
+        oficio.value.observacion = response.data.oficio.observacion;
         historial.value = response.data.historial;
       }
     })
@@ -398,7 +401,30 @@ const confirmarCambioAsesor = () => {
               Respuesta del asesor: <span v-if="solicitude.estado === 'rechazado'" class="text-red-500 italic"> "{{ solicitude.observacion }}"</span>
               </h4>
               
-              <div>
+              <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
+              >
+                <div
+                    v-if="['aceptado'].includes(solicitude.estado)"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+                  >
+                    <!-- Botón de Ver -->
+                    <a
+                      :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a
+                      :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
                 <span
                   :class="estadoClase(solicitude.estado)"
                   class="estado-estilo"
@@ -476,27 +502,25 @@ const confirmarCambioAsesor = () => {
                 class="flex flex-col md:flex-row justify-between md:items-center"
               >
                 <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0"
-                  >Oficio de Secretaria PAISI</span
-                >
+                <span class="w-full md:w-auto mb-2 md:mb-0">
+                  Oficio de Secretaria PAISI
+                  <p v-if="oficio.estado === 'observado'" class="italic">
+                    "{{ oficio.observacion }}"
+                  </p>
+                </span>
 
                 <div
                   class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
                 >
                   <!-- Mostrar botones si el documento está listo -->
                   <div
-                    v-if="['tramitado', 'observado'].includes(oficio.estado)"
+                    v-if="['tramitado'].includes(oficio.estado)"
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
                   >
                     <!-- Botón de Ver -->
                     <a
                       :href="`${VIEW_OFFICE}/${oficio.id}`"
                       target="_blank"
-                      :disabled="
-                        ['en progreso', 'pendiente', 'rechazado'].includes(
-                          solicitude.estado
-                        )
-                      "
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
                     >
                       <i class="fas fa-eye mr-2"></i> Ver
@@ -505,11 +529,6 @@ const confirmarCambioAsesor = () => {
                     <a
                       :href="`${DOWNLOAD_OFFICE}/${oficio.id}`"
                       download
-                      :disabled="
-                        ['en progreso', 'pendiente', 'rechazado'].includes(
-                          solicitude.estado
-                        )
-                      "
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
                     >
                       <i class="fas fa-download mr-2"></i> Descargar
@@ -535,9 +554,13 @@ const confirmarCambioAsesor = () => {
                 class="flex flex-col md:flex-row justify-between md:items-center"
               >
                 <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0"
-                  >Resolución de Facultad</span
-                >
+                <span class="w-full md:w-auto mb-2 md:mb-0">
+                  Resolución de Facultad
+                  <p v-if="resolucion.estado === 'observado'" class="italic">
+                    "{{ resolucion.observacion }}"
+                  </p>
+                </span>
+
 
                 <div
                   class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
@@ -545,7 +568,7 @@ const confirmarCambioAsesor = () => {
                   <!-- Mostrar botones si el documento está listo -->
                   <div
                     v-if="
-                      ['tramitado', 'observado'].includes(resolucion.estado)
+                      ['tramitado'].includes(resolucion.estado)
                     "
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
                   >
@@ -553,11 +576,6 @@ const confirmarCambioAsesor = () => {
                     <a
                       :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
                       target="_blank"
-                      :disabled="
-                        ['en progreso', 'pendiente', 'rechazado'].includes(
-                          solicitude.estado
-                        )
-                      "
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
                     >
                       <i class="fas fa-eye mr-2"></i> Ver
@@ -566,11 +584,6 @@ const confirmarCambioAsesor = () => {
                     <a
                       :href="`${DOWNLOAD_RESOLUTION}/${resolucion.id}`"
                       download
-                      :disabled="
-                        ['en progreso', 'pendiente', 'rechazado'].includes(
-                          solicitude.estado
-                        )
-                      "
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
                     >
                       <i class="fas fa-download mr-2"></i> Descargar
