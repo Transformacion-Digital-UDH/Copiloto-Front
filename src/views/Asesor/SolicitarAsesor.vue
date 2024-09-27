@@ -4,6 +4,7 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
+import { alertToast } from "@/functions";
 
 // ***** Texto que escribe automáticamente ********
 const text = "Pendientes de confirmar, rechazar o declinar";
@@ -44,7 +45,8 @@ const currentPage = ref(1);  // Página actual
 const tableData = ref<Solicitud[]>([]);  // Datos obtenidos del backend (tipado)
 const load = ref(false);  // Estado de carga
 const authStore = useAuthStore();  // Accedemos al authStore para obtener el id del asesor
-let solicitudSeleccionada = ref<string | null>(null);  // Almacena la solicitud seleccionada para los modales
+let solicitudSeleccionada = ref(null);  // Almacena la solicitud seleccionada para los modales
+const URL_VIEW_OFFICE = "https://titulacion-back.abimaelfv.site/api/view-office";
 
 // Función para abrir y cerrar modales
 function openModal(solicitudId: string) {
@@ -95,12 +97,13 @@ const acceptSolicitude = async () => {
     const response = await axios.patch(`/api/solicitudes/${solicitudId}/status`, params);
 
     if (response.data.status) {
-      const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
-      if (solicitud) solicitud.estado = 'aceptado';
-      closeModal();
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      if (solicitud) solicitud.estado = 'aceptado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal después de la actualización
+      alertToast('La solicitud ha sido aceptada', 'Éxito', 'success');
     }
   } catch (error) {
-    console.error('Error al aceptar la solicitud:', error);
+    alertToast('Error al aceptar la solicitud', 'Error', 'error');
   }
 };
 
@@ -118,7 +121,8 @@ const rejectSolicitude = async () => {
     if (response.data.status) {
       const solicitud = tableData.value.find((sol) => sol._id === solicitudId);
       if (solicitud) solicitud.estado = 'rechazado';
-      closeModal();
+      closeModal();  // Cerrar el modal después de la actualización
+      alertToast('La solicitud ha sido rechazada', 'Éxito', 'success');
     }
   } catch (error) {
     console.error('Error al rechazar la solicitud:', error);
@@ -145,7 +149,7 @@ const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter((data) => data.estado.toLowerCase() === selectedFilter.value.toLowerCase())
     : tableData.value;
-
+  
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
@@ -247,46 +251,81 @@ function closeDocumentModal() {
               </div>
             </div>
 
-            <!-- Tabla de solicitudes -->
-            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
-              <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
-                <table class="min-w-full leading-normal sm:table md:table lg:table">
-                  <thead class="custom-thead font-Quicksand border-b-5">
-                    <tr class="text-center text-black  bg-baseClarito">
-                      <th class="py-3 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                      <th class="py-3 px-3 text-left tracking-wider">TÍTULO</th>
-                      <th class="py-3 px-4 tracking-wider">ACCIÓN</th>
-                      <th class="py-3 px-3 tracking-wider">DOCUMENTOS</th>
-                      <th class="py-3 px-4 tracking-wider">ESTADO</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(u, index) in filteredTableData"
-                      :key="u._id"
-                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 whitespace-nowrap w-64">{{ u.estudiante?.nombre_completo || 'Nombre desconocido' }}</p>
-                      </td>
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-90">{{ u.titulo || 'Título no disponible' }}</p>
-                      </td>
-                      <td class="px-3 py-5 flex flex-col items-center justify-center">
-                      <button class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u._id)" v-if="u.estado === 'pendiente'">Aceptar</button>
-                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u._id)" v-if="u.estado === 'pendiente'">Rechazar</button>
-                      <!-- <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openDeclineModal(u._id)" v-if="u.estado === 'aceptado'">Declinar</button> -->
+          <!-- Tabla de solicitudes -->
+          <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+            <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
+              <table class="min-w-full leading-normal">
+                <thead class="custom-thead font-Quicksand">
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
+                    <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
+                    <th class="py-2 px-3 tracking-wider">DOCUMENTOS</th>
+                    <th class="py-2 px-4 tracking-wider">ESTADO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="(u, index) in filteredTableData"
+                    :key="u.id"
+                    
+                    class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.estudiante?.nombre_completo || 'Nombre desconocido' }}</p>
                     </td>
-                      <td class="px-3 py-5 text-center">
-                        <button>
-                        <svg @click="openDocumentModal(u._id)"  fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 text-wrap w-80">{{ u.titulo || 'Título no disponible' }}</p>
+                    </td>
+                    <td class="px-3 py-5 flex flex-col items-center justify-center">
+                      <button
+                        v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                        :class="['w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78]  rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150', 
+                          ['rechazado'].includes(u.estado) 
+                            ? 'cursor-not-allowed' 
+                            : 'hover:bg-green-600'
+                        ]"
+                        :disabled="['rechazado'].includes(u.estado)"
+                        @click="openModal(u.id)"
+                      >
+                        Aceptar
                       </button>
-                      </td>
-                      <td class="px-3 py-5 text-center">
-                        <span :class="`estado-estilo estado-${u.estado ? u.estado.toLowerCase().replace(' ', '-') : ''}`">{{ u.estado || 'Estado desconocido' }}</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+
+                      <button
+                        v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                        :class="['w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150', 
+                          ['rechazado'].includes(u.estado) 
+                            ? 'cursor-not-allowed' 
+                            : 'hover:bg-red-600'
+                        ]"
+                        :disabled="['rechazado'].includes(u.estado)"
+                        @click="openRejectModal(u.id)"
+                      >
+                        Rechazar
+                      </button>
+
+                      <button
+                        v-if="['aceptado'].includes(u.estado)"
+                        class="w-20 px-3 py-1 text-sm text-white bg-slate-600 rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
+                        @click="openRejectModal(u.id)"
+                      >
+                        Declinar
+                      </button>
+                    </td>
+                    <td class="px-3 py-5 text-center">
+                    <button v-if="u.estado === 'aceptado'" @click="openDocumentModal(u.id)" class="focus:outline-none">
+                      <!-- Icono centrado -->
+                      <svg  fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
+                    </button>
+                      <p v-else>no generado</p>
+                  </td>
+
+
+                    <td class="px-3 py-5 text-center">
+                      <span :class="`estado-estilo estado-${u.estado ? u.estado.toLowerCase().replace(' ', '-') : ''}`">{{ u.estado || 'Estado desconocido' }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
                 <!-- Paginación -->
                 <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
@@ -346,55 +385,24 @@ function closeDocumentModal() {
             </div>
           </div>
 
-          <!-- Modal de documentos -->
-          <transition name="fade">
-            <div
-              v-if="showDocumentModal"
-              class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 transition-opacity duration-300 ease-in-out"
-            >
-              <div
-                class="relative w-full max-w-md p-6 bg-white rounded-2xl shadow-2xl transform transition-all duration-300 ease-out scale-100"
-                @click.stop
-              >
-                <!-- Botón cerrar con diseño flotante -->
-                <div class="absolute top-0 right-0 p-2">
-                  <button
-                    class="text-gray-500 bg-gray-100 p-2 rounded-full shadow-lg hover:shadow-xl hover:text-red-500 hover:bg-red-100 transition-all duration-200"
-                    @click="closeDocumentModal"
-                  >
-                    <IconCerrar />
-                  </button>
-                </div>
-
-                <!-- Contenido del modal -->
-                <div class="p-4">
-                  <h5 class="text-2xl font-bold text-center text-gray-800 mb-4">Documentos Adjuntos</h5>
-                  
-                  <!-- Separador sutil debajo del título -->
-                  <hr class="my-4 border-gray-200">
-
-                  <!-- Enlace personalizado con efecto hover -->
-                  <a
-                    :href="`https://titulacion-back.abimaelfv.site/api/view-letter/${solicitudSeleccionada}`"
-                    target="_blank"
-                    class="block text-center text-lg text-blue-600 underline hover:text-blue-800 transition-colors duration-200"
-                  >
-                    Ver carta de aceptación
-                  </a>
-                </div>
-
-                <!-- Footer con botón de cerrar mejorado -->
-                <div class="flex items-center justify-end p-4 mt-4 border-t border-gray-100">
-                  <button
-                    class="px-6 py-2 font-semibold text-white bg-gradient-to-r from-base to-green-500 rounded-full shadow-md hover:shadow-lg transform hover:scale-105 transition-transform duration-200 ease-in-out"
-                    @click="closeDocumentModal"
-                  >
-                    Cerrar
-                  </button>
-                </div>
-              </div>
+      <!-- Modal de documentos -->
+      <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="p-6">
+            <h5 class="text-2xl font-medium text-center mb-4">Documentos Adjuntos</h5>
+            <div class="flex justify-between">
+              <p>Carta de aceptación</p>
+              <a :href="`${URL_VIEW_OFFICE}/${solicitudSeleccionada}`" target="_blank" class="text-blue-600 underline">ver</a>
             </div>
-          </transition>
+          </div>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cerrar</button>
+          </div>
         </div>
       </div>
     </div>
