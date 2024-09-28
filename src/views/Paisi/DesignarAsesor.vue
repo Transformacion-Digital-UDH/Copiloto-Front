@@ -5,6 +5,8 @@ import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
 // ***** Texto que escribe automatiqueshionmente ********
 const text = "Oficio para designación de asesor";
@@ -23,6 +25,7 @@ onMounted(() => {
 // *******************************************************
 
 // Estados y propiedades
+const isHovered = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
@@ -155,7 +158,7 @@ const updateOffice = async () => {
       const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
       if (oficio) oficio.oficio_estado = 'tramitado';  // Actualizar la tabla localmente
       closeModal();  // Cerrar el modal después de la actualización
-      alertToast('El oficio a sido generado', 'Éxito', 'success');
+      alertToast('El oficio ha sido generado', 'Éxito', 'success');
     }
 
   } catch (error) {
@@ -300,7 +303,7 @@ const rejectSolicitude = async () => {
                         <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azulbajo w-32 px-4 py-1 text-sm rounded-xl focus:outline-none">
                           Generar docs
                         </button>
-                        <a v-else :href="solicitude.link" target="_blank" class="text-blue-600 underline" >Ver documento</a>
+                        <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
                       </td>
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button
@@ -311,9 +314,7 @@ const rejectSolicitude = async () => {
                               : 'hover:bg-green-600'
                           ]"
                           :disabled="['tramitado'].includes(solicitude.oficio_estado)"
-                          @click="openModal(solicitude.oficio_id)"
-                        >
-                          Generar
+                          @click="openModal(solicitude.oficio_id)">Generar
                         </button>
                         <button
                           v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
@@ -323,17 +324,17 @@ const rejectSolicitude = async () => {
                               : 'hover:bg-gray-400'
                           ]"
                           :disabled="['tramitado'].includes(solicitude.oficio_estado)"
-                          @click="openRejectModal(solicitude.oficio_id)"
-                        >
-                          Observar
+                          @click="openRejectModal(solicitude.oficio_id)">Observar
                         </button>
-
                         <a
                           :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" target="_blank"
+                          @mouseenter="isHovered = true"
+                          @mouseleave="isHovered = false"
                           v-if="['tramitado'].includes(solicitude.oficio_estado)"
-                          class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
-                        >
-                          Ver oficio
+                          class="flex items-center hover:underline">
+                          <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
+                          <IconEyeAbrir v-else class="mr-1"/>
+                          <span class="text-black text-base">Ver oficio</span>
                         </a>
                       </td>
                       <td class="px-3 py-5 text-center">
@@ -375,104 +376,7 @@ const rejectSolicitude = async () => {
         </div>
 
         <!-- Modal para generar un oficio al estudiante -->
-        <div
-          v-if="showModal"
-          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-        >
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button
-                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-                @click="closeModal"
-              >
-                <IconCerrar />
-              </button>
-            </div>
-            <div
-              class="flex items-start justify-between p-3 border-b border-gray-200"
-            >
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-                Se autogenerará el oficio para este estudiante
-              </h5>
-            </div>
-            <div class="p-6">
-              <p class="text-gray-500 text-base text-left mb-2">
-                Dígite el N° de oficio.
-              </p>
-              <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
-
-              <p class="text-gray-500 text-base text-left mb-2">
-                Dígite el N° de expediente.
-              </p>
-              <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
-            </div>
-            <div
-              class="flex items-center justify-end p-3 border-t border-gray-200"
-            >
-              <button
-                class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal"
-              >
-                Cancelar
-              </button>
-              <button
-                class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-                @click="updateOffice"
-              >
-                Enviar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal de observacion -->
-        <div
-          v-if="showRejectModal"
-          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-        >
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button
-                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-                @click="closeModal"
-              >
-                <IconCerrar />
-              </button>
-            </div>
-            <div
-              class="flex items-start justify-between p-3 border-b border-gray-200"
-            >
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-                Observación
-              </h5>
-            </div>
-            <div class="p-6 bg-white rounded-lg">
-              <p class="text-gray-600 text-base text-center mb-4">
-                Por favor escriba el motivo de su observación
-              </p>
-              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
-            </div>
-            <div
-              class="flex items-center justify-end p-3 border-t border-gray-200"
-            >
-              <button
-                class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal"
-              >
-                Cancelar
-              </button>
-              <button
-                class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-                @click="rejectSolicitude"
-              >
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal para generar link de tesis -->
-        <div v-if="showLinkModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
@@ -480,24 +384,95 @@ const rejectSolicitude = async () => {
               </button>
             </div>
             <div class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                Se autogenerará el oficio para este estudiante
+              </h5>
+            </div>
+            <div class="p-6">
+              <p class="text-gray-500 text-lg text-left mb-2">
+                Dígite el N° de oficio.
+              </p>
+              <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
+
+              <p class="text-gray-500 text-lg text-left mb-2">
+                Dígite el N° de expediente.
+              </p>
+              <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
+            </div>
+            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">
+                Cancelar
+              </button>
+              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl"
+                @click="updateOffice">
+                Enviar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de observacion -->
+        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+            <div class="flex justify-end items-start">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
+                <IconCerrar />
+              </button>
+            </div>
+            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                Observación
+              </h5>
+            </div>
+            <div class="p-6 bg-white rounded-lg">
+              <p class="text-gray-600 text-lg text-center mb-4">
+                Por favor escriba el motivo de su observación
+              </p>
+              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
+            </div>
+            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button
+                class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">
+                Cancelar
+              </button>
+              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+                @click="rejectSolicitude">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal para generar link de tesis -->
+        <div v-if="showLinkModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+            <div class="flex justify-end items-start">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+                <IconCerrar />
+              </button>
+            </div>
+            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
                 Generar enlace de documento
               </h5>
             </div>
             <div class="p-6">
-              <p class="text-gray-500 text-base text-center mb-2">
+              <p class="text-gray-500 text-lg text-center mb-2">
                 ¿Está seguro de que desea generar el documento?
               </p>
             </div>
             <div class="flex items-center justify-end p-3 border-t border-gray-200">
               <button 
               :disabled="createdoc"
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+              class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                 Cancelar
               </button>
               <button 
               :disabled="createdoc"
-              v-if="!selectedSolicitude.link" @click="createGoogleDoc(selectedSolicitude.id)" class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl">
+              v-if="!selectedSolicitude.link" @click="createGoogleDoc(selectedSolicitude.id)" class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl">
                 <div v-if="createdoc" class="flex items-center gap-2">
                   <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

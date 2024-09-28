@@ -5,22 +5,27 @@ import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import { alertToast } from "@/functions";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
-
-// Texto que queremos escribir automáticamente
-const text = `Resoluciones para designación de Asesor`;
-const typedText = ref(''); // Inicializamos el texto como vacío
-let index = 0; // Índice para controlar la posición en el texto
-
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Resoluciones para designación de asesor";
+const textoTipiado = ref("");
+let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    typedText.value += text.charAt(index); 
+    textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 80); 
+    setTimeout(typeWriter, 80);
   }
 };
+onMounted(() => {
+  typeWriter();
+});
+// *******************************************************
 
 // Estados y propiedades
+const isHovered = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
@@ -184,7 +189,9 @@ const rejectResolution = async () => {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ typedText }}</h3>
+        <h3 class="text-4xl font-semibold text-center text-azul">
+          {{ textoTipiado }}
+        </h3>
         <!-- Tabla de datos -->
         <div>
           <!-- Filtros de tabla -->
@@ -250,12 +257,12 @@ const rejectResolution = async () => {
                       class="border-b border-gray-200"
                     >
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-32">
+                        <p class="text-gray-900 text-wrap w-64">
                           {{ u.estudiante_nombre || 'Nombre desconocido' }}
                         </p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-32">
+                        <p class="text-gray-900 text-wrap w-64">
                           {{ u.asesor_nombre || 'Asesor desconocido' }}
                         </p>
                       </td>
@@ -298,11 +305,15 @@ const rejectResolution = async () => {
                         </button>
 
                         <a
-                          :href="`${VIEW_RESOLUTION}/${ u.resolucion_id }`" target="_blank"
+                          :href="`${VIEW_RESOLUTION}/${u.resolucion_id}`"
+                          target="_blank"
+                          @mouseenter="isHovered = true"
+                          @mouseleave="isHovered = false"
                           v-if="['tramitado'].includes(u.resolucion_estado)"
-                          class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none text-center"
-                        >
-                          Ver resolución
+                          class="flex items-center text-blue-950 hover:underline">
+                          <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
+                          <IconEyeAbrir v-else class="mr-1"/>
+                          <span class="text-black text-base">Ver resolución</span>
                         </a>
                       </td>
                       <td class="px-3 py-5 text-center">
@@ -343,71 +354,45 @@ const rejectResolution = async () => {
           </div>
         </div>
           <!-- Modal para generar un oficio al estudiante -->
-          <div
-          v-if="showModal"
-          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-        >
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button
-                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-                @click="closeModal"
-              >
-                <IconCerrar />
-              </button>
-            </div>
-            <div
-              class="flex items-start justify-between p-3 border-b border-gray-200"
-            >
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-                Se autogenerará la resolucion de asesor para este estudiante
-              </h5>
-            </div>
-            <div class="p-6">
-              <p class="text-gray-500 text-base text-left mb-2">
-                Dígite el N° de expediente
-              </p>
-              <input type="text" id="nroResolution" v-model="nroResolution" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="4" inputmode="numeric" pattern="[0-9]*" >
-            </div>
-            <div
-              class="flex items-center justify-end p-3 border-t border-gray-200"
-            >
-              <button
-                class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal"
-              >
-                Cancelar
-              </button>
-              <button
-                class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-                @click="updateResolution"
-              >
-                Generar
-              </button>
+          <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+            <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+              <div class="flex justify-end items-start">
+                <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+                  <IconCerrar />
+                </button>
+              </div>
+              <div class="flex items-start justify-between p-3 border-b border-gray-200">
+                <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                  Se autogenerará la resolucion de asesor para este estudiante
+                </h5>
+              </div>
+              <div class="p-6">
+                <p class="text-gray-500 text-lg text-left mb-2">
+                  Dígite el N° de expediente
+                </p>
+                <input type="text" id="nroResolution" v-model="nroResolution" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="4" inputmode="numeric" pattern="[0-9]*" >
+              </div>
+              <div class="flex items-center justify-end p-3 border-t border-gray-200">
+                <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+                  Cancelar
+                </button>
+                <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl" @click="updateResolution">
+                  Generar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
         <!-- Modal de observacion -->
-        <div
-          v-if="showRejectModal"
-          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-        >
+        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button
-                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-                @click="closeModal"
-              >
+              <button  class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
-            <div
-              class="flex items-start justify-between p-3 border-b border-gray-200"
-            >
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-                Observación
-              </h5>
+            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación</h5>
             </div>
             <div class="p-6 bg-white rounded-lg">
               <p class="text-gray-600 text-lg text-center mb-4">
@@ -415,27 +400,19 @@ const rejectResolution = async () => {
               </p>
               <textarea v-model="motivoObservacion" class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
             </div>
-            <div
-              class="flex items-center justify-end p-3 border-t border-gray-200"
-            >
-              <button
-                class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal"
-              >
+            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                 Cancelar
               </button>
-              <button
-                class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-                @click="rejectResolution"
-              >
+              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectResolution">
                 Confirmar
               </button>
             </div>
           </div>
         </div>
 
-        <!-- modal para enviar tramite a la facultad -->
-        <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <!-- modal para enviar tramite a la facultad 
+        <div v-if="showSendModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
             <div class="flex justify-end items-start">
                 <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"     @click="closeModal">
@@ -467,9 +444,7 @@ const rejectResolution = async () => {
                 </button>
             </div>
           </div>
-        </div>
-
-        <!-- Modal para subir link de tesis -->
+        </div -->
       </div>
     </div>
   </template>
