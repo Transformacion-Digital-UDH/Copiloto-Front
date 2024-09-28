@@ -29,12 +29,12 @@ const mostrarModalCambioAsesor = ref(false); // Controla el modal de cambio de a
 const mostrarModalConfirmacion = ref(false); // Modal de confirmación para cambio de asesor
 
 //VARIABLES DE ENTORNO
-const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER
-const DOWNLOAD_LETTER = import.meta.env.VITE_URL_DOWNLOAD_LETTER
-const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE
-const DOWNLOAD_OFFICE = import.meta.env.VITE_URL_DOWNLOAD_OFFICE
-const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION
-const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
+const DOWNLOAD_LETTER = import.meta.env.VITE_URL_DOWNLOAD_LETTER;
+const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
+const DOWNLOAD_OFFICE = import.meta.env.VITE_URL_DOWNLOAD_OFFICE;
+const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION;
+const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
 
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
@@ -76,7 +76,13 @@ const oficio = ref({
   nombre_de_oficio: "",
   observacion: "",
 });
-const resolucion = ref({ id: "", nombre: "", fecha_creado: "", estado: "", observacion: "" });
+const resolucion = ref({
+  id: "",
+  nombre: "",
+  fecha_creado: "",
+  estado: "",
+  observacion: "",
+});
 const historial = ref([]);
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 onMounted(() => {
@@ -84,9 +90,9 @@ onMounted(() => {
   getInfoStudent();
 });
 
-const goToNextPage = () =>{
-    router.push('/estudiante/conformidad-asesor')
-}
+const goToNextPage = () => {
+  router.push("/estudiante/conformidad-asesor");
+};
 
 const getInfoStudent = async () => {
   load.value = true;
@@ -165,9 +171,13 @@ const updateSolicitude = async (
   asesor_id: string,
   estado: string
 ) => {
-  if(["aceptado"].includes(estado)) {
-    alertToast("No puedes actualizar una solicitud que fue aceptada", "Error", "error");
-    return 
+  if (["aceptado"].includes(estado)) {
+    alertToast(
+      "No puedes actualizar una solicitud que fue aceptada",
+      "Error",
+      "error"
+    );
+    return;
   }
   try {
     const params = {
@@ -205,7 +215,7 @@ const solicitarCambioAsesor = () => {
 // Confirmar cambio de asesor con alert toast
 const confirmarCambioAsesor = () => {
   mostrarModalConfirmacion.value = false; // Cerrar modal
-  alertToast('Solicitud enviada correctamente', 'Éxito', 'success');
+  alertToast("Solicitud enviada correctamente", "Éxito", "success");
   //enviar peticion de cambio de asesor -> UPDATE API
 };
 </script>
@@ -398,39 +408,49 @@ const confirmarCambioAsesor = () => {
           >
             <div class="flex justify-between items-center">
               <h4 class="text-black">
-              Respuesta del asesor: <span v-if="solicitude.estado === 'rechazado'" class="text-red-500 italic"> "{{ solicitude.observacion }}"</span>
+                Respuesta del asesor:
+                <span
+                  v-if="solicitude.estado === 'rechazado'"
+                  class="text-red-500 italic"
+                >
+                  "{{ solicitude.observacion }}"</span
+                >
               </h4>
-              
+
               <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
+                class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
               >
                 <div
-                    v-if="['aceptado'].includes(solicitude.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+                  v-if="['aceptado'].includes(solicitude.estado)"
+                  class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+                >
+                  <!-- Botón de Ver -->
+                  <a
+                    :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
+                    target="_blank"
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
                   >
-                    <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
+                    <i class="fas fa-eye mr-2"></i> Ver
+                  </a>
+                  <!-- Botón de Descargar -->
+                  <a
+                    :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`"
+                    download
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                  >
+                    <i class="fas fa-download mr-2"></i> Descargar
+                  </a>
+                </div>
                 <span
                   :class="estadoClase(solicitude.estado)"
                   class="estado-estilo"
                   >{{ solicitude.estado }}</span
                 >
-                <a href="#historial" v-if="solicitude.estado === 'rechazado'" class="ml-4 p-1 text-blue-500"> 
+                <a
+                  href="#historial"
+                  v-if="solicitude.estado === 'rechazado'"
+                  class="ml-4 p-1 text-blue-500"
+                >
                   ver motivo
                 </a>
               </div>
@@ -447,13 +467,14 @@ const confirmarCambioAsesor = () => {
           <span
             v-else-if="solicitude.estado === 'rechazado'"
             class="text-red-500 italic"
-            >El asesor ha rechazado la solicitud, revise el historial de acciones  y porfavor vuelve a seleccionar
-            tu asesor.</span
+            >El asesor ha rechazado la solicitud, revise el historial de
+            acciones y porfavor vuelve a seleccionar tu asesor.</span
           >
           <span
             v-else-if="solicitude.estado === 'aceptado'"
             class="text-green-500 italic"
-            >El asesor ha aceptado tu solicitud, puedes pasar el punto 2. Documentos</span
+            >El asesor ha aceptado tu solicitud, puedes pasar el punto 2.
+            Documentos</span
           >
         </div>
 
@@ -561,15 +582,12 @@ const confirmarCambioAsesor = () => {
                   </p>
                 </span>
 
-
                 <div
                   class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
                 >
                   <!-- Mostrar botones si el documento está listo -->
                   <div
-                    v-if="
-                      ['tramitado'].includes(resolucion.estado)
-                    "
+                    v-if="['tramitado'].includes(resolucion.estado)"
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
                   >
                     <!-- Botón de Ver -->
@@ -610,12 +628,13 @@ const confirmarCambioAsesor = () => {
         <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
           <button
-            :disabled="['pendiente'].includes(resolucion.estado)"
+            :disabled="resolucion.estado !== 'tramitado'"
             @click="goToNextPage"
-            :class="['px-4 py-2 text-white rounded-md bg-[#48bb78]', 
-              ['pendiente'].includes(resolucion.estado) 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'hover:bg-green-600 '
+            :class="[
+              'px-4 py-2 text-white rounded-md',
+              resolucion.estado !== 'tramitado'
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-[#48bb78] hover:bg-green-600',
             ]"
           >
             Siguiente
@@ -624,7 +643,11 @@ const confirmarCambioAsesor = () => {
 
         <!-- Card 3: Solicitar Cambio de Asesor -->
         <div
-          :disabled="['pendiente', 'en progreso', 'rechazado'].includes(solicitude.estado)"
+          :disabled="
+            ['pendiente', 'en progreso', 'rechazado'].includes(
+              solicitude.estado
+            )
+          "
           :class="[
             'rounded-lg shadow-lg p-6 relative mt-6',
             ['en progreso', 'pendiente', 'rechazado'].includes(
@@ -664,7 +687,11 @@ const confirmarCambioAsesor = () => {
             <!-- Botón de Solicitar Cambio de Asesor -->
             <div class="flex justify-center">
               <button
-                :disabled="['pendiente', 'en progreso', 'rechazado'].includes(solicitude.estado)"
+                :disabled="
+                  ['pendiente', 'en progreso', 'rechazado'].includes(
+                    solicitude.estado
+                  )
+                "
                 @click="solicitarCambioAsesor"
                 :class="[
                   'px-4 py-2 text-white rounded-md focus:outline-none',
@@ -708,13 +735,14 @@ const confirmarCambioAsesor = () => {
                   <td class="px-4 py-2">{{ h.titulo }}</td>
                 </tr>
                 <tr v-else>
-                  <td class="px-4 py-2 text-center h-5" colspan="5">No hay historial de acciones.</td>
+                  <td class="px-4 py-2 text-center h-5" colspan="5">
+                    No hay historial de acciones.
+                  </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
-
 
         <!-- Modal de Confirmación -->
         <div

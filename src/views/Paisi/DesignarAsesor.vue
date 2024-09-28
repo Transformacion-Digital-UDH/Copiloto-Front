@@ -397,12 +397,12 @@ const rejectSolicitude = async () => {
             </div>
             <div class="p-6">
               <p class="text-gray-500 text-base text-left mb-2">
-                Dígite el N° de oficio
+                Dígite el N° de oficio.
               </p>
               <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
 
               <p class="text-gray-500 text-base text-left mb-2">
-                Dígite el N° de expediente
+                Dígite el N° de expediente.
               </p>
               <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
             </div>
