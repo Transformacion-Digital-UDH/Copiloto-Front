@@ -7,21 +7,21 @@ import { alertToast, alertConfirmation } from "@/functions";
 import confetti from "canvas-confetti";
 import router from "@/router";
 
-// Texto que queremos escribir automáticamente
-const text = `<h3 class="text-4xl font-semibold text-center text-azul">Designación de Asesor</h3>`;
-const typedText = ref("");
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Designación de asesor";
+const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    typedText.value += text.charAt(index);
+    textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 30);
+    setTimeout(typeWriter, 80);
   }
 };
-
 onMounted(() => {
-  typeWriter(); // Llamamos la función al montar el componente
+  typeWriter();
 });
+// *******************************************************
 
 // Modal de confirmación
 const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
@@ -321,7 +321,9 @@ const confirmarCambioAsesor = () => {
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-        <div v-html="typedText"></div>
+        <h3 class="text-4xl font-semibold text-center text-azul">
+          {{ textoTipiado }}
+        </h3>
         <!-- Mostrar un spinner mientras se cargan los datos -->
         <div v-if="load" class="flex justify-center text-xl text-base">
           <span>Cargando datos...</span>

@@ -3,9 +3,9 @@ import AdminLayout from '@/layouts/AdminLayout.vue'
 import AppLogin from '@/components/auth/AppLogin.vue'
 import AppRegister from '@/components/auth/AppRegister.vue'
 import DesignacionAsesor from '@/views/Estudiante/DesignacionAsesor.vue'
-import SolicitarAsesor from '@/views/Asesor/SolicitarAsesor.vue'
+import SolicitudAsesoria from '@/views/Asesor/SolicitudAsesoria.vue'
 import ConformidadAsesor from '@/views/Estudiante/ConformidadAsesor.vue'
-import SolicitarRevisión from '@/views/Asesor/SolicitarRevisión.vue'
+import SolicitudRevision from '@/views/Asesor/SolicitudRevision.vue'
 import DesignacionJurado from '@/views/Estudiante/DesignacionJurado.vue'
 import ConformidadJurado from '@/views/Estudiante/ConformidadJurado.vue'
 import AprobacionProyecto from '@/views/Estudiante/AprobacionProyecto.vue'
@@ -70,8 +70,8 @@ const router = createRouter({
       meta: { roles: ['asesor'], title: 'Asesor' },
       component: AdminLayout,
       children: [
-        { path: 'solicitar-asesor', name: 'SolicitudesAsesoria', component: SolicitarAsesor, meta: { title: 'Solicitudes de asesoría' } },
-        { path: 'solicitar-revision', name: 'SolicitarRevision', component: SolicitarRevisión, meta: { title: 'Solicitar revisión' } },
+        { path: 'solicitud-asesoria', name: 'SolicitudesAsesoria', component: SolicitudAsesoria, meta: { title: 'Solicitudes de asesoría' } },
+        { path: 'solicitud-revision', name: 'SolicitudesRevision', component: SolicitudRevision, meta: { title: 'Solicitudes de revisión' } },
         { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
       ]
     },

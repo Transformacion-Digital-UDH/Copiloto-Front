@@ -115,8 +115,8 @@ export default defineComponent({
       } else if (role.value === 'asesor') {
         // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
         allSections[0].submenus.push(
-          { name: 'Solicitar asesor', label: 'Pendientes de Aceptar', path: '/asesor/solicitar-asesor' },
-          { name: 'Revisión de proyecto', label: 'Revisión de Proyectos', path: '/asesor/solicitar-revision' }
+          { name: 'SolicitudesAsesoria', label: 'Pendientes de Aceptar', path: '/asesor/solicitud-asesoria' },
+          { name: 'SolicitudesRevision', label: 'Revisión de proyectos', path: '/asesor/solicitud-revision' }
         );
         allSections[1].submenus.push(
           { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
