@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+// Importaciones necesarias desde Vue y otras dependencias
 import { ref, computed, watch, onMounted } from "vue";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
@@ -7,28 +8,33 @@ import { alertToast, alertConfirmation } from "@/functions";
 import confetti from "canvas-confetti";
 import router from "@/router";
 
-// ***** Texto que escribe automatiqueshionmente ********
-const text = "Designación de asesor";
-const textoTipiado = ref("");
-let index = 0;
+// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
+const text = "Designación de asesor"; // Texto que se va a escribir automáticamente
+const textoTipiado = ref(""); // Estado para almacenar el texto que se va escribiendo
+let index = 0; // Índice para ir controlando la posición del texto
+
+// Función para simular el efecto de escribir en la pantalla
 const typeWriter = () => {
   if (index < text.length) {
     textoTipiado.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 80);
+    setTimeout(typeWriter, 80); // Llama de nuevo la función cada 80ms
   }
 };
+
+// Al montar el componente, inicia el efecto de escritura
 onMounted(() => {
   typeWriter();
 });
 // *******************************************************
 
-// Modal de confirmación
-const mostrarModalDocumentos = ref(false); // Controla el modal de documentos
-const mostrarModalCambioAsesor = ref(false); // Controla el modal de cambio de asesor
-const mostrarModalConfirmacion = ref(false); // Modal de confirmación para cambio de asesor
+// Estados para controlar los modales
+const mostrarModalDocumentos = ref(false); // Modal de documentos
+const mostrarModalCambioAsesor = ref(false); // Modal de cambio de asesor
+const mostrarModalConfirmacion = ref(false);
+const mostrarModalSolicitudAsesor = ref(false);  // Modal de confirmación para el cambio de asesor
 
-//VARIABLES DE ENTORNO
+// VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
 const DOWNLOAD_LETTER = import.meta.env.VITE_URL_DOWNLOAD_LETTER;
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
@@ -36,7 +42,7 @@ const DOWNLOAD_OFFICE = import.meta.env.VITE_URL_DOWNLOAD_OFFICE;
 const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION;
 const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
 
-// Método para determinar la clase del estado
+// Método para determinar la clase CSS dependiendo del estado
 const estadoClase = (estado: string) => {
   switch (estado) {
     case "en progreso":
@@ -56,12 +62,41 @@ const estadoClase = (estado: string) => {
   }
 };
 
+// Inicialización de estados y almacenes
 const authStore = useAuthStore();
-const initSolicitude = ref(false);
-const advisers = ref({ id: "", nombre: "" });
-const load = ref(false);
-const enviado = ref(false);
-const solicitude = ref({
+const initSolicitude = ref(false); // Control de inicialización de la solicitud
+const advisers = ref<{ id: string, nombre: string }[]>([]); // Asesores (tipado correcto con un arreglo de objetos)
+const load = ref(false); // Control de carga
+const enviado = ref(false); // Control de envío de solicitud
+
+// Tipos definidos para mayor seguridad y claridad
+interface Solicitude {
+  estudiante_id: string;
+  titulo: string;
+  asesor_id: string;
+  estado: string;
+  solicitud_id: string;
+  observacion: string;
+}
+
+interface Resolucion {
+  id: string;
+  nombre: string;
+  fecha_creado: string;
+  estado: string;
+  observacion: string;
+}
+
+interface Oficio {
+  id: string;
+  estado: string;
+  fecha_creado: string;
+  nombre_de_oficio: string;
+  observacion: string;
+}
+
+// Ref para los objetos usando los tipos definidos
+const solicitude = ref<Solicitude>({
   estudiante_id: "",
   titulo: "",
   asesor_id: "",
@@ -69,86 +104,118 @@ const solicitude = ref({
   solicitud_id: "",
   observacion: "",
 });
-const oficio = ref({
-  id: "",
-  estado: "",
-  fecha_creado: "",
-  nombre_de_oficio: "",
-  observacion: "",
-});
-const resolucion = ref({
+
+const resolucion = ref<Resolucion>({
   id: "",
   nombre: "",
   fecha_creado: "",
   estado: "",
   observacion: "",
 });
-const historial = ref([]);
-axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
-onMounted(() => {
-  getAdvisers();
-  getInfoStudent();
+
+const oficio = ref<Oficio>({
+  id: "",
+  estado: "",
+  fecha_creado: "",
+  nombre_de_oficio: "",
+  observacion: "",
 });
 
+// Historial de acciones
+const historial = ref<{ accion: string, asesor: string, fecha: string, observacion: string, titulo: string }[]>([]); // Tipado del historial correctamente
+
+// Configuración de los headers de axios para la autenticación
+axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
+
+// Al montar el componente, cargamos los asesores y la información del estudiante
+onMounted(() => {
+  getAdvisers(); // Carga la lista de asesores
+  getInfoStudent(); // Carga la información del estudiante
+});
+
+// Función para redirigir a la siguiente página
 const goToNextPage = () => {
   router.push("/estudiante/conformidad-asesor");
 };
 
+// Función para obtener la información del estudiante
 const getInfoStudent = async () => {
-  load.value = true;
-  await axios
-    .get(`/api/student/getInfo/${authStore.id}`)
-    .then((response) => {
-      console.log(response.data);
-      if (response.data.status) {
-        solicitude.value.solicitud_id = response.data.solicitud.id;
-        solicitude.value.titulo = response.data.solicitud.titulo;
-        solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
-        solicitude.value.estado = response.data.solicitud.estado;
-        solicitude.value.observacion = response.data.solicitud.observacion;
-        solicitude.value.oficio = response.data.solicitud.oficio;
-        resolucion.value.id = response.data.resolucion.id;
-        resolucion.value.nombre = response.data.resolucion.nombre;
-        resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
-        resolucion.value.estado = response.data.resolucion.estado;
-        resolucion.value.observacion = response.data.resolucion.observacion;
-        oficio.value.id = response.data.oficio.id;
-        oficio.value.estado = response.data.oficio.estado;
-        oficio.value.fecha_creado = response.data.oficio.fecha_creado;
-        oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
-        oficio.value.observacion = response.data.oficio.observacion;
-        historial.value = response.data.historial;
-      }
-    })
-    .catch((error) => {
-      // alertToast(error.response.data.message, 'Error', 'error')
-    })
-    .finally(() => {
-      load.value = false;
-    });
-};
-const getAdvisers = async () => {
-  const res = await axios.get("/api/adviser/get-select");
-  advisers.value = res.data.data;
+  load.value = true; // Indica que se están cargando los datos
+  try {
+    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
+    if (response.data.status) {
+      // Mapeo de los datos recibidos a los objetos de solicitud, oficio y resolución
+      const solicitud = response.data.solicitud;
+      solicitude.value = {
+        estudiante_id: solicitud.estudiante_id ?? "",  // Verifica si es null o undefined
+        titulo: solicitud.titulo ?? "",               // Verifica si es null o undefined
+        asesor_id: solicitud.asesor_id ?? "",         // Verifica si es null o undefined
+        estado: solicitud.estado ?? "",               // Verifica si es null o undefined
+        solicitud_id: solicitud.id ?? "",             // Verifica si es null o undefined
+        observacion: solicitud.observacion ?? "",     // Verifica si es null o undefined
+      };
+
+      const res = response.data.resolucion;
+      resolucion.value = {
+        id: res.id ?? "",                             // Verifica si es null o undefined
+        nombre: res.nombre ?? "",                     // Verifica si es null o undefined
+        fecha_creado: res.fecha_creado ?? "",         // Verifica si es null o undefined
+        estado: res.estado ?? "",                     // Verifica si es null o undefined
+        observacion: res.observacion ?? "",           // Verifica si es null o undefined
+      };
+
+      const oficioData = response.data.oficio;
+      oficio.value = {
+        id: oficioData.id ?? "",                      // Verifica si es null o undefined
+        estado: oficioData.estado ?? "",              // Verifica si es null o undefined
+        fecha_creado: oficioData.fecha_creado ?? "",  // Verifica si es null o undefined
+        nombre_de_oficio: oficioData.nombre_de_oficio ?? "", // Verifica si es null o undefined
+        observacion: oficioData.observacion ?? "",    // Verifica si es null o undefined
+      };
+
+      historial.value = response.data.historial || []; // Carga el historial si existe
+    }
+  } catch (error) {
+    console.error("Error al cargar información del estudiante", error);
+    // Aquí puedes manejar el error mostrando un mensaje si es necesario
+  } finally {
+    load.value = false; // Finaliza la carga
+  }
 };
 
+// Función para obtener la lista de asesores desde el backend
+const getAdvisers = async () => {
+  try {
+    const res = await axios.get("/api/adviser/get-select");
+    advisers.value = res.data.data; // Almacena la lista de asesores
+  } catch (error) {
+    console.error("Error al cargar los asesores", error);
+    // Manejo de errores aquí
+  }
+};
+
+// Función para enviar una solicitud de asesor
 const sendSolicitude = async (student_id: string) => {
   try {
     const params = {
       student_id: student_id,
     };
+    // Llamada a la función de confirmación antes de enviar la solicitud
     alertConfirmation(
-      "Estás seguro de iniciar este trámite?",
+      "¿Estás seguro de iniciar este trámite?",
       "Iniciar trámite",
       "question",
       params,
       "/api/solicitudes-store",
       "POST",
-      (response) => {
+      (response: any) => {
+        // Actualiza los datos de la solicitud con los datos recibidos del backend
         solicitude.value.solicitud_id = response.data._id;
         solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id || "";
+        solicitude.value.asesor_id = response.data.adviser_id ?? "";
         solicitude.value.estado = response.data.sol_status;
+
+        // Dispara confetti como señal de éxito
         confetti({
           particleCount: 500,
           spread: 1010,
@@ -158,19 +225,21 @@ const sendSolicitude = async (student_id: string) => {
     );
   } catch (error: any) {
     let description = "";
-    error.response.data.error.map((e: any) => {
+    error.response.data.error.forEach((e: any) => {
       description = description + " " + e;
     });
-    alertToast(description, "Error", "error");
+    alertToast(description, "Error", "error"); // Muestra el error
   }
 };
 
+// Función para actualizar una solicitud de asesor existente
 const updateSolicitude = async (
   solicitud_id: string,
   titulo: string,
   asesor_id: string,
   estado: string
 ) => {
+  // Si el estado es "aceptado", no se puede actualizar
   if (["aceptado"].includes(estado)) {
     alertToast(
       "No puedes actualizar una solicitud que fue aceptada",
@@ -181,44 +250,57 @@ const updateSolicitude = async (
   }
   try {
     const params = {
-      sol_title_inve: titulo,
-      adviser_id: asesor_id,
-      sol_status: "pendiente",
+      sol_title_inve: titulo, // Título de la tesis
+      adviser_id: asesor_id, // ID del asesor
+      sol_status: "pendiente", // Estado de la solicitud
     };
+    // Llamada a la función de confirmación antes de actualizar la solicitud
     alertConfirmation(
-      "Asegurate de ingresar los datos correctos. Todo ok?",
+      "Asegurate de ingresar los datos correctos. ¿Todo ok?",
       "Solicitar asesor",
       "question",
       params,
       `/api/solicitudes/${solicitud_id}`,
       "PUT",
-      (response) => {
+      (response: any) => {
+        // Actualiza los datos de la solicitud con los nuevos valores
         solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id || "";
+        solicitude.value.asesor_id = response.data.adviser_id ?? "";
         solicitude.value.estado = response.data.sol_status;
       }
     );
   } catch (error: any) {
     let description = "";
-    error.response.data.error.map((e: any) => {
+    error.response.data.error.forEach((e: any) => {
       description = description + " " + e;
     });
     alertToast(description, "Error", "error");
   }
 };
 
-// Función para solicitar cambio de asesor
+// Función para solicitar el cambio de asesor
 const solicitarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = true; // Mostrar modal de confirmación
+  mostrarModalConfirmacion.value = true; // Muestra el modal de confirmación
 };
 
-// Confirmar cambio de asesor con alert toast
+// Función para confirmar el cambio de asesor
 const confirmarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = false; // Cerrar modal
+  mostrarModalConfirmacion.value = false; // Oculta el modal
   alertToast("Solicitud enviada correctamente", "Éxito", "success");
-  //enviar peticion de cambio de asesor -> UPDATE API
+  // Aquí podrías enviar una petición al backend para realizar el cambio de asesor
 };
+
+const estadoDocumentos = computed(() => {
+  if (oficio.value.estado === "tramitado" && resolucion.value.estado === "tramitado") {
+    return "hecho"; // Ambos documentos están tramitados
+  } else {
+    return "pendiente"; // Alguno o ambos no están tramitados
+  }
+});
+
+const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
 </script>
+
 
 <template>
   <!-- Muestra si hay una solicitud ya sea pendiente rechazada o aceptada -->
@@ -310,7 +392,7 @@ const confirmarCambioAsesor = () => {
 
           <div class="flex justify-center">
             <button
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-blue-950 transition duration-300"
+              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
               @click="sendSolicitude(authStore.id)"
             >
               Iniciar trámite
@@ -321,21 +403,32 @@ const confirmarCambioAsesor = () => {
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-        <h3 class="text-4xl font-semibold text-center text-azul">
+        <h3 class="text-5xl font-semibold text-center text-azul">
           {{ textoTipiado }}
         </h3>
-        <!-- Mostrar un spinner mientras se cargan los datos -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative">
+      <div class="flex items-center">
+        <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
+        <img
+                src="/icon/info2.svg"
+                alt="Info"
+                class="ml-2 w-4 h-4 cursor-pointer"
+                @mouseover="mostrarModalSolicitudAsesor = true"
+                @mouseleave="mostrarModalSolicitudAsesor = false"
+              />
+          <!-- Modal informativo para el Punto 1 -->
+          <div
+              v-show="mostrarModalSolicitudAsesor"
+              class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
+            >
+              <p class="text-sm text-gray-600">
+                Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.
+              </p>
+              </div>
         <div v-if="load" class="flex justify-center text-xl text-base">
           <span>Cargando datos...</span>
         </div>
         <br />
-
-        <!-- Card 1: Solicitud de Asesor -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">
-              1. Solicitud de Asesor
-            </h2>
             <span
               :class="estadoClase(solicitude.estado)"
               class="estado-estilo ml-4"
@@ -358,7 +451,6 @@ const confirmarCambioAsesor = () => {
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
               placeholder="Escribe tu título de tesis aquí..."
             />
-
             <!-- Select para elegir asesor -->
             <label
               for="nombreAsesor"
@@ -458,6 +550,7 @@ const confirmarCambioAsesor = () => {
               </div>
             </div>
           </div>
+        
           <br />
 
           <!-- Mensaje de espera según el estado -->
@@ -478,16 +571,18 @@ const confirmarCambioAsesor = () => {
             >El asesor ha aceptado tu solicitud, puedes pasar el punto 2.
             Documentos</span
           >
-        </div>
+    </div>
+    
+    <br>
 
-        <!-- Card 2: Documentos -->
-        <div
+       <!-- Card 2: Documentos -->
+        <div class="mt-4"
           :disabled="
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado
             )
           "
-          :class="[
+          :class="[ 
             'rounded-lg shadow-lg p-6 relative mt-6',
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado
@@ -496,17 +591,25 @@ const confirmarCambioAsesor = () => {
               : 'bg-white',
           ]"
         >
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
-            <img
-              src="/icon/info2.svg"
-              alt="Info"
-              class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalDocumentos = true"
-              @mouseleave="mostrarModalDocumentos = false"
-            />
+          <div class="flex justify-between items-center">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+              <img
+                src="/icon/info2.svg"
+                alt="Info"
+                class="ml-2 w-4 h-4 cursor-pointer"
+                @mouseover="mostrarModalDocumentos = true"
+                @mouseleave="mostrarModalDocumentos = false"
+              />
+            </div>
+            <span
+              :class="estadoClase(solicitude.estado)"
+              class="estado-estilo ml-4"
+              >{{ estadoDocumentos }}</span
+            >
           </div>
 
+          <!-- Modal punto 2 -->
           <div
             v-show="mostrarModalDocumentos"
             class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
@@ -518,12 +621,11 @@ const confirmarCambioAsesor = () => {
             </p>
           </div>
 
+          <!-- Listado de documentos -->
           <div class="mt-4 space-y-4">
-            <!-- Listado de documentos -->
+            <!-- Listado de documentos OFICIO-->
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
                   Oficio de Secretaria PAISI
@@ -572,6 +674,8 @@ const confirmarCambioAsesor = () => {
                 </div>
               </div>
             </div>
+
+            <!-- Listado de documentos RESOLUCION-->
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div
                 class="flex flex-col md:flex-row justify-between md:items-center"
@@ -626,22 +730,16 @@ const confirmarCambioAsesor = () => {
             </div>
           </div>
         </div>
-
-        <!-- Botón "Siguiente" -->
+       <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
           <button
-            :disabled="resolucion.estado !== 'tramitado'"
+            :disabled="isNextButtonDisabled"
             @click="goToNextPage"
-            :class="['px-4 py-2 text-white rounded-md bg-[#48bb78]', 
-              ['pendiente'].includes(resolucion.estado) 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'hover:bg-green-600 '
-            ]"
+            :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600']"
           >
             Siguiente
           </button>
         </div>
-
         <!-- Card 3: Solicitar Cambio de Asesor -->
         <div
           :disabled="
@@ -708,7 +806,6 @@ const confirmarCambioAsesor = () => {
             </div>
           </div>
         </div>
-
         <!-- Historial de Acciones -->
         <div class="bg-base rounded-lg shadow-lg p-6 mt-6" id="historial">
           <h2 class="text-2xl font-medium text-white">Historial de Acciones</h2>
@@ -744,7 +841,6 @@ const confirmarCambioAsesor = () => {
             </table>
           </div>
         </div>
-
         <!-- Modal de Confirmación -->
         <div
           v-if="mostrarModalConfirmacion"
@@ -775,12 +871,15 @@ const confirmarCambioAsesor = () => {
             </div>
           </div>
         </div>
+
       </div>
+      
     </template>
   </template>
 </template>
 
 <style scoped>
+
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
