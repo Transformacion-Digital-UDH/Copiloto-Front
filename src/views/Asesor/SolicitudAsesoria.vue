@@ -1,0 +1,547 @@
+<script lang="ts" setup>
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
+import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
+import { alertToast } from "@/functions";
+import IconPdf from "@/components/icons/IconPdf.vue";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
+
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Pendientes de solicitudes de asesoría";
+const textoTipiado = ref("");
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+onMounted(() => {
+  typeWriter();
+});
+// *******************************************************
+
+// Estado de los modales y datos
+const showModal = ref(false); // Modal de aceptación
+const showRejectModal = ref(false); // Modal de rechazo
+const nroCarta = ref(""); // Número de oficio para la carta
+const motivoRechazo = ref(""); // Motivo de rechazo
+const isHovered = ref(false);
+const selectedFilter = ref(""); // Filtro por estado
+const rowsPerPage = ref(5); // Número de filas por página
+const currentPage = ref(1); // Página actual
+const tableData = ref([]); // Datos obtenidos del backend
+const load = ref(false); // Estado de carga
+const authStore = useAuthStore(); // Accedemos al authStore para obtener el id del asesor
+let solicitudSeleccionada = ref(null); // Almacena la solicitud seleccionada para los modales
+
+//VARIABLES DE ENTORNO
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
+
+// Función para abrir y cerrar modales
+function openModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId; // Guardar la solicitud seleccionada
+  showModal.value = true;
+}
+
+function openRejectModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId; // Guardar la solicitud seleccionada
+  showRejectModal.value = true;
+}
+
+// Función para cerrar ambos modales
+function closeModal() {
+  showModal.value = false;
+  showRejectModal.value = false;
+  nroCarta.value = ""; // Limpiar el campo de número de carta
+  motivoRechazo.value = ""; // Limpiar el campo de motivo de rechazo
+}
+
+// Función para obtener las solicitudes del backend
+const fetchSolicitudes = async () => {
+  load.value = true;
+
+  try {
+    // Verifica si el ID del asesor está definido
+    if (!authStore.id) {
+      throw new Error("El ID del asesor no está definido.");
+    }
+
+    // Hacer la petición con el id del asesor desde el authStore
+    const response = await axios.get(
+      `/api/adviser/getSolicitude/${authStore.id}`
+    );
+    console.log(response.data);
+    // Extraer los datos de la respuesta
+    const solicitudes = response.data.data;
+    tableData.value = solicitudes;
+  } catch (error) {
+    console.error("Error al cargar las solicitudes:", error);
+  } finally {
+    load.value = false; // Quitar el indicador de carga
+  }
+};
+
+// Función para aceptar la solicitud
+const acceptSolicitude = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value;
+    const params = {
+      sol_status: "aceptado",
+      sol_num: nroCarta.value, // Número de carta de aceptación
+    };
+    const response = await axios.patch(
+      `/api/solicitudes/${solicitudId}/status`,
+      params
+    ); // URL y request body
+
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      if (solicitud) solicitud.estado = "aceptado"; // Actualizar la tabla localmente
+      closeModal(); // Cerrar el modal después de la actualización
+      alertToast("La solicitud ha sido aceptada", "Éxito", "success");
+    }
+  } catch (error) {
+    alertToast("Error al aceptar la solicitud", "Error", "error");
+  }
+};
+
+// Función para rechazar la solicitud
+const rejectSolicitude = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value;
+    const params = {
+      sol_status: "rechazado",
+      sol_observation: motivoRechazo.value, // Motivo de rechazo
+    };
+
+    const response = await axios.patch(
+      `/api/solicitudes/${solicitudId}/status`,
+      params
+    ); // URL y request body
+
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudId);
+      if (solicitud) solicitud.estado = "rechazado";
+      closeModal(); // Cerrar el modal después de la actualización
+      alertToast("La solicitud ha sido rechazada", "Éxito", "success");
+    }
+  } catch (error) {
+    console.error("Error al rechazar la solicitud:", error);
+  }
+};
+
+// Filtrar datos y aplicar paginación
+const filteredTableData = computed(() => {
+  let filteredData = tableData.value;
+
+  // Aplicar filtro por estado
+  if (selectedFilter.value) {
+    filteredData = filteredData.filter(
+      (data) => data.estado === selectedFilter.value.toLowerCase()
+    );
+  }
+
+  // Paginación
+  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
+  const endIndex = startIndex + rowsPerPage.value;
+  return filteredData.slice(startIndex, endIndex);
+});
+
+// Calcular el total de páginas
+const totalPages = computed(() => {
+  const filteredData = selectedFilter.value
+    ? tableData.value.filter(
+        (data) => data.estado === selectedFilter.value.toLowerCase()
+      )
+    : tableData.value;
+
+  return Math.ceil(filteredData.length / rowsPerPage.value);
+});
+
+// Navegación de paginación
+function goToPreviousPage() {
+  if (currentPage.value > 1) currentPage.value--;
+}
+
+function goToNextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
+
+// Llama a la función cuando el componente se monta
+onMounted(() => {
+  fetchSolicitudes();
+});
+
+// Estado de los modales y documentos
+const showDocumentModal = ref(false); // Modal de documentos
+const documents = ref([]); // Documentos obtenidos del backend
+
+function openDocumentModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId; // Guardar la solicitud seleccionada
+  // fetchDocuments(solicitudId);  // Cargar los documentos del backend
+  showDocumentModal.value = true; // Mostrar el modal
+}
+
+function closeDocumentModal() {
+  showDocumentModal.value = false; // Cerrar el modal
+}
+const fetchDocuments = async (solicitudId: string) => {
+  // try {
+  //   // Hacer la petición al backend para obtener los documentos
+  //   const response = await axios.get(`/api/document/view/${solicitudId}`);
+  //   documents.value = response.data.documents;  // Guardar los documentos en la variable `documents`
+  // } catch (error) {
+  //   console.error('Error al cargar los documentos:', error);
+  // }
+};
+</script>
+
+<template>
+  <template v-if="load">
+    <div class="flex h-screen bg-gray-100">
+      <div class="flex-1 p-10 border-s-2 bg-gray-100">
+        <div class="flex justify-center items-center content-center px-14 flex-col">
+          <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
+        </div>
+        <div class="mt-8">
+          <div class="mt-4">
+            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+              <div class="w-full flex justify-end items-center space-x-2">
+                <h3 class="bg-gray-200 h-12 w-[30%] rounded-lg duration-200 skeleton-loader"></h3>
+              </div>
+            </div>
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
+              <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+  <template v-else>
+    <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
+      <div class="flex-1 p-10 overflow-auto">
+        <h3 class="text-4xl font-semibold text-center text-azul">
+          {{ textoTipiado }}
+        </h3>
+
+        <div class="mt-8">
+          <!-- Filtros de tabla -->
+          <div class="mt-6">
+            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+              <div class="w-full flex justify-end items-center space-x-2">
+                <!-- Búsqueda -->
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                    <IconBuscar />
+                  </span>
+                  <input
+                    placeholder="Buscar"
+                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none"/>
+                </div>
+                <div class="relative">
+                  <select
+                    v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                  </select>
+                </div>
+
+                <!-- Filtro de estado -->
+                <div class="relative">
+                  <select
+                    v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500">
+                    <option value="">Todos</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Aceptado">Aceptado</option>
+                    <option value="Rechazado">Rechazado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabla de solicitudes -->
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+              <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
+                <table class="min-w-full leading-normal">
+                  <thead class="custom-thead font-Quicksand">
+                    <tr class="text-center text-black border-b-2 bg-gray-300">
+                      <th class="py-2 px-3 text-left tracking-wider">
+                        ESTUDIANTE
+                      </th>
+                      <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
+                      <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
+                      <th class="py-2 px-3 tracking-wider">DOCUMENTOS</th>
+                      <th class="py-2 px-4 tracking-wider">ESTADO</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      v-for="(u, index) in filteredTableData"
+                      :key="u.id"
+                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                      <td class="px-3 py-5 text-base">
+                        <p class="text-gray-900 whitespace-nowrap w-64">
+                          {{
+                            u.estudiante?.nombre_completo ||
+                            "Nombre desconocido"
+                          }}
+                        </p>
+                      </td>
+                      <td class="px-3 py-5 text-base">
+                        <p class="text-gray-900 text-wrap w-80">
+                          {{ u.titulo || "Título no disponible" }}
+                        </p>
+                      </td>
+                      <td class="px-3 py-5 flex flex-col items-center justify-center"><br>
+                        <button
+                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                          :class="[
+                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78]  rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                            ['rechazado'].includes(u.estado)
+                              ? 'cursor-not-allowed'
+                              : 'hover:bg-green-600',
+                          ]"
+                          :disabled="['rechazado'].includes(u.estado)"
+                          @click="openModal(u.id)">Aceptar
+                        </button>
+
+                        <button
+                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                          :class="[
+                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                            ['rechazado'].includes(u.estado)
+                              ? 'cursor-not-allowed'
+                              : 'hover:bg-red-600',
+                          ]"
+                          :disabled="['rechazado'].includes(u.estado)"
+                          @click="openRejectModal(u.id)">Rechazar
+                        </button><br>
+
+                        <button
+                          v-if="['aceptado'].includes(u.estado)"
+                          class="w-20 px-3 py-1 text-sm text-white bg-slate-600 rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
+                          @click="openRejectModal(u.id)">Declinar
+                        </button>
+                      </td>
+                      <td class="px-3 py-5 text-center">
+                        <button
+                          v-if="u.estado === 'aceptado'"
+                          @click="openDocumentModal(u.id)"
+                          class="focus:outline-none">
+                          <IconPdf />
+                        </button>
+                        <p v-else>No generado</p>
+                      </td>
+
+                      <td class="px-3 py-5 text-center">
+                        <span
+                          :class="`estado-estilo estado-${
+                            u.estado
+                              ? u.estado.toLowerCase().replace(' ', '-')
+                              : ''
+                          }`"
+                          >{{ u.estado || "Estado desconocido" }}</span
+                        >
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- Paginación -->
+                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                  <span class="text-sm text-gray-900 xs:text-sm"
+                    >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+                    {{
+                      Math.min(currentPage * rowsPerPage, tableData.length)
+                    }}
+                    de {{ tableData.length }}
+                  </span>
+                  <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                    <button
+                      :disabled="currentPage === 1"
+                      @click="goToPreviousPage"
+                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">
+                      Anterior
+                    </button>
+                    <button
+                      :disabled="currentPage === totalPages"
+                      @click="goToNextPage"
+                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">
+                      Siguiente
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de confirmación -->
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+            <div class="flex justify-end items-start">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
+                <IconCerrar />
+              </button>
+            </div>
+            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                Confirmación
+              </h5>
+            </div>
+            <div class="p-6">
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">
+                Porfavor escriba el N° de Oficio para la Carta de Aceptación
+              </p>
+              <input
+                type="text"
+                id="nroCarta"
+                v-model="nroCarta"
+                class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0"
+                maxlength="3"
+                inputmode="numeric"
+                pattern="[0-9]*"/>
+              <br /><br>
+              <p class="text-base text-left mb-2">
+                <i>Esta carta se autogenerará por el sistema</i>
+              </p>
+            </div>
+            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button
+                class="px-4 py-3 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">
+                Cancelar
+              </button>
+              <button
+                class="ml-5 px-4 py-3 text-lg font-Thin 100 text-white bg-base rounded-2xl"
+                @click="acceptSolicitude">
+                Generar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de rechazo -->
+        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+            <div class="flex justify-end items-start">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
+                <IconCerrar />
+              </button>
+            </div>
+            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                Observación
+              </h5>
+            </div>
+            <div class="p-6 bg-white rounded-lg">
+              <p class="text-gray-600 text-lg mb-4">
+                Por favor escriba el motivo de su rechazo
+              </p>
+              <textarea
+                class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0"
+                v-model="motivoRechazo"
+                placeholder="Escriba aquí su observación..."
+              ></textarea>
+            </div>
+            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button
+                class="px-4 py-3 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">
+                Cancelar
+              </button>
+              <button
+                class="ml-4 px-4 py-3 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+                @click="rejectSolicitude">
+                Confirmar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal de documentos -->
+        <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+            <div class="flex justify-end items-start">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeDocumentModal">
+                <IconCerrar />
+              </button>
+            </div>
+            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+              <h5 class="text-2xl font-medium text-gray-900 text-center flex-1">
+                Documentos Adjuntos
+              </h5>
+            </div>
+            <div class="p-6 bg-white rounded-lg">
+              <div class="flex justify-between items-center">
+                <p class="text-gray-600 text-lg">Carta de aceptación</p>
+                <a
+                  :href="`${VIEW_LETTER}/${solicitudSeleccionada}`"
+                  target="_blank"
+                  @mouseenter="isHovered = true"
+                  @mouseleave="isHovered = false"
+                  class="flex items-center hover:underline">
+                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
+                  <IconEyeAbrir v-else class="mr-1"/>
+                  <span class="text-black text-base" >Visualizar</span>
+                </a>
+              </div>
+            </div>
+            <div class="flex items-center justify-center p-3 border-t border-gray-200">
+              <button
+                class="px-4 py-3 text-sl font-thin text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeDocumentModal">
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+</template>
+
+<style scoped>
+.estado-estilo {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 400;
+  border-radius: 0.375rem;
+}
+
+.estado-aceptado {
+  background-color: #48bb78;
+  color: #ffffff;
+}
+
+.estado-rechazado {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+
+.custom-thead th {
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+}
+</style>
