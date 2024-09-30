@@ -34,14 +34,14 @@ function goToLoginOrEstudiante() {
 <template>
   <nav class="bg-white-800 shadow-md font-Roboto">
     <div
-      class="max-w-full w-[1700px] px-2 sm:px-6 lg:px-8 flex justify-between items-center h-20 mx-auto"
+      class="max-w-full w-[1700px] px-2 sm:px-6 lg:px-8 flex justify-between items-center h-20 mx-auto "
     >
       <!-- Logo -->
       <a href="/" aria-label="Inicio">
-        <img class="h-12" src="/img/logo.svg" alt="Logo" />
+        <img class="h-12" src="/img/logo_light.svg" alt="Logo" />
       </a>
       <!-- Menu -->
-      <div class="hidden sm:flex space-x-6">
+      <div class="hidden sm:flex space-x-6 ">
         <a
           v-for="item in navigation"
           :key="item.name"

@@ -1,49 +1,127 @@
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
-const observaciones = ref([
-  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'Pendiente' },
-]);
-
-const solicitudEstado = ref('Pendiente');
-const informeEstado = ref('Pendiente');
-
-function solicitarRevision() {
-  // Lógica para solicitar revisión
+// Define los tipos para observaciones y documentos
+interface Observacion {
+  descripcion: string;
+  revision: number;
+  fecha: string;
+  accion: string;
+  estado: string;
 }
 
+interface Documento {
+  nombre: string;
+  estado: string;
+  documentoUrl: string;
+}
+
+// Estado de solicitud (reactivo usando ref)
+const solicitudEstado = ref<string>('Pendiente');
+
+// Observaciones es un array reactivo de tipo Observacion usando reactive
+const observaciones = reactive<Observacion[]>([
+  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'Pendiente' }
+]);
+
+// Documentos es un array reactivo de tipo Documento usando reactive
+const documentos = reactive<Documento[]>([
+  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
+]);
+
+// Función para cambiar el estado de la solicitud
+function solicitarRevision() {
+  solicitudEstado.value = 'En Proceso';
+}
+
+// Método para determinar la clase del estado basado en el estado del documento o solicitud
+function estadoClase(estado: string) {
+  switch (estado) {
+    case 'Hecho': return 'bg-green-500 text-white';
+    case 'En Proceso': return 'bg-orange-500 text-white';
+    case 'Pendiente': return 'bg-gray-400 text-white';
+    case 'Rechazado': return 'bg-red-500 text-white';
+    default: return '';
+  }
+}
+
+// Estados para los modales
+const mostrarModalRevision = ref(false);
+const mostrarModalObservaciones = ref(false);
+const mostrarModalDocumentos = ref(false);
 </script>
 
 <template>
-    <div class="flex-1 flex flex-col font-roboto">
-      <div class="flex-1 p-6  ">
-        <h3 class="text-4xl font-medium text-black text-center mb-6">Conformidad de proyecto de tesis por el asesor</h3>
+  <div class="flex-1 p-10 border-s-2 bg-gray-100 font-roboto">
+    <h3 class="text-4xl font-bold text-center text-azul">Conformidad de proyecto de tesis por el asesor</h3>
 
-        <div class="mb-8 " >
-          <p class="text-lg"><strong>Asesor:</strong> Aldo Ramirez</p>
-          <p class="text-lg"><strong>Título de Tesis:</strong> Implementacion de un algoritmo</p>
-          <p class="text-lg"><strong>Link de tesis:</strong> <a href="https://docs.google.com/document/" class="text-blue-500 underline">https://docs.google.com/document/</a></p>
+    <div class="mt-6 space-y-10">
+      <!-- Información del asesor y tesis -->
+      <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white">
+        <p class="text-lg mb-2"><strong>Asesor:</strong> Aldo Ramirez</p>
+        <p class="text-lg mb-2"><strong>Título de Tesis:</strong> Implementación de un algoritmo</p>
+        <!-- Responsividad para el link de tesis -->
+        <p class="text-lg break-words">
+          <strong>Link de tesis:</strong> 
+          <a href="https://docs.google.com/document/" class="text-blue-500 underline break-all">https://docs.google.com/document/</a>
+        </p>
+      </div>
+
+      <!-- Observaciones -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center justify-between">
+          <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
+          <div class="relative">
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                 @mouseover="mostrarModalRevision = true"
+                 @mouseleave="mostrarModalRevision = false" />
+            <!-- Modal informativo del punto 1 -->
+            <div v-if="mostrarModalRevision" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+              <p class="text-sm text-gray-600">
+                Asegúrate de revisar todas las observaciones antes de solicitar una nueva revisión.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <!-- Observaciones -->
-        <div class="mb-8">
-          <h4 class="text-2xl font-medium text-black mb-4">1. Observaciones</h4>
-          <p class="text-gray-500 mb-4">Haz click en el botón de Solicitar Revisión para iniciar</p>
-          <button class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
-          <span :class="{'estado-pendiente': solicitudEstado === 'Pendiente'}" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
+        <div class="flex items-center justify-between">
+          <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
+          <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
+        </div>
+        <div class="flex justify-center mt-3">
+          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
+        </div>
+      </div>
+
+      <!-- Revisión de levantamiento de observaciones -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h4 class="text-2xl font-medium text-black">2. Solicitar revisión de levantamiento de observaciones</h4>
+          <div class="relative">
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                 @mouseover="mostrarModalObservaciones = true"
+                 @mouseleave="mostrarModalObservaciones = false" />
+            <!-- Modal informativo del punto 2 -->
+            <div v-show="mostrarModalObservaciones" 
+                 class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 modal-pos">
+              <p class="text-sm text-gray-600">
+                Aquí podrás solicitar la revisión de las observaciones levantadas para la tesis. 
+                Asegúrate de que todos los documentos están en orden antes de continuar.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <!-- Solicitar revisión de levantamiento de observaciones -->
-        <div class="mb-8">
-          <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
+        <!-- Tabla de observaciones -->
+        <div class="overflow-x-auto mt-4">
           <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
             <thead>
               <tr>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCION</th>
+                <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
                 <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISIÓN</th>
                 <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA</th>
                 <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">Estado</th>
+                <th class="px-4 py-2 text-left text-gray-600 border-b">ESTADO</th>
               </tr>
             </thead>
             <tbody>
@@ -54,29 +132,69 @@ function solicitarRevision() {
                 <td class="px-4 py-2 border-b">
                   <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>{{ obs.accion }}</button>
                 </td>
-                <td class="px-4 py-2 border-b"><span :class="{'estado-pendiente': obs.estado === 'Pendiente'}" class="estado-estilo">{{ obs.estado }}</span></td>
+                <td class="px-4 py-2 border-b">
+                  <span :class="estadoClase(obs.estado)" class="estado-estilo">{{ obs.estado }}</span>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
+      </div>
 
-        <!-- Informe de Conformidad de Observaciones -->
-        <div class="mb-8">
-          <h4 class="text-2xl font-medium text-black mb-4">3. Informe de Conformidad de Observaciones</h4>
-          <div class="bg-white rounded-md shadow-xl custom-rounded px-5 py-6">
-            <p class="mb-4 text-1xl">Por tu asesor elegido</p>
-            <div class="flex items-center justify-between mb-4">
-              <input id="informe" type="text" value="imageattachment.jpg" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6" disabled>
-              <span :class="{'estado-pendiente': informeEstado === 'Pendiente'}" class="estado-estilo ml-4">{{ informeEstado }}</span>
+      <!-- Documentos -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+               @mouseover="mostrarModalDocumentos = true"
+               @mouseleave="mostrarModalDocumentos = false" />
+        </div>
+
+        <!-- Modal informativo del punto 3 -->
+        <div v-if="mostrarModalDocumentos" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Asegúrate de revisar el documento para verificar las observaciones antes de continuar.
+          </p>
+        </div>
+
+        <div class="mt-4 space-y-4">
+          <!-- documentos es un reactive, así que NO usamos .value para las propiedades internas -->
+          <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <div class="flex flex-col md:flex-row justify-between md:items-center">
+              <span class="flex-1">{{ documento.nombre }}</span>
+
+              <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                <!-- Mostrar botones "Ver" y "Descargar" si el estado es 'Hecho' -->
+                <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                  <!-- Botón de Ver -->
+                  <a :href="documento.documentoUrl" target="_blank"
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                    <i class="fas fa-eye mr-2"></i> Ver
+                  </a>
+                  <!-- Botón de Descargar -->
+                  <a :href="documento.documentoUrl" download
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                    <i class="fas fa-download mr-2"></i> Descargar
+                  </a>
+                </div>
+                <!-- Mostrar mensaje de espera si el estado es 'Pendiente' -->
+                <span v-else-if="documento.estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
+
+                <!-- Estado del documento -->
+                <span :class="estadoClase(documento.estado)" class="estado-estilo ml-4">{{ documento.estado }}</span>
+              </div>
             </div>
           </div>
         </div>
-
-        <div class="flex justify-end">
-          <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>Siguiente</button>
-        </div>
       </div>
+
+      <!-- Botón de siguiente -->
+      <div class="flex justify-end">
+        <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>Siguiente</button>
+      </div>
+
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -88,8 +206,21 @@ function solicitarRevision() {
   display: inline-block;
 }
 
-.estado-pendiente {
-  background-color: #8898AA;
-  color: #ffffff;
+.break-all {
+  word-break: break-all;
+}
+
+/* Estilos para hacer que el modal se ajuste en pantallas móviles */
+.modal-pos {
+  right: 0;
+  top: 100%;
+}
+
+@media (max-width: 640px) {
+  .modal-pos {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 120%;
+  }
 }
 </style>
