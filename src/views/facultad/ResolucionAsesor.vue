@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import axios from "axios";
-import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+import { AxiosError } from 'axios'; 
 
 // Texto que queremos escribir automáticamente
 const text = `<h3 class="text-4xl font-semibold text-center text-azul">Resoluciones para Designacion de Asesor</h3>`;
@@ -32,25 +32,27 @@ const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showModal = ref(false);
-const showRejectModal = ref(false);
-const showSendModal = ref(false);
-const nroOficio1 = ref('');
+const nroOficio1 = ref(''); // Número de la resolución ingresada en el modal
+const fechaEmision = ref(''); // Fecha de emisión ingresada en el modal
+const selectedResolucion = ref<Resolucion | null>(null); // Resolución seleccionada para generar
+
 const isLoading = ref(false); // Indicador de carga
 
 // Estado de la tabla que almacenará los datos de la API, tipada con `Resolucion[]`
 const tableData = ref<Resolucion[]>([]);
 
-function openModal() {
+// Función para abrir el modal con la resolución seleccionada
+function openModal(resolucion: Resolucion) {
+  selectedResolucion.value = resolucion;
   showModal.value = true;
 }
 
-function openRejectModal() {
-  showRejectModal.value = true;
-}
-
+// Función para cerrar el modal
 function closeModal() {
   showModal.value = false;
-  showRejectModal.value = false; // cerrar ambos modales
+  nroOficio1.value = ''; // Limpiar el número de resolución
+  fechaEmision.value = ''; // Limpiar la fecha de emisión
+  selectedResolucion.value = null; // Limpiar la resolución seleccionada
 }
 
 // Filtrado y paginación
@@ -105,6 +107,44 @@ onMounted(() => {
   fetchOffices();
   typeWriter();
 });
+
+// Función para enviar la resolución a la API
+const generarResolucion = async () => {
+  if (!selectedResolucion.value) return;
+
+  const payload = {
+    office_id: selectedResolucion.value.id,
+    res_status: "tramitado", // Siempre será "tramitado"
+    res_num_res: nroOficio1.value, // Número de resolución ingresado por el usuario
+    res_date_emit: fechaEmision.value, // Fecha de emisión ingresada por el usuario
+  };
+
+  try {
+    const response = await axios.post("/api/resolution/store", payload);
+    console.log(response.data); // Ver la respuesta del servidor
+
+    if (response.data.message === "OK") {
+      alert("Resolución generada correctamente");
+      closeModal(); // Cerrar el modal después de generar la resolución
+    } else {
+      alert("Error al generar la resolución");
+    }
+  } catch (err: unknown) {
+    // Verifica si el error es una instancia de AxiosError antes de acceder a sus propiedades
+    const error = err as AxiosError;
+    
+    if (error.response) {
+      // Maneja el error del servidor
+      console.error("Error del servidor:", error.response.data);
+    } else {
+      // Maneja cualquier otro tipo de error
+      console.error("Error al generar la resolución:", error.message);
+    }
+    
+    alert("Ocurrió un error al generar la resolución");
+  }
+};
+
 </script>
 
 <template>
@@ -132,12 +172,12 @@ onMounted(() => {
                   placeholder="Buscar"
                   class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
                 />
-                </div>
+              </div>
               <div class="relative">
                 <select
-                    v-model="rowsPerPage"
-                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                  >
+                  v-model="rowsPerPage"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                >
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="20">20</option>
@@ -147,9 +187,9 @@ onMounted(() => {
               <!-- Filtro de estado -->
               <div class="relative">
                 <select
-                    v-model="selectedFilter"
-                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                  >
+                  v-model="selectedFilter"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                >
                   <option value="">Todos</option>
                   <option value="pendiente">Pendiente</option>
                   <option value="observado">Observado</option>
@@ -201,15 +241,9 @@ onMounted(() => {
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none hover:bg-green-600 transform active:translate-y-1 transition-transform duration-150"
-                        @click="openModal"
+                        @click="openModal(u)"
                       >
                         Generar
-                      </button>
-                      <button
-                        class="w-20 px-3 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none hover:bg-orange-400 transform active:translate-y-1 transition-transform duration-150"
-                        @click="openRejectModal"
-                      >
-                        Observar
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
@@ -222,111 +256,33 @@ onMounted(() => {
               </table>
 
               <!-- Paginación -->
-              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
-                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-gray-800 bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-black bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Modal para generar un oficio al estudiante -->
-      <div
-        v-if="showModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
+      <!-- Modal para generar una resolución -->
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
               <IconCerrar />
             </button>
           </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará la resolución de asesor para este estudiante
-            </h5>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">Generar resolución para {{ selectedResolucion?.estudiante_nombre }}</h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de expediente correspondiente
-            </p>
-            <input type="text" id="nroOficio1" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
+            <p class="text-gray-500 text-base text-left mb-2">Escriba el número de resolución</p>
+            <input type="text" v-model="nroOficio1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
           </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Generar
-            </button>
+          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <button class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl" @click="generarResolucion">Generar</button>
           </div>
         </div>
       </div>
-
-      <!-- Modal de observacion -->
-      <div
-        v-if="showRejectModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-          <div class="flex justify-end items-start">
-            <button
-              class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-              @click="closeModal"
-            >
-              <IconCerrar />
-            </button>
-          </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Observación
-            </h5>
-          </div>
-          <div class="p-6 bg-white rounded-lg">
-            <p class="text-gray-600 text-lg text-center mb-4">
-              Por favor escriba el motivo de su observación
-            </p>
-            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Modal para subir link de tesis -->
     </div>
   </div>
 </template>
