@@ -632,11 +632,10 @@ const confirmarCambioAsesor = () => {
           <button
             :disabled="resolucion.estado !== 'tramitado'"
             @click="goToNextPage"
-            :class="[
-              'px-4 py-2 text-white rounded-md',
-              resolucion.estado !== 'tramitado'
-                ? 'bg-gray-400 cursor-not-allowed'
-                : 'bg-[#48bb78] hover:bg-green-600',
+            :class="['px-4 py-2 text-white rounded-md bg-[#48bb78]', 
+              ['pendiente'].includes(resolucion.estado) 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'hover:bg-green-600 '
             ]"
           >
             Siguiente

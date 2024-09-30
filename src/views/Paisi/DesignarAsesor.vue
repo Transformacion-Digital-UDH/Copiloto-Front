@@ -5,9 +5,14 @@ import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
-import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
-import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
+<<<<<<<<< Temporary merge branch 1
+// Texto que queremos escribir automáticamente
+const text = `<h3 class="text-4xl font-semibold text-center text-azul">Oficios para Designacion de Asesor</h3>`;
+const typedText = ref(''); // Inicializamos el texto como vacío
+let index = 0; // Índice para controlar la posición en el texto
+
+=========
 // ***** Texto que escribe automatiqueshionmente ********
 const text = "Oficio para designación de asesor";
 const textoTipiado1 = ref('');
@@ -25,7 +30,15 @@ onMounted(() => {
 // *******************************************************
 
 // Estados y propiedades
-const isHovered = ref(false);
+<<<<<<<<< Temporary merge branch 1
+const selectedFilter = ref<string>("");
+const rowsPerPage = ref<number>(5);
+const currentPage = ref<number>(1);
+const showModal = ref<boolean>(false);
+const showRejectModal = ref<boolean>(false);
+const showLinkModal = ref<boolean>(false);
+const motivoObservacion = ref<string>("");
+=========
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
@@ -53,9 +66,7 @@ function openRejectModal(oficioId: string) {
   oficio_id.value = oficioId
 }
 
-const selectedSolicitude = ref<Solicitude | null>(null);
-
-const openModalLink = (solicitude: Solicitude) => {
+const openModalLink = (solicitude) => {
   showLinkModal.value = true;
   selectedSolicitude.value = solicitude;
 }
@@ -68,14 +79,13 @@ function closeModal() {
 }
 
 // Filtrar datos y aplicar paginación
-const tableData = ref<Solicitude[]>([]);
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.estado?.toLowerCase() === selectedFilter.value.toLowerCase()
+      (data) => data.estado === selectedFilter.value.toLowerCase()
     );
   }
 
@@ -88,7 +98,7 @@ const filteredTableData = computed(() => {
 // Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.estado?.toLowerCase() === selectedFilter.value.toLowerCase())
+    ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
     : tableData.value;
 
   return Math.ceil(filteredData.length / rowsPerPage.value);
@@ -101,9 +111,11 @@ function goToPreviousPage() {
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
-
+ 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
-const load = ref<boolean>(false);
+const tableData = ref([]);
+const load = ref(false);
+const selectedSolicitude = ref('');
 
 const fetchSolicitudes = async () => {
   load.value = true;
@@ -131,7 +143,7 @@ const createGoogleDoc = async (solicitudeId) => {
     console.log(response);
 
     const link = response.data.link;
-    if (link && selectedSolicitude.value) {
+    if (link) {
       selectedSolicitude.value.link = link;
       closeModal();
     }
@@ -453,6 +465,11 @@ const createGoogleDoc = async (solicitudeId) => {
   border-radius: 0.375rem;
 }
 
+.estado-tramitado {
+  background-color: #39B49E;
+  color: #ffffff;
+}
+
 .estado-aceptado {
   background-color: #48bb78;
   color: #ffffff;
@@ -473,4 +490,6 @@ const createGoogleDoc = async (solicitudeId) => {
   font-size: 16px;  /* Tamaño de la fuente */
   text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
+
+
 </style>

@@ -18,10 +18,15 @@ const typeWriter = () => {
     setTimeout(typeWriter, 80);
   }
 };
-onMounted(() => {
-  typeWriter();
-});
-// *******************************************************
+
+// Definimos una interfaz para tipar los elementos de `tableData`
+interface Resolucion {
+  id: string;
+  estudiante_nombre: string;
+  asesor_nombre: string;
+  fecha_creado: string;
+  estado: string;
+}
 
 // Estados y propiedades
 const isHovered = ref(false);
@@ -39,8 +44,10 @@ const motivoObservacion = ref("");
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE
 const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION
 
-// Estado de la tabla que almacenará los datos de la API
-const tableData = ref([]);
+// Estado de carga y datos
+const isLoading = ref<boolean>(false);  // Añadimos isLoading para mostrar el estado de carga
+const tableData = ref<any[]>([]);  // El tipo de los datos de la tabla lo dejamos como un array de objetos
+const selectedOfficeId = ref<number | null>(null); // ID de la resolución seleccionada
 
 let oficio_id = ref(null);
 
@@ -61,9 +68,7 @@ function openRejectModal(oficioId: string) {
 
 function closeModal() {
   showModal.value = false;
-  nroOficio1.value = ''; // Limpiar el número de resolución
-  fechaEmision.value = ''; // Limpiar la fecha de emisión
-  selectedResolucion.value = null; // Limpiar la resolución seleccionada
+  showRejectModal.value = false; // cerrar ambos modales
 }
 
 // Filtrado y paginación
@@ -71,7 +76,6 @@ const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   if (selectedFilter.value) {
-    // Filtrar por la propiedad "estado"
     filteredData = filteredData.filter(
       (data) => data.estado === selectedFilter.value
     );
