@@ -9,7 +9,7 @@ import confetti from "canvas-confetti";
 import router from "@/router";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de asesor"; // Texto que se va a escribir automáticamente
+const text = "Designación de Asesor"; // Texto que se va a escribir automáticamente
 const textoTipiado = ref(""); // Estado para almacenar el texto que se va escribiendo
 let index = 0; // Índice para ir controlando la posición del texto
 
@@ -406,16 +406,24 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
         <h3 class="text-5xl font-semibold text-center text-azul">
           {{ textoTipiado }}
         </h3>
-    <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative">
-      <div class="flex items-center">
-        <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
-        <img
+    <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative ">
+      <div class="flex justify-between">
+        <div class="flex flex-col sm:flex-row items-center justify-between w-full">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
+              <img
                 src="/icon/info2.svg"
                 alt="Info"
                 class="ml-2 w-4 h-4 cursor-pointer"
                 @mouseover="mostrarModalSolicitudAsesor = true"
                 @mouseleave="mostrarModalSolicitudAsesor = false"
               />
+            </div>
+            <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
+              {{ solicitude.estado }}
+            </span>
+         </div>
+      </div>
           <!-- Modal informativo para el Punto 1 -->
           <div
               v-show="mostrarModalSolicitudAsesor"
@@ -424,18 +432,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               <p class="text-sm text-gray-600">
                 Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.
               </p>
-              </div>
-        <div v-if="load" class="flex justify-center text-xl text-base">
-          <span>Cargando datos...</span>
-        </div>
-        <br />
-            <span
-              :class="estadoClase(solicitude.estado)"
-              class="estado-estilo ml-4"
-              >{{ solicitude.estado }}</span
-            >
           </div>
-
           <div class="mt-4">
             <!-- Título de tesis -->
             <label
@@ -591,7 +588,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               : 'bg-white',
           ]"
         >
-          <div class="flex justify-between items-center">
+          <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
               <img
@@ -757,7 +754,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
           ]"
         >
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-gray-600">Cambio de Asesor</h2>
+            <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de Asesor</h2>
             <img
               src="/icon/info2.svg"
               alt="Info"
@@ -768,9 +765,9 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
           </div>
           <br />
           <p class="text-gray-400">
-            Si consideras que necesitas un cambio de asesor, puedes solicitarlo
-            en cualquier momento.
+            Este botón se activará cuando recibas la resolución de Designación de Asesor en '2. Documentos' por parte de Facultad.
           </p>
+
 
           <div
             v-show="mostrarModalCambioAsesor"
@@ -807,11 +804,11 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
           </div>
         </div>
         <!-- Historial de Acciones -->
-        <div class="bg-base rounded-lg shadow-lg p-6 mt-6" id="historial">
-          <h2 class="text-2xl font-medium text-white">Historial de Acciones</h2>
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" id="historial">
+          <h2 class="text-2xl font-medium text-azul">Historial de Acciones</h2>
           <div class="overflow-x-auto mt-4">
             <table class="min-w-full table-auto bg-gray-50 rounded-lg">
-              <thead class="bg-gray-100 rounded-lg">
+              <thead class="bg-gray-100 rounded-lg text-azul">
                 <tr>
                   <th class="px-4 py-2 text-left font-medium">Acción</th>
                   <th class="px-4 py-2 text-left font-medium">Asesor</th>
@@ -833,8 +830,8 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
                   <td class="px-4 py-2">{{ h.titulo }}</td>
                 </tr>
                 <tr v-else>
-                  <td class="px-4 py-2 text-center h-5" colspan="5">
-                    No hay historial de acciones.
+                  <td class="px-4 py-2 text-center h-5 text-gray-500" colspan="5">
+                    Aún no hay acciones registradas
                   </td>
                 </tr>
               </tbody>

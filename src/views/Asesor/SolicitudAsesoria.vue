@@ -289,7 +289,7 @@ const fetchDocuments = async (solicitudId: string) => {
               <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
-                    <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <tr class="text-center text-azul border-b-2 bg-gray-300">
                       <th class="py-2 px-3 text-left tracking-wider">
                         ESTUDIANTE
                       </th>
@@ -350,7 +350,7 @@ const fetchDocuments = async (solicitudId: string) => {
                           <!-- Botón Declinar -->
                           <button
                             v-if="['aceptado'].includes(u.estado)"
-                            class="w-20 px-3 py-1 text-sm text-white bg-slate-500 rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
+                            class="w-20 px-3 py-1 text-sm text-white bg-azul rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
                             @click="openRejectModal(u.id)">
                             Declinar
                           </button>
@@ -362,9 +362,7 @@ const fetchDocuments = async (solicitudId: string) => {
                           v-if="u.estado === 'aceptado'"
                           @click="openDocumentModal(u.id)"
                           class="focus:outline-none">
-                          <button>
                             <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
-                          </button>
                         </button>
                         <p v-else class="italic text-gray-500">No generado</p>
                       </td>
