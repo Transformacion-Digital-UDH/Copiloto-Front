@@ -448,6 +448,13 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
               placeholder="Escribe tu título de tesis aquí..."
             />
+            <!-- <label class="block text-lg font-medium text-gray-800 mb-2">Elige tu formato de Tesis</label>
+              <select class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
+                <option disabled selected value="">Selecciona un formato...</option>
+                <option value="Formato_Investigativo">Formato Investigativo</option>
+                <option value="Formato_Tecnologico">Formato Tecnológico</option>
+              </select> -->
+
             <!-- Select para elegir asesor -->
             <label
               for="nombreAsesor"
@@ -478,6 +485,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
                   solicitude.titulo,
                   solicitude.asesor_id,
                   solicitude.estado
+
                 )
               "
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"

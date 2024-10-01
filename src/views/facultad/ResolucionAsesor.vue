@@ -8,7 +8,7 @@ import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
 // ***** Texto que escribe automáticamente ********
-const text = "Resoluciones para designación de asesor";
+const text = "Resoluciones para Designación de Asesor";
 const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
 let index = 0;
 const typeWriter = () => {
@@ -200,7 +200,7 @@ const rejectResolution = async () => {
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
         <!-- Texto tipiado -->
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
+        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
         <!-- Tabla de datos -->
         <div>
@@ -216,7 +216,7 @@ const rejectResolution = async () => {
                   </span>
                   <input
                     placeholder="Buscar"
-                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
+                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
                    />
                 </div>
                 <div class="relative">
@@ -244,13 +244,14 @@ const rejectResolution = async () => {
                 </div>
               </div>
             </div>
+            <br>
 
             <!-- Tabla de datos -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
               <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
-                    <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <tr class="text-center text-azul border-b-2 bg-gray-300">
                       <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                       <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
@@ -263,9 +264,7 @@ const rejectResolution = async () => {
                     <tr
                       v-for="(u, index) in filteredTableData"
                       :key="u.id"
-                      :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
-                      class="border-b border-gray-200"
-                    >
+                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
                         <p class="text-gray-900 text-wrap w-64">{{ u.estudiante_nombre || 'Nombre desconocido' }}</p>
                       </td>
@@ -334,8 +333,8 @@ const rejectResolution = async () => {
                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
                 <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-gray-800 bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-black bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
               </div>

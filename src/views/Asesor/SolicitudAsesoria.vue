@@ -283,6 +283,7 @@ const fetchDocuments = async (solicitudId: string) => {
                 </div>
               </div>
             </div>
+            <br>
 
             <!-- Tabla de solicitudes -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
@@ -305,7 +306,7 @@ const fetchDocuments = async (solicitudId: string) => {
                       :key="u.id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 whitespace-nowrap w-64">
+                        <p class="text-black whitespace-nowrap w-64">
                           {{
                             u.estudiante?.nombre_completo ||
                             "Nombre desconocido"
@@ -313,7 +314,7 @@ const fetchDocuments = async (solicitudId: string) => {
                         </p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-80">
+                        <p class="text-black text-wrap w-80">
                           {{ u.titulo || "Título no disponible" }}
                         </p>
                       </td>
@@ -364,7 +365,7 @@ const fetchDocuments = async (solicitudId: string) => {
                           class="focus:outline-none">
                             <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                         </button>
-                        <p v-else class="italic text-gray-500">No generado</p>
+                        <p v-else class="italic text-gray-400">No generado</p>
                       </td>
 
                       <td class="px-3 py-5 text-center">
@@ -385,13 +386,14 @@ const fetchDocuments = async (solicitudId: string) => {
                 <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
                 <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-white bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-white bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
               </div>
             </div>
           </div>
+
         </div>
 
         <!-- Modal de confirmación -->
