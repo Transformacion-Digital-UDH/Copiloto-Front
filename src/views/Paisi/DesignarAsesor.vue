@@ -3,14 +3,32 @@ import { ref, computed, onMounted } from "vue";
 import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
-import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
-import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Oficio para Designación de Asesor";
-const textoTipiado1 = ref(''); // Texto tipiado automáticamente
+// Definir la interfaz para las solicitudes
+interface Estudiante {
+  nombre_completo: string;
+}
+
+interface Asesor {
+  nombre_completo: string;
+}
+
+interface Solicitude {
+  id: number;
+  estudiante: Estudiante;
+  asesor: Asesor;
+  oficio_id: number;
+  oficio_estado: string | null;
+  link: string | null;
+}
+
+// ***** Texto que escribe automáticamente ********
+const text = "Oficio para designación de asesor";
+const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
@@ -22,96 +40,61 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
+// *******************************************************
 
 // Estados y propiedades
-const selectedFilter = ref<string>("");  // Filtro por estado
-const rowsPerPage = ref<number>(5);      // Filas por página
-const currentPage = ref<number>(1);      // Página actual
-const showModal = ref<boolean>(false);   // Estado del modal de creación
-const showRejectModal = ref<boolean>(false);  // Estado del modal de rechazo
-const showLinkModal = ref<boolean>(false);    // Estado del modal para generar enlace
-const motivoObservacion = ref<string>("");    // Motivo de observación
-const nroOficio1 = ref<string>('');  // Número de oficio
-const nroExped1 = ref<string>('');   // Número de expediente
-let oficio_id = ref<string | null>(null); // ID del oficio seleccionado
-const createdoc = ref<boolean>(false);    // Estado de creación del documento
+const isHovered = ref(false);
+const selectedFilter = ref<string>("");  // Añadido tipo explícito string
+const rowsPerPage = ref<number>(5);      // Añadido tipo explícito number
+const currentPage = ref<number>(1);      // Añadido tipo explícito number
+const showModal = ref<boolean>(false);   // Añadido tipo explícito boolean
+const showRejectModal = ref<boolean>(false);  // Añadido tipo explícito boolean
+const showLinkModal = ref<boolean>(false);    // Añadido tipo explícito boolean
+const nroOficio1 = ref<string>('');  // Tipo explícito string
+const nroExped1 = ref<string>('');   // Tipo explícito string
+const motivoObservacion = ref<string>("");  // Tipo explícito string
+let oficio_id = ref<number | null>(null);   // Puede ser null
+const createdoc = ref<boolean>(false);    // Añadido tipo explícito boolean
 
-// Nueva variable para manejar el estado de hover (ratón sobre el ítem)
-const isHovered = ref(false);  // Estado para cambiar íconos cuando el ratón está encima
-
-// VARIABLES DE ENTORNO
+//VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
 
-// Funciones para abrir y cerrar modales
-function openModal(oficioId: string) {
+// Función para abrir modal
+function openModal(oficioId: number) {
   showModal.value = true;
   oficio_id.value = oficioId;
 }
 
-function openRejectModal(oficioId: string) {
+// Función para abrir modal de rechazo
+function openRejectModal(oficioId: number) {
   showRejectModal.value = true;
   oficio_id.value = oficioId;
 }
 
-function openModalLink(solicitude: any) {
+// El tipo de solicitude se especifica como `Solicitude`
+const openModalLink = (solicitude: Solicitude) => {
   showLinkModal.value = true;
   selectedSolicitude.value = solicitude;
 }
 
+// Función para cerrar modal
 function closeModal() {
   showModal.value = false;
-  showRejectModal.value = false;
+  showRejectModal.value = false; //cerrar ambos modales
   showLinkModal.value = false;
   motivoObservacion.value = "";
 }
 
-// Función para actualizar un oficio
-const updateOffice = async () => {
-  try {
-    if (!oficio_id.value) return;
-    const params = {
-      numeroOficio: nroOficio1.value,
-      expediente: nroExped1.value,
-    };
-
-    const response = await axios.post(`/api/oficios/${oficio_id.value}/update`, params);
-    if (response.status === 200) {
-      alertToast('Oficio actualizado correctamente', 'success');
-      closeModal();  // Cierra el modal tras actualizar
-    }
-  } catch (error) {
-    alertToast('Error al actualizar el oficio', 'error');
-  }
-};
-
-// Función para rechazar una solicitud
-const rejectSolicitude = async () => {
-  try {
-    if (!oficio_id.value) return;
-    const params = {
-      motivoObservacion: motivoObservacion.value,
-    };
-
-    const response = await axios.post(`/api/oficios/${oficio_id.value}/reject`, params);
-    if (response.status === 200) {
-      alertToast('Oficio rechazado correctamente', 'success');
-      closeModal();  // Cierra el modal tras rechazar
-    }
-  } catch (error) {
-    alertToast('Error al rechazar el oficio', 'error');
-  }
-};
-
 // Filtrar datos y aplicar paginación
-const tableData = ref<any[]>([]);  // Datos de la tabla
+const tableData = ref<Solicitude[]>([]);  // Tipo explícito: Array de Solicitude
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.estado.toLowerCase() === selectedFilter.value.toLowerCase()
+      (data) => data.oficio_estado?.toLowerCase() === selectedFilter.value.toLowerCase()
     );
   }
 
@@ -124,30 +107,33 @@ const filteredTableData = computed(() => {
 // Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter(
-        (data) => data.estado.toLowerCase() === selectedFilter.value.toLowerCase()
-      )
+    ? tableData.value.filter((data) => data.oficio_estado?.toLowerCase() === selectedFilter.value.toLowerCase())
     : tableData.value;
+
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
+// Cambiar página a la anterior
 function goToPreviousPage() {
   if (currentPage.value > 1) currentPage.value--;
 }
 
+// Cambiar página a la siguiente
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// Cargar solicitudes desde el backend
+//*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 const load = ref<boolean>(false);
-const selectedSolicitude = ref<any>('');
+const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser null
 
+// Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
     const response = await axios.get('/api/paisi/getSolicitude');
-    tableData.value = response.data.data;
+    tableData.value = response.data.data as Solicitude[];  // Forzamos el tipo a `Solicitude[]`
+    console.log(response.data);
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   } finally {
@@ -160,14 +146,16 @@ onMounted(() => {
 });
 
 // Crear documento en Google Docs
-const createGoogleDoc = async (solicitudeId: string) => {
+const createGoogleDoc = async (solicitudeId: number) => {
   createdoc.value = true;
   try {
     const response = await axios.post("/api/create-document", {
       solicitude_id: solicitudeId,
     });
+    console.log(response);
+
     const link = response.data.link;
-    if (link) {
+    if (link && selectedSolicitude.value) {
       selectedSolicitude.value.link = link;
       closeModal();
     }
@@ -178,7 +166,54 @@ const createGoogleDoc = async (solicitudeId: string) => {
     createdoc.value = false;
   }
 };
+
+// Función para actualizar o generar oficio
+const updateOffice = async () => {
+  try {
+    const oficioId = oficio_id.value;
+    if (oficioId === null) return;  // Verificamos que `oficioId` no sea null
+    const params = {
+      of_status: 'tramitado',
+      of_num_of: nroOficio1.value,
+      of_num_exp: nroExped1.value,
+    };
+    const response = await axios.put(`/api/offices/${oficioId}/update-status-paisi`, params);  // URL y request body
+
+    if (response.data.status) {
+      const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
+      if (oficio) oficio.oficio_estado = 'tramitado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal después de la actualización
+      alertToast('El oficio ha sido generado', 'Éxito', 'success');
+    }
+  } catch (error) {
+    alertToast('Error al generar oficio', 'Error', 'error');
+  }
+};
+
+// Función para observar la solicitud
+const rejectSolicitude = async () => {
+  try {
+    const oficioId = oficio_id.value;
+    if (oficioId === null) return;  // Verificamos que `oficioId` no sea null
+    const params = {
+      of_status: 'observado',
+      of_observation: motivoObservacion.value,  // Motivo de rechazo
+    };
+    const response = await axios.put(`/api/offices/${oficioId}/update-status-paisi`, params);  // URL y request body
+
+    if (response.data.status) {
+      const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
+      if (oficio) oficio.oficio_estado = 'observado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal tras la actualización
+      alertToast('La solicitud ha sido observada', 'Éxito', 'success');
+    }
+  } catch (error) {
+    alertToast('Error al observar la solicitud', 'Error', 'error');
+  }
+};
+
 </script>
+
 
 <template>
   <template v-if="load">
@@ -202,7 +237,6 @@ const createGoogleDoc = async (solicitudeId: string) => {
       </div>
     </div>
   </template>
-  
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
@@ -251,11 +285,15 @@ const createGoogleDoc = async (solicitudeId: string) => {
             <br>
 
             <!-- Tabla -->
-            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
-              <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
+              <div
+                class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
+              >
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
-                    <tr class="text-center text-azul border-b-2 bg-gray-300">
+                    <tr
+                      class="text-center text-azul border-b-2 bg-gray-300"
+                    >
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                       <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
@@ -269,12 +307,16 @@ const createGoogleDoc = async (solicitudeId: string) => {
                       v-for="(solicitude, index) in filteredTableData"
                       :key="solicitude.oficio_id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
-                    >
+                      >
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-64">{{ solicitude.estudiante.nombre_completo }}</p>
+                        <p class="text-black text-wrap w-64">
+                          {{ solicitude.estudiante.nombre_completo}}
+                        </p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-64">{{ solicitude.asesor.nombre_completo }}</p>
+                        <p class="text-black text-wrap w-64">
+                          {{ solicitude.asesor.nombre_completo}}
+                        </p>
                       </td>
                       <td class="text-center px-4">
                         <a :href="`${VIEW_LETTER}/${ solicitude.id }`" target="_blank">
@@ -284,7 +326,9 @@ const createGoogleDoc = async (solicitudeId: string) => {
                         </a>
                       </td>
                       <td class="text-center px-4">
-                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">Generar docs</button>
+                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)"  class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">
+                          Generar docs
+                        </button>
                         <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
                       </td>
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
@@ -293,26 +337,27 @@ const createGoogleDoc = async (solicitudeId: string) => {
                           :class="['w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado) 
                               ? 'cursor-not-allowed' 
-                              : 'hover:bg-green-600']"
+                              : 'hover:bg-green-600'
+                          ]"
                           :disabled="['tramitado'].includes(solicitude.oficio_estado)"
-                          @click="openModal(solicitude.oficio_id)"
-                        >Generar</button>
+                          @click="openModal(solicitude.oficio_id)">Generar
+                        </button>
                         <button
                           v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
                           :class="['w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado) 
                               ? 'cursor-not-allowed' 
-                              : 'hover:bg-gray-400']"
+                              : 'hover:bg-gray-400'
+                          ]"
                           :disabled="['tramitado'].includes(solicitude.oficio_estado)"
-                          @click="openRejectModal(solicitude.oficio_id)"
-                        >Observar</button>
+                          @click="openRejectModal(solicitude.oficio_id)">Observar
+                        </button>
                         <a
                           :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" target="_blank"
                           @mouseenter="isHovered = true"
                           @mouseleave="isHovered = false"
                           v-if="['tramitado'].includes(solicitude.oficio_estado)"
-                          class="flex items-center hover:underline"
-                        >
+                          class="flex items-center hover:underline">
                           <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
                           <IconEyeAbrir v-else class="mr-1"/>
                           <span class="text-black text-base">Ver oficio</span>
@@ -326,13 +371,31 @@ const createGoogleDoc = async (solicitudeId: string) => {
                 </table>
 
                 <!-- Paginación -->
-                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
-                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
+                <div
+                  class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
+                >
+                  <span class="text-sm text-gray-900 xs:text-sm"
+                    >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+                    {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
+                    {{ tableData.length }}</span
+                  >
+                  <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                    <button
+                      :disabled="currentPage === 1"
+                      @click="goToPreviousPage"
+                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
+                    >
+                      Anterior
+                    </button>
+                    <button
+                      :disabled="currentPage === totalPages"
+                      @click="goToNextPage"
+                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
+                    >
+                      Siguiente
+                    </button>
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </div>
@@ -356,14 +419,21 @@ const createGoogleDoc = async (solicitudeId: string) => {
                 Dígite el N° de oficio.
               </p>
               <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
+
               <p class="text-gray-500 text-lg text-left mb-2">
                 Dígite el N° de expediente.
               </p>
               <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl" @click="updateOffice">Enviar</button>
+            <div class="flex items-center justify-center p-3  border-gray-200">
+              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">
+                Cancelar
+              </button>
+              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
+                @click="updateOffice">
+                Enviar
+              </button>
             </div>
           </div>
         </div>
@@ -372,7 +442,8 @@ const createGoogleDoc = async (solicitudeId: string) => {
         <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -387,9 +458,16 @@ const createGoogleDoc = async (solicitudeId: string) => {
               </p>
               <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectSolicitude">Confirmar</button>
+            <div class="flex items-center justify-center p-3  border-gray-200">
+              <button
+                class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">
+                Cancelar
+              </button>
+              <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+                @click="rejectSolicitude">
+                Confirmar
+              </button>
             </div>
           </div>
         </div>
@@ -408,23 +486,32 @@ const createGoogleDoc = async (solicitudeId: string) => {
               </h5>
             </div>
             <div class="p-6">
-              <p class="text-gray-500 text-lg text-center mb-2">¿Está seguro de que desea generar el documento?</p>
+              <p class="text-gray-500 text-lg text-center mb-2">
+                ¿Está seguro de que desea generar el documento?
+              </p>
             </div>
-            <div class="flex items-center justify-end p-3  border-gray-200">
-              <button :disabled="createdoc" class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button :disabled="createdoc" v-if="!selectedSolicitude.link" @click="createGoogleDoc(selectedSolicitude.id)" class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl">
+            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+              <button 
+              :disabled="createdoc"
+              class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+                Cancelar
+              </button>
+              <button 
+              :disabled="createdoc"
+              v-if="!selectedSolicitude.link" @click="createGoogleDoc(selectedSolicitude.id)" class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl">
                 <div v-if="createdoc" class="flex items-center gap-2">
-                  <svg class="animate-spin h-4 w-4 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>
                   Creando...
                 </div>
-                <p v-else >Crear documento</p>
+                <p v-else>Crear documento</p>
               </button>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </template>
@@ -460,8 +547,10 @@ const createGoogleDoc = async (solicitudeId: string) => {
 }
 
 .custom-thead th {
-  font-weight: 700;
-  font-size: 16px;
-  text-transform: uppercase;
+  font-weight: 700; /* Grosor delgado */
+  font-size: 16px;  /* Tamaño de la fuente */
+  text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
+
+
 </style>

@@ -28,12 +28,12 @@ export const alertConfirmation = (message: string, title: string, icon: string =
         icon: icon as SweetAlertIcon,
         text: message,
         customClass: {
-            confirmButton: 'bg-base text-white px-4 py-2 rounded-md hover:bg-emerald-600',
-            cancelButton: 'bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700'
+            confirmButton: 'bg-base text-white px-4 py-2 rounded-md hover:bg-emerald-400',
+            cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-orange-400'
         },
         showCloseButton: true,
         showCancelButton: true,
-        confirmButtonText: 'Sí, acepto',
+        confirmButtonText: 'Confirmar',
         cancelButtonText: 'No',
     }).then((result) => {
         if(result.isConfirmed){

@@ -256,8 +256,8 @@ const updateSolicitude = async (
     };
     // Llamada a la función de confirmación antes de actualizar la solicitud
     alertConfirmation(
-      "Asegurate de ingresar los datos correctos. ¿Todo ok?",
-      "Solicitar asesor",
+      "Verifica que los datos sean correctos antes de proceder",
+      "¿Confirmas tu solicitud de asesor?",
       "question",
       params,
       `/api/solicitudes/${solicitud_id}`,
@@ -562,7 +562,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
           <span
             v-if="solicitude.estado === 'pendiente'"
             class="text-gray-500 italic"
-            >Esperando la respuesta del asesor...</span
+            >Estamos esperando la respuesta del asesor. Se mostrará aquí cuando esté disponible.</span
           >
           <span
             v-else-if="solicitude.estado === 'rechazado'"

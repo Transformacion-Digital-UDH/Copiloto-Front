@@ -296,10 +296,10 @@ const rejectResolution = async () => {
                         </button>
                         <button
                           v-if="['pendiente', 'observado'].includes(u.resolucion_estado)"
-                          :class="['w-24 px-4 py-1 mb-2 text-sm text-black bg-gray-300 rounded-xl focus:outline-none', 
+                          :class="['w-24 px-3 py-1 mb-2 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
                             ['tramitado'].includes(u.resolucion_estado) 
                               ? 'cursor-not-allowed' 
-                              : 'hover:bg-gray-400'
+                              : 'hover:bg-[#f1aa47e8]'
                           ]"
                           :disabled="['tramitado'].includes(u.resolucion_estado)"
                           @click="openRejectModal(u.id)"
@@ -333,18 +333,73 @@ const rejectResolution = async () => {
                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
                 <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
+
+
+                 <!-- Modal para generar un oficio al estudiante -->
+          <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+            <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+              <div class="flex justify-end items-start">
+                <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+                  <IconCerrar />
+                </button>
+              </div>
+              <div class="flex items-start justify-between p-3 border-b border-gray-200">
+                <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                  Se autogenerará la resolucion de asesor para este estudiante
+                </h5>
+              </div>
+              <div class="p-6">
+                <p class="text-gray-500 text-lg text-left mb-2">
+                  Dígite el N° de expediente
+                </p>
+                <input type="text" id="nroResolution" v-model="nroResolution" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="4" inputmode="numeric" pattern="[0-9]*" >
+              </div>
+              <div class="flex items-center justify-center p-3  border-gray-200">
+                <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+                  Cancelar
+                </button>
+                <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" @click="updateResolution">
+                  Generar
+                </button>
+              </div>
+            </div>
+          </div>
+
+            <!-- Modal de observacion -->
+            <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+              <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+                <div class="flex justify-end items-start">
+                  <button  class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+                    <IconCerrar />
+                  </button>
+                </div>
+                <div class="flex items-start justify-between p-3 border-b border-gray-200">
+                  <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación</h5>
+                </div>
+                <div class="p-6 bg-white rounded-lg">
+                  <p class="text-gray-600 text-lg text-center mb-4">
+                    Por favor escriba el motivo de su observación
+                  </p>
+                  <textarea v-model="motivoObservacion" class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+                </div>
+                <div class="flex items-center justify-center p-3  border-gray-200">
+                  <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+                    Cancelar
+                  </button>
+                  <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectResolution">
+                    Confirmar
+                  </button>
+                </div>
+              </div>
+            </div>
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Modales de confirmación, observación, y otros -->
-        <!-- ... No se modifica la lógica de diseño, igual que antes ... -->
-
       </div>
     </div>
   </template>

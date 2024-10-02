@@ -386,8 +386,8 @@ const fetchDocuments = async (solicitudId: string) => {
                 <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
                 <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-[#011B4B]  bg-baseClarito hover:bg-base rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
               </div>
@@ -407,7 +407,7 @@ const fetchDocuments = async (solicitudId: string) => {
               </button>
             </div>
             <div class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+              <h5 class="text-2xl font-ligth  text-gray-900 text-center flex-1">
                 Confirmación
               </h5>
             </div>
@@ -428,14 +428,14 @@ const fetchDocuments = async (solicitudId: string) => {
                 <i>Esta carta se autogenerará por el sistema</i>
               </p>
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <div class="flex items-center justify-center p-1  border-gray-200">
               <button
-                class="px-3 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
               <button
-                class="ml-5 px-3 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl"
+                class="ml-5 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
                 @click="acceptSolicitude">
                 Generar
               </button>
@@ -459,7 +459,7 @@ const fetchDocuments = async (solicitudId: string) => {
               </h5>
             </div>
             <div class="p-6 bg-white rounded-lg">
-              <p class="text-gray-600 text-lg mb-4">
+              <p class="text-[#5d6d7e] text-lg mb-4">
                 Por favor escriba el motivo de su rechazo
               </p>
               <textarea
@@ -468,14 +468,14 @@ const fetchDocuments = async (solicitudId: string) => {
                 placeholder="Escriba aquí su observación..."
               ></textarea>
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <div class="flex items-center justify-center p-3  border-gray-200">
               <button
-                class="px-4 py-3 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
               <button
-                class="ml-4 px-4 py-3 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+                class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
                 @click="rejectSolicitude">
                 Confirmar
               </button>
@@ -515,7 +515,7 @@ const fetchDocuments = async (solicitudId: string) => {
             </div>
             <div class="flex items-center justify-center p-3 border-t border-gray-200">
               <button
-                class="px-3 py-2 text-sl font-thin text-white bg-base rounded-2xl"
+                class="px-3 py-2 text-sl font-thin text-white bg-base rounded-2xl hover:bg-green-500"
                 @click="closeDocumentModal">
                 Cerrar
               </button>
