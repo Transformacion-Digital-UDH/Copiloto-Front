@@ -1,47 +1,28 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
-import IconBuscar from "@/components/icons/IconBuscar.vue";
-import IconCerrar from "@/components/icons/IconCerrar.vue";
-import IconArchivo from "@/components/icons/IconArchivo.vue";
 import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
+import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
+import { alertToast } from "@/functions";
 
-// ***** Para guardar archivo y mostrar lo que ha seleccionado ********
-const fileName = ref(null); 
-const fileInput = ref(null);
+// Define una interfaz para los datos de la solicitud
+interface Solicitud {
+  id: string;
+  estado: string;
+  titulo: string;
+  estudiante: {
+    nombre_completo: string;
+  };
+}
 
-const triggerFileInput = () => {
-  fileInput.value.click();
-};
-
-const handleFileUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    fileName.value = file.name;
-  }
-};
-
-const handleDrop = (event) => {
-  const file = event.dataTransfer.files[0];
-  if (file) {
-    fileName.value = file.name;
-  }
-};
-// para guardar el archivo y enviar
-// const submitFile = () => {
-//   if (fileName.value) {
-//     console.log('Archivo enviado:', fileName.value);
-//     closeModal();
-//   }
-// };
-// *******************************************************
-
-// ***** Texto que escribe automatiqueshionmente ********
-const text = "Pendientes de revisiones de proyecto de tesis";
-const textoTipiado2 = ref("");
+// Texto de tipo máquina de escribir
+const text = "Pendientes de solicitudes de asesoría";
+const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
+    textoTipiado.value += text.charAt(index);
     index++;
     setTimeout(typeWriter, 80);
   }
@@ -49,67 +30,182 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
-// *******************************************************
 
-const rowsPerPage = ref(5);
+// Estado de los modales y datos
+const showModal = ref(false);
+const showRejectModal = ref(false);
+const nroCarta = ref("");
+const motivoRechazo = ref("");
+const isHovered = ref(false);
 const selectedFilter = ref("");
+const rowsPerPage = ref(5);
 const currentPage = ref(1);
-const showModal = ref(false); // modal de aprobar proyecto
-const showRejectModal = ref(false); // modal de observar proyecto
+const tableData = ref<Solicitud[]>([]);
+const load = ref(false);
+const authStore = useAuthStore();
+let solicitudSeleccionada = ref<string | null>(null);
 
-function openModal() {showModal.value = true;}
-function openRejectModal() {showRejectModal.value = true;}
-function closeModal() {showModal.value = false; showRejectModal.value = false;}
-function goToPreviousPage() {if (currentPage.value > 1) currentPage.value--;}
-function goToNextPage() {if (currentPage.value < totalPages.value) currentPage.value++;}
+// Variables para el archivo
+const fileInput = ref<HTMLInputElement | null>(null); // Input file ref
+const fileName = ref<string | null>(null); // Nombre del archivo
+const selectedFile = ref<File | null>(null); // Archivo seleccionado
 
+// Función para manejar la subida de archivo
+const handleFileUpload = (event: Event) => {
+  const file = (event.target as HTMLInputElement)?.files?.[0];
+  if (file) {
+    fileName.value = file.name;
+    selectedFile.value = file;
+  }
+};
+
+// Función para leer el archivo y convertirlo en una cadena (en base64 o texto)
+const readFileAsText = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+    reader.readAsText(file); // Alternativamente, puedes usar readAsDataURL(file) para base64
+  });
+};
+
+// Función para abrir y cerrar modales
+function openModal(solicitudeId: string) {
+  if (!solicitudeId) {
+    alertToast("ID de solicitud no encontrado", "Error", "error");
+    return;
+  }
+  
+  console.log("Solicitud seleccionada para aprobar:", solicitudeId);
+  solicitudSeleccionada.value = solicitudeId;
+  showModal.value = true;
+}
+
+function openRejectModal(solicitudeId: string) {
+  if (!solicitudeId) {
+    alertToast("ID de solicitud no encontrado", "Error", "error");
+    return;
+  }
+
+  console.log("Solicitud seleccionada para observar:", solicitudeId);
+  solicitudSeleccionada.value = solicitudeId; // Guardar la solicitud seleccionada
+  showRejectModal.value = true;
+}
+
+// Función para cerrar ambos modales
+function closeModal() {
+  showModal.value = false;
+  showRejectModal.value = false;
+  nroCarta.value = "";
+  motivoRechazo.value = "";
+  fileName.value = null;
+  selectedFile.value = null;
+}
+
+// Función para enviar archivo y observación al backend usando la API
+const sendObservacion = async () => {
+  if (!selectedFile.value) {
+    alertToast("Debe seleccionar un archivo para observar", "Advertencia", "warning");
+    return;
+  }
+
+  if (!solicitudSeleccionada.value) {
+    alertToast("No se ha seleccionado ninguna solicitud", "Error", "error");
+    return;
+  }
+
+  try {
+    // Leer el archivo como texto (o base64, según prefieras)
+    const fileContent = await readFileAsText(selectedFile.value);
+
+    // Crear el cuerpo en JSON como lo requiere el backend
+    const requestBody = {
+      rev_status: "observado",
+      rev_file: fileContent, // Enviamos el contenido del archivo como string
+    };
+
+    const solicitudeId = solicitudSeleccionada.value;
+
+    // Enviar la solicitud PUT al backend usando la API proporcionada
+    const response = await axios.put(`/api/student/review/${solicitudeId}/status`, requestBody, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.data.status) {
+      closeModal();
+      alertToast("La observación ha sido enviada con éxito", "Éxito", "success");
+    }
+  } catch (error) {
+    console.error("Error al enviar la observación: ", error);
+    alertToast("Error al enviar la observación", "Error", "error");
+  }
+};
+
+// Función para obtener las solicitudes del backend
+const fetchSolicitudes = async () => {
+  load.value = true;
+
+  try {
+    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
+    const solicitudes: Solicitud[] = response.data.data;
+    tableData.value = solicitudes;
+  } catch (error) {
+    console.error("Error al cargar las solicitudes:", error);
+  } finally {
+    load.value = false;
+  }
+};
+
+// Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
+
+  // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => data.estado === selectedFilter.value.toLowerCase()
     );
   }
+
+  // Paginación
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
   const endIndex = startIndex + rowsPerPage.value;
-  return filteredData.slice(startIndex, endIndex);});
+  return filteredData.slice(startIndex, endIndex);
+});
 
+// Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    ? tableData.value.filter(
+        (data) => data.estado === selectedFilter.value.toLowerCase()
+      )
     : tableData.value;
-  return Math.ceil(filteredData.length / rowsPerPage.value);});
 
-  const tableData = ref([
-  {  
-    name: "Rodríguez Meléndez, Fabio",
-    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
-    obs: "10",
-    status: "Observado",
-  },
-  {
-    name: "Sulca Correa, Omar Iván",
-    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
-    obs: "20",
-    status: "Aprobado",
-  },
-  {
-    name: "Nuñez Vicente, José Antonio",
-    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
-    obs: "30",
-    status: "Pendiente",
-  },
-]);
+  return Math.ceil(filteredData.length / rowsPerPage.value);
+});
 
-//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+// Navegación de paginación
+function goToPreviousPage() {
+  if (currentPage.value > 1) currentPage.value--;
+}
 
+function goToNextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
+
+onMounted(() => {
+  fetchSolicitudes();
+});
 </script>
+
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        {{ textoTipiado2 }}
+        {{ textoTipiado }}
       </h3>
       <div class="mt-8">
         <div class="mt-6">
@@ -140,7 +236,7 @@ const totalPages = computed(() => {
             </div>
           </div>
 
-          <!-- Tabla de proyectos de tesis pendientes por confirmar -->
+          <!-- Tabla de proyectos de tesis -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal">
@@ -156,32 +252,33 @@ const totalPages = computed(() => {
                 </thead>
                 <tbody>
                   <tr v-for="(u, index) in filteredTableData" :key="index" :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'" class="border-b border-gray-200">
-                    <td class="px-3 py-5 text-base" >
-                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.name }}</p>
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">{{ u.title }}</p>
+                      <p class="text-gray-900 text-wrap w-80">{{ u.sol_title_inve }}</p>
                     </td>
                     <td class="px-3 py-5 text-center"><a target="_blank" class="text-blue-800 hover:underline">Ver proyecto</a></td>
-                    <td class="px-3 py-5 text-center">{{ u.obs }}</td>
+                    <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal">Aprobar
+                        @click="openModal(u.id)">Aprobar
                       </button>
                       <button 
                         class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-                        @click="openRejectModal">Observar
+                        @click="openRejectModal(u.id)">Observar
                       </button>
                     </td>
+
                     <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.status .toLowerCase() .replace(' ', '-')}`">{{ u.status }}</span>
+                      <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">{{ u.rev_status }}</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
 
-              <!-- paginacion -->
+              <!-- paginación -->
               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
                 <span class="text-sm text-gray-900 xs:text-sm"
                   >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
@@ -207,7 +304,7 @@ const totalPages = computed(() => {
         </div>
       </div>
 
-      <!-- modal para aprobar proyecto -->
+      <!-- Modal para aprobar proyecto -->
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
@@ -240,7 +337,7 @@ const totalPages = computed(() => {
         </div>
       </div>
 
-      <!-- modal para corregir y observar proyecto -->
+      <!-- Modal para corregir y observar proyecto -->
       <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
@@ -257,8 +354,8 @@ const totalPages = computed(() => {
             <p class="text-black text-lg text-center mb-4">¿Desea agregar correcciones a este proyecto de tesis?</p>
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition flex flex-col items-center justify-center" @dragover.prevent @drop.prevent="handleDrop">
               <p class="text-black text-base mb-4">Arrastra y suelta el archivo aquí o</p>
-              <button class="flex items-center text-black underline" @click="triggerFileInput">
-                <IconArchivo class="mr-2"/> 
+              <button class="flex items-center text-black underline" @click="fileInput.click()">
+                <IconCerrar class="mr-2"/> 
                 <span>Subir archivo</span>
               </button>
               <input type="file" id="file" ref="fileInput" class="hidden" @change="handleFileUpload">
@@ -268,20 +365,15 @@ const totalPages = computed(() => {
             </div>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button
-              class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal">Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl"
-              @click="closeModal">Enviar
-            </button>
+            <button class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl" @click="sendObservacion">Enviar</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .estado-estilo {
@@ -307,8 +399,8 @@ const totalPages = computed(() => {
 }
 
 .custom-thead th {
-  font-weight: 700; /* Grosor delgado */
-  font-size: 16px;  /* Tamaño de la fuente */
-  text-transform: uppercase; /* Todo el texto en mayúsculas */
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
 }
 </style>

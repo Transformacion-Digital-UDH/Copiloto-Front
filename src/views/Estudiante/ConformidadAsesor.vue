@@ -1,8 +1,11 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
+import axios from 'axios';
+import { useAuthStore } from '@/stores/auth'; // Importamos el authStore
 
-// Define los tipos para observaciones y documentos
-interface Observacion {
+// Estado de solicitud (reactivo usando ref)
+const solicitudEstado = ref<string>('Pendiente');
+  interface Observacion {
   descripcion: string;
   revision: number;
   fecha: string;
@@ -16,9 +19,6 @@ interface Documento {
   documentoUrl: string;
 }
 
-// Estado de solicitud (reactivo usando ref)
-const solicitudEstado = ref<string>('Pendiente');
-
 // Observaciones es un array reactivo de tipo Observacion usando reactive
 const observaciones = reactive<Observacion[]>([
   { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'Pendiente' }
@@ -29,10 +29,35 @@ const documentos = reactive<Documento[]>([
   { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
 ]);
 
-// Función para cambiar el estado de la solicitud
-function solicitarRevision() {
-  solicitudEstado.value = 'En Proceso';
+// Auth Store: Accedemos al authStore para obtener el ID del estudiante autenticado
+const authStore = useAuthStore(); 
+
+// Función para cambiar el estado de la solicitud al hacer la solicitud de revisión
+async function solicitarRevision() {
+  try {
+    solicitudEstado.value = 'En Proceso';
+
+    const studentId = authStore.id;
+    const response = await axios.post(`/api/student/first-review/${studentId}`, {
+      student_id: studentId
+    });
+
+    // Verifica si la respuesta tiene status "true"
+    if (response.data.status === true) {
+      solicitudEstado.value = 'En Proceso';
+      alert(response.data.message); // Muestra el mensaje del servidor "Su solicitud de revisión fue enviada"
+    } else {
+      solicitudEstado.value = 'Pendiente';
+      alert('Error en la solicitud, intenta nuevamente.');
+    }
+  } catch (error: any) {  // Corregido aquí
+    solicitudEstado.value = 'Pendiente';
+    console.error('Error al solicitar revisión:', error.response?.data || error.message || error);
+    alert('Ocurrió un error al realizar la solicitud.');
+  }
 }
+
+
 
 // Método para determinar la clase del estado basado en el estado del documento o solicitud
 function estadoClase(estado: string) {
@@ -49,6 +74,10 @@ function estadoClase(estado: string) {
 const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
+
+onMounted(() => {
+  // Aquí puedes realizar cualquier acción cuando el componente se monte
+});
 </script>
 
 <template>
@@ -89,7 +118,14 @@ const mostrarModalDocumentos = ref(false);
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
         </div>
         <div class="flex justify-center mt-3">
-          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
+          <button 
+            class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" 
+            :disabled="solicitudEstado === 'En Proceso'" 
+            :class="{ 'cursor-not-allowed bg-gray-400': solicitudEstado === 'En Proceso', 'bg-base': solicitudEstado !== 'En Proceso' }"
+            @click="solicitarRevision"
+          >
+            Solicitar Revisión
+          </button>
         </div>
       </div>
 
