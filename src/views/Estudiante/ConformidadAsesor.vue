@@ -113,7 +113,7 @@ const obtenerDatosEstudiante = async () => {
         <!-- Responsividad para el link de tesis -->
         <p class="text-lg break-words">
           <strong>Link de tesis: </strong> 
-          <a href="link" target="_blank" class="text-blue-500 underline break-all">{{ link }}</a>
+          <a :href="`${link}`" target="_blank" class="text-blue-500 underline break-all">{{ link }}</a>
         </p>
       </div>
 
