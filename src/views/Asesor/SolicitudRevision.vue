@@ -4,7 +4,10 @@ import axios from "axios";
 import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
-import { alertToast } from "@/functions";
+import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconArchivo from "@/components/icons/IconArchivo.vue";
+import { useAuthStore } from "@/stores/auth";
+import axios from "axios";
 
 // Define una interfaz para los datos de la solicitud
 interface Solicitud {
@@ -40,125 +43,25 @@ const isHovered = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
-const tableData = ref<Solicitud[]>([]);
-const load = ref(false);
-const authStore = useAuthStore();
-let solicitudSeleccionada = ref<string | null>(null);
+const showModal = ref(false); // modal de aprobar proyecto
+const showRejectModal = ref(false); // modal de observar proyecto
+let estudianteSeleccionado = ref(null); // Almacena el id del estudiante seleccionado en los modales
 
-// Variables para el archivo
-const fileInput = ref<HTMLInputElement | null>(null); // Input file ref
-const fileName = ref<string | null>(null); // Nombre del archivo
-const selectedFile = ref<File | null>(null); // Archivo seleccionado
 
-// Función para manejar la subida de archivo
-const handleFileUpload = (event: Event) => {
-  const file = (event.target as HTMLInputElement)?.files?.[0];
-  if (file) {
-    fileName.value = file.name;
-    selectedFile.value = file;
-  }
-};
-
-// Función para leer el archivo y convertirlo en una cadena (en base64 o texto)
-const readFileAsText = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = (error) => reject(error);
-    reader.readAsText(file); // Alternativamente, puedes usar readAsDataURL(file) para base64
-  });
-};
-
-// Función para abrir y cerrar modales
-function openModal(solicitudeId: string) {
-  if (!solicitudeId) {
-    alertToast("ID de solicitud no encontrado", "Error", "error");
-    return;
-  }
-  
-  console.log("Solicitud seleccionada para aprobar:", solicitudeId);
-  solicitudSeleccionada.value = solicitudeId;
+function openModal(studentId: string) {
+  estudianteSeleccionado.value = studentId;
   showModal.value = true;
 }
 
-function openRejectModal(solicitudeId: string) {
-  if (!solicitudeId) {
-    alertToast("ID de solicitud no encontrado", "Error", "error");
-    return;
-  }
-
-  console.log("Solicitud seleccionada para observar:", solicitudeId);
-  solicitudSeleccionada.value = solicitudeId; // Guardar la solicitud seleccionada
+function openRejectModal(studentId: string) {
+  estudianteSeleccionado.value = studentId;
   showRejectModal.value = true;
 }
 
-// Función para cerrar ambos modales
-function closeModal() {
-  showModal.value = false;
-  showRejectModal.value = false;
-  nroCarta.value = "";
-  motivoRechazo.value = "";
-  fileName.value = null;
-  selectedFile.value = null;
-}
+function closeModal() {showModal.value = false; showRejectModal.value = false;}
+function goToPreviousPage() {if (currentPage.value > 1) currentPage.value--;}
+function goToNextPage() {if (currentPage.value < totalPages.value) currentPage.value++;}
 
-// Función para enviar archivo y observación al backend usando la API
-const sendObservacion = async () => {
-  if (!selectedFile.value) {
-    alertToast("Debe seleccionar un archivo para observar", "Advertencia", "warning");
-    return;
-  }
-
-  if (!solicitudSeleccionada.value) {
-    alertToast("No se ha seleccionado ninguna solicitud", "Error", "error");
-    return;
-  }
-
-  try {
-    // Leer el archivo como texto (o base64, según prefieras)
-    const fileContent = await readFileAsText(selectedFile.value);
-
-    // Crear el cuerpo en JSON como lo requiere el backend
-    const requestBody = {
-      rev_status: "observado",
-      rev_file: fileContent, // Enviamos el contenido del archivo como string
-    };
-
-    const solicitudeId = solicitudSeleccionada.value;
-
-    // Enviar la solicitud PUT al backend usando la API proporcionada
-    const response = await axios.put(`/api/student/review/${solicitudeId}/status`, requestBody, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.data.status) {
-      closeModal();
-      alertToast("La observación ha sido enviada con éxito", "Éxito", "success");
-    }
-  } catch (error) {
-    console.error("Error al enviar la observación: ", error);
-    alertToast("Error al enviar la observación", "Error", "error");
-  }
-};
-
-// Función para obtener las solicitudes del backend
-const fetchSolicitudes = async () => {
-  load.value = true;
-
-  try {
-    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
-    const solicitudes: Solicitud[] = response.data.data;
-    tableData.value = solicitudes;
-  } catch (error) {
-    console.error("Error al cargar las solicitudes:", error);
-  } finally {
-    load.value = false;
-  }
-};
-
-// Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
@@ -182,21 +85,23 @@ const totalPages = computed(() => {
         (data) => data.estado === selectedFilter.value.toLowerCase()
       )
     : tableData.value;
+  return Math.ceil(filteredData.length / rowsPerPage.value);});
 
-  return Math.ceil(filteredData.length / rowsPerPage.value);
-});
+//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+const authStore = useAuthStore();
+const tableData = ref([]);
 
-// Navegación de paginación
-function goToPreviousPage() {
-  if (currentPage.value > 1) currentPage.value--;
-}
-
-function goToNextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-}
-
-onMounted(() => {
-  fetchSolicitudes();
+const fetchReviews = async() => {
+  try{
+    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`)
+    tableData.value = response.data.data;
+    console.log(response.data)
+  } catch (error){
+    console.error('Error al obtener las correcciones pendientes:', error);
+  }
+};
+onMounted(() =>{
+  fetchReviews()
 });
 </script>
 
@@ -251,28 +156,30 @@ onMounted(() => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(u, index) in filteredTableData" :key="index" :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'" class="border-b border-gray-200">
-                    <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name }}</p>
+                  <tr v-for="(u, index) in filteredTableData" 
+                  :key="u.stu_id" 
+                  class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <td class="px-3 py-5 text-base" >
+                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">{{ u.sol_title_inve }}</p>
+                      <p class="text-gray-900 text-wrap w-80">{{ u.sol_title_inve || "Título no disponible" }}</p>
                     </td>
                     <td class="px-3 py-5 text-center"><a target="_blank" class="text-blue-800 hover:underline">Ver proyecto</a></td>
                     <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal(u.id)">Aprobar
+                        @click="openModal(u.stu_id)">Aprobar
                       </button>
                       <button 
                         class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-                        @click="openRejectModal(u.id)">Observar
+                        @click="openRejectModal(u.stu_id)">Observar
                       </button>
                     </td>
 
                     <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">{{ u.rev_status }}</span>
+                      <span :class="`estado-estilo estado-${u.rev_status .toLowerCase() .replace(' ', '-')}`">{{ u.rev_status }}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -304,8 +211,8 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Modal para aprobar proyecto -->
-      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+      <!-- modal para aprobar proyecto -->
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
             <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
@@ -337,8 +244,8 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Modal para corregir y observar proyecto -->
-      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+      <!-- modal para corregir y observar proyecto -->
+      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
             <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">

@@ -318,35 +318,30 @@ const fetchDocuments = async (solicitudId: string) => {
                           {{ u.titulo || "Título no disponible" }}
                         </p>
                       </td>
-                      <td class="px-3 py-5 flex items-center justify-center">
-                        <div class="flex flex-col items-center justify-center space-y-2">
-                          <!-- Botón Aceptar -->
-                          <button
-                            v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                            :class="[
-                              'w-20 px-3 py-1 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                              ['rechazado'].includes(u.estado)
-                                ? 'cursor-not-allowed'
-                                : 'hover:bg-green-600',
-                            ]"
-                            :disabled="['rechazado'].includes(u.estado)"
-                            @click="openModal(u.id)">
-                            Aceptar
-                          </button>
+                      <td class="px-3 py-5 flex flex-col items-center justify-center">
+                        <button
+                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                          :class="[
+                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78]  rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                            ['rechazado'].includes(u.estado)
+                              ? 'cursor-not-allowed'
+                              : 'hover:bg-green-600',
+                          ]"
+                          :disabled="['rechazado'].includes(u.estado)"
+                          @click="openModal(u.id)">Aceptar
+                        </button>
 
-                          <!-- Botón Rechazar -->
-                          <button
-                            v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                            :class="[
-                              'w-20 px-3 py-1 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                              ['rechazado'].includes(u.estado)
-                                ? 'cursor-not-allowed'
-                                : 'hover:bg-red-600',
-                            ]"
-                            :disabled="['rechazado'].includes(u.estado)"
-                            @click="openRejectModal(u.id)">
-                            Rechazar
-                          </button>
+                        <button
+                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                          :class="[
+                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                            ['rechazado'].includes(u.estado)
+                              ? 'cursor-not-allowed'
+                              : 'hover:bg-red-600',
+                          ]"
+                          :disabled="['rechazado'].includes(u.estado)"
+                          @click="openRejectModal(u.id)">Rechazar
+                        </button>
 
                           <!-- Botón Declinar -->
                           <button
@@ -397,7 +392,7 @@ const fetchDocuments = async (solicitudId: string) => {
         </div>
 
         <!-- Modal de confirmación -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button
@@ -444,7 +439,7 @@ const fetchDocuments = async (solicitudId: string) => {
         </div>
 
         <!-- Modal de rechazo -->
-        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button
@@ -459,8 +454,8 @@ const fetchDocuments = async (solicitudId: string) => {
               </h5>
             </div>
             <div class="p-6 bg-white rounded-lg">
-              <p class="text-[#5d6d7e] text-lg mb-4">
-                Por favor escriba el motivo de su rechazo
+              <p class="text-gray-600 text-lg mb-4">
+                Por favor escriba el motivo de su decisión
               </p>
               <textarea
                 class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0"
@@ -484,7 +479,7 @@ const fetchDocuments = async (solicitudId: string) => {
         </div>
 
         <!-- Modal de documentos -->
-        <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeDocumentModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button
@@ -493,7 +488,7 @@ const fetchDocuments = async (solicitudId: string) => {
                 <IconCerrar />
               </button>
             </div>
-            <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <div class="flex items-start justify-between p-8 border-b border-gray-200">
               <h5 class="text-2xl font-medium text-gray-900 text-center flex-1">
                 Documentos Adjuntos
               </h5>
@@ -506,22 +501,23 @@ const fetchDocuments = async (solicitudId: string) => {
                   target="_blank"
                   @mouseenter="isHovered = true"
                   @mouseleave="isHovered = false"
-                  class="flex items-center hover:underline">
+                  class="flex items-center">
                   <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
                   <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="font-medium text-base" >Visualizar</span>
+                  <span class="text-[#34495e]">Visualizar</span>
                 </a>
               </div>
             </div>
-            <div class="flex items-center justify-center p-3 border-t border-gray-200">
+            <div class="flex items-center justify-end p-6 border-t border-gray-200">
               <button
-                class="px-3 py-2 text-sl font-thin text-white bg-base rounded-2xl hover:bg-green-500"
+                class="px-4 py-3 text-lg font-thin text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeDocumentModal">
-                Cerrar
+                Cancelar
               </button>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </template>

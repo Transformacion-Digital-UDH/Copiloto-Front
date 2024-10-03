@@ -103,17 +103,10 @@ const solicitude = ref<Solicitude>({
   estado: "",
   solicitud_id: "",
   observacion: "",
+  tipo_investigacion: "",
 });
 
-const resolucion = ref<Resolucion>({
-  id: "",
-  nombre: "",
-  fecha_creado: "",
-  estado: "",
-  observacion: "",
-});
-
-const oficio = ref<Oficio>({
+const oficio = ref({
   id: "",
   estado: "",
   fecha_creado: "",
@@ -140,50 +133,39 @@ const goToNextPage = () => {
 
 // Función para obtener la información del estudiante
 const getInfoStudent = async () => {
-  load.value = true; // Indica que se están cargando los datos
-  try {
-    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
-    if (response.data.status) {
-      // Mapeo de los datos recibidos a los objetos de solicitud, oficio y resolución
-      const solicitud = response.data.solicitud;
-      solicitude.value = {
-        estudiante_id: solicitud.estudiante_id ?? "",  // Verifica si es null o undefined
-        titulo: solicitud.titulo ?? "",               // Verifica si es null o undefined
-        asesor_id: solicitud.asesor_id ?? "",         // Verifica si es null o undefined
-        estado: solicitud.estado ?? "",               // Verifica si es null o undefined
-        solicitud_id: solicitud.id ?? "",             // Verifica si es null o undefined
-        observacion: solicitud.observacion ?? "",     // Verifica si es null o undefined
-      };
-
-      const res = response.data.resolucion;
-      resolucion.value = {
-        id: res.id ?? "",                             // Verifica si es null o undefined
-        nombre: res.nombre ?? "",                     // Verifica si es null o undefined
-        fecha_creado: res.fecha_creado ?? "",         // Verifica si es null o undefined
-        estado: res.estado ?? "",                     // Verifica si es null o undefined
-        observacion: res.observacion ?? "",           // Verifica si es null o undefined
-      };
-
-      const oficioData = response.data.oficio;
-      oficio.value = {
-        id: oficioData.id ?? "",                      // Verifica si es null o undefined
-        estado: oficioData.estado ?? "",              // Verifica si es null o undefined
-        fecha_creado: oficioData.fecha_creado ?? "",  // Verifica si es null o undefined
-        nombre_de_oficio: oficioData.nombre_de_oficio ?? "", // Verifica si es null o undefined
-        observacion: oficioData.observacion ?? "",    // Verifica si es null o undefined
-      };
-
-      historial.value = response.data.historial || []; // Carga el historial si existe
-    }
-  } catch (error) {
-    console.error("Error al cargar información del estudiante", error);
-    // Aquí puedes manejar el error mostrando un mensaje si es necesario
-  } finally {
-    load.value = false; // Finaliza la carga
-  }
+  load.value = true;
+  await axios
+    .get(`/api/student/getInfo/${authStore.id}`)
+    .then((response) => {
+      console.log(response.data);
+      if (response.data.status) {
+        solicitude.value.solicitud_id = response.data.solicitud.id;
+        solicitude.value.titulo = response.data.solicitud.titulo;
+        solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
+        solicitude.value.estado = response.data.solicitud.estado;
+        solicitude.value.observacion = response.data.solicitud.observacion;
+        solicitude.value.tipo_investigacion = response.data.solicitud.tipo_investigacion || "";
+        solicitude.value.oficio = response.data.solicitud.oficio;
+        resolucion.value.id = response.data.resolucion.id;
+        resolucion.value.nombre = response.data.resolucion.nombre;
+        resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
+        resolucion.value.estado = response.data.resolucion.estado;
+        resolucion.value.observacion = response.data.resolucion.observacion;
+        oficio.value.id = response.data.oficio.id;
+        oficio.value.estado = response.data.oficio.estado;
+        oficio.value.fecha_creado = response.data.oficio.fecha_creado;
+        oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
+        oficio.value.observacion = response.data.oficio.observacion;
+        historial.value = response.data.historial;
+      }
+    })
+    .catch((error) => {
+      // alertToast(error.response.data.message, 'Error', 'error')
+    })
+    .finally(() => {
+      load.value = false;
+    });
 };
-
-// Función para obtener la lista de asesores desde el backend
 const getAdvisers = async () => {
   try {
     const res = await axios.get("/api/adviser/get-select");
@@ -237,7 +219,8 @@ const updateSolicitude = async (
   solicitud_id: string,
   titulo: string,
   asesor_id: string,
-  estado: string
+  estado: string,
+  tipo_investigacion: string
 ) => {
   // Si el estado es "aceptado", no se puede actualizar
   if (["aceptado"].includes(estado)) {
@@ -250,9 +233,10 @@ const updateSolicitude = async (
   }
   try {
     const params = {
-      sol_title_inve: titulo, // Título de la tesis
-      adviser_id: asesor_id, // ID del asesor
-      sol_status: "pendiente", // Estado de la solicitud
+      sol_title_inve: titulo,
+      adviser_id: asesor_id,
+      sol_status: "pendiente",
+      sol_type_inve: tipo_investigacion
     };
     // Llamada a la función de confirmación antes de actualizar la solicitud
     alertConfirmation(
@@ -267,6 +251,7 @@ const updateSolicitude = async (
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id ?? "";
         solicitude.value.estado = response.data.sol_status;
+        solicitude.value.tipo_investigacion = response.data.sol_type_inve || "";
       }
     );
   } catch (error: any) {
@@ -476,6 +461,27 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
                 {{ asesor.nombre }}
               </option>
             </select>
+           
+            <!-- Select para elegir tipo de investigacion -->
+            <label
+              for="tipoInvestigacion"
+              class="block text-lg font-medium text-gray-800 mb-2"
+              >Elige tu tipo de investigación</label
+            >
+            <select
+              id="tipoInvestigacion"
+              v-model="solicitude.tipo_investigacion"
+              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+            >
+              <option disabled value="">Selecciona un tipo...</option>
+              <option value="cientifica">
+                CIENTÍFICA
+              </option>
+              <option value="tecnologica">
+                TECNOLÓGICA
+              </option>
+            </select>
 
             <!-- Botón de enviar -->
             <button
@@ -484,8 +490,8 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
                   solicitude.solicitud_id,
                   solicitude.titulo,
                   solicitude.asesor_id,
-                  solicitude.estado
-
+                  solicitude.estado,
+                  solicitude.tipo_investigacion
                 )
               "
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"

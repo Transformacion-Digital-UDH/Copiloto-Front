@@ -5,7 +5,7 @@ import axios from 'axios';
 export const alertToast = (message: string, title: string, icon: string = 'question') => {
     const toast = Swal.mixin({
         toast: true,
-        position: "top-end",
+        position: "bottom-end",
         showConfirmButton: false,
         timer: 5000,
         timerProgressBar: true,

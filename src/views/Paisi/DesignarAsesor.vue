@@ -309,12 +309,12 @@ const rejectSolicitude = async () => {
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                       >
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-64">
+                        <p class="text-black text-wrap w-52">
                           {{ solicitude.estudiante.nombre_completo}}
                         </p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-64">
+                        <p class="text-black text-wrap w-52">
                           {{ solicitude.asesor.nombre_completo}}
                         </p>
                       </td>
@@ -352,16 +352,18 @@ const rejectSolicitude = async () => {
                           :disabled="['tramitado'].includes(solicitude.oficio_estado)"
                           @click="openRejectModal(solicitude.oficio_id)">Observar
                         </button>
-                        <a
+                        <button>
+                          <a
                           :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" target="_blank"
                           @mouseenter="isHovered = true"
                           @mouseleave="isHovered = false"
                           v-if="['tramitado'].includes(solicitude.oficio_estado)"
-                          class="flex items-center hover:underline">
+                          class="flex items-center m-2">
                           <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
                           <IconEyeAbrir v-else class="mr-1"/>
-                          <span class="text-black text-base">Ver oficio</span>
+                          <span class="text-[#34495e]">Oficio</span>
                         </a>
+                        </button>
                       </td>
                       <td class="px-3 py-5 text-center">
                         <span :class="`estado-estilo estado-${solicitude.oficio_estado ? solicitude.oficio_estado.toLowerCase().replace(' ', '-') : ''}`">{{ solicitude.oficio_estado || 'Estado desconocido' }}</span>
@@ -402,7 +404,7 @@ const rejectSolicitude = async () => {
         </div>
 
         <!-- Modal para generar un oficio al estudiante -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
@@ -439,11 +441,10 @@ const rejectSolicitude = async () => {
         </div>
 
         <!-- Modal de observacion -->
-        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-                @click="closeModal">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -473,7 +474,7 @@ const rejectSolicitude = async () => {
         </div>
 
         <!-- Modal para generar link de tesis -->
-        <div v-if="showLinkModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div v-if="showLinkModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
               <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">

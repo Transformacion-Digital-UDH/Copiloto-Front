@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { reactive, ref, onMounted } from 'vue';
 import axios from 'axios';
-import { useAuthStore } from '@/stores/auth'; // Importamos el authStore
+import { useAuthStore } from "@/stores/auth";
 
 // Estado de solicitud (reactivo usando ref)
 const solicitudEstado = ref<string>('Pendiente');
@@ -19,9 +19,13 @@ interface Documento {
   documentoUrl: string;
 }
 
+// Estado de solicitud (reactivo usando ref)
+const solicitudEstado = ref<string>('');
+const solicitudMensaje = ref('');
+
 // Observaciones es un array reactivo de tipo Observacion usando reactive
 const observaciones = reactive<Observacion[]>([
-  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'Pendiente' }
+  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'pendiente' }
 ]);
 
 // Documentos es un array reactivo de tipo Documento usando reactive
@@ -29,42 +33,12 @@ const documentos = reactive<Documento[]>([
   { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
 ]);
 
-// Auth Store: Accedemos al authStore para obtener el ID del estudiante autenticado
-const authStore = useAuthStore(); 
-
-// Función para cambiar el estado de la solicitud al hacer la solicitud de revisión
-async function solicitarRevision() {
-  try {
-    solicitudEstado.value = 'En Proceso';
-
-    const studentId = authStore.id;
-    const response = await axios.post(`/api/student/first-review/${studentId}`, {
-      student_id: studentId
-    });
-
-    // Verifica si la respuesta tiene status "true"
-    if (response.data.status === true) {
-      solicitudEstado.value = 'En Proceso';
-      alert(response.data.message); // Muestra el mensaje del servidor "Su solicitud de revisión fue enviada"
-    } else {
-      solicitudEstado.value = 'Pendiente';
-      alert('Error en la solicitud, intenta nuevamente.');
-    }
-  } catch (error: any) {  // Corregido aquí
-    solicitudEstado.value = 'Pendiente';
-    console.error('Error al solicitar revisión:', error.response?.data || error.message || error);
-    alert('Ocurrió un error al realizar la solicitud.');
-  }
-}
-
-
-
 // Método para determinar la clase del estado basado en el estado del documento o solicitud
 function estadoClase(estado: string) {
   switch (estado) {
     case 'Hecho': return 'bg-green-500 text-white';
     case 'En Proceso': return 'bg-orange-500 text-white';
-    case 'Pendiente': return 'bg-gray-400 text-white';
+    case 'pendiente': return 'bg-gray-400 text-white';
     case 'Rechazado': return 'bg-red-500 text-white';
     default: return '';
   }
@@ -75,9 +49,40 @@ const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
+//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+
+const authStore = useAuthStore();
+axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
+
 onMounted(() => {
-  // Aquí puedes realizar cualquier acción cuando el componente se monte
+  obtenerRevisiones();
 });
+
+const solicitarRevision = async () => {
+  try {
+      const response = await axios.post(`/api/student/first-review/${authStore.id}`);
+      console.log(response)
+      if (response.data.status) {
+        solicitudEstado.value = 'pendiente';
+        solicitudMensaje.value = 'Solicitud enviada, espere las indicaciones del asesor por favor!';
+      }
+  } catch (error :any) {
+    console.log(error)
+    solicitudMensaje.value = error.response.data.message;
+  }
+};
+
+const obtenerRevisiones = async () =>{
+  try {
+    const obtenerRev = await axios.get(`api/student/get-review/${authStore.id}`);
+    console.log(obtenerRev)
+    if(obtenerRev.data.status){
+      solicitudEstado.value = obtenerRev.data.revision.estado;
+    }
+  } catch (error :any){
+    solicitudMensaje.value = error.response.data.message;
+  }
+};
 </script>
 
 <template>
@@ -119,14 +124,14 @@ onMounted(() => {
         </div>
         <div class="flex justify-center mt-3">
           <button 
-            class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" 
-            :disabled="solicitudEstado === 'En Proceso'" 
-            :class="{ 'cursor-not-allowed bg-gray-400': solicitudEstado === 'En Proceso', 'bg-base': solicitudEstado !== 'En Proceso' }"
-            @click="solicitarRevision"
-          >
+            :disabled="solicitudEstado === 'pendiente'"
+            :class="solicitudEstado === 'pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
+            class="px-4 py-2 text-white rounded-md"
+            @click="solicitarRevision">
             Solicitar Revisión
           </button>
         </div>
+        <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div> <!-- Mensaje de la solicitud -->
       </div>
 
       <!-- Revisión de levantamiento de observaciones -->
@@ -213,8 +218,8 @@ onMounted(() => {
                     <i class="fas fa-download mr-2"></i> Descargar
                   </a>
                 </div>
-                <!-- Mostrar mensaje de espera si el estado es 'Pendiente' -->
-                <span v-else-if="documento.estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                <!-- Mostrar mensaje de espera si el estado es 'pendiente' -->
+                <span v-else-if="documento.estado === 'pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
                 <!-- Estado del documento -->
                 <span :class="estadoClase(documento.estado)" class="estado-estilo ml-4">{{ documento.estado }}</span>
