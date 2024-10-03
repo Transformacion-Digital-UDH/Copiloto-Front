@@ -1,31 +1,20 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
-import axios from "axios";
-import { useAuthStore } from "@/stores/auth";
-import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconArchivo from "@/components/icons/IconArchivo.vue";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
-// Define una interfaz para los datos de la solicitud
-interface Solicitud {
-  id: string;
-  rev_status: string;
-  sol_title_inve: string;
-  estudiante: {
-    stu_name: string;
-  };
-}
 
-// Texto de tipo máquina de escribir
-const text = "Pendientes de solicitudes de asesoría";
-const textoTipiado = ref("");
+
+// ***** Texto que escribe automáticamente ********
+const text = "Pendientes de revisiones de proyecto de tesis";
+const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    textoTipiado.value += text.charAt(index);
+    textoTipiado2.value += text.charAt(index);
     index++;
     setTimeout(typeWriter, 80);
   }
@@ -34,28 +23,99 @@ onMounted(() => {
   typeWriter();
 });
 
-// Estado de los modales y datos
-const showModal = ref(false);
-const showRejectModal = ref(false);
-const nroCarta = ref("");
-const motivoRechazo = ref("");
-const isHovered = ref(false);
-const selectedFilter = ref("");
+// Estados para la paginación y modales
 const rowsPerPage = ref(5);
+const selectedFilter = ref("");
 const currentPage = ref(1);
-const tableData = ref<Solicitud[]>([]);
-const load = ref(false);
-const authStore = useAuthStore();
-let solicitudSeleccionada = ref<string | null>(null);
+const showModal = ref(false); // Modal para aprobar proyecto
+const showRejectModal = ref(false); // Modal para observar proyecto
+const solicitudSeleccionada = ref<string | null>(null); // Almacena la solicitud seleccionada
 
-// Variables para el archivo
-const fileInput = ref<HTMLInputElement | null>(null); // Input file ref
+// Funciones para abrir y cerrar modales
+function openModal(id: string) {
+  solicitudSeleccionada.value = id;
+  showModal.value = true;
+}
+function openRejectModal(id: string) {
+  solicitudSeleccionada.value = id;
+  showRejectModal.value = true;
+}
+function closeModal() {
+  showModal.value = false;
+  showRejectModal.value = false;
+  fileName.value = null;
+  selectedFile.value = null;
+}
+
+// Funciones para la paginación
+function goToPreviousPage() {
+  if (currentPage.value > 1) currentPage.value--;
+}
+function goToNextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
+
+// Filtrar datos y aplicar paginación
+const filteredTableData = computed(() => {
+  let filteredData = tableData.value;
+  if (selectedFilter.value) {
+    filteredData = filteredData.filter((data) => data.rev_status === selectedFilter.value);
+  }
+  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
+  const endIndex = startIndex + rowsPerPage.value;
+  return filteredData.slice(startIndex, endIndex);
+});
+
+// Calcular el total de páginas
+const totalPages = computed(() => {
+  const filteredData = selectedFilter.value
+    ? tableData.value.filter((data) => data.rev_status === selectedFilter.value)
+    : tableData.value;
+  return Math.ceil(filteredData.length / rowsPerPage.value);
+});
+
+//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+const authStore = useAuthStore();
+const tableData = ref([]);
+
+// Función para obtener las revisiones desde el backend
+const fetchReviews = async () => {
+  try {
+    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
+    console.log("Datos recibidos de la API:", response.data.data);
+    tableData.value = response.data.data;
+  } catch (error) {
+    console.error("Error al obtener las correcciones pendientes:", error);
+  }
+};
+onMounted(() => {
+  fetchReviews();
+});
+
+
+// ***** Para guardar archivo y mostrar lo que ha seleccionado ********
 const fileName = ref<string | null>(null); // Nombre del archivo
+const fileInput = ref<HTMLInputElement | null>(null); // Input file ref
 const selectedFile = ref<File | null>(null); // Archivo seleccionado
+
+// Función para abrir el input de archivo
+const triggerFileInput = () => {
+  fileInput.value?.click();
+};
 
 // Función para manejar la subida de archivo
 const handleFileUpload = (event: Event) => {
   const file = (event.target as HTMLInputElement)?.files?.[0];
+  if (file) {
+    fileName.value = file.name;
+    selectedFile.value = file;
+  }
+};
+
+// Función para manejar el arrastre y soltar (drag and drop)
+const handleDrop = (event: DragEvent) => {
+  event.preventDefault();
+  const file = event.dataTransfer?.files?.[0];
   if (file) {
     fileName.value = file.name;
     selectedFile.value = file;
@@ -72,41 +132,23 @@ const readFileAsText = (file: File): Promise<string> => {
   });
 };
 
-// Función para abrir y cerrar modales
-function openModal(solicitudId: string) {
-  solicitudSeleccionada.value = solicitudId;  
-  showModal.value = true;
-}
+// Función para enviar la observación con el archivo
+// Nuevo estado para manejar si está enviando o no
+const isSending = ref(false);
 
-function openRejectModal(solicitudId: string) {
-  solicitudSeleccionada.value = solicitudId;  
-  showRejectModal.value = true;
-}
-
-
-// Función para cerrar ambos modales
-function closeModal() {
-  showModal.value = false;
-  showRejectModal.value = false;
-  nroCarta.value = "";
-  motivoRechazo.value = "";
-  fileName.value = null;
-  selectedFile.value = null;
-}
-
-// Función para enviar archivo y observación al backend usando la API
+// Función para enviar la observación con el archivo
 const sendObservacion = async () => {
   try {
     // Verificar si hay un archivo seleccionado
     if (!selectedFile.value) {
-      alertToast("Debe seleccionar un archivo", "Error", "error");
+      alert("Debe seleccionar un archivo");
       return;
     }
 
     // Verificar si hay una solicitud seleccionada
     const solicitudeId = solicitudSeleccionada.value;
     if (!solicitudeId) {
-      alertToast("Debe seleccionar una solicitud", "Error", "error");
+      alert("Debe seleccionar una solicitud");
       return;
     }
 
@@ -115,92 +157,42 @@ const sendObservacion = async () => {
 
     const params = {
       rev_status: "observado",
-      rev_file: fileContent, // Archivo como contenido
+      rev_file: fileContent,
     };
+
+    // Indicar que está enviando
+    isSending.value = true;
+
+    // Muestra los parámetros que se enviarán al backend
+    console.log("Parámetros enviados al backend:", params);
 
     // Realizar la solicitud PUT al backend
     const response = await axios.put(`/api/student/review/${solicitudeId}/status`, params);
 
+    // Verificar la respuesta del servidor
+    console.log("Respuesta del servidor:", response.data);
+
     if (response.data.status) {
-      const solicitud = tableData.value.find((sol) => sol.id === solicitudeId);
-      if (solicitud) solicitud.rev_status = "observado";
-      closeModal(); // Cerrar el modal
-      alertToast("La solicitud ha sido observada", "Éxito", "success");
+      alert("La solicitud ha sido observada correctamente");
+      closeModal(); // Cerrar el modal después de la actualización
     }
   } catch (error) {
     console.error("Error al observar la solicitud:", error);
-    alertToast("Ocurrió un error al observar la solicitud", "Error", "error");
-  }
-};
-
-// Función para obtener las solicitudes del backend
-const fetchSolicitudes = async () => {
-  load.value = true;
-
-  try {
-    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
-    if (response.data && response.data.data) {
-      const solicitudes: Solicitud[] = response.data.data;
-      tableData.value = solicitudes;
-    }
-  } catch (error) {
-    console.error("Error al cargar las solicitudes:", error);
+    alert("Ocurrió un error al observar la solicitud");
   } finally {
-    load.value = false;
+    // Desactivar el estado de envío
+    isSending.value = false;
   }
 };
 
-// Filtrar datos y aplicar paginación
-const filteredTableData = computed(() => {
-  let filteredData = tableData.value;
 
-  // Aplicar filtro por estado (reemplazar `estado` con `rev_status`)
-  if (selectedFilter.value) {
-    filteredData = filteredData.filter(
-      (data) => data.rev_status === selectedFilter.value.toLowerCase()
-    );
-  }
-
-  // Paginación
-  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
-  const endIndex = startIndex + rowsPerPage.value;
-  return filteredData.slice(startIndex, endIndex);
-});
-
-// Calcular el total de páginas
-const totalPages = computed(() => {
-  const filteredData = selectedFilter.value
-    ? tableData.value.filter(
-        (data) => data.rev_status === selectedFilter.value.toLowerCase()
-      )
-    : tableData.value;
-  return Math.ceil(filteredData.length / rowsPerPage.value);});
-
-//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
-const authStore = useAuthStore();
-const tableData = ref([]);
-
-const fetchReviews = async() => {
-  try{
-    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`)
-    tableData.value = response.data.data;
-    console.log(response.data)
-  } catch (error){
-    console.error('Error al obtener las correcciones pendientes:', error);
-  }
-};
-onMounted(() =>{
-  fetchReviews()
-});
 </script>
-
-
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        {{ textoTipiado }}
+        {{ textoTipiado2 }}
       </h3>
       <div class="mt-8">
         <div class="mt-6">
@@ -219,19 +211,18 @@ onMounted(() =>{
                   <option value="20">20</option>
                 </select>
               </div>
-
               <div class="relative">
-                <select v-model="selectedFilter" class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500">
+                <select v-model="selectedFilter" class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500">
                   <option value="">Todos</option>
-                  <option value="Pendiente">Pendiente</option>
-                  <option value="Observado">Observado</option>
-                  <option value="Aprobado">Aprobado</option>
+                  <option value="pendiente">Pendiente</option>
+                  <option value="observado">Observado</option>
+                  <option value="aprobado">Aprobado</option>
                 </select>
               </div>
             </div>
           </div>
 
-          <!-- Tabla de proyectos de tesis -->
+          <!-- Tabla de proyectos de tesis pendientes por confirmar -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal">
@@ -246,10 +237,8 @@ onMounted(() =>{
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(u, index) in filteredTableData" 
-                  :key="u.stu_id" 
-                  class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                    <td class="px-3 py-5 text-base" >
+                  <tr v-for="(u, index) in filteredTableData" :key="u.stu_id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
@@ -258,50 +247,26 @@ onMounted(() =>{
                     <td class="px-3 py-5 text-center"><a target="_blank" class="text-blue-800 hover:underline">Ver proyecto</a></td>
                     <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
-                      <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal(u.stu_id)">Aprobar
-                      </button>
-                      <button
-                            v-if="['pendiente', 'observado'].includes(u.rev_status)"
-                            :class="[
-                              'w-20 px-3 py-1 text-sm text-white bg-[#6d6868] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                              ['observado'].includes(u.rev_status)
-                                ? 'cursor-not-allowed'
-                                : 'hover:bg-gray-600',
-                            ]"
-                            :disabled="['rechazado'].includes(u.rev_status)"
-                            @click="openRejectModal(u.id)">
-                            Observar
-                          </button>
+                      <button class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u.stu_id)">Aprobar</button>
+                      <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u.stu_id)">Observar</button>
                     </td>
-
                     <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.rev_status .toLowerCase() .replace(' ', '-')}`">{{ u.rev_status }}</span>
+                      <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">{{ u.rev_status }}</span>
                     </td>
                   </tr>
                 </tbody>
               </table>
 
-              <!-- paginación -->
+              <!-- Paginación -->
               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-900 xs:text-sm"
-                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
+                <span class="text-sm text-gray-900 xs:text-sm">
+                  Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
                   {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}</span>
+                  {{ tableData.length }}
+                </span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button
-                    :disabled="currentPage === 1"
-                    @click="goToPreviousPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">
-                    Anterior
-                  </button>
-                  <button
-                    :disabled="currentPage === totalPages"
-                    @click="goToNextPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">
-                    Siguiente
-                  </button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
@@ -309,7 +274,7 @@ onMounted(() =>{
         </div>
       </div>
 
-      <!-- modal para aprobar proyecto -->
+      <!-- Modal para aprobar proyecto -->
       <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
@@ -318,31 +283,19 @@ onMounted(() =>{
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-              Aprobación de proyecto
-            </h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Aprobación de proyecto</h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-center">
-              ¿Está seguro de que el proyecto de tesis ya no requiere observaciones adicionales?
-            </p>
+            <p class="text-black text-lg text-center">¿Está seguro de que el proyecto de tesis ya no requiere observaciones adicionales?</p>
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button
-              class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal">
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl"
-              @click="closeModal">
-              Confirmar
-            </button>
+            <button class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl" @click="closeModal">Confirmar</button>
           </div>
         </div>
       </div>
 
-      <!-- modal para corregir y observar proyecto -->
+      <!-- Modal para corregir y observar proyecto -->
       <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
@@ -351,16 +304,14 @@ onMounted(() =>{
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-              Observación de proyecto
-            </h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación de proyecto</h5>
           </div>
           <div class="p-6">
             <p class="text-black text-lg text-center mb-4">¿Desea agregar correcciones a este proyecto de tesis?</p>
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:bg-gray-50 transition flex flex-col items-center justify-center" @dragover.prevent @drop.prevent="handleDrop">
               <p class="text-black text-base mb-4">Arrastra y suelta el archivo aquí o</p>
-              <button class="flex items-center text-black underline" @click="fileInput.click()">
-                <IconCerrar class="mr-2"/> 
+              <button class="flex items-center text-black underline" @click="triggerFileInput">
+                <IconArchivo class="mr-2"/> 
                 <span>Subir archivo</span>
               </button>
               <input type="file" id="file" ref="fileInput" class="hidden" @change="handleFileUpload">
@@ -371,14 +322,21 @@ onMounted(() =>{
           </div>
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
             <button class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-            <button class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl" @click="sendObservacion">Enviar</button>
+            <button
+  class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl"
+  :disabled="isSending"
+  @click="sendObservacion"
+>
+  <span v-if="isSending">Enviando...</span>
+  <span v-else>Enviar</span>
+</button>
+
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .estado-estilo {

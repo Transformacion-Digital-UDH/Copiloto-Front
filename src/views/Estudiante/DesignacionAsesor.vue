@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-// Importaciones necesarias desde Vue y otras dependencias
 import { ref, computed, watch, onMounted } from "vue";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
@@ -9,11 +8,9 @@ import confetti from "canvas-confetti";
 import router from "@/router";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Asesor"; // Texto que se va a escribir automáticamente
-const textoTipiado = ref(""); // Estado para almacenar el texto que se va escribiendo
-let index = 0; // Índice para ir controlando la posición del texto
-
-// Función para simular el efecto de escribir en la pantalla
+const text = "Designación de Asesor";
+const textoTipiado = ref("");
+let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
     textoTipiado.value += text.charAt(index);
@@ -21,18 +18,15 @@ const typeWriter = () => {
     setTimeout(typeWriter, 80); // Llama de nuevo la función cada 80ms
   }
 };
-
-// Al montar el componente, inicia el efecto de escritura
 onMounted(() => {
   typeWriter();
 });
-// *******************************************************
 
 // Estados para controlar los modales
-const mostrarModalDocumentos = ref(false); // Modal de documentos
-const mostrarModalCambioAsesor = ref(false); // Modal de cambio de asesor
+const mostrarModalDocumentos = ref(false);
+const mostrarModalCambioAsesor = ref(false);
 const mostrarModalConfirmacion = ref(false);
-const mostrarModalSolicitudAsesor = ref(false);  // Modal de confirmación para el cambio de asesor
+const mostrarModalSolicitudAsesor = ref(false);
 
 // VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
@@ -64,10 +58,26 @@ const estadoClase = (estado: string) => {
 
 // Inicialización de estados y almacenes
 const authStore = useAuthStore();
-const initSolicitude = ref(false); // Control de inicialización de la solicitud
-const advisers = ref<{ id: string, nombre: string }[]>([]); // Asesores (tipado correcto con un arreglo de objetos)
-const load = ref(false); // Control de carga
-const enviado = ref(false); // Control de envío de solicitud
+const initSolicitude = ref(false);
+const advisers = ref<{ id: string, nombre: string }[]>([]);
+const load = ref(false);
+const enviado = ref(false);
+const solicitude = ref<Solicitude>({
+  estudiante_id: "",
+  titulo: "",
+  asesor_id: "",
+  estado: "",
+  solicitud_id: "",
+  observacion: "",
+  tipo_investigacion: "",  
+});
+const oficio = ref<Oficio>({
+  id: "",
+  estado: "",
+  fecha_creado: "",
+  nombre_de_oficio: "",
+  observacion: "",
+});
 
 // Tipos definidos para mayor seguridad y claridad
 interface Solicitude {
@@ -77,6 +87,9 @@ interface Solicitude {
   estado: string;
   solicitud_id: string;
   observacion: string;
+  tipo_investigacion: string;
+  oficio?: Oficio;  // Se añadió oficio como opcional
+  resolucion?: Resolucion;  // Se añadió resolucion como opcional
 }
 
 interface Resolucion {
@@ -95,35 +108,24 @@ interface Oficio {
   observacion: string;
 }
 
-// Ref para los objetos usando los tipos definidos
-const solicitude = ref<Solicitude>({
-  estudiante_id: "",
-  titulo: "",
-  asesor_id: "",
-  estado: "",
-  solicitud_id: "",
-  observacion: "",
-  tipo_investigacion: "",
-});
-
-const oficio = ref({
+const resolucion = ref<Resolucion>({
   id: "",
-  estado: "",
+  nombre: "",
   fecha_creado: "",
-  nombre_de_oficio: "",
+  estado: "",
   observacion: "",
 });
 
 // Historial de acciones
-const historial = ref<{ accion: string, asesor: string, fecha: string, observacion: string, titulo: string }[]>([]); // Tipado del historial correctamente
+const historial = ref<{ accion: string, asesor: string, fecha: string, observacion: string, titulo: string }[]>([]);
 
 // Configuración de los headers de axios para la autenticación
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
 // Al montar el componente, cargamos los asesores y la información del estudiante
 onMounted(() => {
-  getAdvisers(); // Carga la lista de asesores
-  getInfoStudent(); // Carga la información del estudiante
+  getAdvisers();
+  getInfoStudent();
 });
 
 // Función para redirigir a la siguiente página
@@ -139,23 +141,31 @@ const getInfoStudent = async () => {
     .then((response) => {
       console.log(response.data);
       if (response.data.status) {
+        // Actualizamos los datos de solicitud
         solicitude.value.solicitud_id = response.data.solicitud.id;
         solicitude.value.titulo = response.data.solicitud.titulo;
         solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
         solicitude.value.estado = response.data.solicitud.estado;
         solicitude.value.observacion = response.data.solicitud.observacion;
         solicitude.value.tipo_investigacion = response.data.solicitud.tipo_investigacion || "";
-        solicitude.value.oficio = response.data.solicitud.oficio;
-        resolucion.value.id = response.data.resolucion.id;
-        resolucion.value.nombre = response.data.resolucion.nombre;
-        resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
-        resolucion.value.estado = response.data.resolucion.estado;
-        resolucion.value.observacion = response.data.resolucion.observacion;
-        oficio.value.id = response.data.oficio.id;
-        oficio.value.estado = response.data.oficio.estado;
-        oficio.value.fecha_creado = response.data.oficio.fecha_creado;
-        oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
-        oficio.value.observacion = response.data.oficio.observacion;
+
+        // Actualizamos oficio y resolución
+        if (response.data.resolucion) {
+          resolucion.value.id = response.data.resolucion.id;
+          resolucion.value.nombre = response.data.resolucion.nombre;
+          resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
+          resolucion.value.estado = response.data.resolucion.estado;
+          resolucion.value.observacion = response.data.resolucion.observacion;
+        }
+        
+        if (response.data.oficio) {
+          oficio.value.id = response.data.oficio.id;
+          oficio.value.estado = response.data.oficio.estado;
+          oficio.value.fecha_creado = response.data.oficio.fecha_creado;
+          oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
+          oficio.value.observacion = response.data.oficio.observacion;
+        }
+
         historial.value = response.data.historial;
       }
     })
@@ -166,53 +176,19 @@ const getInfoStudent = async () => {
       load.value = false;
     });
 };
+
+// Función para obtener la lista de asesores
 const getAdvisers = async () => {
   try {
     const res = await axios.get("/api/adviser/get-select");
-    advisers.value = res.data.data; // Almacena la lista de asesores
+    advisers.value = res.data.data;
   } catch (error) {
     console.error("Error al cargar los asesores", error);
-    // Manejo de errores aquí
   }
 };
 
 // Función para enviar una solicitud de asesor
-const sendSolicitude = async (student_id: string) => {
-  try {
-    const params = {
-      student_id: student_id,
-    };
-    // Llamada a la función de confirmación antes de enviar la solicitud
-    alertConfirmation(
-      "¿Estás seguro de iniciar este trámite?",
-      "Iniciar trámite",
-      "question",
-      params,
-      "/api/solicitudes-store",
-      "POST",
-      (response: any) => {
-        // Actualiza los datos de la solicitud con los datos recibidos del backend
-        solicitude.value.solicitud_id = response.data._id;
-        solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id ?? "";
-        solicitude.value.estado = response.data.sol_status;
 
-        // Dispara confetti como señal de éxito
-        confetti({
-          particleCount: 500,
-          spread: 1010,
-          origin: { y: 0.6 },
-        });
-      }
-    );
-  } catch (error: any) {
-    let description = "";
-    error.response.data.error.forEach((e: any) => {
-      description = description + " " + e;
-    });
-    alertToast(description, "Error", "error"); // Muestra el error
-  }
-};
 
 // Función para actualizar una solicitud de asesor existente
 const updateSolicitude = async (
@@ -222,14 +198,13 @@ const updateSolicitude = async (
   estado: string,
   tipo_investigacion: string
 ) => {
-  // Si el estado es "aceptado", no se puede actualizar
   if (["aceptado"].includes(estado)) {
     alertToast(
       "No puedes actualizar una solicitud que fue aceptada",
       "Error",
       "error"
     );
-    return;
+    return;             
   }
   try {
     const params = {
@@ -238,7 +213,6 @@ const updateSolicitude = async (
       sol_status: "pendiente",
       sol_type_inve: tipo_investigacion
     };
-    // Llamada a la función de confirmación antes de actualizar la solicitud
     alertConfirmation(
       "Verifica que los datos sean correctos antes de proceder",
       "¿Confirmas tu solicitud de asesor?",
@@ -247,7 +221,6 @@ const updateSolicitude = async (
       `/api/solicitudes/${solicitud_id}`,
       "PUT",
       (response: any) => {
-        // Actualiza los datos de la solicitud con los nuevos valores
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id ?? "";
         solicitude.value.estado = response.data.sol_status;
@@ -265,25 +238,48 @@ const updateSolicitude = async (
 
 // Función para solicitar el cambio de asesor
 const solicitarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = true; // Muestra el modal de confirmación
+  mostrarModalConfirmacion.value = true;
 };
 
 // Función para confirmar el cambio de asesor
 const confirmarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = false; // Oculta el modal
+  mostrarModalConfirmacion.value = false;
   alertToast("Solicitud enviada correctamente", "Éxito", "success");
-  // Aquí podrías enviar una petición al backend para realizar el cambio de asesor
 };
 
+// Computed para determinar el estado de los documentos
 const estadoDocumentos = computed(() => {
   if (oficio.value.estado === "tramitado" && resolucion.value.estado === "tramitado") {
-    return "hecho"; // Ambos documentos están tramitados
+    return "hecho";
   } else {
-    return "pendiente"; // Alguno o ambos no están tramitados
+    return "pendiente";
   }
 });
 
-const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
+// Computed para deshabilitar el botón de siguiente
+//const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
+
+//alerta Boton siguiente
+
+const isNextButtonDisabled = computed(() => {
+  // Tu lógica para habilitar o deshabilitar el botón
+  return estadoDocumentos.value !== "hecho";
+});
+
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    // Mostrar un mensaje si el botón está deshabilitado
+    Swal.fire({
+      icon: 'warning',
+      title: 'Pasos incompletos',
+      text: 'Por favor, completa todos los pasos antes de continuar.',
+      confirmButtonText: 'OK',
+    });
+  } else {
+    // Navegar a la siguiente página
+    goToNextPage();
+  }
+};
 </script>
 
 
@@ -433,14 +429,6 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
               placeholder="Escribe tu título de tesis aquí..."
             />
-            <!-- <label class="block text-lg font-medium text-gray-800 mb-2">Elige tu formato de Tesis</label>
-              <select class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
-                <option disabled selected value="">Selecciona un formato...</option>
-                <option value="Formato_Investigativo">Formato Investigativo</option>
-                <option value="Formato_Tecnologico">Formato Tecnológico</option>
-              </select> -->
-
-            <!-- Select para elegir asesor -->
             <label
               for="nombreAsesor"
               class="block text-lg font-medium text-gray-800 mb-2"
@@ -511,7 +499,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
             class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md"
             v-if="solicitude.estado !== 'en progreso'"
           >
-            <div class="flex justify-between items-center">
+            <div class="flex flex-col md:flex-row justify-between md:items-center">
               <h4 class="text-black">
                 Respuesta del asesor:
                 <span
@@ -561,7 +549,6 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               </div>
             </div>
           </div>
-        
           <br />
 
           <!-- Mensaje de espera según el estado -->
@@ -583,9 +570,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
             Documentos</span
           >
     </div>
-    
     <br>
-
        <!-- Card 2: Documentos -->
         <div class="mt-4"
           :disabled="
@@ -619,7 +604,6 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               >{{ estadoDocumentos }}</span
             >
           </div>
-
           <!-- Modal punto 2 -->
           <div
             v-show="mostrarModalDocumentos"
@@ -631,7 +615,6 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
               paso.
             </p>
           </div>
-
           <!-- Listado de documentos -->
           <div class="mt-4 space-y-4">
             <!-- Listado de documentos OFICIO-->
@@ -688,9 +671,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
 
             <!-- Listado de documentos RESOLUCION-->
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
                   Resolución de Facultad
@@ -698,10 +679,7 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
                     "{{ resolucion.observacion }}"
                   </p>
                 </span>
-
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
                   <div
                     v-if="['tramitado'].includes(resolucion.estado)"
@@ -724,33 +702,27 @@ const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-
                   <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
                   <!-- Estado del documento -->
                   <span
                     :class="estadoClase(resolucion.estado)"
                     class="estado-estilo ml-4"
-                    >{{ resolucion.estado }}</span
-                  >
+                    >{{ resolucion.estado }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
        <!-- Botón "Siguiente" -->
-        <div class="flex justify-end mt-6">
-          <button
-            :disabled="isNextButtonDisabled"
-            @click="goToNextPage"
-            :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600']"
-          >
-            Siguiente
-          </button>
-        </div>
+       <div class="flex justify-end mt-6">
+        <button
+          @click="handleNextButtonClick"
+          :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600']"
+        >
+          Siguiente
+        </button>
+      </div>
         <!-- Card 3: Solicitar Cambio de Asesor -->
         <div
           :disabled="
