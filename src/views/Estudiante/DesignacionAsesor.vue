@@ -68,6 +68,7 @@ const solicitude = ref({
   estado: "",
   solicitud_id: "",
   observacion: "",
+  tipo_investigacion: "",
 });
 const oficio = ref({
   id: "",
@@ -106,6 +107,7 @@ const getInfoStudent = async () => {
         solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
         solicitude.value.estado = response.data.solicitud.estado;
         solicitude.value.observacion = response.data.solicitud.observacion;
+        solicitude.value.tipo_investigacion = response.data.solicitud.tipo_investigacion || "";
         solicitude.value.oficio = response.data.solicitud.oficio;
         resolucion.value.id = response.data.resolucion.id;
         resolucion.value.nombre = response.data.resolucion.nombre;
@@ -169,7 +171,8 @@ const updateSolicitude = async (
   solicitud_id: string,
   titulo: string,
   asesor_id: string,
-  estado: string
+  estado: string,
+  tipo_investigacion: string
 ) => {
   if (["aceptado"].includes(estado)) {
     alertToast(
@@ -184,7 +187,7 @@ const updateSolicitude = async (
       sol_title_inve: titulo,
       adviser_id: asesor_id,
       sol_status: "pendiente",
-      //sol_type_inve: cientifica o tecnologico (boton de estudiante)
+      sol_type_inve: tipo_investigacion
     };
     alertConfirmation(
       "Asegurate de ingresar los datos correctos. Todo ok?",
@@ -197,6 +200,7 @@ const updateSolicitude = async (
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id || "";
         solicitude.value.estado = response.data.sol_status;
+        solicitude.value.tipo_investigacion = response.data.sol_type_inve || "";
       }
     );
   } catch (error: any) {
@@ -381,6 +385,27 @@ const confirmarCambioAsesor = () => {
                 {{ asesor.nombre }}
               </option>
             </select>
+           
+            <!-- Select para elegir tipo de investigacion -->
+            <label
+              for="tipoInvestigacion"
+              class="block text-lg font-medium text-gray-800 mb-2"
+              >Elige tu tipo de investigación</label
+            >
+            <select
+              id="tipoInvestigacion"
+              v-model="solicitude.tipo_investigacion"
+              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+            >
+              <option disabled value="">Selecciona un tipo...</option>
+              <option value="cientifica">
+                CIENTÍFICA
+              </option>
+              <option value="tecnologica">
+                TECNOLÓGICA
+              </option>
+            </select>
 
             <!-- Botón de enviar -->
             <button
@@ -389,7 +414,8 @@ const confirmarCambioAsesor = () => {
                   solicitude.solicitud_id,
                   solicitude.titulo,
                   solicitude.asesor_id,
-                  solicitude.estado
+                  solicitude.estado,
+                  solicitude.tipo_investigacion
                 )
               "
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
