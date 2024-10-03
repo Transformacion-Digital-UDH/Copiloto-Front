@@ -57,9 +57,19 @@ const selectedFilter = ref("");
 const currentPage = ref(1);
 const showModal = ref(false); // modal de aprobar proyecto
 const showRejectModal = ref(false); // modal de observar proyecto
+let estudianteSeleccionado = ref(null); // Almacena el id del estudiante seleccionado en los modales
 
-function openModal() {showModal.value = true;}
-function openRejectModal() {showRejectModal.value = true;}
+
+function openModal(studentId: string) {
+  estudianteSeleccionado.value = studentId;
+  showModal.value = true;
+}
+
+function openRejectModal(studentId: string) {
+  estudianteSeleccionado.value = studentId;
+  showRejectModal.value = true;
+}
+
 function closeModal() {showModal.value = false; showRejectModal.value = false;}
 function goToPreviousPage() {if (currentPage.value > 1) currentPage.value--;}
 function goToNextPage() {if (currentPage.value < totalPages.value) currentPage.value++;}
@@ -89,6 +99,7 @@ const fetchReviews = async() => {
   try{
     const response = await axios.get(`/api/adviser/get-review/${authStore.id}`)
     tableData.value = response.data.data;
+    console.log(response.data)
   } catch (error){
     console.error('Error al obtener las correcciones pendientes:', error);
   }
@@ -149,7 +160,7 @@ onMounted(() =>{
                 </thead>
                 <tbody>
                   <tr v-for="(u, index) in filteredTableData" 
-                  :key="u.id" 
+                  :key="u.stu_id" 
                   class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base" >
                       <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
@@ -162,11 +173,11 @@ onMounted(() =>{
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal">Aprobar
+                        @click="openModal(u.stu_id)">Aprobar
                       </button>
                       <button 
                         class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-                        @click="openRejectModal">Observar
+                        @click="openRejectModal(u.stu_id)">Observar
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
