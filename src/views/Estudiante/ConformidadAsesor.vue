@@ -35,27 +35,41 @@ const authStore = useAuthStore();
 // Función para cambiar el estado de la solicitud al hacer la solicitud de revisión
 async function solicitarRevision() {
   try {
-    solicitudEstado.value = 'En Proceso';
+    solicitudEstado.value = 'En Proceso';  // Cambia el estado localmente
+    localStorage.setItem('solicitudEstado', solicitudEstado.value);  // También puedes almacenarlo en localStorage
 
     const studentId = authStore.id;
     const response = await axios.post(`/api/student/first-review/${studentId}`, {
       student_id: studentId
     });
 
-    // Verifica si la respuesta tiene status "true"
     if (response.data.status === true) {
-      solicitudEstado.value = 'En Proceso';
-      alert(response.data.message); // Muestra el mensaje del servidor "Su solicitud de revisión fue enviada"
+      solicitudEstado.value = 'En Proceso';  // Actualiza según la respuesta del backend
+      alert(response.data.message); // "Su solicitud de revisión fue enviada"
     } else {
       solicitudEstado.value = 'Pendiente';
       alert('Error en la solicitud, intenta nuevamente.');
     }
-  } catch (error: any) {  // Corregido aquí
+
+    // Aquí puedes enviar el estado al backend y recibir el estado actual
+  } catch (error) {
     solicitudEstado.value = 'Pendiente';
-    console.error('Error al solicitar revisión:', error.response?.data || error.message || error);
+    console.error('Error al solicitar revisión:', error);
     alert('Ocurrió un error al realizar la solicitud.');
   }
 }
+
+onMounted(async () => {
+  try {
+    const response = await axios.get(`/api/student/review-status/${authStore.id}`);
+    
+    // Asume que el servidor devuelve el estado de la solicitud
+    solicitudEstado.value = response.data.solicitudEstado || 'Pendiente';
+  } catch (error) {
+    console.error('Error al recuperar el estado de revisión:', error);
+  }
+});
+
 
 
 
@@ -119,13 +133,14 @@ onMounted(() => {
         </div>
         <div class="flex justify-center mt-3">
           <button 
-            class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" 
-            :disabled="solicitudEstado === 'En Proceso'" 
-            :class="{ 'cursor-not-allowed bg-gray-400': solicitudEstado === 'En Proceso', 'bg-base': solicitudEstado !== 'En Proceso' }"
-            @click="solicitarRevision"
-          >
-            Solicitar Revisión
-          </button>
+  class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" 
+  :disabled="solicitudEstado === 'En Proceso'" 
+  :class="{ 'cursor-not-allowed bg-gray-400': solicitudEstado === 'En Proceso', 'bg-base': solicitudEstado !== 'En Proceso' }"
+  @click="solicitarRevision"
+>
+  Solicitar Revisión
+</button>
+
         </div>
       </div>
 

@@ -9,10 +9,10 @@ import { alertToast } from "@/functions";
 // Define una interfaz para los datos de la solicitud
 interface Solicitud {
   id: string;
-  estado: string;
-  titulo: string;
+  rev_status: string;
+  sol_title_inve: string;
   estudiante: {
-    nombre_completo: string;
+    stu_name: string;
   };
 }
 
@@ -70,27 +70,16 @@ const readFileAsText = (file: File): Promise<string> => {
 };
 
 // Función para abrir y cerrar modales
-function openModal(solicitudeId: string) {
-  if (!solicitudeId) {
-    alertToast("ID de solicitud no encontrado", "Error", "error");
-    return;
-  }
-  
-  console.log("Solicitud seleccionada para aprobar:", solicitudeId);
-  solicitudSeleccionada.value = solicitudeId;
+function openModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  
   showModal.value = true;
 }
 
-function openRejectModal(solicitudeId: string) {
-  if (!solicitudeId) {
-    alertToast("ID de solicitud no encontrado", "Error", "error");
-    return;
-  }
-
-  console.log("Solicitud seleccionada para observar:", solicitudeId);
-  solicitudSeleccionada.value = solicitudeId; // Guardar la solicitud seleccionada
+function openRejectModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  
   showRejectModal.value = true;
 }
+
 
 // Función para cerrar ambos modales
 function closeModal() {
@@ -104,42 +93,40 @@ function closeModal() {
 
 // Función para enviar archivo y observación al backend usando la API
 const sendObservacion = async () => {
-  if (!selectedFile.value) {
-    alertToast("Debe seleccionar un archivo para observar", "Advertencia", "warning");
-    return;
-  }
-
-  if (!solicitudSeleccionada.value) {
-    alertToast("No se ha seleccionado ninguna solicitud", "Error", "error");
-    return;
-  }
-
   try {
-    // Leer el archivo como texto (o base64, según prefieras)
+    // Verificar si hay un archivo seleccionado
+    if (!selectedFile.value) {
+      alertToast("Debe seleccionar un archivo", "Error", "error");
+      return;
+    }
+
+    // Verificar si hay una solicitud seleccionada
+    const solicitudeId = solicitudSeleccionada.value;
+    if (!solicitudeId) {
+      alertToast("Debe seleccionar una solicitud", "Error", "error");
+      return;
+    }
+
+    // Leer el archivo como texto (o base64)
     const fileContent = await readFileAsText(selectedFile.value);
 
-    // Crear el cuerpo en JSON como lo requiere el backend
-    const requestBody = {
+    const params = {
       rev_status: "observado",
-      rev_file: fileContent, // Enviamos el contenido del archivo como string
+      rev_file: fileContent, // Archivo como contenido
     };
 
-    const solicitudeId = solicitudSeleccionada.value;
-
-    // Enviar la solicitud PUT al backend usando la API proporcionada
-    const response = await axios.put(`/api/student/review/${solicitudeId}/status`, requestBody, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    // Realizar la solicitud PUT al backend
+    const response = await axios.put(`/api/student/review/${solicitudeId}/status`, params);
 
     if (response.data.status) {
-      closeModal();
-      alertToast("La observación ha sido enviada con éxito", "Éxito", "success");
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudeId);
+      if (solicitud) solicitud.rev_status = "observado";
+      closeModal(); // Cerrar el modal
+      alertToast("La solicitud ha sido observada", "Éxito", "success");
     }
   } catch (error) {
-    console.error("Error al enviar la observación: ", error);
-    alertToast("Error al enviar la observación", "Error", "error");
+    console.error("Error al observar la solicitud:", error);
+    alertToast("Ocurrió un error al observar la solicitud", "Error", "error");
   }
 };
 
@@ -149,8 +136,10 @@ const fetchSolicitudes = async () => {
 
   try {
     const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
-    const solicitudes: Solicitud[] = response.data.data;
-    tableData.value = solicitudes;
+    if (response.data && response.data.data) {
+      const solicitudes: Solicitud[] = response.data.data;
+      tableData.value = solicitudes;
+    }
   } catch (error) {
     console.error("Error al cargar las solicitudes:", error);
   } finally {
@@ -162,10 +151,10 @@ const fetchSolicitudes = async () => {
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
-  // Aplicar filtro por estado
+  // Aplicar filtro por estado (reemplazar `estado` con `rev_status`)
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.estado === selectedFilter.value.toLowerCase()
+      (data) => data.rev_status === selectedFilter.value.toLowerCase()
     );
   }
 
@@ -179,7 +168,7 @@ const filteredTableData = computed(() => {
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter(
-        (data) => data.estado === selectedFilter.value.toLowerCase()
+        (data) => data.rev_status === selectedFilter.value.toLowerCase()
       )
     : tableData.value;
 
@@ -199,6 +188,7 @@ onMounted(() => {
   fetchSolicitudes();
 });
 </script>
+
 
 
 <template>
@@ -265,10 +255,18 @@ onMounted(() => {
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal(u.id)">Aprobar
                       </button>
-                      <button 
-                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-                        @click="openRejectModal(u.id)">Observar
-                      </button>
+                      <button
+                            v-if="['pendiente', 'observado'].includes(u.rev_status)"
+                            :class="[
+                              'w-20 px-3 py-1 text-sm text-white bg-[#6d6868] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                              ['observado'].includes(u.rev_status)
+                                ? 'cursor-not-allowed'
+                                : 'hover:bg-gray-600',
+                            ]"
+                            :disabled="['rechazado'].includes(u.rev_status)"
+                            @click="openRejectModal(u.id)">
+                            Observar
+                          </button>
                     </td>
 
                     <td class="px-3 py-5 text-center">
