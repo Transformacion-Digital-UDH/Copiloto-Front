@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { reactive, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+import axios from 'axios';
+import { useAuthStore } from "@/stores/auth";
 
 // Define los tipos para observaciones y documentos
 interface Observacion {
@@ -17,7 +19,8 @@ interface Documento {
 }
 
 // Estado de solicitud (reactivo usando ref)
-const solicitudEstado = ref<string>('Pendiente');
+const solicitudEstado = ref<string>('');
+const solicitudMensaje = ref('');
 
 // Observaciones es un array reactivo de tipo Observacion usando reactive
 const observaciones = reactive<Observacion[]>([
@@ -28,11 +31,6 @@ const observaciones = reactive<Observacion[]>([
 const documentos = reactive<Documento[]>([
   { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
 ]);
-
-// Función para cambiar el estado de la solicitud
-function solicitarRevision() {
-  solicitudEstado.value = 'En Proceso';
-}
 
 // Método para determinar la clase del estado basado en el estado del documento o solicitud
 function estadoClase(estado: string) {
@@ -49,6 +47,43 @@ function estadoClase(estado: string) {
 const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
+
+//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+
+const authStore = useAuthStore();
+axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
+
+onMounted(() => {
+  obtenerRevisiones();
+});
+
+const solicitarRevision = async () => {
+  try {
+      const response = await axios.post(`/api/student/first-review/${authStore.id}`);
+      console.log(response)
+      if (response.data.status) {
+        solicitudMensaje.value = 'Solicitud enviada, espere las indicaciones del asesor por favor!';
+      }
+  } catch (error :any) {
+    console.log(error)
+    solicitudMensaje.value = error.response.data.message;
+  }
+};
+
+const obtenerRevisiones = async () =>{
+  try {
+    const obtenerRev = await axios.get(`api/student/get-review/${authStore.id}`);
+    console.log(obtenerRev)
+    if(obtenerRev.data.data = []){
+      console.log("entre aqui no hay nada causa")
+      solicitudEstado.value = 'Pendiente';
+    }else{
+      console.log("entre aqui porque hay algo")
+    }
+  } catch (error :any){
+    solicitudMensaje.value = error.response.data.message;
+  }
+};
 </script>
 
 <template>
@@ -89,8 +124,15 @@ const mostrarModalDocumentos = ref(false);
           <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
         </div>
         <div class="flex justify-center mt-3">
-          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
+          <button 
+            :disabled="solicitudEstado === 'Pendiente'"
+            :class="solicitudEstado === 'Pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
+            class="px-4 py-2 text-white rounded-md"
+            @click="solicitarRevision">
+            Solicitar Revisión
+          </button>
         </div>
+        <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div> <!-- Mensaje de la solicitud -->
       </div>
 
       <!-- Revisión de levantamiento de observaciones -->

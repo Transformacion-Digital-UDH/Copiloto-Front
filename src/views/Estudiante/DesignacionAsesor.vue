@@ -184,6 +184,7 @@ const updateSolicitude = async (
       sol_title_inve: titulo,
       adviser_id: asesor_id,
       sol_status: "pendiente",
+      //sol_type_inve: cientifica o tecnologico (boton de estudiante)
     };
     alertConfirmation(
       "Asegurate de ingresar los datos correctos. Todo ok?",

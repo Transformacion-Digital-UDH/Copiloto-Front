@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconArchivo from "@/components/icons/IconArchivo.vue";
+import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
 // ***** Para guardar archivo y mostrar lo que ha seleccionado ********
@@ -80,29 +81,21 @@ const totalPages = computed(() => {
     : tableData.value;
   return Math.ceil(filteredData.length / rowsPerPage.value);});
 
-  const tableData = ref([
-  {  
-    name: "Rodríguez Meléndez, Fabio",
-    title: "Evaluación de la usabilidad de la plataforma de aprendizaje remota Google Classroom en la Universidad de Huánuco en el 2021",
-    obs: "10",
-    status: "Observado",
-  },
-  {
-    name: "Sulca Correa, Omar Iván",
-    title: "Metodología para la implementación del servicio de infraestructura en la nube para las revistas científicas de la UDH",
-    obs: "20",
-    status: "Aprobado",
-  },
-  {
-    name: "Nuñez Vicente, José Antonio",
-    title: "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2021",
-    obs: "30",
-    status: "Pendiente",
-  },
-]);
-
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+const authStore = useAuthStore();
+const tableData = ref([]);
 
+const fetchReviews = async() => {
+  try{
+    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`)
+    tableData.value = response.data.data;
+  } catch (error){
+    console.error('Error al obtener las correcciones pendientes:', error);
+  }
+};
+onMounted(() =>{
+  fetchReviews()
+});
 </script>
 
 <template>
@@ -155,15 +148,17 @@ const totalPages = computed(() => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(u, index) in filteredTableData" :key="index" :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'" class="border-b border-gray-200">
+                  <tr v-for="(u, index) in filteredTableData" 
+                  :key="u.id" 
+                  class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base" >
-                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.name }}</p>
+                      <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">{{ u.title }}</p>
+                      <p class="text-gray-900 text-wrap w-80">{{ u.sol_title_inve || "Título no disponible" }}</p>
                     </td>
                     <td class="px-3 py-5 text-center"><a target="_blank" class="text-blue-800 hover:underline">Ver proyecto</a></td>
-                    <td class="px-3 py-5 text-center">{{ u.obs }}</td>
+                    <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
@@ -175,7 +170,7 @@ const totalPages = computed(() => {
                       </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.status .toLowerCase() .replace(' ', '-')}`">{{ u.status }}</span>
+                      <span :class="`estado-estilo estado-${u.rev_status .toLowerCase() .replace(' ', '-')}`">{{ u.rev_status }}</span>
                     </td>
                   </tr>
                 </tbody>
@@ -208,7 +203,7 @@ const totalPages = computed(() => {
       </div>
 
       <!-- modal para aprobar proyecto -->
-      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
             <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
@@ -241,7 +236,7 @@ const totalPages = computed(() => {
       </div>
 
       <!-- modal para corregir y observar proyecto -->
-      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
             <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">

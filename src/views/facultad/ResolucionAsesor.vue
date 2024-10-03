@@ -310,10 +310,10 @@ const rejectResolution = async () => {
                           @mouseenter="isHovered = true"
                           @mouseleave="isHovered = false"
                           v-if="['tramitado'].includes(u.resolucion_estado)"
-                          class="flex items-center text-blue-950 hover:underline">
+                          class="flex items-center">
                           <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
                           <IconEyeAbrir v-else class="mr-1"/>
-                          <span class="text-black text-base">Ver resolución</span>
+                          <span class="text-[#34495e]">Resolución</span>
                         </a>
                       </td>
                       <td class="px-3 py-5 text-center">
