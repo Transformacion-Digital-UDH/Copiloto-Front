@@ -301,7 +301,7 @@ const fetchDocuments = async (solicitudId: string) => {
                           {{ u.titulo || "Título no disponible" }}
                         </p>
                       </td>
-                      <td class="px-3 py-5 flex flex-col items-center justify-center"><br>
+                      <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button
                           v-if="['pendiente', 'rechazado'].includes(u.estado)"
                           :class="[
@@ -324,7 +324,7 @@ const fetchDocuments = async (solicitudId: string) => {
                           ]"
                           :disabled="['rechazado'].includes(u.estado)"
                           @click="openRejectModal(u.id)">Rechazar
-                        </button><br>
+                        </button>
 
                         <button
                           v-if="['aceptado'].includes(u.estado)"
