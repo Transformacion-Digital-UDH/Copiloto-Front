@@ -24,7 +24,7 @@ const solicitudMensaje = ref('');
 
 // Observaciones es un array reactivo de tipo Observacion usando reactive
 const observaciones = reactive<Observacion[]>([
-  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'Pendiente' }
+  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'pendiente' }
 ]);
 
 // Documentos es un array reactivo de tipo Documento usando reactive
@@ -37,7 +37,7 @@ function estadoClase(estado: string) {
   switch (estado) {
     case 'Hecho': return 'bg-green-500 text-white';
     case 'En Proceso': return 'bg-orange-500 text-white';
-    case 'Pendiente': return 'bg-gray-400 text-white';
+    case 'pendiente': return 'bg-gray-400 text-white';
     case 'Rechazado': return 'bg-red-500 text-white';
     default: return '';
   }
@@ -62,6 +62,7 @@ const solicitarRevision = async () => {
       const response = await axios.post(`/api/student/first-review/${authStore.id}`);
       console.log(response)
       if (response.data.status) {
+        solicitudEstado.value = 'pendiente';
         solicitudMensaje.value = 'Solicitud enviada, espere las indicaciones del asesor por favor!';
       }
   } catch (error :any) {
@@ -74,11 +75,8 @@ const obtenerRevisiones = async () =>{
   try {
     const obtenerRev = await axios.get(`api/student/get-review/${authStore.id}`);
     console.log(obtenerRev)
-    if(obtenerRev.data.data = []){
-      console.log("entre aqui no hay nada causa")
-      solicitudEstado.value = 'Pendiente';
-    }else{
-      console.log("entre aqui porque hay algo")
+    if(obtenerRev.data.status){
+      solicitudEstado.value = obtenerRev.data.revision.estado;
     }
   } catch (error :any){
     solicitudMensaje.value = error.response.data.message;
@@ -125,8 +123,8 @@ const obtenerRevisiones = async () =>{
         </div>
         <div class="flex justify-center mt-3">
           <button 
-            :disabled="solicitudEstado === 'Pendiente'"
-            :class="solicitudEstado === 'Pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
+            :disabled="solicitudEstado === 'pendiente'"
+            :class="solicitudEstado === 'pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
             class="px-4 py-2 text-white rounded-md"
             @click="solicitarRevision">
             Solicitar Revisión
@@ -219,8 +217,8 @@ const obtenerRevisiones = async () =>{
                     <i class="fas fa-download mr-2"></i> Descargar
                   </a>
                 </div>
-                <!-- Mostrar mensaje de espera si el estado es 'Pendiente' -->
-                <span v-else-if="documento.estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                <!-- Mostrar mensaje de espera si el estado es 'pendiente' -->
+                <span v-else-if="documento.estado === 'pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
                 <!-- Estado del documento -->
                 <span :class="estadoClase(documento.estado)" class="estado-estilo ml-4">{{ documento.estado }}</span>
