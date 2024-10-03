@@ -49,12 +49,15 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
-
+const asesor = ref('');
+const titulo = ref('');
+const link = ref('');
 const authStore = useAuthStore();
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
 onMounted(() => {
   obtenerRevisiones();
+  obtenerDatosEstudiante();
 });
 
 const solicitarRevision = async () => {
@@ -82,6 +85,20 @@ const obtenerRevisiones = async () =>{
     solicitudMensaje.value = error.response.data.message;
   }
 };
+
+const obtenerDatosEstudiante = async () => {
+  try {
+    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
+    if (response.data.status) {
+      const solicitud = response.data.solicitud;
+      asesor.value = solicitud.asesor_id;
+      titulo.value = solicitud.titulo;
+      link.value = solicitud.link;
+    }
+  } catch (error) {
+    console.error('Error al obtener los datos del estudiante:', error);
+  }
+};
 </script>
 
 <template>
@@ -91,12 +108,12 @@ const obtenerRevisiones = async () =>{
     <div class="mt-6 space-y-10">
       <!-- Información del asesor y tesis -->
       <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white">
-        <p class="text-lg mb-2"><strong>Asesor:</strong> Aldo Ramirez</p>
-        <p class="text-lg mb-2"><strong>Título de Tesis:</strong> Implementación de un algoritmo</p>
+        <p class="text-lg mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
+        <p class="text-lg mb-2"><strong>Título de Tesis: </strong>{{ titulo }}</p>
         <!-- Responsividad para el link de tesis -->
         <p class="text-lg break-words">
-          <strong>Link de tesis:</strong> 
-          <a href="https://docs.google.com/document/" class="text-blue-500 underline break-all">https://docs.google.com/document/</a>
+          <strong>Link de tesis: </strong> 
+          <a href="link" target="_blank" class="text-blue-500 underline break-all">{{ link }}</a>
         </p>
       </div>
 
