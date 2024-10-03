@@ -12,10 +12,10 @@ import axios from "axios";
 // Define una interfaz para los datos de la solicitud
 interface Solicitud {
   id: string;
-  estado: string;
-  titulo: string;
+  rev_status: string;
+  sol_title_inve: string;
   estudiante: {
-    nombre_completo: string;
+    stu_name: string;
   };
 }
 
@@ -43,32 +43,121 @@ const isHovered = ref(false);
 const selectedFilter = ref("");
 const rowsPerPage = ref(5);
 const currentPage = ref(1);
-const showModal = ref(false); // modal de aprobar proyecto
-const showRejectModal = ref(false); // modal de observar proyecto
-let estudianteSeleccionado = ref(null); // Almacena el id del estudiante seleccionado en los modales
+const tableData = ref<Solicitud[]>([]);
+const load = ref(false);
+const authStore = useAuthStore();
+let solicitudSeleccionada = ref<string | null>(null);
 
+// Variables para el archivo
+const fileInput = ref<HTMLInputElement | null>(null); // Input file ref
+const fileName = ref<string | null>(null); // Nombre del archivo
+const selectedFile = ref<File | null>(null); // Archivo seleccionado
 
-function openModal(studentId: string) {
-  estudianteSeleccionado.value = studentId;
+// Función para manejar la subida de archivo
+const handleFileUpload = (event: Event) => {
+  const file = (event.target as HTMLInputElement)?.files?.[0];
+  if (file) {
+    fileName.value = file.name;
+    selectedFile.value = file;
+  }
+};
+
+// Función para leer el archivo y convertirlo en una cadena (en base64 o texto)
+const readFileAsText = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+    reader.readAsText(file); // Alternativamente, puedes usar readAsDataURL(file) para base64
+  });
+};
+
+// Función para abrir y cerrar modales
+function openModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  
   showModal.value = true;
 }
 
-function openRejectModal(studentId: string) {
-  estudianteSeleccionado.value = studentId;
+function openRejectModal(solicitudId: string) {
+  solicitudSeleccionada.value = solicitudId;  
   showRejectModal.value = true;
 }
 
-function closeModal() {showModal.value = false; showRejectModal.value = false;}
-function goToPreviousPage() {if (currentPage.value > 1) currentPage.value--;}
-function goToNextPage() {if (currentPage.value < totalPages.value) currentPage.value++;}
 
+// Función para cerrar ambos modales
+function closeModal() {
+  showModal.value = false;
+  showRejectModal.value = false;
+  nroCarta.value = "";
+  motivoRechazo.value = "";
+  fileName.value = null;
+  selectedFile.value = null;
+}
+
+// Función para enviar archivo y observación al backend usando la API
+const sendObservacion = async () => {
+  try {
+    // Verificar si hay un archivo seleccionado
+    if (!selectedFile.value) {
+      alertToast("Debe seleccionar un archivo", "Error", "error");
+      return;
+    }
+
+    // Verificar si hay una solicitud seleccionada
+    const solicitudeId = solicitudSeleccionada.value;
+    if (!solicitudeId) {
+      alertToast("Debe seleccionar una solicitud", "Error", "error");
+      return;
+    }
+
+    // Leer el archivo como texto (o base64)
+    const fileContent = await readFileAsText(selectedFile.value);
+
+    const params = {
+      rev_status: "observado",
+      rev_file: fileContent, // Archivo como contenido
+    };
+
+    // Realizar la solicitud PUT al backend
+    const response = await axios.put(`/api/student/review/${solicitudeId}/status`, params);
+
+    if (response.data.status) {
+      const solicitud = tableData.value.find((sol) => sol.id === solicitudeId);
+      if (solicitud) solicitud.rev_status = "observado";
+      closeModal(); // Cerrar el modal
+      alertToast("La solicitud ha sido observada", "Éxito", "success");
+    }
+  } catch (error) {
+    console.error("Error al observar la solicitud:", error);
+    alertToast("Ocurrió un error al observar la solicitud", "Error", "error");
+  }
+};
+
+// Función para obtener las solicitudes del backend
+const fetchSolicitudes = async () => {
+  load.value = true;
+
+  try {
+    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
+    if (response.data && response.data.data) {
+      const solicitudes: Solicitud[] = response.data.data;
+      tableData.value = solicitudes;
+    }
+  } catch (error) {
+    console.error("Error al cargar las solicitudes:", error);
+  } finally {
+    load.value = false;
+  }
+};
+
+// Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
-  // Aplicar filtro por estado
+  // Aplicar filtro por estado (reemplazar `estado` con `rev_status`)
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.estado === selectedFilter.value.toLowerCase()
+      (data) => data.rev_status === selectedFilter.value.toLowerCase()
     );
   }
 
@@ -82,7 +171,7 @@ const filteredTableData = computed(() => {
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter(
-        (data) => data.estado === selectedFilter.value.toLowerCase()
+        (data) => data.rev_status === selectedFilter.value.toLowerCase()
       )
     : tableData.value;
   return Math.ceil(filteredData.length / rowsPerPage.value);});
@@ -104,6 +193,7 @@ onMounted(() =>{
   fetchReviews()
 });
 </script>
+
 
 
 <template>
@@ -172,10 +262,18 @@ onMounted(() =>{
                         class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                         @click="openModal(u.stu_id)">Aprobar
                       </button>
-                      <button 
-                        class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-                        @click="openRejectModal(u.stu_id)">Observar
-                      </button>
+                      <button
+                            v-if="['pendiente', 'observado'].includes(u.rev_status)"
+                            :class="[
+                              'w-20 px-3 py-1 text-sm text-white bg-[#6d6868] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                              ['observado'].includes(u.rev_status)
+                                ? 'cursor-not-allowed'
+                                : 'hover:bg-gray-600',
+                            ]"
+                            :disabled="['rechazado'].includes(u.rev_status)"
+                            @click="openRejectModal(u.id)">
+                            Observar
+                          </button>
                     </td>
 
                     <td class="px-3 py-5 text-center">
