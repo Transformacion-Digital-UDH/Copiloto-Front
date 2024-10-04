@@ -1,22 +1,13 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from "@/stores/auth";
 
 // Define los tipos para observaciones y documentos
-interface Solicitud {
-  id: string;
-  estado: string;
-  titulo: string;
-  estudiante: {
-    nombre_completo: string;
-  };
-}
-
 interface Observacion {
-  descripcion: string;
+  rev_file: string;
   rev_count: number;
-  fecha: string;
+  updated_at: string;
   accion: string;
   estado: string;
 }
@@ -28,16 +19,18 @@ interface Documento {
 }
 
 // Variables reactivas para almacenar datos
-const solicitudEstado = ref<string>('Pendiente');      // Estado de la solicitud
-const solicitudMensaje = ref('');             // Mensaje de la solicitud
-const observaciones = reactive<Observacion[]>([]);  // Lista de observaciones reactivas
-const documentos = reactive<Documento[]>([]);      // Lista de documentos reactivas
-// Variables reactivas para almacenar los datos del asesor y tesis
-const asesorNombre = ref<string>(''); // Nombre del asesor
-const tesis = ref<string>(''); // Título de la tesis
-const tesisLink = ref<string | null>(null);  // Link de la tesis (puede ser null)
-  const historial = ref<any[]>([]);
+const solicitudEstado = ref<string>('Pendiente');  // Estado de la solicitud
+const solicitudMensaje = ref('');  // Mensaje de la solicitud
+const historial = ref<any[]>([]);  // Array para almacenar el historial de observaciones
 
+// Variables reactivas para almacenar los datos del asesor y tesis
+const asesorNombre = ref<string>('');  // Nombre del asesor
+const tesis = ref<string>('');  // Título de la tesis
+const tesisLink = ref<string | null>(null); 
+const rev_file = ref<string>(''); 
+const rev_status = ref<string>(''); 
+const rev_count = ref<number>(); 
+const updated_at =  ref<string>(''); 
 // Método para determinar la clase CSS del estado
 function estadoClase(estado: string) {
   switch (estado) {
@@ -49,8 +42,10 @@ function estadoClase(estado: string) {
   }
 }
 
+
 // Estados para los modales
 const mostrarModalRevision = ref(false);
+
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 const authStore = useAuthStore();
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
@@ -68,28 +63,20 @@ const solicitarRevision = async () => {
   }
 };
 
-// Función para obtener las revisiones y observaciones desde el backend
 const obtenerRevisiones = async () => {
   try {
     const response = await axios.get(`/api/student/get-review/${authStore.id}`);
-    console.log("Datos recibidos de la API:", response.data);
+    //console.log("Datos recibidos de la API:", response.data);
 
     if (response.data.status) {
       // Asigna los valores recibidos de la API a las variables reactivas
       asesorNombre.value = response.data.data.asesor;
       tesis.value = response.data.data.título;
-      tesisLink.value = response.data.data['link-tesis'] || null; // Asigna null si no hay link
+      tesisLink.value = response.data.data['link-tesis'] || null;  // Asigna null si no hay link
 
-      // Cargar las observaciones
+      // Cargar el historial para las observaciones
       if (response.data.data.historial) {
-        observaciones.length = 0;  // Limpiar observaciones anteriores
-        observaciones.push(...response.data.data.historial.map((rev: any) => ({
-          descripcion: rev.rev_file || 'Sin descripción',
-          rev_count: rev.rev_count,
-          fecha: new Date(rev.updated_at).toLocaleDateString(),
-          accion: 'Acción',  // Puedes cambiar esto según tu lógica
-          estado: rev.rev_status,
-        })));
+        historial.value = response.data.data.historial;  // Guardar el historial completo
       }
     }
   } catch (error: any) {
@@ -97,9 +84,40 @@ const obtenerRevisiones = async () => {
   }
 };
 
+// Computed para las observaciones derivadas del historial
+const ObetenerRev = async () => {
+  try {
+    const response = await axios.get(`/api/student/get-review/${authStore.id}`);
+    console.log("Datos recibidos de historial:", response.data);
+
+    if (response.data.status) {
+      console.log("Estructura de los datos recibidos:", response.data);
+      
+      // Asigna los valores recibidos de la API a las variables reactivas
+      rev_file.value = response.data.revision.rev_file;
+      rev_count.value = response.data.revision.rev_count;
+      updated_at.value = response.data.revision.updated_at || null;
+      rev_status.value = response.data.revision.rev_status;  // Asigna null si no hay link
+      
+      // Verifica si el historial existe directamente en response.data
+      if (response.data.historial) {
+        console.log("Historial completo:", response.data.historial);
+        historial.value = response.data.historial || [];  // Asigna el historial si existe
+      } else {
+        console.error("No se encontró el historial en la estructura de datos");
+      }
+    }
+  } catch (error) {
+    console.error("Error al cargar los datos:", error.response?.data.message || "Error desconocido.");
+  }
+};
+
+
 // Llama a la función cuando el componente se monta
 onMounted(() => {
   obtenerRevisiones();
+  ObetenerRev();
+  solicitarRevision();
 });
 </script>
 
@@ -108,18 +126,18 @@ onMounted(() => {
     <h3 class="text-4xl font-bold text-center text-azul">Conformidad de proyecto de tesis por el asesor</h3>
 
     <div class="mt-6 space-y-10">
-     <!-- Información del asesor y tesis -->
-     <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white">
-      <p class="text-lg mb-2"><strong>Asesor:</strong> {{ asesorNombre }}</p>
-      <p class="text-lg mb-2"><strong>Título de Tesis:</strong> {{ tesis }}</p>
+      <!-- Información del asesor y tesis -->
+      <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-white">
+        <p class="text-lg mb-2"><strong>Asesor:</strong> {{ asesorNombre }}</p>
+        <p class="text-lg mb-2"><strong>Título de Tesis:</strong> {{ tesis }}</p>
 
-      <!-- Mostrar el link solo si existe -->
-      <p class="text-lg break-words">
-        <strong>Link de tesis:</strong>
-        <a v-if="tesisLink" :href="tesisLink" class="text-blue-500 underline break-all">{{ tesisLink }}</a>
-        <span v-else>No disponible</span> <!-- Muestra un mensaje si no hay link -->
-      </p>
-    </div>
+        <!-- Mostrar el link solo si existe -->
+        <p class="text-lg break-words">
+          <strong>Link de tesis:</strong>
+          <a v-if="tesisLink" :href="tesisLink" class="text-blue-500 underline break-all">{{ tesisLink }}</a>
+          <span v-else>No disponible</span> <!-- Muestra un mensaje si no hay link -->
+        </p>
+      </div>
 
       <!-- Observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -174,50 +192,20 @@ onMounted(() => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(obs, index) in observaciones" :key="index">
-                <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">{{ obs.descripcion }}</a></td>
-                <td class="px-4 py-2 border-b">{{ obs.rev_count }}</td>
-                <td class="px-4 py-2 border-b">{{ obs.fecha }}</td>
+              <tr v-for="(obs, index) in historial" :key="index">
+                <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">{{ obs.rev_file || 'Nombre desconocido' }}</a></td>
+                <td class="px-4 py-2 border-b">{{ obs.rev_count || 'Desconocido' }}</td>
+                <td class="px-4 py-2 border-b">{{ obs.updated_at || 'Desconocido' }}</td>
                 <td class="px-4 py-2 border-b">
-                  <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>{{ obs.accion }}</button>
+                  <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>{{ obs.accion || 'solicitar Revision' }}</button>
                 </td>
                 <td class="px-4 py-2 border-b">
-                  <span :class="estadoClase(obs.estado)" class="estado-estilo">{{ obs.estado }}</span>
+                  <span :class="`estado-estilo estado-${obs.rev_status.toLowerCase().replace(' ', '-')}`">{{ obs.rev_status || 'Desconocido' }}</span>
                 </td>
               </tr>
             </tbody>
+
           </table>
-        </div>
-      </div>
-
-      <!-- Tabla de Documentos -->
-      <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
-          <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
-        </div>
-
-        <div class="mt-4 space-y-4">
-          <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-            <div class="flex flex-col md:flex-row justify-between md:items-center">
-              <span class="flex-1">{{ documento.nombre }}</span>
-
-              <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                <!-- Botones de Ver y Descargar si el documento está disponible -->
-                <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                  <a :href="documento.documentoUrl" target="_blank"
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                    <i class="fas fa-eye mr-2"></i> Ver
-                  </a>
-                  <a :href="documento.documentoUrl" download
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                    <i class="fas fa-download mr-2"></i> Descargar
-                  </a>
-                </div>
-                <span v-else-if="documento.estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
-                <span :class="estadoClase(documento.estado)" class="estado-estilo ml-4">{{ documento.estado }}</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -231,6 +219,10 @@ onMounted(() => {
   font-weight: 600;
   border-radius: 0.375rem;
   display: inline-block;
+}
+.estado-observado {
+  background-color: #e79e38;
+  color: #ffffff;
 }
 
 .break-all {

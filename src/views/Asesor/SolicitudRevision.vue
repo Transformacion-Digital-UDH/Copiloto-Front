@@ -6,7 +6,14 @@ import IconArchivo from "@/components/icons/IconArchivo.vue";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
-
+// Define an interface for your table data structure
+interface Review {
+  stu_id: string;
+  stu_name: string;
+  sol_title_inve: string;
+  rev_status: string;
+  rev_count: number;
+}
 
 // ***** Texto que escribe automáticamente ********
 const text = "Pendientes de revisiones de proyecto de tesis";
@@ -76,14 +83,14 @@ const totalPages = computed(() => {
 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 const authStore = useAuthStore();
-const tableData = ref([]);
+const tableData = ref<Review[]>([]);  // <-- Define the type of the array as 'Review[]'
 
 // Función para obtener las revisiones desde el backend
 const fetchReviews = async () => {
   try {
     const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
     console.log("Datos recibidos de la API:", response.data.data);
-    tableData.value = response.data.data;
+    tableData.value = response.data.data; // Ensure that the API returns data that matches the 'Review' interface
   } catch (error) {
     console.error("Error al obtener las correcciones pendientes:", error);
   }
@@ -91,7 +98,6 @@ const fetchReviews = async () => {
 onMounted(() => {
   fetchReviews();
 });
-
 
 // ***** Para guardar archivo y mostrar lo que ha seleccionado ********
 const fileName = ref<string | null>(null); // Nombre del archivo
@@ -132,27 +138,23 @@ const readFileAsText = (file: File): Promise<string> => {
   });
 };
 
-// Función para enviar la observación con el archivo
 // Nuevo estado para manejar si está enviando o no
 const isSending = ref(false);
 
 // Función para enviar la observación con el archivo
 const sendObservacion = async () => {
   try {
-    // Verificar si hay un archivo seleccionado
     if (!selectedFile.value) {
       alert("Debe seleccionar un archivo");
       return;
     }
 
-    // Verificar si hay una solicitud seleccionada
     const solicitudeId = solicitudSeleccionada.value;
     if (!solicitudeId) {
       alert("Debe seleccionar una solicitud");
       return;
     }
 
-    // Leer el archivo como texto (o base64)
     const fileContent = await readFileAsText(selectedFile.value);
 
     const params = {
@@ -160,33 +162,30 @@ const sendObservacion = async () => {
       rev_file: fileContent,
     };
 
-    // Indicar que está enviando
     isSending.value = true;
 
-    // Muestra los parámetros que se enviarán al backend
     console.log("Parámetros enviados al backend:", params);
 
-    // Realizar la solicitud PUT al backend
     const response = await axios.put(`/api/student/review/${solicitudeId}/status`, params);
-
-    // Verificar la respuesta del servidor
     console.log("Respuesta del servidor:", response.data);
 
     if (response.data.status) {
       alert("La solicitud ha sido observada correctamente");
-      closeModal(); // Cerrar el modal después de la actualización
+      
+      // Llamamos al cierre del modal y verificamos si se ejecuta
+      console.log("Cerrando modal...");
+      closeModal();
     }
   } catch (error) {
     console.error("Error al observar la solicitud:", error);
     alert("Ocurrió un error al observar la solicitud");
   } finally {
-    // Desactivar el estado de envío
     isSending.value = false;
   }
 };
 
-
 </script>
+
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
@@ -323,13 +322,13 @@ const sendObservacion = async () => {
           <div class="flex items-center justify-end p-3 border-t border-gray-200">
             <button class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
             <button
-  class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl"
-  :disabled="isSending"
-  @click="sendObservacion"
->
-  <span v-if="isSending">Enviando...</span>
-  <span v-else>Enviar</span>
-</button>
+              class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl"
+              :disabled="isSending"
+              @click="sendObservacion"
+            >
+              <span v-if="isSending">Enviando...</span>
+              <span v-else>Enviar</span>
+            </button>
 
           </div>
         </div>
