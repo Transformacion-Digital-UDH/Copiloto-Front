@@ -78,7 +78,7 @@ const filteredTableData = computed(() => {
   let filteredData = tableData.value;
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => data.rev_status === selectedFilter.value
     );
   }
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
@@ -87,7 +87,7 @@ const filteredTableData = computed(() => {
 
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    ? tableData.value.filter((data) => data.rev_status === selectedFilter.value)
     : tableData.value;
   return Math.ceil(filteredData.length / rowsPerPage.value);});
 
@@ -95,7 +95,7 @@ const totalPages = computed(() => {
 const authStore = useAuthStore();
 const tableData = ref([]);
 
-const fetchReviews = async() => {
+const obtenerRevisiones = async() => {
   try{
     const response = await axios.get(`/api/adviser/get-review/${authStore.id}`)
     tableData.value = response.data.data;
@@ -105,7 +105,7 @@ const fetchReviews = async() => {
   }
 };
 onMounted(() =>{
-  fetchReviews()
+  obtenerRevisiones()
 });
 </script>
 
@@ -160,7 +160,7 @@ onMounted(() =>{
                 </thead>
                 <tbody>
                   <tr v-for="(u, index) in filteredTableData" 
-                  :key="u.stu_id" 
+                  :key="u.id" 
                   class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base" >
                       <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
@@ -168,7 +168,9 @@ onMounted(() =>{
                     <td class="px-3 py-5 text-base">
                       <p class="text-gray-900 text-wrap w-80">{{ u.sol_title_inve || "Título no disponible" }}</p>
                     </td>
-                    <td class="px-3 py-5 text-center"><a target="_blank" class="text-blue-800 hover:underline">Ver proyecto</a></td>
+                    <td class="px-3 py-5 text-center">
+                      <a :href="`${u['link-tesis']}`" target="_blank" class="text-black hover:text-blue-700 underline">Ver documento</a>
+                    </td>
                     <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
