@@ -48,6 +48,22 @@ const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
+// ***** Texto que escribe automatiqueshionmente ********
+const text = "Conformidad de proyecto de tesis por el asesor";
+const textoTipiado2 = ref("");
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado2.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+onMounted(() => {
+  typeWriter();
+});
+// *******************************************************
+
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 const asesor = ref('');
 const titulo = ref('');
@@ -103,89 +119,72 @@ onMounted(() => {
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col"
-      >
+      <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3
-          class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"
-        ></h3>
+          class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader">
+        </h3>
       </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-10 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+      <div class="mt-6 space-y-10">
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200">
+            </h2>
+          </div>
         </div>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200">
+            </h2>
+            <div class="flex justify-between items-center">
+              <h2 class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"></h2>
+            </div>
+            <div class="h-7">
+              <h2 class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            </div>
+          </div>
         </div>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-1 w-15 rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200">
+            </h2>
+            <h2
+              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200">
+            </h2>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200">
+            </h2>
+            <h2
+              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200">
+            </h2>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <div class="block space-y-5">
+            <h2 class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"></h2>
+          </div>
         </div>
       </div>
     </div>
   </template>
   <template v-else>  
-    <div class="flex-1 p-10 border-s-2 bg-gray-100 font-roboto">
-        <h3 class="text-4xl font-bold text-center text-azul">Conformidad de proyecto de tesis por el asesor</h3>
+    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+        <h3 class="text-4xl font-bold text-center text-azul">
+          {{ textoTipiado2 }}
+        </h3>
     
         <div class="mt-6 space-y-10">
-          <!-- Información del asesor y tesis -->
-          <div class="bg-white rounded-lg shadow-lg p-6 text-black" v-if="solicitudEstado === 'pendiente'">
+          <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600" v-if="solicitudEstado === 'pendiente'">
             <p class="text-lg mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
-            <p class="text-lg mb-2"><strong>Título de Tesis: </strong>
-              <span class="break-words">
-                {{ titulo }}
-              </span>
-            </p>
-            <!-- Responsividad para el link de tesis -->
-            <p class="text-lg break-words">
-              <strong>Link de tesis: </strong> 
-              <a :href="`${link}`" target="_blank" class="text-black hover:text-blue-700 underline"> Ver proyecto de investigación</a>
+            <p class="text-lg mb-2 block truncate max-w-xl"><strong>Título de Tesis: </strong>{{ titulo }}</p>
+            <p class="text-lg"><strong>Link de tesis: </strong> 
+              <a :href="`${link}`" target="_blank" class="text-gray-600 hover:text-blue-700 underline"> Ver proyecto de investigación</a>
             </p>
           </div>
     
@@ -246,7 +245,6 @@ onMounted(() => {
               <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
                 <thead>
                   <tr>
-                    <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
                     <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISIÓN</th>
                     <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA</th>
                     <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
@@ -255,7 +253,6 @@ onMounted(() => {
                 </thead>
                 <tbody>
                   <tr v-for="(obs, index) in observaciones" :key="index">
-                    <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">{{ obs.descripcion }}</a></td>
                     <td class="px-4 py-2 border-b">{{ obs.revision }}</td>
                     <td class="px-4 py-2 border-b">{{ obs.fecha }}</td>
                     <td class="px-4 py-2 border-b">
