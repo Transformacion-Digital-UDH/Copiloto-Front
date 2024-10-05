@@ -97,6 +97,15 @@ function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
+//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
+
+const validateResolution = () => {
+  nroResolution.value = nroResolution.value.replace(/[^0-9]/g, '');
+  if (nroResolution.value.length > 4) {
+    nroResolution.value = nroResolution.value.slice(0, 4);
+  }
+};
+
 // Función para obtener los datos desde la API
 const fetchOffices = async () => {
   load.value = true;
@@ -166,16 +175,18 @@ const rejectResolution = async () => {
 
 <template>
   <template v-if="load">
-    <div class="flex h-screen bg-gray-100">
-      <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex h-screen border-s-2 bg-gray-100">
+      <div class="flex-1 p-10">
         <div class="flex justify-center items-center content-center px-14 flex-col">
-          <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
+          <h3 
+            class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
+          </h3>
         </div>
         <div class="mt-8">
-          <div class="mt-4">
-            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+          <div class="mt-6">
+            <div class="flex flex-col mt-3 sm:flex-row">
               <div class="w-full flex justify-end items-center space-x-2">
-                <h3 class="bg-gray-200 h-12 w-[30%] rounded-lg duration-200 skeleton-loader"></h3>
+                <h3 class="bg-gray-200 h-10 w-1/3 rounded-lg duration-200 skeleton-loader"></h3>
               </div>
             </div>
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
@@ -253,9 +264,7 @@ const rejectResolution = async () => {
                     <tr
                       v-for="(u, index) in filteredTableData"
                       :key="u.id"
-                      :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
-                      class="border-b border-gray-200"
-                    >
+                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
                         <p class="text-gray-900 text-wrap w-64">
                           {{ u.estudiante_nombre || 'Nombre desconocido' }}
@@ -303,16 +312,13 @@ const rejectResolution = async () => {
                         >
                           Observar
                         </button>
-
                         <a
                           :href="`${VIEW_RESOLUTION}/${u.resolucion_id}`"
                           target="_blank"
-                          @mouseenter="isHovered = true"
-                          @mouseleave="isHovered = false"
-                          v-if="['tramitado'].includes(u.resolucion_estado)"
-                          class="flex items-center">
-                          <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
-                          <IconEyeAbrir v-else class="mr-1"/>
+                          class="flex items-center m-2 relative group"
+                          v-if="['tramitado'].includes(u.resolucion_estado)">
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                           <span class="text-[#34495e]">Resolución</span>
                         </a>
                       </td>
@@ -370,13 +376,25 @@ const rejectResolution = async () => {
                 <p class="text-gray-500 text-lg text-left mb-2">
                   Dígite el N° de expediente
                 </p>
-                <input type="text" id="nroResolution" v-model="nroResolution" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="4" inputmode="numeric" pattern="[0-9]*" >
+                <input 
+                  type="text" 
+                  id="nroResolution" 
+                  v-model="nroResolution" 
+                  class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+                  maxlength="4" 
+                  inputmode="numeric" 
+                  @input="validateResolution"
+                  required>
+                  <p v-if="nroResolution.length !== 4 && nroResolution !== ''" class="text-red-800">Debe ingresar 4 dígitos</p>
               </div>
               <div class="flex items-center justify-end p-3 border-t border-gray-200">
                 <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                   Cancelar
                 </button>
-                <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl" @click="updateResolution">
+                <button 
+                  class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl" 
+                  @click="updateResolution" 
+                  :disabled="nroResolution.length !== 4">
                   Generar
                 </button>
               </div>
