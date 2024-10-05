@@ -2,6 +2,8 @@
 import { onMounted, reactive, ref } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from "@/stores/auth";
+import { computed } from 'vue';
+import { alertToast } from "@/functions";
 
 // Define los tipos para observaciones y documentos
 interface Observacion {
@@ -62,7 +64,12 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
-// *******************************************************
+const isRevisionDisabled = computed(() => {
+  const estado = solicitudEstado.value?.toLowerCase(); // Acceder al valor correctamente
+  console.log('Estado actual para deshabilitar botón:', estado); // Verificar el estado
+  return ['pendiente', 'aprobado', 'observado'].includes(estado); // Compara correctamente con el estado 'aprobado'
+});
+
 
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 const asesor = ref('');
@@ -87,7 +94,6 @@ const solicitarRevision = async () => {
 };
 
 const obtenerRevisiones = async () => {
-  load.value = true;
   await axios.get(`/api/student/get-review/${authStore.id}`)
     .then((response) => {
       if (response.data.status) {
@@ -102,13 +108,13 @@ const obtenerRevisiones = async () => {
         
         // Asignar estado de la revisión
         solicitudEstado.value = revision.estado;
+        console.log('Estado de la solicitud:', solicitudEstado.value); 
       }
     }).catch((error) => {
       solicitudMensaje.value = error.response.data.message;
-    }).finally(() => {
-      load.value = false;
-    });    
+    });
 };
+
 
 const ObetenerRev = async () => {
   try {
@@ -149,35 +155,35 @@ const actualizarRevision = async (studentId: string) => {
       return;
     }
 
+    // Llamada para actualizar el estado a 'pendiente'
     const response = await axios.put(`/api/student/review/${studentId}/status`, {
-      rev_status: 'pendiente'  // Cambiamos el estado a "pendiente"
+      rev_status: 'pendiente'
     });
 
-    if (response.data.message === 'Solicitud de revisión enviada') {
-      alert('El estado de la revisión ha sido cambiado a "pendiente"');
+    // Verificar si la respuesta HTTP fue exitosa (status 200 o 201)
+    if (response.status === 200 || response.status === 201) {
+      // Si la respuesta fue exitosa, actualizamos las revisiones
+      await ObetenerRev(); // <-- Actualiza los datos localmente llamando a ObetenerRev
 
-      // Para asegurar la reactividad, reemplaza el elemento por completo
-      const updatedRevisions = revision.value.map((item) => {
-        if (item.estudiante_id === studentId) {
-          // Retornamos un nuevo objeto con los mismos datos pero con el estado actualizado
-          return { ...item, estado: 'pendiente' }; 
-        }
-        return item;  // Retornamos los elementos que no han cambiado
-      });
-
-      // Reasignamos todo el array para que Vue detecte los cambios
-      revision.value = updatedRevisions;
+      // Mostrar una alerta de éxito
+      alert("Se han enviado las observaciones corregidas.");
+      alertToast("Revisión actualizada", "Éxito", "success");
+    } else {
+      // Si la respuesta no es exitosa, mostramos una alerta
+      alert("Hubo un problema al actualizar la revisión.");
     }
+
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
+      // Manejo del error de Axios con el mensaje del servidor
       alert(`Error al actualizar la revisión: ${error.response?.data.message || 'Error desconocido'}`);
     } else {
+      // Manejo de otros errores desconocidos
       alert('Ocurrió un error desconocido.');
     }
     console.error(error);
   }
 };
-
 
 
 onMounted(() => {
@@ -243,13 +249,14 @@ const mostrarAlerta = (mensaje: string) => {
         </h3>
     
         <div class="mt-6 space-y-10">
-          <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600" v-if="solicitudEstado === 'pendiente'">
+          <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600">
             <p class="text-lg mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
             <p class="text-lg mb-2 block truncate max-w-xl"><strong>Título de Tesis: </strong>{{ titulo }}</p>
             <p class="text-lg"><strong>Link de tesis: </strong> 
               <a :href="`${link}`" target="_blank" class="text-gray-600 hover:text-blue-700 underline"> Ver proyecto de investigación</a>
             </p>
           </div>
+
     
           <!-- Observaciones -->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -274,13 +281,14 @@ const mostrarAlerta = (mensaje: string) => {
             </div>
             <div class="flex justify-center mt-3">
               <button 
-                :disabled="solicitudEstado === 'pendiente'"
-                :class="solicitudEstado === 'pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
+                :disabled="isRevisionDisabled"
+                :class="isRevisionDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
                 class="px-4 py-2 text-white rounded-md"
                 @click="solicitarRevision">
                 Solicitar Revisión
               </button>
             </div>
+
             <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div> <!-- Mensaje de la solicitud -->
           </div>
     
@@ -410,6 +418,10 @@ const mostrarAlerta = (mensaje: string) => {
   color: #ffffff;
 }
 .estado-hecho {
+  background-color: #48bb78;
+  color: #ffffff;
+}
+.estado-aprobado {
   background-color: #48bb78;
   color: #ffffff;
 }

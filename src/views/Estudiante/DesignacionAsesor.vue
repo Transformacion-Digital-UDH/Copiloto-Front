@@ -221,9 +221,6 @@ const getAdvisers = async () => {
   }
 };
 
-// Función para enviar una solicitud de asesor
-
-
 // Función para actualizar una solicitud de asesor existente
 const updateSolicitude = async (
   solicitud_id: string,

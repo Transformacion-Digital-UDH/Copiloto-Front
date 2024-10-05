@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
+import { alertToast } from "@/functions";
 import { useAuthStore } from "@/stores/auth";
 
 // Define an interface for your table data structure
@@ -39,6 +40,10 @@ const currentPage = ref(1);
 const showModal = ref(false); // Modal para aprobar proyecto
 const showRejectModal = ref(false); // Modal para observar proyecto
 const solicitudSeleccionada = ref<Review | null>(null); // Almacena la solicitud seleccionada
+const nroCarta = ref("");
+
+//VARIABLES DE ENTORNO
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
 
 // Funciones para abrir y cerrar modales
 function openModal(id: string) {
@@ -59,6 +64,7 @@ function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
   solicitudSeleccionada.value = null;
+  nroCarta.value = ""; 
 }
 
 // Funciones para la paginación
@@ -104,7 +110,18 @@ const fetchReviews = async () => {
   try {
     const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
     console.log("Datos recibidos de la API:", response.data.data);
-    tableData.value = response.data.data; // Asegúrate de que la API devuelva datos que coincidan con la interfaz 'Review'
+
+    // Asume que `response.data.data` contiene un array de objetos Review
+    tableData.value = response.data.data.map((review: any) => {
+      return {
+        ...review,
+        // Agrega la propiedad `oficio_generado` basándote en el estado o alguna otra lógica
+        oficio_generado: review.rev_status === 'aprobado',  // Aquí se asume que si está 'aprobado', se generó el oficio
+        rev_num_of: review.rev_num_of|| null  // Almacena el ID del oficio si está presente
+      };
+    });
+
+    console.log("Datos transformados con oficio_generado:", tableData.value);
   } catch (error) {
     console.error("Error al obtener las correcciones pendientes:", error);
   }
@@ -141,6 +158,51 @@ const sendObservacion = async () => {
     alert("Ocurrió un error al procesar la solicitud");
   }
 };
+
+const acceptCorrecion = async () => {
+  try {
+    const solicitudId = solicitudSeleccionada.value?.stu_id;
+    if (!solicitudId) {
+      alert("Debe seleccionar una solicitud");
+      return;
+    }
+
+    if (!nroCarta.value || nroCarta.value.length !== 3) {
+      alertToast("El N° de Oficio debe tener exactamente 3 caracteres", "Error", "error");
+      return;
+    }
+
+    const params = {
+      rev_status: "aprobado",
+      rev_num_of: nroCarta.value,
+    };
+
+    const response = await axios.put(`/api/student/review/${solicitudId}/status`, params);
+
+    if (response.status === 200 || response.status === 201) {
+      console.log("Datos actualizados desde la API:", response.data);
+
+      // Actualiza manualmente los datos en la tabla
+      const solicitud = tableData.value.find((sol) => sol.stu_id === solicitudId);
+      if (solicitud) {
+        solicitud.rev_status = 'aprobado';    // Actualiza el estado de la solicitud
+        solicitud.oficio_generado = true;     // Marca como oficio generado
+        solicitud.rev_num_of = response.data.data.rev_num_of || '';  // Verifica que el ID del oficio esté presente
+      }
+
+      alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
+      closeModal(); // Cierra el modal
+    } else {
+      alert("Hubo un problema al aprobar la solicitud.");
+    }
+  } catch (error) {
+    alertToast("Error al aceptar la solicitud", "Error", "error");
+    console.error(error);
+  }
+};
+
+
+
 // Llamada al backend cuando el componente se monta
 onMounted(() => {
   fetchReviews();
@@ -220,15 +282,40 @@ onMounted(() => {
                </td>
                 <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                 <td class="px-3 py-5 text-center align-middle">
-                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
-                    <button class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none" @click="openModal(u.stu_id)">
-                      Aprobar
-                    </button>
-                    <button class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none" @click="openRejectModal(u.stu_id)">
-                      Observar
-                    </button>
-                  </div>
-                </td>
+  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
+    <!-- Botones de "Aprobar" y "Observar" (solo se muestran si el oficio no ha sido generado) -->
+    <button
+      v-if="!u.oficio_generado"  
+      class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none"
+      @click="openModal(u.stu_id)"
+    >
+      Aprobar
+    </button>
+
+    <button
+      v-if="!u.oficio_generado" 
+      class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+      @click="openRejectModal(u.stu_id)"
+    >
+      Observar
+    </button>
+
+    <!-- Enlace para ver el oficio (solo se muestra si el oficio ya fue generado) -->
+    <a
+      v-if="u.oficio_generado" 
+      :href="`${VIEW_LETTER}/${u.rev_num_of}`" 
+      target="_blank"
+      class="w-24 px-4 py-1 text-sm text-white bg-[#2ecc71] rounded-xl focus:outline-none text-center"
+    >
+      Ver Oficio
+    </a>
+  </div>
+</td>
+
+
+
+
+
                 <td class="px-3 py-5 text-center">
                   <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">{{ u.rev_status }}</span>
                 </td>
@@ -265,11 +352,21 @@ onMounted(() => {
             <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Aprobación de proyecto</h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-center">¿Está seguro de que el proyecto de tesis ya no requiere observaciones adicionales?</p>
-          </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-            <button class="ml-4 px-4 py-2 text-lg text-white bg-base rounded-2xl" @click="closeModal">Confirmar</button>
+            <p class="text-black text-lg text-center">¿Está seguro de que el proyecto de tesis ya no requiere observaciones adicionales?</p><br>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Porfavor escriba el N° de Oficio para el Documento de Conformidad</p>
+              <input
+                type="text"
+                id="nroCarta"
+                v-model="nroCarta"
+                class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0"
+                maxlength="3"
+                inputmode="numeric"
+                pattern="[0-9]*"
+              />
+            </div>
+          <div class="flex items-center justify-center p-3  border-gray-200">
+            <button class="px-4 py-2 text-xm text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-2 text-xm text-white bg-base rounded-2xl" @click="acceptCorrecion">Confirmar</button>
           </div>
         </div>
       </div>

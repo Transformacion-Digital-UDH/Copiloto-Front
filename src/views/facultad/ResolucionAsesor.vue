@@ -54,11 +54,6 @@ const selectedOfficeId = ref<string | null>(null); // ID de la resolución selec
 // Definimos oficio_id como `string | null` para manejar posibles valores nulos
 let oficio_id = ref<string | null>(null);
 
-// Función para abrir y cerrar modales
-function openSendModal() {
-  showSendModal.value = true;
-}
-
 function openModal(oficioId: string) {
   showModal.value = true;
   oficio_id.value = oficioId;
