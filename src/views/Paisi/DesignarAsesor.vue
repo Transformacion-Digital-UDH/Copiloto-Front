@@ -192,16 +192,18 @@ const rejectSolicitude = async () => {
 
 <template>
   <template v-if="load">
-    <div class="flex h-screen bg-gray-100">
-      <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex h-screen border-s-2 bg-gray-100">
+      <div class="flex-1 p-10">
         <div class="flex justify-center items-center content-center px-14 flex-col">
-          <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
+          <h3 
+            class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
+          </h3>
         </div>
         <div class="mt-8">
-          <div class="mt-4">
-            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+          <div class="mt-6">
+            <div class="flex flex-col mt-3 sm:flex-row">
               <div class="w-full flex justify-end items-center space-x-2">
-                <h3 class="bg-gray-200 h-12 w-[30%] rounded-lg duration-200 skeleton-loader"></h3>
+                <h3 class="bg-gray-200 h-10 w-1/3 rounded-lg duration-200 skeleton-loader"></h3>
               </div>
             </div>
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
@@ -328,13 +330,12 @@ const rejectSolicitude = async () => {
                         </button>
                         <button>
                           <a
-                          :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" target="_blank"
-                          @mouseenter="isHovered = true"
-                          @mouseleave="isHovered = false"
-                          v-if="['tramitado'].includes(solicitude.oficio_estado)"
-                          class="flex items-center m-2">
-                          <IconEyeCerrar v-if="!isHovered" class="mr-1" /> 
-                          <IconEyeAbrir v-else class="mr-1"/>
+                          :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" 
+                          target="_blank"
+                          class="flex items-center m-2 relative group"
+                          v-if="['tramitado'].includes(solicitude.oficio_estado)">
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                           <span class="text-[#34495e]">Oficio</span>
                         </a>
                         </button>
@@ -392,14 +393,28 @@ const rejectSolicitude = async () => {
             </div>
             <div class="p-6">
               <p class="text-gray-500 text-lg text-left mb-2">
-                Dígite el N° de oficio.
+                Por favor dígite el N° de oficio.
               </p>
-              <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric" pattern="[0-9]*">
+              <input 
+                type="text" 
+                id="nroOficio1" 
+                v-model="nroOficio1" 
+                class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+                maxlength="3" 
+                inputmode="numeric" 
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
 
               <p class="text-gray-500 text-lg text-left mb-2">
-                Dígite el N° de expediente.
+                Por favor dígite el N° de expediente.
               </p>
-              <input type="text" id="nroExped1" v-model="nroExped1" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" inputmode="numeric" pattern="[0-9\-]*">
+              <input 
+                type="text" 
+                id="nroExped1" 
+                v-model="nroExped1" 
+                class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+                maxlength="17" 
+                inputmode="numeric" 
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
             <div class="flex items-center justify-end p-3 border-t border-gray-200">
               <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
