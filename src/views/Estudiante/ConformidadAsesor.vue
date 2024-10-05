@@ -180,7 +180,7 @@ onMounted(() => {
         </h3>
     
         <div class="mt-6 space-y-10">
-          <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600" v-if="solicitudEstado === 'pendiente'">
+          <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600">
             <p class="text-lg mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
             <p class="text-lg mb-2 block truncate max-w-xl"><strong>Título de Tesis: </strong>{{ titulo }}</p>
             <p class="text-lg"><strong>Link de tesis: </strong> 
@@ -284,30 +284,30 @@ onMounted(() => {
             </div>
     
             <div class="mt-4 space-y-4">
-              <!-- documentos es un reactive, así que NO usamos .value para las propiedades internas -->
-              <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
                 <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1">{{ documento.nombre }}</span>
-    
+                  <span class="w-full md:w-auto mb-2 md:mb-0">
+                    Informe de Conformidad de Observaciones
+                  </span>
                   <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <!-- Mostrar botones "Ver" y "Descargar" si el estado es 'Hecho' -->
-                    <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <div class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                       <!-- Botón de Ver -->
-                      <a :href="documento.documentoUrl" target="_blank"
+                      <a 
+                        href="#" 
+                        target="_blank"
                         class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                         <i class="fas fa-eye mr-2"></i> Ver
                       </a>
                       <!-- Botón de Descargar -->
-                      <a :href="documento.documentoUrl" download
+                      <a 
+                        href="#" 
+                        download
                         class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                         <i class="fas fa-download mr-2"></i> Descargar
                       </a>
                     </div>
-                    <!-- Mostrar mensaje de espera si el estado es 'pendiente' -->
-                    <span v-else-if="documento.estado === 'pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
-    
-                    <!-- Estado del documento -->
-                    <span :class="estadoClase(documento.estado)" class="estado-estilo ml-4">{{ documento.estado }}</span>
+                    <span class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                    <span class="estado-estilo ml-4"></span>
                   </div>
                 </div>
               </div>

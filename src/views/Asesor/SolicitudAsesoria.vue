@@ -305,36 +305,38 @@ const fetchDocuments = async (solicitudId: string) => {
                           {{ u.titulo || "Título no disponible" }}
                         </p>
                       </td>
-                      <td class="px-3 py-5 flex flex-col items-center justify-center">
-                        <button
+                      <td class="px-3 py-5 text-center align-middle">
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
+                          <button
                           v-if="['pendiente', 'rechazado'].includes(u.estado)"
                           :class="[
                             'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78]  rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
                             ['rechazado'].includes(u.estado)
                               ? 'cursor-not-allowed'
                               : 'hover:bg-green-600',
-                          ]"
-                          :disabled="['rechazado'].includes(u.estado)"
-                          @click="openModal(u.id)">Aceptar
-                        </button>
+                            ]"
+                            :disabled="['rechazado'].includes(u.estado)"
+                            @click="openModal(u.id)">Aceptar
+                          </button>
 
-                        <button
-                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                          :class="[
-                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                            ['rechazado'].includes(u.estado)
-                              ? 'cursor-not-allowed'
-                              : 'hover:bg-red-600',
-                          ]"
-                          :disabled="['rechazado'].includes(u.estado)"
-                          @click="openRejectModal(u.id)">Rechazar
-                        </button>
+                          <button
+                            v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                            :class="[
+                              'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                              ['rechazado'].includes(u.estado)
+                                ? 'cursor-not-allowed'
+                                : 'hover:bg-red-600',
+                            ]"
+                            :disabled="['rechazado'].includes(u.estado)"
+                            @click="openRejectModal(u.id)">Rechazar
+                          </button>
 
-                        <button
-                          v-if="['aceptado'].includes(u.estado)"
-                          class="w-20 px-3 py-1 text-sm text-white bg-slate-600 rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
-                          @click="openRejectModal(u.id)">Declinar
-                        </button>
+                          <button
+                            v-if="['aceptado'].includes(u.estado)"
+                            class="w-20 px-3 py-1 text-sm text-white bg-slate-600 rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
+                            @click="openRejectModal(u.id)">Declinar
+                          </button>
+                        </div>
                       </td>
                       <td class="px-3 py-5 text-center">
                         <button
