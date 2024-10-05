@@ -121,7 +121,7 @@ onMounted(() => {
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3
-          class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader">
+          class="bg-gray-200 h-9 w-3/5 rounded-lg duration-200 skeleton-loader">
         </h3>
       </div>
       <div class="mt-6 space-y-10">

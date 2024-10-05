@@ -203,19 +203,23 @@ const fetchDocuments = async (solicitudId: string) => {
 
 <template>
   <template v-if="load">
-    <div class="flex h-screen bg-gray-100">
-      <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex h-screen border-s-2 bg-gray-100">
+      <div class="flex-1 p-10 overflow-auto">
         <div class="flex justify-center items-center content-center px-14 flex-col">
-          <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
+          <h3 
+            class="bg-gray-200 h-9 w-2/4 rounded-lg duration-200 skeleton-loader">
+          </h3>
         </div>
         <div class="mt-8">
-          <div class="mt-4">
-            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+          <div class="mt-6">
+            <div class="flex flex-col mt-3 sm:flex-row">
               <div class="w-full flex justify-end items-center space-x-2">
-                <h3 class="bg-gray-200 h-12 w-[30%] rounded-lg duration-200 skeleton-loader"></h3>
+                <h3 
+                  class="bg-gray-200 h-10 w-1/3 rounded-lg duration-200 skeleton-loader">
+                </h3>
               </div>
             </div>
-            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
               <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
             </div>
           </div>
@@ -411,7 +415,7 @@ const fetchDocuments = async (solicitudId: string) => {
                 class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0"
                 maxlength="3"
                 inputmode="numeric"
-                pattern="[0-9]*"/>
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')"/>
               <br /><br>
               <p class="text-base text-left mb-2">
                 <i>Esta carta se autogenerará por el sistema</i>
