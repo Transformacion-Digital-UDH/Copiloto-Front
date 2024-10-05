@@ -113,6 +113,7 @@ const fetchOffices = async () => {
   try {
     // Llamada a la API para obtener los datos
     const response = await axios.get("/api/faculty/getOffices");
+    console.log(response);
     tableData.value = response.data.data; // Tipado como `Resolucion[]`
   } catch (error) {
     console.error("Error al cargar las solicitudes:", error);

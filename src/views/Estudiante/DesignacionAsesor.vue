@@ -177,6 +177,40 @@ const getInfoStudent = async () => {
     });
 };
 
+const sendSolicitude = async (student_id: string) => {
+  try {
+    const params = {
+      student_id: student_id,
+    };
+    alertConfirmation(
+      "Estás seguro de iniciar este trámite?",
+      "Iniciar trámite",
+      "question",
+      params,
+      "/api/solicitudes-store",
+      "POST",
+      (response) => {
+        solicitude.value.solicitud_id = response.data._id;
+        solicitude.value.titulo = response.data.sol_title_inve;
+        solicitude.value.asesor_id = response.data.adviser_id || "";
+        solicitude.value.estado = response.data.sol_status;
+        confetti({
+          particleCount: 500,
+          spread: 1010,
+          origin: { y: 0.6 },
+        });
+      }
+    );
+  } catch (error: any) {
+    let description = "";
+    error.response.data.error.map((e: any) => {
+      description = description + " " + e;
+    });
+    alertToast(description, "Error", "error");
+  }
+};
+
+
 // Función para obtener la lista de asesores
 const getAdvisers = async () => {
   try {

@@ -235,6 +235,7 @@ function closeDocumentModal() {
               </div>
             </div>
           </div>
+          <br>
 
           <!-- Tabla de solicitudes -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
@@ -242,12 +243,10 @@ function closeDocumentModal() {
               <table class="min-w-full leading-normal">
                 <thead class="custom-thead font-Quicksand">
                   <tr class="text-center text-azul border-b-2 bg-gray-300">
-                    <th class="py-2 px-3 text-left tracking-wider">
-                      ESTUDIANTE
-                    </th>
+                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
                     <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
-                    <th class="py-2 px-3 tracking-wider">DOCUMENTOS</th>
+                    <th class="py-2 px-3 tracking-wider text-center">DOCUMENTOS</th>
                     <th class="py-2 px-4 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
@@ -259,44 +258,52 @@ function closeDocumentModal() {
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-black text-wrap w-80">
-                        {{ u.titulo || "Título no disponible" }}
-                      </p>
+                      <p class="text-black text-wrap w-80">{{ u.titulo || "Título no disponible" }}</p>
                     </td>
-                    <td class="px-3 py-5 flex flex-col items-center justify-center">
-                      <button
-                        v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                        :class="[
-                          'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                          ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-green-600'
-                        ]"
-                        :disabled="['rechazado'].includes(u.estado)"
-                        @click="openModal(u.id)">Aceptar
-                      </button>
+                    <td class="px-3 py-5 text-center align-middle">
+                      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
+                        <button
+                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                          :class="[
+                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                            ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-green-600'
+                          ]"
+                          :disabled="['rechazado'].includes(u.estado)"
+                          @click="openModal(u.id)">Aceptar
+                        </button>
 
-                      <button
-                        v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                        :class="[
-                          'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                          ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-red-600'
-                        ]"
-                        :disabled="['rechazado'].includes(u.estado)"
-                        @click="openRejectModal(u.id)">Rechazar
-                      </button>
-                      <button
+                        <button
+                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
+                          :class="[
+                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                            ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-red-600'
+                          ]"
+                          :disabled="['rechazado'].includes(u.estado)"
+                          @click="openRejectModal(u.id)">Rechazar
+                        </button>
+
+                        <button
                           v-if="['aceptado'].includes(u.estado)"
                           class="w-20 px-3 py-1 text-sm text-white bg-azul rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
                           @click="openRejectModal(u.id)">Declinar
                         </button>
+                      </div>
                     </td>
+
+                    <!-- Ajuste en la columna DOCUMENTOS para centrar -->
                     <td class="px-3 py-5 text-center">
-                      <button v-if="u.estado === 'aceptado'" @click="openDocumentModal(u.id)" class="focus:outline-none">
-                        <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                        <IconEyeAbrir v-else class="mr-1"/>
-                        <span class="text-[#34495e]">Documentos</span>
-                      </button>
-                      <p v-else class="italic text-gray-400">No generado</p>
+                      <div class="flex justify-center items-center">
+                        <!-- Botón de Documentos -->
+                        <button v-if="u.estado === 'aceptado'" @click="openDocumentModal(u.id)" class="focus:outline-none flex justify-center items-center space-x-1">
+                          <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
+                          <IconEyeAbrir v-else class="mr-1"/>
+                          <span class="text-[#34495e]">Documentos</span>
+                        </button>
+                        <!-- Mensaje alternativo cuando no está aceptado -->
+                        <p v-else class="italic text-gray-400">No generado</p>
+                      </div>
                     </td>
+
                     <td class="px-3 py-5 text-center">
                       <span :class="`estado-estilo estado-${u.estado?.toLowerCase().replace(' ', '-')}`">
                         {{ u.estado || "Estado desconocido" }}
@@ -305,7 +312,6 @@ function closeDocumentModal() {
                   </tr>
                 </tbody>
               </table>
-
               <!-- Paginación -->
               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
                 <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
@@ -437,4 +443,5 @@ function closeDocumentModal() {
   font-size: 16px;
   text-transform: uppercase;
 }
+
 </style>
