@@ -1,3 +1,5 @@
+SOLICITUD REVISION
+
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
@@ -209,7 +211,6 @@ const acceptCorrecion = async () => {
 onMounted(() => {
   fetchReviews();
 });
-
 </script>
 
 <template>
@@ -252,9 +253,6 @@ onMounted(() => {
                   <option value="aprobado">Aprobado</option>
                 </select>
               </div>
-            </div>
-            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
-                <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
             </div>
           </div>
           <br>
@@ -399,7 +397,6 @@ onMounted(() => {
       </div>
     </div>
   </div>
-  </template>
 </template>
 
 <style scoped>
