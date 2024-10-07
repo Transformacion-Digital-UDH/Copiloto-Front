@@ -19,13 +19,12 @@ interface Documento {
 }
 
 // Estado de solicitud (reactivo usando ref)
-const solicitudEstado = ref<string>('');
+const solicitudEstado1 = ref('');
+const solicitudEstado = ref('');
 const solicitudMensaje = ref('');
 
 // Observaciones es un array reactivo de tipo Observacion usando reactive
-const observaciones = reactive<Observacion[]>([
-  { descripcion: 'Reporte.xlsx', revision: 5, fecha: '10/08/2023', accion: 'Solicitar revisión', estado: 'pendiente' }
-]);
+const observaciones = ref([]);
 
 // Documentos es un array reactivo de tipo Documento usando reactive
 const documentos = reactive<Documento[]>([
@@ -35,10 +34,9 @@ const documentos = reactive<Documento[]>([
 // Método para determinar la clase del estado basado en el estado del documento o solicitud
 function estadoClase(estado: string) {
   switch (estado) {
-    case 'Hecho': return 'bg-green-500 text-white';
-    case 'En Proceso': return 'bg-orange-500 text-white';
-    case 'pendiente': return 'bg-gray-400 text-white';
-    case 'Rechazado': return 'bg-red-500 text-white';
+    case 'aprobado': return 'bg-[#48bb78] text-white';
+    case 'pendiente': return 'bg-[#8898aa] text-white';
+    case 'observado': return 'bg-[#e79e38] text-white';
     default: return '';
   }
 }
@@ -72,12 +70,12 @@ const load = ref(false);
 const authStore = useAuthStore();
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
-const solicitarRevision = async () => {
+const primeraRevision = async () => {
   try {
     const response = await axios.post(`/api/student/first-review/${authStore.id}`);
     console.log(response)
     if (response.data.status) {
-      solicitudEstado.value = 'pendiente';
+        solicitudEstado1.value = 'pendiente';
         solicitudMensaje.value = 'Solicitud enviada, espere las indicaciones del asesor por favor!';
       }
   } catch (error :any) {
@@ -85,6 +83,23 @@ const solicitarRevision = async () => {
     solicitudMensaje.value = error.response.data.message;
   }
 };
+
+const segundaRevision = async (revision: number) => {
+  try {
+    const response = await axios.put(`/api/student/review/${authStore.id}/status`, {
+      rev_status: 'pendiente'
+    });
+
+    if (response.data.message) {
+      solicitudEstado.value = 'pendiente';
+      solicitudMensaje.value = 'Solicitud de revisión enviada al asesor.';
+    }
+  } catch (error: any) {
+    console.log(error);
+    solicitudMensaje.value = error.response.data.message;
+  }
+};
+
 
 const obtenerRevisiones = async () =>{
   load.value = true;
@@ -94,14 +109,15 @@ const obtenerRevisiones = async () =>{
         console.log(response)
         const data = response.data.data;
         const revision = response.data.revision;
-        
-        // Asignar datos del estudiante
-        asesor.value = data.asesor;
-        titulo.value = data.titulo;
-        link.value = data['link-tesis'];
-        
-        // Asignar estado de la revisión
+        const historial = response.data.historial;
+                
         solicitudEstado.value = revision.estado;
+        
+        observaciones.value = historial.map((revision) => ({
+          revision: revision.rev_count,
+          fecha: revision.updated_at,
+          estado: revision.rev_status,
+        }))
       }
     }).catch((error) => {
       solicitudMensaje.value = error.response.data.message;
@@ -110,8 +126,23 @@ const obtenerRevisiones = async () =>{
     });    
 };
 
+const obtenerDatosEstudiante = async () => {
+  try {
+    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
+    if (response.data.status) {
+      const solicitud = response.data.solicitud;
+      asesor.value = solicitud.asesor_id;
+      titulo.value = solicitud.titulo;
+      link.value = solicitud.link;
+    }
+  } catch (error) {
+    console.error('Error al obtener los datos del estudiante:', error);
+  }
+};
+
 onMounted(() => {
   obtenerRevisiones();
+  obtenerDatosEstudiante();
 });
 
 </script>
@@ -182,7 +213,7 @@ onMounted(() => {
         <div class="mt-6 space-y-10">
           <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600">
             <p class="text-lg mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
-            <p class="text-lg mb-2 block truncate max-w-xl"><strong>Título de Tesis: </strong>{{ titulo }}</p>
+            <p class="text-lg mb-2 block truncate max-w-7xl"><strong>Título de Tesis: </strong>{{ titulo }}</p>
             <p class="text-lg"><strong>Link de tesis: </strong> 
               <a :href="`${link}`" target="_blank" class="text-gray-600 hover:text-blue-700 underline"> Ver proyecto de investigación</a>
             </p>
@@ -207,14 +238,15 @@ onMounted(() => {
     
             <div class="flex items-center justify-between">
               <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
-              <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
+              <span :class="estadoClase(solicitudEstado1)" class="estado-estilo ml-4">{{ solicitudEstado1 }}</span>
             </div>
             <div class="flex justify-center mt-3">
-              <button 
-                :disabled="solicitudEstado === 'pendiente'"
-                :class="solicitudEstado === 'pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
+              <button
+                @click="primeraRevision"
+                :disabled="solicitudEstado1 === 'pendiente' || solicitudEstado === 'aprobado'" 
+                :class="(solicitudEstado1 === 'pendiente' || solicitudEstado === 'aprobado') ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
                 class="px-4 py-2 text-white rounded-md"
-                @click="solicitarRevision">
+                >
                 Solicitar Revisión
               </button>
             </div>
@@ -241,24 +273,31 @@ onMounted(() => {
             </div>
     
             <!-- Tabla de observaciones -->
-            <div class="overflow-x-auto mt-4">
-              <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
-                <thead>
-                  <tr>
-                    <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISIÓN</th>
-                    <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA</th>
-                    <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
-                    <th class="px-4 py-2 text-left text-gray-600 border-b">ESTADO</th>
+            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+              <table class="w-auto max-w-sm bg-white border border-gray-200 rounded-md shadow">
+                <thead class="min-w-full leading-normal">
+                  <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <th class="px-4 py-2 tracking-wider">N° REVISIÓN</th>
+                    <th class="px-4 py-2 tracking-wider">FECHA</th>
+                    <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
+                    <th class="px-4 py-2 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(obs, index) in observaciones" :key="index">
-                    <td class="px-4 py-2 border-b">{{ obs.revision }}</td>
-                    <td class="px-4 py-2 border-b">{{ obs.fecha }}</td>
-                    <td class="px-4 py-2 border-b">
-                      <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>{{ obs.accion }}</button>
+                  <tr v-for="(obs, index) in observaciones" :key="obs.id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <td class="px-4 py-2 text-base text-gray-600"><p class="text-wrap w-28 text-center">{{ obs.revision || 'No existe' }}</p></td>
+                    <td class="px-4 py-2 text-base text-gray-600"><p class="text-wrap w-40">{{ obs.fecha || 'No existe' }}</p></td>
+                    <td class="px-4 py-2 text-base">
+                      <button
+                        @click="segundaRevision(obs.revision)"
+                        :class="[
+                        'w-36 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
+                        ['aprobado'].includes(obs.estado) 
+                          ? 'bg-gray-300 cursor-not-allowed' 
+                          : 'hover:bg-green-600']">Solicitar revisión
+                       </button>
                     </td>
-                    <td class="px-4 py-2 border-b">
+                    <td class="px-4 py-2">
                       <span :class="estadoClase(obs.estado)" class="estado-estilo">{{ obs.estado }}</span>
                     </td>
                   </tr>
@@ -328,26 +367,7 @@ onMounted(() => {
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 600;
   border-radius: 0.375rem;
   display: inline-block;
-}
-
-.break-all {
-  word-break: break-all;
-}
-
-/* Estilos para hacer que el modal se ajuste en pantallas móviles */
-.modal-pos {
-  right: 0;
-  top: 100%;
-}
-
-@media (max-width: 640px) {
-  .modal-pos {
-    left: 50%;
-    transform: translateX(-50%);
-    top: 120%;
-  }
 }
 </style>
