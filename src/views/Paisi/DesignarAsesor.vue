@@ -8,7 +8,25 @@ import { alertToast } from "@/functions";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
-// ***** Texto que escribe automatiqueshionmente ********
+// Definir la interfaz para las solicitudes
+interface Estudiante {
+  nombre_completo: string;
+}
+
+interface Asesor {
+  nombre_completo: string;
+}
+
+interface Solicitude {
+  id: number;
+  estudiante: Estudiante;
+  asesor: Asesor;
+  oficio_id: number;
+  oficio_estado: string | null;
+  link: string | null;
+}
+
+// ***** Texto que escribe automáticamente ********
 const text = "Oficio para designación de asesor";
 const textoTipiado1 = ref('');
 let index = 0;
@@ -26,38 +44,41 @@ onMounted(() => {
 
 // Estados y propiedades
 const isHovered = ref(false);
-const selectedFilter = ref("");
-const rowsPerPage = ref(5);
-const currentPage = ref(1);
-const showModal = ref(false);
-const showRejectModal = ref(false);
-const showLinkModal = ref(false);
-const nroOficio1 = ref('');
-const nroExped1 = ref('');
-const motivoObservacion = ref("");
-let oficio_id = ref(null);
-const createdoc = ref(false);
+const selectedFilter = ref<string>("");  // Añadido tipo explícito string
+const rowsPerPage = ref<number>(5);      // Añadido tipo explícito number
+const currentPage = ref<number>(1);      // Añadido tipo explícito number
+const showModal = ref<boolean>(false);   // Añadido tipo explícito boolean
+const showRejectModal = ref<boolean>(false);  // Añadido tipo explícito boolean
+const showLinkModal = ref<boolean>(false);    // Añadido tipo explícito boolean
+const nroOficio1 = ref<string>('');  // Tipo explícito string
+const nroExped1 = ref<string>('');   // Tipo explícito string
+const motivoObservacion = ref<string>("");  // Tipo explícito string
+let oficio_id = ref<number | null>(null);   // Puede ser null
+const createdoc = ref<boolean>(false);    // Añadido tipo explícito boolean
 
 //VARIABLES DE ENTORNO
-const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER
-const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE
+const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
+const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
 
-
-function openModal (oficioId: string) {
+// Función para abrir modal
+function openModal(oficioId: number) {
   showModal.value = true;
-  oficio_id.value = oficioId
+  oficio_id.value = oficioId;
 }
 
-function openRejectModal(oficioId: string) {
+// Función para abrir modal de rechazo
+function openRejectModal(oficioId: number) {
   showRejectModal.value = true;
-  oficio_id.value = oficioId
+  oficio_id.value = oficioId;
 }
 
-const openModalLink = (solicitude) => {
+// El tipo de solicitude se especifica como `Solicitude`
+const openModalLink = (solicitude: Solicitude) => {
   showLinkModal.value = true;
   selectedSolicitude.value = solicitude;
 }
 
+// Función para cerrar modal
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
@@ -66,13 +87,14 @@ function closeModal() {
 }
 
 // Filtrar datos y aplicar paginación
+const tableData = ref<Solicitude[]>([]);  // Tipo explícito: Array de Solicitude
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
 
   // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.estado === selectedFilter.value.toLowerCase()
+      (data) => data.oficio_estado?.toLowerCase() === selectedFilter.value.toLowerCase()
     );
   }
 
@@ -85,31 +107,33 @@ const filteredTableData = computed(() => {
 // Calcular el total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.estado === selectedFilter.value.toLowerCase())
+    ? tableData.value.filter((data) => data.oficio_estado?.toLowerCase() === selectedFilter.value.toLowerCase())
     : tableData.value;
 
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
+// Cambiar página a la anterior
 function goToPreviousPage() {
   if (currentPage.value > 1) currentPage.value--;
 }
 
+// Cambiar página a la siguiente
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
- 
-//*********************************** INTEGRACION CON EL BACKEND *************************************************** */
-const tableData = ref([]);
-const load = ref(false);
-const selectedSolicitude = ref('');
 
+//*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
+const load = ref<boolean>(false);
+const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser null
+
+// Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
     const response = await axios.get('/api/paisi/getSolicitude');
-    tableData.value = response.data.data;
-    console.log(response.data)
+    tableData.value = response.data.data as Solicitude[];  // Forzamos el tipo a `Solicitude[]`
+    console.log(response.data);
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   } finally {
@@ -121,8 +145,9 @@ onMounted(() => {
   typeWriter();
 });
 
-const createGoogleDoc = async (solicitudeId) => {
-  createdoc.value= true
+// Crear documento en Google Docs
+const createGoogleDoc = async (solicitudeId: number) => {
+  createdoc.value = true;
   try {
     const response = await axios.post("/api/create-document", {
       solicitude_id: solicitudeId,
@@ -130,7 +155,7 @@ const createGoogleDoc = async (solicitudeId) => {
     console.log(response);
 
     const link = response.data.link;
-    if (link) {
+    if (link && selectedSolicitude.value) {
       selectedSolicitude.value.link = link;
       closeModal();
     }
@@ -138,15 +163,15 @@ const createGoogleDoc = async (solicitudeId) => {
     console.error("Error al crear el documento:", error);
     alert("No se pudo crear el documento");
   } finally {
-    createdoc.value = false
+    createdoc.value = false;
   }
 };
-
 
 // Función para actualizar o generar oficio
 const updateOffice = async () => {
   try {
     const oficioId = oficio_id.value;
+    if (oficioId === null) return;  // Verificamos que `oficioId` no sea null
     const params = {
       of_status: 'tramitado',
       of_num_of: nroOficio1.value,
@@ -160,16 +185,16 @@ const updateOffice = async () => {
       closeModal();  // Cerrar el modal después de la actualización
       alertToast('El oficio ha sido generado', 'Éxito', 'success');
     }
-
   } catch (error) {
     alertToast('Error al generar oficio', 'Error', 'error');
   }
 };
 
-// función para observar la solicitud
+// Función para observar la solicitud
 const rejectSolicitude = async () => {
   try {
     const oficioId = oficio_id.value;
+    if (oficioId === null) return;  // Verificamos que `oficioId` no sea null
     const params = {
       of_status: 'observado',
       of_observation: motivoObservacion.value,  // Motivo de rechazo
@@ -179,16 +204,16 @@ const rejectSolicitude = async () => {
     if (response.data.status) {
       const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
       if (oficio) oficio.oficio_estado = 'observado';  // Actualizar la tabla localmente
-      closeModal();  // Cerrar el modal   de la actualización
+      closeModal();  // Cerrar el modal tras la actualización
       alertToast('La solicitud ha sido observada', 'Éxito', 'success');
     }
-
   } catch (error) {
-    alertToast('Error al observada la solicitud', 'Error', 'error');
+    alertToast('Error al observar la solicitud', 'Error', 'error');
   }
 };
 
 </script>
+
 
 <template>
   <template v-if="load">
@@ -217,7 +242,7 @@ const rejectSolicitude = async () => {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
+        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
         <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
@@ -231,14 +256,14 @@ const rejectSolicitude = async () => {
                   </span>
                   <input
                     placeholder="Buscar"
-                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                  />
+                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
+                   />
                 </div>
                 <div class="relative">
                   <select
-                    v-model="rowsPerPage"
-                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
-                  >
+                  v-model="rowsPerPage"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                >
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -248,9 +273,9 @@ const rejectSolicitude = async () => {
                 <!-- Filtro de estado -->
                 <div class="relative">
                   <select
-                    v-model="selectedFilter"
-                    class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
-                  >
+                  v-model="selectedFilter"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
+                >
                     <option value="">Todos</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="Observado">Observado</option>
@@ -259,6 +284,7 @@ const rejectSolicitude = async () => {
                 </div>
               </div>
             </div>
+            <br>
 
             <!-- Tabla -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
@@ -268,7 +294,7 @@ const rejectSolicitude = async () => {
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
                     <tr
-                      class="text-center text-black border-b-2 bg-gray-300"
+                      class="text-center text-azul border-b-2 bg-gray-300"
                     >
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
@@ -297,12 +323,12 @@ const rejectSolicitude = async () => {
                       <td class="text-center px-4">
                         <a :href="`${VIEW_LETTER}/${ solicitude.id }`" target="_blank">
                           <button>
-                            <IconPdf />
+                            <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                           </button>
                         </a>
                       </td>
                       <td class="text-center px-4">
-                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azulbajo w-32 px-4 py-1 text-sm rounded-xl focus:outline-none">
+                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)"  class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">
                           Generar docs
                         </button>
                         <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
@@ -310,7 +336,7 @@ const rejectSolicitude = async () => {
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button
                           v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
-                          :class="['w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
+                          :class="['w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado) 
                               ? 'cursor-not-allowed' 
                               : 'hover:bg-green-600'
@@ -320,7 +346,7 @@ const rejectSolicitude = async () => {
                         </button>
                         <button
                           v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
-                          :class="['w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none', 
+                          :class="['w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado) 
                               ? 'cursor-not-allowed' 
                               : 'hover:bg-gray-400'
@@ -416,12 +442,12 @@ const rejectSolicitude = async () => {
                 inputmode="numeric" 
                 oninput="this.value = this.value.replace(/[^0-9]/g, '')">
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+            <div class="flex items-center justify-center p-3  border-gray-200">
+              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
-              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl"
+              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
                 @click="updateOffice">
                 Enviar
               </button>
@@ -448,13 +474,13 @@ const rejectSolicitude = async () => {
               </p>
               <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <div class="flex items-center justify-center p-3  border-gray-200">
               <button
-                class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
-              <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+              <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
                 @click="rejectSolicitude">
                 Confirmar
               </button>
