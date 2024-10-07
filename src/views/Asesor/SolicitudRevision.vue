@@ -43,7 +43,7 @@ const solicitudSeleccionada = ref<Review | null>(null); // Almacena la solicitud
 const nroCarta = ref("");
 
 //VARIABLES DE ENTORNO
-const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
+const VIEW_CONFORMIDAD = import.meta.env.VITE_URL_VIEW_CONFORMIDAD;
 
 // Funciones para abrir y cerrar modales
 function openModal(id: string) {
@@ -75,6 +75,7 @@ function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
+
 // Filtrar datos y aplicar paginación
 const filteredTableData = computed(() => {
   let filteredData = tableData.value;
@@ -101,6 +102,9 @@ const totalPages = computed(() => {
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
+
+
+
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 const authStore = useAuthStore();
 const tableData = ref<Review[]>([]);  // <-- Define el tipo de array como 'Review[]'
@@ -116,8 +120,9 @@ const fetchReviews = async () => {
       return {
         ...review,
         // Agrega la propiedad `oficio_generado` basándote en el estado o alguna otra lógica
-        oficio_generado: review.rev_status === 'aprobado',  // Aquí se asume que si está 'aprobado', se generó el oficio
-        rev_num_of: review.rev_num_of|| null  // Almacena el ID del oficio si está presente
+        oficio_generado: review.rev_status === 'aprobado',
+        rev_num_of: review.rev_num_of,
+        review_id: review.review_id, // Asegúrate de obtener el review_id aquí
       };
     });
 
@@ -126,6 +131,7 @@ const fetchReviews = async () => {
     console.error("Error al obtener las correcciones pendientes:", error);
   }
 };
+
 // Función para enviar la observación
 const sendObservacion = async () => {
   try {
@@ -171,43 +177,38 @@ const acceptCorrecion = async () => {
       alertToast("El N° de Oficio debe tener exactamente 3 caracteres", "Error", "error");
       return;
     }
-
+    //console.log("Número de oficio que se está enviando:", nroCarta.value);
     const params = {
       rev_status: "aprobado",
-      rev_num_of: nroCarta.value,
+      rev_num_of: nroCarta.value,  // Asegúrate de estar enviando este campo
     };
 
+    // Realiza la solicitud PUT al backend para actualizar el estado y el número de oficio
     const response = await axios.put(`/api/student/review/${solicitudId}/status`, params);
 
+    // Verifica si la respuesta del backend es exitosa
     if (response.status === 200 || response.status === 201) {
-      console.log("Datos actualizados desde la API:", response.data);
-
-      // Actualiza manualmente los datos en la tabla
-      const solicitud = tableData.value.find((sol) => sol.stu_id === solicitudId);
-      if (solicitud) {
-        solicitud.rev_status = 'aprobado';    // Actualiza el estado de la solicitud
-        solicitud.oficio_generado = true;     // Marca como oficio generado
-        solicitud.rev_num_of = response.data.data.rev_num_of || '';  // Verifica que el ID del oficio esté presente
-      }
-
-      alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
-      closeModal(); // Cierra el modal
-    } else {
-      alert("Hubo un problema al aprobar la solicitud.");
+    const solicitud = tableData.value.find((sol) => sol.stu_id === solicitudId);
+    if (solicitud) {
+      solicitud.rev_status = 'aprobado';
+      solicitud.oficio_generado = true;
+      solicitud.rev_num_of = response.data?.data?.rev_num_of || params.rev_num_of;  
+      //console.log("Número de oficio guardado:", solicitud.rev_num_of);
     }
-  } catch (error) {
-    alertToast("Error al aceptar la solicitud", "Error", "error");
-    console.error(error);
-  }
-};
-
-
-
+        alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
+        closeModal();
+      } else {
+        alert("Hubo un problema al aprobar la solicitud.");
+      }
+    } catch (error) {
+      alertToast("Error al aceptar la solicitud", "Error", "error");
+      console.error("Error al aceptar la corrección:", error);
+    }
+  };
 // Llamada al backend cuando el componente se monta
 onMounted(() => {
   fetchReviews();
 });
-
 </script>
 
 <template>
@@ -282,40 +283,41 @@ onMounted(() => {
                </td>
                 <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                 <td class="px-3 py-5 text-center align-middle">
-  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
-    <!-- Botones de "Aprobar" y "Observar" (solo se muestran si el oficio no ha sido generado) -->
-    <button
-      v-if="!u.oficio_generado"  
-      class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none"
-      @click="openModal(u.stu_id)"
-    >
-      Aprobar
-    </button>
+                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
+                  <!-- Botón "Aprobar" solo si el estado no es "aprobado" y el oficio no ha sido generado -->
+                  <button
+                    v-if="!u.oficio_generado && u.rev_status !== 'aprobado'" 
+                    class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none"
+                    @click="openModal(u.stu_id)"
+                  >
+                    Aprobar
+                  </button>
 
-    <button
-      v-if="!u.oficio_generado" 
-      class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
-      @click="openRejectModal(u.stu_id)"
-    >
-      Observar
-    </button>
+                  <!-- Botón "Observar" solo si el oficio ha sido generado y el estado es 'observado' o 'pendiente' -->
+                  <button
+                    v-if="!u.oficio_generado && u.rev_status !== 'aprobado'"  
+                    class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+                    @click="openRejectModal(u.stu_id)"
+                  >
+                    Observar
+                  </button>
 
-    <!-- Enlace para ver el oficio (solo se muestra si el oficio ya fue generado) -->
-    <a
-      v-if="u.oficio_generado" 
-      :href="`${VIEW_LETTER}/${u.rev_num_of}`" 
-      target="_blank"
-      class="w-24 px-4 py-1 text-sm text-white bg-[#2ecc71] rounded-xl focus:outline-none text-center"
-    >
-      Ver Oficio
-    </a>
-  </div>
-</td>
+                  <!-- Enlace "Ver Oficio" solo si el estado es "aprobado" y el oficio ha sido generado -->
+                  <a
+                    v-if="u.oficio_generado && u.rev_status === 'aprobado'" 
+                    :href="`${VIEW_CONFORMIDAD}/${u.review_id}`"  
+                    target="_blank" 
+                    class="text-blue-800"
+                  >
+                  <button>
+                    <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
+                  </button>
+                  <!-- <br>
+                    Ver Conformidad -->
+                  </a>
 
-
-
-
-
+                  </div>
+                </td>
                 <td class="px-3 py-5 text-center">
                   <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">{{ u.rev_status }}</span>
                 </td>

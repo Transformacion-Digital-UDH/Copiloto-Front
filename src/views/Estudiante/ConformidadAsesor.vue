@@ -4,6 +4,9 @@ import axios from 'axios';
 import { useAuthStore } from "@/stores/auth";
 import { computed } from 'vue';
 import { alertToast } from "@/functions";
+import router from "@/router";
+import Swal from "sweetalert2";
+
 
 // Define los tipos para observaciones y documentos
 interface Observacion {
@@ -17,21 +20,27 @@ interface Documento {
   nombre: string;
   estado: string;
   documentoUrl: string;
+  revision_id?: string | null;  // Campo opcional
 }
+
 
 // Estado de solicitud (reactivo usando ref)
 const solicitudEstado = ref<string>('');
 const solicitudMensaje = ref('');
 const revision = ref<any[]>([]); 
 
-// Variables reactivas para almacenar los datos del asesor y tesis
-const estado = ref<string>(''); 
-const cantidad = ref<number>(); 
-const fecha =  ref<string>('');
+//Variables de entorno
+const VIEW_CONFORMIDAD = import.meta.env.VITE_URL_VIEW_CONFORMIDAD;
+const DOWNLOAD_CONFORMIDAD = import.meta.env.VITE_URL_DOWNLOAD_CONFORMIDAD;
 
 // Documentos es un array reactivo de tipo Documento usando reactive
 const documentos = reactive<Documento[]>([
-  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
+  { 
+    nombre: 'Informe de Conformidad de Observaciones', 
+    estado: 'pendiente',  // Inicialmente en pendiente
+    documentoUrl: '',  // Inicialmente sin URL, ya que puede no estar disponible
+    revision_id: null  // Inicialmente null, será asignado con el ID correcto más adelante
+  }
 ]);
 
 // Método para determinar la clase del estado basado en el estado del documento o solicitud
@@ -76,6 +85,11 @@ const asesor = ref('');
 const titulo = ref('');
 const link = ref('');
 const load = ref(false);
+// Variables reactivas para almacenar los datos del asesor y tesis
+const estado = ref<string>(''); 
+const cantidad = ref<number>(); 
+const fecha =  ref<string>('');
+const revision_id = ref(null);
 const authStore = useAuthStore();
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
@@ -115,7 +129,6 @@ const obtenerRevisiones = async () => {
     });
 };
 
-
 const ObetenerRev = async () => {
   try {
     const response = await axios.get(`/api/student/get-review/${authStore.id}`);
@@ -124,17 +137,34 @@ const ObetenerRev = async () => {
     if (response.data.status) {
       console.log("Estructura de los datos recibidos:", response.data);
       
-      // Asigna los valores recibidos de la API a las variables reactivas
-      cantidad.value = response.data.revision.cantidad;
-      fecha.value = response.data.revision.fecha || 'Desconocido';
-      estado.value = response.data.revision.estado;
+      // Extraer la información de revisión del backend
+      const revisionData = response.data.revision;
 
-      // Encapsula la única revisión en un array para poder iterarla en la tabla
+      // Actualizar los datos locales con la información recibida
+      cantidad.value = revisionData.cantidad;
+      fecha.value = revisionData.fecha || 'Desconocido';
+      estado.value = revisionData.estado;
+      revision_id.value = revisionData.revision_id;
+
+      // Actualizar el array de documentos con revision_id
+      documentos[0].revision_id = revisionData.revision_id;
+
+      // Aquí verificamos si el estado de la revisión es "aprobado"
+      if (revisionData.estado === 'aprobado') {
+        // Si la revisión está aprobada, cambiamos el estado del documento a "Hecho"
+        documentos[0].estado = 'Hecho';
+        documentos[0].documentoUrl = 'https://titulacion-back.abimaelfv.site/api/view-cpa';  // Simula que ya tienes la URL del documento
+      } else {
+        // Si no está aprobado, el estado sigue siendo "pendiente"
+        documentos[0].estado = 'pendiente';
+      }
+
+      // Encapsula la revisión en un array para poder iterarla en la tabla
       revision.value = [{
-        cantidad: response.data.revision.cantidad,
-        fecha: response.data.revision.fecha || 'Desconocido',
+        cantidad: revisionData.cantidad,
+        fecha: revisionData.fecha || 'Desconocido',
         accion: 'Solicitar Revisión',
-        estado: response.data.revision.estado
+        estado: revisionData.estado
       }];
     }
   } catch (error) {
@@ -146,6 +176,39 @@ const ObetenerRev = async () => {
     console.error(error);
   }
 };
+
+// Computada para habilitar o deshabilitar el botón basado solo en el estado del paso 3 (Documentos)
+const isNextButtonDisabled = computed(() => {
+  // Busca el documento correspondiente al paso 3
+  const documentoPaso3 = documentos.find(doc => doc.nombre === 'Informe de Conformidad de Observaciones');
+  
+  // Verifica si ese documento está en estado "Hecho"
+  return documentoPaso3?.estado !== 'Hecho';
+});
+
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    // Mostrar un mensaje si el botón está deshabilitado
+    Swal.fire({
+      icon: 'warning',
+      title: 'Pasos incompletos',
+      text: 'Por favor, completa todos los pasos antes de continuar.',
+      confirmButtonText: 'OK',
+    });
+  } else {
+    // Navegar a la siguiente página si el estado del paso 3 es "Hecho"
+    goToNextPage();
+  }
+};
+
+// Función para redirigir a la siguiente página
+const goToNextPage = () => {
+  router.push("/estudiante/designacion-jurado");
+};
+
+
+
+
 
 // Función para actualizar el estado de la revisión en la tabla (Botón en la tabla)
 const actualizarRevision = async (studentId: string) => {
@@ -184,7 +247,6 @@ const actualizarRevision = async (studentId: string) => {
     console.error(error);
   }
 };
-
 
 onMounted(() => {
   obtenerRevisiones();
@@ -249,11 +311,13 @@ const mostrarAlerta = (mensaje: string) => {
         </h3>
     
         <div class="mt-6 space-y-10">
-          <div class="bg-white rounded-lg shadow-lg p-6 text-gray-600">
-            <p class="text-lg mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
-            <p class="text-lg mb-2 block truncate max-w-xl"><strong>Título de Tesis: </strong>{{ titulo }}</p>
-            <p class="text-lg"><strong>Link de tesis: </strong> 
-              <a :href="`${link}`" target="_blank" class="text-gray-600 hover:text-blue-700 underline"> Ver proyecto de investigación</a>
+          <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-gray-600 ">
+            <p class="text-lg text-azul mb-2"><strong>Asesor: </strong>{{ asesor }}</p>
+            <p class="text-lg mb-2 text-azul"><strong>Título de Tesis: </strong>{{ titulo }}</p>
+            <hr>
+            <br>
+            <p class="text-lg text-azul"><strong>Sube tu tesis Aquí: </strong> 
+              <a :href="`${link}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline"> Ver proyecto de investigación</a>
             </p>
           </div>
 
@@ -276,7 +340,7 @@ const mostrarAlerta = (mensaje: string) => {
             </div>
     
             <div class="flex items-center justify-between">
-              <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
+              <p class="text-gray-500">Paso 1: Sube tu tesis haciendo clic en el link 'Ver proyecto de investigacion' <br> Paso 2: Solicita revisión para iniciar las correcciones</p>
               <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
             </div>
             <div class="flex justify-center mt-3">
@@ -328,10 +392,10 @@ const mostrarAlerta = (mensaje: string) => {
                     <td class="px-4 py-2 border-b">{{ obs.fecha || 'Desconocido' }}</td>
                     <td class="px-4 py-2 border-b">
                       <button
-                        :disabled="obs.estado === 'pendiente'" 
+                        :disabled="obs.estado === 'pendiente' || obs.estado === 'aprobado'"  
                         :class="[ 
                           'px-4 py-1 rounded-xl focus:outline-none text-white', 
-                          obs.estado === 'pendiente' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-[#48bb78]' 
+                          obs.estado === 'pendiente' || obs.estado === 'aprobado' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-[#48bb78]' 
                         ]"
                         @click="authStore.id ? actualizarRevision(authStore.id) : mostrarAlerta('ID no disponible')">
                         Observaciones <br> Corregidas
@@ -347,59 +411,66 @@ const mostrarAlerta = (mensaje: string) => {
           </div>
     
           <!-- Documentos -->
-          <div class="bg-white rounded-lg shadow-lg p-6 relative">
-            <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
-              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-                   @mouseover="mostrarModalDocumentos = true"
-                   @mouseleave="mostrarModalDocumentos = false" />
-            </div>
-    
-            <!-- Modal informativo del punto 3 -->
-            <div v-if="mostrarModalDocumentos" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-              <p class="text-sm text-gray-600">
-                Asegúrate de revisar el documento para verificar las observaciones antes de continuar.
-              </p>
-            </div>
-    
-            <div class="mt-4 space-y-4">
-              <!-- documentos es un reactive, así que NO usamos .value para las propiedades internas -->
-              <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-                <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1">{{ documento.nombre }}</span>
-    
-                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <!-- Mostrar botones "Ver" y "Descargar" si el estado es 'Hecho' -->
-                    <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                      <!-- Botón de Ver -->
-                      <a :href="documento.documentoUrl" target="_blank"
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-eye mr-2"></i> Ver
-                      </a>
-                      <!-- Botón de Descargar -->
-                      <a :href="documento.documentoUrl" download
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-download mr-2"></i> Descargar
-                      </a>
-                    </div>
-                    <!-- Mostrar mensaje de espera si el estado es 'pendiente' -->
-                    <span v-else-if="documento.estado === 'pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
-    
-                    <!-- Estado del documento -->
-                    <span :class="`estado-estilo estado-${documento.estado.toLowerCase().replace(' ', '-')}`">
-                          {{documento.estado || 'Estado desconocido' }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Documentos -->
+  <div class="bg-white rounded-lg shadow-lg p-6 relative">
+    <div class="flex items-center">
+      <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+      <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+           @mouseover="mostrarModalDocumentos = true"
+           @mouseleave="mostrarModalDocumentos = false" />
+    </div>
+
+    <!-- Modal informativo del punto 3 -->
+    <div v-if="mostrarModalDocumentos" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+      <p class="text-sm text-gray-600">
+        Asegúrate de revisar el documento para verificar las observaciones antes de continuar.
+      </p>
+    </div>
+
+    <div class="mt-4 space-y-4">
+      <!-- documentos es un reactive, así que NO usamos .value para las propiedades internas -->
+      <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+        <div class="flex flex-col md:flex-row justify-between md:items-center">
+          <span class="flex-1">{{ documento.nombre }}</span>
+
+          <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+            <!-- Mostrar botones "Ver" y "Descargar" si el estado es 'Hecho' -->
+            <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+  <!-- Botón de Ver -->
+  <a  :href="`${VIEW_CONFORMIDAD}/${documento.revision_id}`"target="_blank"
+    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+    <i class="fas fa-eye mr-2"></i> Ver
+  </a>
+  <!-- Botón de Descargar -->
+  <a :href="`${DOWNLOAD_CONFORMIDAD}/${documento.revision_id}`" download
+    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+    <i class="fas fa-download mr-2"></i> Descargar
+  </a>
+</div>
+
+            <!-- Mostrar mensaje de espera si el estado es 'pendiente' -->
+            <span v-else-if="documento.estado === 'pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
+
+            <!-- Estado del documento -->
+            <span :class="`estado-estilo estado-${documento.estado.toLowerCase().replace(' ', '-')}`">
+              {{ documento.estado || 'Estado desconocido' }}
+            </span>
           </div>
-    
+        </div>
+      </div>
+    </div>
+  </div>
           <!-- Botón de siguiente -->
           <div class="flex justify-end">
-            <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>Siguiente</button>
+            <button
+              :disabled="isNextButtonDisabled"  
+              :class="isNextButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-green-600'" 
+              class="px-4 py-2 text-base text-white rounded-s-2xl"
+              @click="handleNextButtonClick"
+            >
+              Siguiente
+            </button>
           </div>
-    
         </div>
     </div>
   </template>
