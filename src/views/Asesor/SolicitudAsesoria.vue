@@ -192,6 +192,13 @@ function openDocumentModal(solicitudId: string) {
 function closeDocumentModal() {
   showDocumentModal.value = false;
 }
+
+const validateResolution = () => {
+  nroCarta.value = nroCarta.value.replace(/[^0-9]/g, '');
+  if (nroCarta.value.length > 3) {
+    nroCarta.value = nroCarta.value.slice(0, 3);
+  }
+};
 </script>
 
 <template>
@@ -235,7 +242,6 @@ function closeDocumentModal() {
               </div>
             </div>
           </div>
-          <br>
 
           <!-- Tabla de solicitudes -->
           <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
@@ -342,17 +348,17 @@ function closeDocumentModal() {
                 type="text"
                 id="nroCarta"
                 v-model="nroCarta"
-                class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0"
+                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0"
                 maxlength="3"
                 inputmode="numeric"
-                pattern="[0-9]*"
-              />
-              <br /><br />
-              <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
+                @input="validateResolution"
+                required>
+                <p v-if="nroCarta.length !== 3 && nroCarta !== ''" class="text-red-800">Debe ingresar 3 dígitos</p>
+                <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
             </div>
             <div class="flex items-center justify-center p-1 border-gray-200">
               <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button class="ml-5 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" @click="acceptSolicitude">Generar</button>
+              <button class="ml-5 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="nroCarta.length !== 3" @click="acceptSolicitude">Generar</button>
             </div>
           </div>
         </div>

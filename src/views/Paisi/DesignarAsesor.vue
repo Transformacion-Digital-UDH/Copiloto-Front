@@ -212,6 +212,27 @@ const rejectSolicitude = async () => {
   }
 };
 
+// Validación para N° de oficio: exactamente 3 dígitos
+const validateNroOficio = () => {
+  nroOficio1.value = nroOficio1.value.replace(/[^0-9]/g, ''); // Solo permite números
+  if (nroOficio1.value.length > 3) {
+    nroOficio1.value = nroOficio1.value.slice(0, 3); // Limitar a 3 caracteres
+  }
+};
+
+// Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
+const validateNroExped = () => {
+  nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, ''); // Permitir solo números y un guion
+  if (nroExped1.value.length > 17) {
+    nroExped1.value = nroExped1.value.slice(0, 17); // Limitar a 17 caracteres
+  }
+};
+
+// Computar si el formulario es válido
+const formIsValid = computed(() => {
+  return nroOficio1.value.length === 3 && nroExped1.value.length === 17;
+});
+
 </script>
 
 
@@ -425,11 +446,11 @@ const rejectSolicitude = async () => {
                 type="text" 
                 id="nroOficio1" 
                 v-model="nroOficio1" 
-                class="mb-6 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
                 maxlength="3" 
-                inputmode="numeric" 
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-
+                @input="validateNroOficio"
+                required>
+                <p v-if="nroOficio1.length !== 3 && nroOficio1 !== ''" class="text-red-800 mb-3">Debe ingresar 3 dígitos</p>
               <p class="text-gray-500 text-lg text-left mb-2">
                 Por favor dígite el N° de expediente.
               </p>
@@ -437,17 +458,18 @@ const rejectSolicitude = async () => {
                 type="text" 
                 id="nroExped1" 
                 v-model="nroExped1" 
-                class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
                 maxlength="17" 
-                inputmode="numeric" 
-                oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                @input="validateNroExped"
+                required>
+                <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
             </div>
             <div class="flex items-center justify-center p-3  border-gray-200">
               <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
-              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
+              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="!formIsValid" 
                 @click="updateOffice">
                 Enviar
               </button>

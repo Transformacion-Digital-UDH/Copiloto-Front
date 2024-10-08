@@ -363,7 +363,7 @@ const rejectResolution = async () => {
                   type="text" 
                   id="nroResolution" 
                   v-model="nroResolution" 
-                  class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+                  class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
                   maxlength="4" 
                   inputmode="numeric" 
                   @input="validateResolution"
@@ -374,7 +374,7 @@ const rejectResolution = async () => {
                 <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                   Cancelar
                 </button>
-                <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" @click="updateResolution">
+                <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="nroResolution.length !== 4" @click="updateResolution">
                   Generar
                 </button>
               </div>
