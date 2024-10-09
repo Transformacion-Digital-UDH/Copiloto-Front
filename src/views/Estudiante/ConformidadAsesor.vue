@@ -47,7 +47,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de proyecto de tesis por el asesor";
+const text = "Conformidad de Proyecto de Tesis por el Asesor";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -337,7 +337,7 @@ onMounted(() => {
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
           <!-- Información del Asesor -->
           <p v-if="asesor">
-            <strong>ASESOR:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
+            <strong >ASESOR:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
           </p>
           
           <!-- Título de Tesis -->
