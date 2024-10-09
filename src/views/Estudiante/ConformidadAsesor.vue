@@ -13,6 +13,11 @@ interface Documento {
   documentoUrl: string;
   revision_id?: string | null;
 }
+interface Asesor {
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+}
 
 // Documentos es un array reactivo de tipo Documento usando reactive
 const documentos = reactive<Documento[]>([
@@ -58,7 +63,7 @@ onMounted(() => {
 // ******************************************************
 
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
-const asesor = ref("");
+const asesor = ref<Asesor | null>(null);
 const titulo = ref("");
 const link = ref("");
 const load = ref(false);
@@ -324,29 +329,38 @@ onMounted(() => {
   </template>
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-4xl font-bold text-center text-azul">
+      <h3 class="text-5xl font-bold text-center text-azul">
         {{ textoTipiado2 }}
       </h3>
 
       <div class="mt-6 space-y-10">
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul">
-          <p class="mb-2">
-            <strong>ASESOR: </strong>{{ asesor.nombre }}
-            {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
+          <!-- Información del Asesor -->
+          <p v-if="asesor">
+            <strong>ASESOR:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
           </p>
-          <p class="mb-2 block truncate max-w-7xl">
-            <strong>TÍTULO DE TESIS </strong>{{ titulo }}
+          
+          <!-- Título de Tesis -->
+          <p v-if="titulo">
+            <strong>TÍTULO DE TESIS:</strong> {{ titulo }}
           </p>
-          <p class="mb-1">
+          
+          <!-- Enlace al Proyecto de Tesis -->
+          <p v-if="link">
             <strong>PROYECTO DE TESIS: </strong>
             <a
               :href="`${link}`"
               target="_blank"
-              class="bg-azul text-white px-4 py-2 rounded-lg text-base"
-              >Haga clic aquí</a
-            >
+              class="inline-block bg-azul text-white px-3 py-2 rounded-lg hover:bg-azulOscuro transition text-base"
+              > Abrir link de Google Docs</a>
+          </p>
+
+          <!-- Explicación breve -->
+          <p class="text-sm text-gray-600">
+            Suba su información del proyecto de tesis en el documento de Google Docs proporcionado y luego haga clic en "Solicitar Revisión".
           </p>
         </div>
+
 
         <!-- Observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -365,13 +379,12 @@ onMounted(() => {
             class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
           >
             <p class="text-sm text-gray-600">
-              Asegúrate de revisar todas las observaciones antes de solicitar
-              una nueva revisión.
+              Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.
             </p>
           </div>
           <div class="flex items-center justify-between">
             <p class="text-gray-500 text-lg">
-              Solicita una revisión para comenzar con las correcciones.
+              Haz click en <strong class="text-[#39B49E]">Solicitar Revision</strong> para iniciar con el proceso de correcciones.
             </p>
             <span
               :class="estadoClase(solicitudEstado2)"
@@ -400,8 +413,9 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h4 class="text-2xl font-medium text-black">
-              2. Solicitar revisión de observaciones
+              2. Revisión de Observaciones
             </h4>
+
             <div class="relative">
               <img
                 src="/icon/info2.svg"
@@ -415,13 +429,18 @@ onMounted(() => {
                 class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 modal-pos"
               >
                 <p class="text-sm text-gray-600">
-                  Solicita la revisión de las observaciones de tu tesis.
-                  Asegúrate de que todos los documentos estén en orden antes de
-                  continuar.
+                  En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor, hasta que esté todo conforme.
                 </p>
               </div>
             </div>
+            
           </div>
+          <p class="text-gray-500 mt-2 mb-1">
+            Si tu asesor dejó observaciones, el estado será <strong class="text-gray-400">pendiente</strong>. Corrige las observaciones en el documento de Google Docs.
+          </p>
+          <p class="text-gray-500">
+            Después de corregir, haz clic en <strong class="text-[#39B49E]">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está bien, el estado cambiará a <strong class="text-green-500">aprobado</strong>.
+          </p>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
             <table
