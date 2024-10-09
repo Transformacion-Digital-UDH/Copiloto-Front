@@ -47,7 +47,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de proyecto de tesis por el asesor";
+const text = "Conformidad de Proyecto de Tesis por el Asesor";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -337,7 +337,7 @@ onMounted(() => {
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
           <!-- Información del Asesor -->
           <p v-if="asesor">
-            <strong>ASESOR:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
+            <strong >ASESOR:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
           </p>
           
           <!-- Título de Tesis -->
@@ -579,11 +579,20 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <!-- Botón de siguiente -->
-        <div class="flex justify-end">
+      <!--Botones siguiente y anteerior-->
+      <div class="flex justify-between">
+          <!-- Botón de Anterior -->
+          <button
+            @click="$router.push('/estudiante/designacion-asesor')" 
+            class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
+          >
+            Anterior
+          </button>
+
+          <!-- Botón de Siguiente -->
           <button
             @click="handleNextButtonClick"
-            :class="[
+            :class="[ 
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
                 ? 'bg-gray-300 cursor-not-allowed'
