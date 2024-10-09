@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
-import IconPdf from "@/components/icons/IconPdf.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";

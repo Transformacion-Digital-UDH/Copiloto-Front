@@ -1,7 +1,9 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
+import axios from "axios";
+import { alertToast } from "@/functions";
 
 const rowsPerPage = ref(5); //cantidad para mostrar en la tabla
 const selectedFilter = ref(""); //para seleccionar el estado
@@ -11,6 +13,21 @@ const showRejectModal = ref(false); //editar jurado
 const selectedPresidente = ref('');
 const selectedSecretario = ref('');
 const selectedVocal = ref('');
+
+// ***** Texto que escribe automáticamente ********
+const text = "Oficio para designación de asesor";
+const textoTipiado1 = ref('');
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado1.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+onMounted(() => {
+  typeWriter();
+});
 
 const asignarJurado = () => {
   if (selectedPresidente.value && selectedSecretario.value && selectedVocal.value) {
