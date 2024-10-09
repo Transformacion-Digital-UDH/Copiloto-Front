@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, watch, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
@@ -23,6 +23,7 @@ onMounted(() => {
 });
 
 // Estados para controlar los modales
+const mostrarModalTramite = ref(false);
 const mostrarModalDocumentos = ref(false);
 const mostrarModalCambioAsesor = ref(false);
 const mostrarModalConfirmacion = ref(false);
@@ -51,10 +52,15 @@ const estadoClase = (estado: string) => {
       return "bg-green-500 text-white";
     case "observado":
       return "bg-orange-500 text-white";
+    case 'Hecho':
+      return 'bg-green-500 text-white';
     default:
       return "";
   }
 };
+const procesos = ref([
+  { título: 'TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA TESIS', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
+]);
 
 // Inicialización de estados y almacenes
 const authStore = useAuthStore();
@@ -287,8 +293,6 @@ const estadoDocumentos = computed(() => {
   }
 });
 
-// Computed para deshabilitar el botón de siguiente
-//const isNextButtonDisabled = computed(() => estadoDocumentos.value !== "hecho");
 
 //alerta Boton siguiente
 
@@ -418,11 +422,37 @@ const handleNextButtonClick = () => {
         <h3 class="text-5xl font-semibold text-center text-azul">
           {{ textoTipiado }}
         </h3>
+        <br>
+        <!-- Card 1: Pago de Trámite -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center">
+          <h2 class="text-2xl font-medium text-black">1. Pago de Trámite</h2>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+               @mouseover="mostrarModalTramite = true"
+               @mouseleave="mostrarModalTramite = false" />
+        </div>
+
+        <div v-show="mostrarModalTramite" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">
+            Asegurate de haber realizado el pago del trámite.
+          </p>
+        </div>
+
+        <!-- Listado de trámites dinámico -->
+        <div class="mt-4 space-y-6">
+          <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
+            class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
+            <h4 class="text-black flex-1">{{ proceso.título }}</h4>
+            <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
+          </div>
+        </div>
+      </div>
     <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative ">
+      
       <div class="flex justify-between">
         <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
+              <h2 class="text-2xl font-medium text-black">2. Solicitud de Asesor</h2>
               <img
                 src="/icon/info2.svg"
                 alt="Info"
