@@ -122,7 +122,7 @@ const primeraRevision = async () => {
     );
     console.log(response);
     if (response.data.status) {
-      solicitudEstado2.value = "pendiente";
+      solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada, espere las indicaciones del asesor por favor", "Éxito", "success");
     }
   } catch (error: any) {
@@ -333,7 +333,7 @@ onMounted(() => {
         {{ textoTipiado2 }}
       </h3>
 
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-10 ">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
           <!-- Información del Asesor -->
           <p v-if="asesor">
@@ -341,7 +341,7 @@ onMounted(() => {
           </p>
           
           <!-- Título de Tesis -->
-          <p v-if="titulo">
+          <p v-if="titulo" class="max-w-7xl">
             <strong>TÍTULO DE TESIS:</strong> {{ titulo }}
           </p>
           

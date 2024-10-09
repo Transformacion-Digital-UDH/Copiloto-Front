@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { alertToast } from '@/functions';
+import { useAuthStore } from '@/stores/auth';
+import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
@@ -21,9 +24,9 @@ const load = ref(false);
 // Estado y datos para Designación de Jurado
 const procesos = ref([
   { título: 'TRAMITE: DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS)', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
-  { título: 'Solicitar Jurados', estado: 'Pendiente' },
+  { título: 'Solicitar Jurados', estado: 'pendiente' },
   { título: 'Tus jurados seleccionados', estado: 'Hecho' },
-  { título: 'Oficio múltiple con los jurados seleccionados', estado: 'Pendiente' },
+  { título: 'Oficio múltiple con los jurados seleccionados', estado: 'pendiente' },
   { título: 'Solicitar cambio de jurado', estado: 'No solicitado' },
 ]);
 
@@ -53,8 +56,8 @@ const estadoClase = (estado: string) => {
       return 'bg-green-500 text-white';
     case 'En Proceso':
       return 'bg-orange-500 text-white';
-    case 'Pendiente':
-      return 'bg-gray-400 text-white';
+    case 'pendiente':
+      return 'bg-[#8898aa] text-white';
     case 'No solicitado':
       return 'bg-gray-500 text-white';
     default:
@@ -77,6 +80,34 @@ const solicitarCambioJurado = (jurado: any) => {
 // Función que verifica si los estados del punto 1 al 2 están en 'Hecho'
 const puedeContinuar = computed(() => {
   return procesos.value.slice(0, 2).every(proceso => proceso.estado === 'Hecho');
+});
+
+
+
+//***************************************** INTEGRACION EL BACKEND  *************************************************************** */
+const authStore = useAuthStore();
+const solicitudEstado = ref<string>("");
+const solicitudMensaje = ref("");
+
+const isSolicitarDisabled = computed(() => {
+  const estado = solicitudEstado.value?.toLowerCase();
+  console.log("Estado actual para deshabilitar botón:", estado);
+  return ["pendiente", "observado", "aprobado"].includes(estado);
+});
+
+const solicitarJurado = async () => {
+  await axios .get(`/api/office/solicitude-juries/${authStore.id}`)
+  .then((response) => {
+    console.log("hola toy aqui",response.data);
+    solicitudEstado.value = response.data.estado;
+  })
+  .catch((error) => {
+    solicitudEstado.value = error.response.data.estado;    
+  });
+};
+
+onMounted(() => {
+  solicitarJurado();
 });
 
 </script>
@@ -180,7 +211,7 @@ const puedeContinuar = computed(() => {
             <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
               class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
               <h4 class="text-black flex-1">{{ proceso.título }}</h4>
-              <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
+              <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
             </div>
           </div>
         </div> --> 
@@ -201,17 +232,20 @@ const puedeContinuar = computed(() => {
           </div>
           <div class="flex items-center justify-between">
             <p class="text-gray-500">Haz click en el botón para solicitar jurados.</p>
-            <span :class="estadoClase(procesos[1].estado)" class="estado-estilo ml-4">{{ procesos[1].estado }}</span>
+            <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
           </div>
 
           <div class="mt-4">
             <div class="flex justify-center mt-6">
-              <button @click="solicitarJurados"
-                :class="procesos[1].estado === 'Hecho' ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-green-600'"
+              <button
+                :disabled="isSolicitarDisabled" 
+                @click="solicitarJurado"
+                :class="isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-green-600'"
                 class="px-4 py-2 text-white rounded-md">
                 SOLICITAR JURADOS
               </button>
             </div>
+            <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div>
           </div>
         </div>
 
@@ -281,7 +315,7 @@ const puedeContinuar = computed(() => {
                     </a>
                   </div>
                   <!-- Mostrar mensaje de espera si el estado es 'Pendiente' -->
-                  <span v-else-if="documentos[0].estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span v-else-if="documentos[0].estado === 'pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
                   <!-- Estado del documento -->
                   <span :class="estadoClase(documentos[0].estado)" class="estado-estilo ml-4">{{ documentos[0].estado }}</span>
@@ -367,4 +401,10 @@ const puedeContinuar = computed(() => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
+
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+
 </style>
