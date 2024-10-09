@@ -1,4 +1,7 @@
 <script lang="ts" setup>
+import { alertToast } from '@/functions';
+import { useAuthStore } from '@/stores/auth';
+import axios from 'axios';
 import { ref, computed } from 'vue';
 
 // Estado y datos para Designación de Jurado
@@ -36,8 +39,8 @@ const estadoClase = (estado: string) => {
       return 'bg-green-500 text-white';
     case 'En Proceso':
       return 'bg-orange-500 text-white';
-    case 'Pendiente':
-      return 'bg-gray-400 text-white';
+    case 'pendiente':
+      return 'bg-[#8898aa] text-white';
     case 'No solicitado':
       return 'bg-gray-500 text-white';
     default:
@@ -61,6 +64,34 @@ const solicitarCambioJurado = (jurado: any) => {
 const puedeContinuar = computed(() => {
   return procesos.value.slice(0, 2).every(proceso => proceso.estado === 'Hecho');
 });
+
+
+
+//***************************************** INTEGRACION EL BACKEND  *************************************************************** */
+const authStore = useAuthStore();
+const solicitudEstado = ref<string>("");
+const solicitudMensaje = ref("");
+const estado = ref<string>("");
+
+const isSolicitarDisabled = computed(() => {
+  const estado = solicitudEstado.value?.toLowerCase();
+  console.log("Estado actual para deshabilitar botón:", estado);
+  return ["pendiente"].includes(estado);
+});
+
+const solicitarJurado = async () => {
+  try {
+    const response = await axios.get(`api/office/solicitude-juries/${authStore.id}`);
+    console.log(response);
+    if(response.data.estado){
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada, espere las indicaciones del Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success")
+    }
+  } catch (error: any){
+    console.log(error);
+    alertToast(error.response.data.message || "Error al enviar la solicitud", "Error", "error");
+  }
+};
 
 </script>
 
@@ -113,17 +144,20 @@ const puedeContinuar = computed(() => {
         </div>
         <div class="flex items-center justify-between">
           <p class="text-gray-500">Haz click en el botón para solicitar jurados.</p>
-          <span :class="estadoClase(procesos[1].estado)" class="estado-estilo ml-4">{{ procesos[1].estado }}</span>
+          <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
         </div>
 
         <div class="mt-4">
           <div class="flex justify-center mt-6">
-            <button @click="solicitarJurados"
-              :class="procesos[1].estado === 'Hecho' ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-green-600'"
-              class="px-4 py-2 text-white rounded-md">
+            <button
+              :disabled="isSolicitarDisabled"
+              :class="isSolicitarDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-base'"
+              class="px-4 py-2 text-white rounded-lg text-lg"
+              @click="solicitarJurado">
               SOLICITAR JURADOS
             </button>
           </div>
+          <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div>
         </div>
       </div>
 
@@ -277,4 +311,10 @@ const puedeContinuar = computed(() => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
+
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+
 </style>
