@@ -165,17 +165,22 @@ const fetchJurados = async () => {
     loadJurados.value = false;
   }
 };
-// Función para asignar jurado
+
 // Función para asignar jurado
 const asignarJurado = () => {
+  // Validar que los tres roles tengan un asesor seleccionado
+  if (!selectedPresidente.value || !selectedSecretario.value || !selectedVocal.value) {
+    alertToast('Por favor, selecciona un docente para cada rol.', 'error');
+    return; // Salir de la función si no están todos los asesores seleccionados
+  }
+
   // Validación para asegurar que no se seleccione el mismo asesor en más de un rol
   if (
     selectedPresidente.value === selectedSecretario.value ||
     selectedPresidente.value === selectedVocal.value ||
     selectedSecretario.value === selectedVocal.value
   ) {
-    // Mostrar alerta usando ToastAlert
-    alertToast('No puedes seleccionar al mismo asesor en roles diferentes', 'error');
+    alertToast('No puedes seleccionar al mismo docente en roles diferentes', 'error');
     return; // Salir de la función si la validación falla
   }
 
@@ -190,6 +195,7 @@ const asignarJurado = () => {
   selectedSecretario.value = "";
   selectedVocal.value = "";
 };
+
 
 
 // Función para manejar la selección de un jurado y mostrar sus revisiones
