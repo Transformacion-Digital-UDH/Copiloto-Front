@@ -206,7 +206,7 @@ onMounted(() => {
             </p>
           </div>
 
-          <!-- Listado de trámites dinámico -->
+           Listado de trámites dinámico -->
           <!-- <div class="mt-4 space-y-6">
             <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
               class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">

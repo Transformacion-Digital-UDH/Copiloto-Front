@@ -5,7 +5,6 @@ import { useAuthStore } from "@/stores/auth";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import { alertToast } from "@/functions";
-import IconPdf from "@/components/icons/IconPdf.vue";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
