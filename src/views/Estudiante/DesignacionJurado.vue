@@ -24,7 +24,7 @@ const load = ref(false);
 // Estado y datos para Designación de Jurado
 const procesos = ref([
   { título: 'TRAMITE: DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS)', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
-  { título: 'Solicitar Jurados', estado: 'pendiente' },
+  // { título: 'Solicitar Jurados', estado: 'pendiente' },
   { título: 'Tus jurados seleccionados', estado: 'Hecho' },
   { título: 'Oficio múltiple con los jurados seleccionados', estado: 'pendiente' },
   { título: 'Solicitar cambio de jurado', estado: 'No solicitado' },
@@ -66,9 +66,9 @@ const estadoClase = (estado: string) => {
 };
 
 // Función para solicitar jurados y cambiar el estado
-const solicitarJurados = () => {
-  procesos.value[1].estado = 'Hecho'; // Cambiar el estado de 'Solicitar Jurados' a 'Hecho'
-};
+// const solicitarJurados = () => {
+//   procesos.value[1].estado = 'Hecho'; // Cambiar el estado de 'Solicitar Jurados' a 'Hecho'
+// };
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -91,24 +91,31 @@ const solicitudMensaje = ref("");
 
 const isSolicitarDisabled = computed(() => {
   const estado = solicitudEstado.value?.toLowerCase();
-  console.log("Estado actual para deshabilitar botón:", estado);
+  console.log("Deshabilitar botón solicitar jurado: ", estado)
   return ["pendiente", "observado", "aprobado"].includes(estado);
 });
 
 const solicitarJurado = async () => {
-  await axios .get(`/api/office/solicitude-juries/${authStore.id}`)
-  .then((response) => {
-    console.log("hola toy aqui",response.data);
-    solicitudEstado.value = response.data.estado;
-  })
-  .catch((error) => {
-    solicitudEstado.value = error.response.data.estado;    
-  });
-};
+  try {
+    const response = await axios.get(`/api/office/solicitude-juries/${authStore.id}`);
+    console.log(response.data);
 
-onMounted(() => {
-  solicitarJurado();
-});
+    if (response.data.estado) {
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
+    }
+    
+  } catch (error: any) {
+    console.error(error);
+
+    if (error.response?.status === 404 && error.response?.data?.estado === "pendiente") {
+      solicitudEstado.value = "pendiente";
+    }
+
+    solicitudMensaje.value = error.response?.data?.message || "Error al enviar la solicitud.";    
+    alertToast(solicitudMensaje.value, "Error");
+  }
+};
 
 </script>
 <template>
@@ -211,7 +218,7 @@ onMounted(() => {
             <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
               class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
               <h4 class="text-black flex-1">{{ proceso.título }}</h4>
-              <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
+              <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
             </div>
           </div>
         </div> --> 
@@ -236,12 +243,12 @@ onMounted(() => {
           </div>
 
           <div class="mt-4">
-            <div class="flex justify-center mt-6">
+            <div class="flex justify-center mt-6 mb-3">
               <button
                 :disabled="isSolicitarDisabled" 
-                @click="solicitarJurado"
-                :class="isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-green-600'"
-                class="px-4 py-2 text-white rounded-md">
+                :class="isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base'"
+                class="px-4 py-2 text-white rounded-md"
+                @click="solicitarJurado">
                 SOLICITAR JURADOS
               </button>
             </div>
