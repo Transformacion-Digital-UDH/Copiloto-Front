@@ -24,7 +24,7 @@ const load = ref(false);
 // Estado y datos para Designación de Jurado
 const procesos = ref([
   { título: 'TRAMITE: DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS)', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
-  { título: 'Solicitar Jurados', estado: 'pendiente' },
+  // { título: 'Solicitar Jurados', estado: 'pendiente' },
   { título: 'Tus jurados seleccionados', estado: 'Hecho' },
   { título: 'Oficio múltiple con los jurados seleccionados', estado: 'pendiente' },
   { título: 'Solicitar cambio de jurado', estado: 'No solicitado' },
@@ -66,9 +66,9 @@ const estadoClase = (estado: string) => {
 };
 
 // Función para solicitar jurados y cambiar el estado
-const solicitarJurados = () => {
-  procesos.value[1].estado = 'Hecho'; // Cambiar el estado de 'Solicitar Jurados' a 'Hecho'
-};
+// const solicitarJurados = () => {
+//   procesos.value[1].estado = 'Hecho'; // Cambiar el estado de 'Solicitar Jurados' a 'Hecho'
+// };
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -91,6 +91,7 @@ const solicitudMensaje = ref("");
 
 const isSolicitarDisabled = computed(() => {
   const estado = solicitudEstado.value?.toLowerCase();
+  console.log("Deshabilitar botón solicitar jurado: ", estado)
   return ["pendiente", "observado", "aprobado"].includes(estado);
 });
 
@@ -100,17 +101,19 @@ const solicitarJurado = async () => {
     console.log(response.data);
 
     if (response.data.estado) {
-      solicitudEstado.value = response.data.estado;
-      solicitudMensaje.value = "Solicitud enviada correctamente.";
-      alertToast("Solicitud enviada, espere las indicaciones del Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
-    } else {
-      console.log("No se recibió el estado esperado de la API.");
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
     }
-
+    
   } catch (error: any) {
     console.error(error);
-    solicitudMensaje.value = error.response?.data?.message || "Error al enviar la solicitud.";
-    alertToast(solicitudMensaje.value, "Error", "error");
+
+    if (error.response?.status === 404 && error.response?.data?.estado === "pendiente") {
+      solicitudEstado.value = "pendiente";
+    }
+
+    solicitudMensaje.value = error.response?.data?.message || "Error al enviar la solicitud.";    
+    alertToast(solicitudMensaje.value, "Error");
   }
 };
 
