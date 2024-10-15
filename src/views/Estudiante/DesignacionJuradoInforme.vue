@@ -108,8 +108,8 @@ const puedeContinuar = computed(() => {
             <table class="w-full max-w-2xl text-left bg-gray-50 border border-gray-200 rounded-md shadow">
             <thead>
                 <tr>
-                <th class="px-4 py-2 text-gray-600 border-b">ROL</th>
-                <th class="px-4 py-2 text-gray-600 border-b">NOMBRE Y APELLIDO</th>
+                <th class="px-4 py-2 text-azul border-b">ROL</th>
+                <th class="px-4 py-2 text-azul border-b">NOMBRE Y APELLIDO</th>
                 </tr>
             </thead>
             <tbody>

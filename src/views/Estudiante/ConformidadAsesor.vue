@@ -579,28 +579,28 @@ onMounted(() => {
             </div>
           </div>
         </div>
-      <!--Botones siguiente y anteerior-->
-      <div class="flex justify-between">
-          <!-- Botón de Anterior -->
-          <button
-            @click="$router.push('/estudiante/designacion-asesor')" 
-            class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
-          >
-            Anterior
-          </button>
+        <!--Botones siguiente y anteerior-->
+        <div class="flex justify-between">
+            <!-- Botón de Anterior -->
+            <button
+              @click="$router.push('/estudiante/designacion-asesor')" 
+              class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
+            >
+              Anterior
+            </button>
 
-          <!-- Botón de Siguiente -->
-          <button
-            @click="handleNextButtonClick"
-            :class="[ 
-              'px-4 py-2 text-white rounded-md',
-              isNextButtonDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',
-            ]"
-          >
-            Siguiente
-          </button>
+            <!-- Botón de Siguiente -->
+            <button
+              @click="handleNextButtonClick"
+              :class="[ 
+                'px-4 py-2 text-white rounded-md',
+                isNextButtonDisabled
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600',
+              ]"
+            >
+              Siguiente
+            </button>
         </div>
       </div>
     </div>

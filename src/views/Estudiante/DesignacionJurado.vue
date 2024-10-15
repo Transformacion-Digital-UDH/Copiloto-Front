@@ -3,6 +3,8 @@ import { alertToast } from '@/functions';
 import { useAuthStore } from '@/stores/auth';
 import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
+import router from "@/router";
+import Swal from "sweetalert2";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designacion de Jurado";
@@ -59,10 +61,29 @@ const solicitarCambioJurado = (jurado: any) => {
 };
 
 
-// Función que verifica si los estados del punto 1 al 2 están en 'Hecho'
-const puedeContinuar = computed(() => {
-  return procesos.value.slice(0, 2).every(proceso => proceso.estado === 'Hecho');
-});
+// const handleNextButtonClick = () => {
+//   if (isNextButtonDisabled.value) {
+//     Swal.fire({
+//       icon: "warning",
+//       title: "Pasos incompletos",
+//       text: "Por favor, completa todos los pasos antes de continuar.",
+//       confirmButtonText: "OK",
+//     });
+//   } else {
+//     goToNextPage();
+//   }
+// };
+
+// const goToNextPage = () => {
+//   router.push("/estudiante/conformidad-jurado");
+// };
+
+// const isNextButtonDisabled = computed(() => {
+//   const documentoPaso3 = documentos.find(
+//     (doc) => doc.nombre === "Informe de Conformidad de Observaciones"
+//   );
+//   return documentoPaso3?.estado !== "Hecho";
+// });
 
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
@@ -261,9 +282,9 @@ onMounted(() => {
           <div class="mt-4 flex justify-center">
             <table class="w-full max-w-2xl text-left uppercase bg-white border border-gray-200 rounded-md shadow">
               <thead>
-                <tr class="text-black border-b-2 bg-gray-300">
-                  <th class="px-4 py-2 text-gray-600 border-b">ROL</th>
-                  <th class="px-4 py-2 text-gray-600 border-b">NOMBRE Y APELLIDO</th>
+                <tr class="text-black border-b-2 bg-gray-200">
+                  <th class="px-4 py-2 text-azul border-b">ROL</th>
+                  <th class="px-4 py-2 text-azul border-b">NOMBRE Y APELLIDO</th>
                 </tr>
               </thead>
               <tbody>
@@ -318,15 +339,26 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Botón Siguiente -->
-        <div class="flex justify-end">
-          <button 
-            :disabled="!puedeContinuar" 
-            class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed"
-            :class="puedeContinuar ? 'bg-green-600 hover:bg-base cursor-pointer' : 'bg-gray-300 cursor-not-allowed'">
-            Siguiente
-          </button>
-        </div>
+       <!--Botones siguiente y anteerior-->
+       <!-- <div class="flex justify-between">
+            <button
+              @click="$router.push('/estudiante/conformidad-asesor')" 
+              class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
+            >
+              Anterior
+            </button>
+            <button
+              @click="handleNextButtonClick"
+              :class="[ 
+                'px-4 py-2 text-white rounded-md',
+                isNextButtonDisabled
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600',
+              ]"
+            >
+              Siguiente
+            </button>
+        </div> -->
 
         <!-- Card 4: Solicitar cambio de jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">

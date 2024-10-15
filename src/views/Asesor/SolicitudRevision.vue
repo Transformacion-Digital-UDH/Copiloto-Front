@@ -262,7 +262,7 @@ onMounted(() => {
               <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
-                    <tr class="text-center text-black border-b-2 bg-gray-300">
+                    <tr class="text-center text-azul border-b-2 bg-gray-300">
                       <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
                       <th class="py-2 px-4 tracking-wider">VISUALIZAR TESIS</th>
@@ -287,12 +287,14 @@ onMounted(() => {
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
                         <button
                           v-if="!u.oficio_generado && u.rev_status !== 'aprobado'" 
-                          class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none"
+                          :disabled="u.rev_status === 'observado'" 
+                          :class="['w-24 px-4 py-1 text-sm rounded-xl focus:outline-none', u.rev_status === 'observado' ? 'bg-gray-400  text-white cursor-not-allowed' : 'bg-base text-white']"
                           @click="openModal(u.stu_id)">Aprobar
                         </button>
                         <button
                           v-if="!u.oficio_generado && u.rev_status !== 'aprobado'"  
-                          class="w-24 px-4 py-1 text-sm text-white bg-[#5d6d7e] rounded-xl focus:outline-none"
+                          :disabled="u.rev_status === 'observado'" 
+                          :class="['w-24 px-4 py-1 text-sm rounded-xl focus:outline-none', u.rev_status === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gray-500 text-white']"
                           @click="openRejectModal(u.stu_id)">Observar
                         </button>
                         <a
@@ -317,17 +319,13 @@ onMounted(() => {
                 </table>
 
                 <!-- Paginación -->
-                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                  <span class="text-sm text-gray-900 xs:text-sm">
-                    Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                    {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                    {{ tableData.length }}
-                  </span>
-                  <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                    <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl">Anterior</button>
-                    <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl">Siguiente</button>
-                  </div>
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
+              </div>
               </div>
             </div>
           </div>
@@ -342,10 +340,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el proyecto de tesis ya no requiere observaciones adicionales?</h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el Proyecto de Tesis ya no requiere mas observaciones?</h5>
           </div>
           <div class="p-6">
-              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el documento de conformidad</p>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>
               <input
                 type="text"
                 id="nroCarta"
@@ -376,11 +374,11 @@ onMounted(() => {
             <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación de proyecto</h5>
           </div>
           <div class="p-6">
-            <p class="text-black text-lg text-center mb-4">¿Se asegura de que los comentarios han sido enviados correctamente en el documento de Google?</p>
+            <p class="text-gray-600 text-center mb-4">¿Esta seguro que los comentarios han sido enviados correctamente en el documento de Google?</p>
           </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
-            <button class="px-4 py-2 text-lg text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-            <button class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="sendObservacion">Enviar</button>
+          <div class="flex items-center justify-center p-3 border-gray-200">
+            <button class="px-4 py-2 text-xm text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
+            <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="sendObservacion">Enviar</button>
           </div>
           </div>
         </div>

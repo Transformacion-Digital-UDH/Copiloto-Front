@@ -52,7 +52,7 @@ const estadoClase = (estado: string) => {
       return "bg-green-500 text-white";
     case "observado":
       return "bg-orange-500 text-white";
-    case 'Hecho':
+    case 'hecho':
       return 'bg-green-500 text-white';
     default:
       return "";
@@ -427,7 +427,7 @@ const handleNextButtonClick = () => {
       <div class="flex justify-between">
         <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Solicitud de Asesor</h2>
+              <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
               <img
                 src="/icon/info2.svg"
                 alt="Info"
@@ -635,10 +635,11 @@ const handleNextButtonClick = () => {
               />
             </div>
             <span
-              :class="estadoClase(solicitude.estado)"
+              :class="estadoClase(estadoDocumentos)"
               class="estado-estilo ml-4"
               >{{ estadoDocumentos }}</span
             >
+
           </div>
           <!-- Modal punto 2 -->
           <div
@@ -904,5 +905,9 @@ const handleNextButtonClick = () => {
   font-size: 0.875rem;
   font-weight: 400;
   border-radius: 0.375rem;
+}
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
 }
 </style>
