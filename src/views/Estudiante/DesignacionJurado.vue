@@ -61,29 +61,29 @@ const solicitarCambioJurado = (jurado: any) => {
 };
 
 
-// const handleNextButtonClick = () => {
-//   if (isNextButtonDisabled.value) {
-//     Swal.fire({
-//       icon: "warning",
-//       title: "Pasos incompletos",
-//       text: "Por favor, completa todos los pasos antes de continuar.",
-//       confirmButtonText: "OK",
-//     });
-//   } else {
-//     goToNextPage();
-//   }
-// };
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
+    });
+  } else {
+    goToNextPage();
+  }
+};
 
-// const goToNextPage = () => {
-//   router.push("/estudiante/conformidad-jurado");
-// };
+const goToNextPage = () => {
+  router.push("/estudiante/conformidad-jurado");
+};
 
-// const isNextButtonDisabled = computed(() => {
-//   const documentoPaso3 = documentos.find(
-//     (doc) => doc.nombre === "Informe de Conformidad de Observaciones"
-//   );
-//   return documentoPaso3?.estado !== "Hecho";
-// });
+const isNextButtonDisabled = computed(() => {
+  const documentoPaso3 = documentos.value.find(
+  (doc) => doc.nombre === "Oficio múltiple"
+);
+  return documentoPaso3?.estado !== "Hecho";
+});
 
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
@@ -342,7 +342,7 @@ onMounted(() => {
         </div>
 
        <!--Botones siguiente y anteerior-->
-       <!-- <div class="flex justify-between">
+       <div class="flex justify-between">
             <button
               @click="$router.push('/estudiante/conformidad-asesor')" 
               class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
@@ -360,7 +360,7 @@ onMounted(() => {
             >
               Siguiente
             </button>
-        </div> -->
+        </div>
 
         <!-- Card 4: Solicitar cambio de jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
