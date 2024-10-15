@@ -327,13 +327,15 @@ onMounted(() => {
                   <td class="px-3 py-5 text-base">
                     <p class="text-gray-900 text-wrap w-80">{{ u.title }}</p>
                   </td>
-                  <button 
+                  <td>
+                    <button 
                     class="w-24 px-5 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
                     :disabled="u.of_status.toLowerCase() === 'tramitado'"
                     :class="{'bg-gray-400 cursor-not-allowed': u.of_status.toLowerCase() === 'tramitado', 'bg-base': u.of_status.toLowerCase() !== 'tramitado'}"
                     @click="openModal(u.oficio_id)">
                     Asignar
-                  </button>
+                    </button>
+                  </td>
                   <td class="px-3 py-5 text-center">
                     <span :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-')}`">{{ u.of_status }}</span>
                   </td>
