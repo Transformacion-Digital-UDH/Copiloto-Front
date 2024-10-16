@@ -4,6 +4,9 @@ import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
+
 
 // Configuración de la tabla
 const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
@@ -111,6 +114,7 @@ const loadJurados = ref(false);
 const nroOficio1 = ref<string>(''); 
 const nroExped1 = ref<string>('');  
 const selectedOficioId = ref<string | null>(null); // Variable para almacenar el oficio_id seleccionado
+const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
 
 
 // Validación para N° de oficio: exactamente 3 dígitos
@@ -151,7 +155,7 @@ const fetchJurados = async () => {
   loadJurados.value = true;
   try {
     const response = await axios.get('/api/juries/get-select');
-    //console.log('Respuesta cruda de la API:', response); // Verifica la estructura de la respuesta completa
+    console.log('Respuesta cruda de la API:', response); // Verifica la estructura de la respuesta completa
     let data = response.data.data; // Acceder a los datos internos correctamente
     if (Array.isArray(data) && data.length > 0) {
       // Asignar los datos de los jurados al estado
@@ -191,7 +195,7 @@ const asignarJurado = () => {
   }
 
   // Mostrar un mensaje genérico de éxito
-  alertToast('Jurados asignados correctamente.', 'success');
+  alertToast('Jurados asignados correctamente.', "Éxito", "success");  
   
   // Abre el modal de "Enviar"
   openSendModal();
@@ -229,7 +233,7 @@ const sendToBackend = async () => {
   try {
     if (selectedOficioId.value) {
       const response = await axios.put(`/api/office/djt/${selectedOficioId.value}/status`, payload);
-      alertToast('Datos enviados correctamente', 'success');
+      alertToast('Datos enviados correctamente', "Éxito", "success");  
 
       // Recargar las solicitudes desde el backend
       await fetchSolicitudes();
@@ -243,8 +247,6 @@ const sendToBackend = async () => {
     console.error('Error al enviar datos:', error);
   }
 };
-
-
 
 
 function openSendModal() {
@@ -302,6 +304,37 @@ onMounted(() => {
       <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
       <div class="mt-8">
+        <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+              <div class="w-full flex justify-end items-center space-x-2">
+                <div class="relative">
+                  <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                    <IconBuscar />
+                  </span>
+                  <input
+                      placeholder="Buscar"
+                      class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"/>
+                </div>
+                <div class="relative">
+                  <select
+                    v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                  </select>
+                </div>
+                <div class="relative">
+                  <select
+                    v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="observado">Observado</option>
+                    <option value="tramitado">Tramitado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
         <!-- Tabla de solicitudes -->
         <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
           <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
@@ -318,24 +351,44 @@ onMounted(() => {
                 <tr 
                   v-for="(u, index) in filteredTableData" 
                   :key="index"
-                  :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
-                  class="border-b border-gray-200"
+                  class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                 >
+                  <!-- Nombre del Estudiante -->
                   <td class="px-3 py-5 text-base">
-                    <p class="text-gray-900 text-wrap w-64">{{ u.name }}</p>
+                    <p class="text-black text-wrap w-72">{{ u.name }}</p>
                   </td>
+
+                  <!-- Título del Proyecto -->
                   <td class="px-3 py-5 text-base">
-                    <p class="text-gray-900 text-wrap w-80">{{ u.title }}</p>
+                    <p class="text-black text-wrap w-80">{{ u.title }}</p>
                   </td>
-                  <td>
-                    <button 
-                    class="w-24 px-5 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                    :disabled="u.of_status.toLowerCase() === 'tramitado'"
-                    :class="{'bg-gray-400 cursor-not-allowed': u.of_status.toLowerCase() === 'tramitado', 'bg-base': u.of_status.toLowerCase() !== 'tramitado'}"
-                    @click="openModal(u.oficio_id)">
-                    Asignar
-                    </button>
+
+                  <!-- Botón Asignar en una celda separada -->
+                  <td class="px-3 py-5 text-center">
+                    <div class="flex justify-center items-center">
+                      <!-- Si el estado es "tramitado", mostrar enlace para ver el oficio -->
+                      <a 
+                        v-if="u.of_status.toLowerCase() === 'tramitado'" 
+                        :href="`${VIEW_OFFICEJURADO}/${u.oficio_id}`" 
+                        target="_blank" 
+                        class="flex items-center m-2 relative group">
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                          <span class="text-[#34495e]">Oficio <br> Múltiple</span>
+                      </a>
+
+                      <!-- Si el estado no es "tramitado", mostrar el botón de Asignar -->
+                      <button 
+                        v-else
+                        class="w-24 px-5 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none hover:bg-baseClarito"
+                        @click="openModal(u.oficio_id)">
+                        Asignar
+                      </button>
+                    </div>
                   </td>
+
+
+                  <!-- Estado del Proyecto -->
                   <td class="px-3 py-5 text-center">
                     <span :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-')}`">{{ u.of_status }}</span>
                   </td>
@@ -344,6 +397,7 @@ onMounted(() => {
             </table>
           </div>
         </div>
+
       </div>
       
       <!-- Modal para la designación de jurados -->
@@ -356,7 +410,7 @@ onMounted(() => {
           </div>
           <div class="w-full pr-4">
             <div class="flex items-start justify-between p-3">
-              <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">Designación de jurados</h5>
+              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Designación de jurados</h5>
             </div>
             <div class="p-6">
               <div class="flex-1">
