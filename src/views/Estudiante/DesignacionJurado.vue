@@ -23,8 +23,7 @@ onMounted(() => {
 
 // Estado y datos para Designación de Jurado
 const procesos = ref([
-  { título: 'TRAMITE: DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS)', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
-  // { título: 'Solicitar Jurados', estado: 'pendiente' },
+  { título: 'TRAMITE: DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS)', estado: 'Hecho' }, 
   { título: 'Tus jurados seleccionados', estado: 'Hecho' },
   { título: 'Oficio múltiple con los jurados seleccionados', estado: 'pendiente' },
   { título: 'Solicitar cambio de jurado', estado: 'No solicitado' },
@@ -36,12 +35,6 @@ const procesos = ref([
 //   { nombre: 'Solicitud de cambio de jurado', estado: 'No solicitado', documentoUrl: '' },
 // ]);
 
-// Jurados seleccionados
-// const jurados = ref([
-//   { rol: 'Vocal', nombre: 'Lucas Vadivia' },
-//   { rol: 'Presidente', nombre: 'Sebastian Martínez' },
-//   { rol: 'Secretario', nombre: 'Lorenzo Perez' }
-// ]);
 
 // Estados para los modales
 const mostrarModalTramite = ref(false);
@@ -49,17 +42,11 @@ const mostrarModalJurados = ref(false);
 const mostrarModalDocumentos = ref(false);
 const mostrarModalCambioJurado = ref(false);
 
-// Función para solicitar jurados y cambiar el estado
-// const solicitarJurados = () => {
-//   procesos.value[1].estado = 'Hecho'; // Cambiar el estado de 'Solicitar Jurados' a 'Hecho'
-// };
-
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
   alert(`Has solicitado el cambio del jurado: ${jurado.nombre}`);
   // Aquí puedes agregar la lógica adicional para solicitar el cambio del jurado
 };
-
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -253,7 +240,7 @@ onMounted(() => {
         <!-- Card 2: Solicitar designación de Jurados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-          <h2 class="text-2xl font-medium text-black ">1. Solicitar designación de jurados</h2>
+          <h2 class="text-2xl font-medium text-black ">1. Solicitar Designación de Jurados</h2>
           <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
             @mouseover="mostrarModalJurados = true"
             @mouseleave="mostrarModalJurados = false" />
@@ -281,8 +268,8 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Card 3: Jurados seleccionados -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
+        <!-- Jurados seleccionados -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div class="flex items-center justify-between mt-2">
             <h2 class="text-2xl font-medium text-black">2. Tus jurados seleccionados son:</h2>
           </div>
@@ -292,8 +279,8 @@ onMounted(() => {
             <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span>
           </div>
 
-          <div class="mt-4 flex justify-center">
-            <table class="w-full max-w-2xl text-left uppercase bg-white border border-gray-200 rounded-md shadow">
+          <div class="mt-6 flex justify-center">
+            <table class="w-full max-w-2xl text-left uppercase bg-white border border-gray-200 rounded-md shadow-lg">
               <thead>
                 <tr class="text-black border-b-2 bg-gray-200">
                   <th class="px-4 py-2 text-azul border-b">ROL</th>
@@ -301,7 +288,15 @@ onMounted(() => {
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="jurado in jurados" :key="jurado.id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                <!-- Si no hay jurados, mostramos un mensaje -->
+                <tr v-if="jurados.length === 0">
+                  <td colspan="2" class="px-4 py-6 text-center text-gray-500 text-base">
+                    <i class="fas fa-exclamation-circle mr-2 text-red-400"></i>
+                    AÚN NO SE HAN ASIGNADO JURADOS.
+                  </td>
+                </tr>
+                <!-- Iteramos los jurados si hay registros -->
+                <tr v-else v-for="jurado in jurados" :key="jurado.id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                   <td class="px-4 py-2 border-b">{{ jurado.rol }}</td>
                   <td class="px-4 py-2 border-b">{{ jurado.asesor }}</td>
                 </tr>
@@ -313,7 +308,7 @@ onMounted(() => {
         <!-- Card 3: Oficio múltiple con los jurados seleccionados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">4. Documentos</h2>
+            <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
             <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
                 @mouseover="mostrarModalDocumentos = true"
                 @mouseleave="mostrarModalDocumentos = false" />
@@ -463,5 +458,9 @@ onMounted(() => {
 .estado-no-solicitado {
   background-color: #718096;
   color: #ffffff;
+}
+.text-center {
+  text-align: center;
+  padding: 1rem;
 }
 </style>
