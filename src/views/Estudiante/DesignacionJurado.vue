@@ -29,10 +29,10 @@ const procesos = ref([
 ]);
 
 // Documentos asociados a la designación
-const documentos = ref([
-  { nombre: 'Oficio múltiple', estado: 'Hecho', documentoUrl: '' },
-  { nombre: 'Solicitud de cambio de jurado', estado: 'No solicitado', documentoUrl: '' },
-]);
+// const documentos = ref([
+//   { nombre: 'Oficio múltiple', estado: 'Hecho', documentoUrl: '' },
+//   { nombre: 'Solicitud de cambio de jurado', estado: 'No solicitado', documentoUrl: '' },
+// ]);
 
 // Jurados seleccionados
 // const jurados = ref([
@@ -72,8 +72,10 @@ const solicitudEstado2 = ref<string>("");
 const isLoading = ref(false);
 const load = ref(false);
 const jurados = ref<Jurado[]>([]);
+const documentos = ref([{ nombre: 'Oficio múltiple', estado: 'pendiente' }]);
 const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
 const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
+const docof_id = ref<string>("");
 
 interface Jurado {
   id: string;
@@ -128,7 +130,16 @@ const mostrarJurados = async () => {
       solicitudEstado2.value = response.data.estado.charAt(0).toUpperCase() + response.data.estado.slice(1).toLowerCase();// para formatear el estado con la primera letra en mayuscula
       console.log("Estado de la solicitud: ", solicitudEstado2.value);
     }
+    
     jurados.value = response.data.jurados// la lista de jurados asignados
+
+    if(response.data.docof_id){
+      docof_id.value = response.data.docof_id;
+      documentos.value[0].estado = 'Hecho';
+      console.log('Valor de docofId:', docof_id.value);
+    } else {
+      console.log('No se encontró el docof_id en la respuesta');
+    }
   } catch (error) {
     console.error('Error al obtener jurados designados: ', error);
   } finally {
@@ -299,14 +310,14 @@ onMounted(() => {
                   <div v-if="documentos[0].estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
                     <a 
-                      :href="`${VIEW_OFFICEJURADO}/${authStore.id}`" 
+                      :href="`${VIEW_OFFICEJURADO}/${docof_id}`" 
                       target="_blank"
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
                     <!-- Botón de Descargar -->
                     <a 
-                      :href="`${DOWNLOAD_OFFICEJURADO}/${authStore.id}`" 
+                      :href="`${DOWNLOAD_OFFICEJURADO}/${docof_id}`" 
                       download
                       class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-download mr-2"></i> Descargar
