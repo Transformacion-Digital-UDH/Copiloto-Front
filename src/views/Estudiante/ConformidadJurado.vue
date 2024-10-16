@@ -1,170 +1,886 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { onMounted, reactive, ref } from "vue";
+import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
+import { computed } from "vue";
+import { alertToast } from "@/functions";
+import router from "@/router";
+import Swal from "sweetalert2";
 
-// Estado del punto 1 (Observaciones)
-const solicitudEstado = ref<string>('Pendiente');
-
-// Estado del punto 3 (Informe de Conformidad de Observaciones)
-const documentos = ref([
-  { nombre: 'Informe de Conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'imageattachment.jpg' }
-]);
-
-// Función para cambiar el estado del punto 1 a "Hecho"
-function solicitarRevision() {
-  solicitudEstado.value = 'Hecho';  // Cambia el estado del punto 1 a "Hecho"
+interface Documento {
+  nombre: string;
+  estado: string;
+  documentoUrl: string;
+  revision_id?: string | null;
+}
+interface Asesor {
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
 }
 
-// Método para determinar la clase del estado basado en el estado del documento o solicitud
+// Documentos es un array reactivo de tipo Documento usando reactive
+const documentos = reactive<Documento[]>([
+  {
+    nombre: "Informe de Conformidad de Observaciones",
+    estado: "pendiente",
+    documentoUrl: "",
+    revision_id: null,
+  },
+]);
+
 function estadoClase(estado: string) {
   switch (estado) {
-    case 'Hecho': return 'bg-green-500 text-white';
-    case 'En Proceso': return 'bg-orange-500 text-white';
-    case 'Pendiente': return 'bg-gray-400 text-white';
-    case 'Rechazado': return 'bg-red-500 text-white';
-    default: return '';
+    case "aprobado":
+      return "bg-[#48bb78] text-white";
+    case "pendiente":
+      return "bg-[#8898aa] text-white";
+    case "observado":
+      return "bg-[#e79e38] text-white";
+    default:
+      return "";
   }
 }
 
-// Computed para habilitar el botón "Siguiente" solo si el Punto 1 y el Punto 3 están en "Hecho"
-const puedeContinuar = computed(() => {
-  return solicitudEstado.value === 'Hecho' && documentos.value[0].estado === 'Hecho';
+const mostrarModalRevision = ref(false);
+const mostrarModalObservaciones = ref(false);
+const mostrarModalDocumentos = ref(false);
+
+// ***** Texto que se escribe automáticamente ********
+const text = "Conformidad de Proyecto de Tesis por los Jurados";
+const textoTipiado2 = ref("");
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado2.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+onMounted(() => {
+  typeWriter();
+});
+// ******************************************************
+
+//*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
+const asesor = ref<Asesor | null>(null);
+const titulo = ref("");
+const link = ref("");
+const load = ref(false);
+const estado = ref<string>("");
+const cantidad = ref<number>();
+const fecha = ref<string>("");
+const revision_id = ref(null);
+const authStore = useAuthStore();
+const solicitudEstado = ref<string>("");
+const solicitudEstado2 = ref<string>("");
+const solicitudMensaje = ref("");
+const revision = ref<any[]>([]);
+
+const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
+const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
+axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
+
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
+    });
+  } else {
+    goToNextPage();
+  }
+};
+
+const goToNextPage = () => {
+  router.push("/estudiante/aprobacion-proyecto");
+};
+
+const isRevisionDisabled = computed(() => {
+  const estado = solicitudEstado.value?.toLowerCase();
+  console.log("Estado actual para deshabilitar botón:", estado);
+  return ["pendiente", "aprobado", "observado"].includes(estado);
 });
 
-// Estados separados para los modales
-const mostrarModalPunto2 = ref(false);
-const mostrarModalPunto3 = ref(false);
+const mostrarAlerta = (mensaje: string) => {
+  window.alert(mensaje);
+};
+
+const isNextButtonDisabled = computed(() => {
+  const documentoPaso3 = documentos.find(
+    (doc) => doc.nombre === "Informe de Conformidad de Observaciones"
+  );
+  return documentoPaso3?.estado !== "Hecho";
+});
+
+const primeraRevision = async () => {
+  try {
+    const response = await axios.post(
+      `/api/student/first-review/${authStore.id}`
+    );
+    console.log(response);
+    if (response.data.status) {
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada, espere las indicaciones del asesor por favor", "Éxito", "success");
+    }
+  } catch (error: any) {
+    console.log(error);
+    alertToast(error.response.data.message || "Error al enviar la solicitud", "Error", "error");
+  }
+};
+
+const obtenerRevisiones = async () => {
+  try {
+    const response = await axios.get(`/api/student/get-review/${authStore.id}`);
+    if (response.data.status) {
+      console.log(response);
+      solicitudEstado.value = response.data.revision.estado;
+      console.log("Estado de la solicitud:", solicitudEstado.value);
+    }
+  } catch (error: any) {
+    solicitudMensaje.value =
+      error.response?.data.message || "Error desconocido";
+  }
+};
+
+const obtenerRev = async () => {
+  load.value = true;
+  try {
+    const response = await axios.get(`/api/student/get-review/${authStore.id}`);
+    console.log("Datos recibidos de revisión:", response.data);
+
+    if (response.data.status) {
+      console.log("Estructura de los datos recibidos:", response.data);
+      const revisionData = response.data.revision;
+
+      cantidad.value = revisionData.cantidad;
+      fecha.value = revisionData.fecha || "Desconocido";
+      estado.value = revisionData.estado;
+      revision_id.value = revisionData.revision_id;
+
+      documentos[0].revision_id = revisionData.revision_id;
+
+      if (revisionData.estado === "aprobado") {
+        documentos[0].estado = "Hecho";
+        documentos[0].documentoUrl =
+          "https://titulacion-back.abimaelfv.site/api/view-cpa";
+      } else {
+        documentos[0].estado = "pendiente";
+      }
+
+      revision.value = [
+        {
+          cantidad: revisionData.cantidad,
+          fecha: revisionData.fecha || "Desconocido",
+          accion: "Solicitar Revisión",
+          estado: revisionData.estado,
+        },
+      ];
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      alert(
+        `Error al actualizar la revisión: ${
+          error.response?.data.message || "Error desconocido"
+        }`
+      );
+    } else {
+      alert("Ocurrió un error desconocido.");
+    }
+    console.error(error);
+  } finally {
+    load.value = false;
+  }
+};
+
+const actualizarRevision = async (studentId: string) => {
+  try {
+    if (!studentId) {
+      alert("No se pudo encontrar el ID del estudiante");
+      return;
+    }
+
+    const response = await axios.put(
+      `/api/student/review/${studentId}/status`,
+      {
+        rev_status: "pendiente",
+      }
+    );
+
+    if (response.status === 200 || response.status === 201) {
+      await obtenerRev();
+
+      alertToast(
+        "Se han enviado las observaciones corregidas.",
+        "Éxito",
+        "success"
+      );
+    } else {
+      alert("Hubo un problema al actualizar la revisión.");
+    }
+  } catch (error: unknown) {
+    if (axios.isAxiosError(error)) {
+      alert(
+        `Error al actualizar la revisión: ${
+          error.response?.data.message || "Error desconocido"
+        }`
+      );
+    } else {
+      alert("Ocurrió un error desconocido.");
+    }
+    console.error(error);
+  }
+};
+
+const obtenerDatosEstudiante = async () => {
+  try {
+    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
+    if (response.data.status) {
+      const solicitud = response.data.solicitud;
+      asesor.value = solicitud.asesor;
+      titulo.value = solicitud.titulo;
+      link.value = solicitud.link;
+    }
+  } catch (error) {
+    console.error("Error al obtener los datos del estudiante:", error);
+  }
+};
+
+onMounted(() => {
+  obtenerRevisiones();
+  obtenerRev();
+  obtenerDatosEstudiante();
+});
 </script>
 
 <template>
-  <div class="flex-1 p-10 bg-gray-100 font-roboto">
-    <h3 class="text-4xl font-bold text-center text-azul">Conformidad de proyecto de tesis por los jurados</h3>
-
-    <div class="mt-6 space-y-10">
-      <!-- Punto 1: Observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-3">1. Observaciones</h4>
-        <div class="flex items-center justify-between">
-          <p class="text-gray-500">Haz click en el botón de Solicitar Revisión para iniciar</p>
-          <span :class="estadoClase(solicitudEstado)" class="estado-estilo ml-4">{{ solicitudEstado }}</span>
-        </div>
-        <div class="flex justify-center mt-3">
-          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar Revisión</button>
-        </div>
+  <template v-if="load">
+    <div class="flex-1 p-10 border-s-2 bg-gray-100">
+      <div
+        class="flex justify-center items-center content-center px-14 flex-col">
+        <h3
+          class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"
+        ></h3>
       </div>
-
-      <!-- Punto 2: Solicitar revisión de levantamiento de observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
-          <h4 class="text-2xl font-medium text-black mb-4">2. Solicitar revisión de levantamiento de observaciones</h4>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-               @mouseover="mostrarModalPunto2 = true"
-               @mouseleave="mostrarModalPunto2 = false" />
+      <div class="mt-6 space-y-10">
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
         </div>
-
-        <div v-show="mostrarModalPunto2" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">
-            Solicita la revisión de levantamiento de observaciones con los documentos necesarios.
-          </p>
-        </div>
-
-        <!-- Hacemos la tabla responsiva con overflow-x-auto -->
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">JURADO</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">CARGO</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="px-4 py-2 border-b">Aldo Ramirez</td>
-                <td class="px-4 py-2 border-b">Presidente</td>
-                <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">Reporte.xlsx</a></td>
-                <td class="px-4 py-2 border-b">7</td>
-                <td class="px-4 py-2 border-b">13/10/2024</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2 border-b">Juan Huapalla</td>
-                <td class="px-4 py-2 border-b">Secretario</td>
-                <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">Reporte.xlsx</a></td>
-                <td class="px-4 py-2 border-b">4</td>
-                <td class="px-4 py-2 border-b">13/10/2024</td>
-              </tr>
-              <tr>
-                <td class="px-4 py-2 border-b">Cristian Soto</td>
-                <td class="px-4 py-2 border-b">Vocal</td>
-                <td class="px-4 py-2 border-b"><a href="#" class="text-blue-500 underline">Reporte.xlsx</a></td>
-                <td class="px-4 py-2 border-b">5</td>
-                <td class="px-4 py-2 border-b">13/10/2024</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Punto 3: Documentos (Informe de Conformidad de Observaciones) -->
-      <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
-          <h4 class="text-2xl font-medium text-black mb-4">3. Documentos</h4>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-               @mouseover="mostrarModalPunto3 = true"
-               @mouseleave="mostrarModalPunto3 = false" />
-        </div>
-
-        <div v-show="mostrarModalPunto3"
-          class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">
-            Espera la conformidad de los documentos para continuar con el proceso de tesis.
-          </p>
-        </div>
-
-        <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-          <div class="flex flex-col md:flex-row justify-between md:items-center">
-            <span class="flex-1">{{ documentos[0].nombre }}</span>
-            <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-              <!-- Mostrar botones "Ver" y "Descargar" si el estado es 'Hecho' -->
-              <div v-if="documentos[0].estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                <!-- Botón de Ver -->
-                <a :href="documentos[0].documentoUrl" target="_blank"
-                  class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                  <i class="fas fa-eye mr-2"></i> Ver
-                </a>
-                <!-- Botón de Descargar -->
-                <a :href="documentos[0].documentoUrl" download
-                  class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                  <i class="fas fa-download mr-2"></i> Descargar
-                </a>
-              </div>
-              <span :class="estadoClase(documentos[0].estado)" class="estado-estilo ml-4">{{ documentos[0].estado }}</span>
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"
+            ></h2>
+            <div class="flex justify-between items-center">
+              <h2
+                class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"
+              ></h2>
+            </div>
+            <div class="h-7">
+              <h2
+                class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"
+              ></h2>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Botón de siguiente -->
-      <div class="flex justify-end">
-        <button :disabled="!puedeContinuar" :class="puedeContinuar ? 'bg-green-600 hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'" class="px-4 py-2 text-white rounded-md">
-          Siguiente
-        </button>
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+        </div>
+        <div class="flex justify-end">
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </template>
+  <template v-else>
+    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+      <h3 class="text-5xl font-bold text-center text-azul">
+        {{ textoTipiado2 }}
+      </h3>
+
+      <div class="mt-6 space-y-10 ">
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
+          <!-- Información del Asesor -->
+          <p v-if="asesor">
+            <strong class="space-y-4">JURADO PRESIDENTE:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }} 
+          </p>
+          <p v-if="asesor">
+            <strong class="space-y-4">JURADO SECRETARIO:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }} 
+          </p>
+          <p v-if="asesor">
+            <strong class="space-y-4">JURADO VOCAL:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }} 
+          </p>
+          
+          <!-- Título de Tesis -->
+          <p v-if="titulo" class="max-w-7xl">
+            <strong>TÍTULO DE TESIS:</strong> {{ titulo }}
+          </p>
+          
+          <!-- Enlace al Proyecto de Tesis -->
+          <p v-if="link">
+            <strong>PROYECTO DE TESIS: </strong>
+            <a
+              :href="`${link}`"
+              target="_blank"
+              class="inline-block bg-azul text-white px-3 py-2 rounded-lg hover:bg-azulOscuro transition text-base"
+              > Abrir link de Google Docs</a>
+          </p>
+
+          <!-- Explicación breve -->
+          <p class="text-sm text-gray-600">
+            Asegurate de tener toda tu informacion corregida y actualizada en el documento de Google Docs proporcionado y luego haga clic en "Solicitar Revisión".
+          </p>
+        </div>
+
+
+        <!-- Observaciones -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">1. Observaciones</h2>
+            <img
+              src="/icon/info2.svg"
+              alt="Info"
+              class="ml-2 w-4 h-4 cursor-pointer"
+              @mouseover="mostrarModalRevision = true"
+              @mouseleave="mostrarModalRevision = false"
+            />
+          </div>
+          <div
+            v-show="mostrarModalRevision"
+            class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
+          >
+            <p class="text-sm text-gray-600">
+              Este botón permitira empezar el proceso para inciar las correcciones con los jurados
+            </p>
+          </div>
+          <div class="flex items-center justify-between">
+            <p class="text-gray-500 text-lg">
+              Haz click en <strong class="text-[#39B49E]">Solicitar Revision</strong> para iniciar con el proceso de correcciones con los Jurados.
+            </p>
+            <span
+              :class="estadoClase(solicitudEstado2)"
+              class="estado-estilo ml-4"
+              >{{ solicitudEstado2 }}</span
+            >
+          </div>
+          <div class="flex justify-center mt-3">
+            <button
+              :disabled="isRevisionDisabled"
+              :class="
+                isRevisionDisabled
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-base'
+              "
+              class="px-4 py-2 text-white rounded-lg text-lg"
+              @click="primeraRevision"
+            >
+              Solicitar revisión
+            </button>
+          </div>
+          <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div>
+        </div>
+
+        <!-- Revisión de levantamiento de observaciones -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h4 class="text-2xl font-medium text-black">
+              2. Revisión de Observaciones
+            </h4>
+
+            <div class="relative">
+              <img
+                src="/icon/info2.svg"
+                alt="Info"
+                class="ml-2 w-4 h-4 cursor-pointer"
+                @mouseover="mostrarModalObservaciones = true"
+                @mouseleave="mostrarModalObservaciones = false"
+              />
+              <div
+                v-show="mostrarModalObservaciones"
+                class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 modal-pos"
+              >
+                <p class="text-sm text-gray-600">
+                  En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.
+                </p>
+              </div>
+            </div>
+            
+          </div>
+          <p class="text-gray-500 mt-2 mb-1">
+            Si tu jurado dejó observaciones, el estado será <strong class="text-gray-400">pendiente</strong>. Corrige las observaciones en el documento de Google Docs.
+          </p>
+          <p class="text-gray-500">
+            Después de corregir, haz clic en <strong class="text-[#39B49E]">“Observaciones corregidas”</strong> para que el jurado correspondiente revise nuevamente.<br> Si los 3 jurados aprueban el Proyecto de Tesis, el estado cambiará a <strong class="text-green-500">aprobado</strong>.
+          </p>
+          <!-- Tabla de observaciones Presidente -->
+          <div class="overflow-x-auto mt-4">
+            <p class="text-xl py-2 text-[#011B4B] font-bold italic">Correcciones con Jurado Presidente</p>
+            <table
+              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
+            >
+              <thead class="min-w-full leading-normal">
+                <tr class="text-center text-azul border-b-2 bg-gray-300">
+                  <th class="px-4 py-2 text-left tracking-wider">
+                    N° REVISIÓN
+                  </th>
+                  <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
+                  <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
+                  <th class="px-4 py-2 tracking-wider">ESTADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(obs, index) in revision"
+                  :key="obs.id"
+                  class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
+                >
+                  <td class="px-4 py-2 text-base text-gray-600">
+                    <p class="text-wrap w-28">
+                      {{ obs.cantidad || "Desconocido" }}
+                    </p>
+                  </td>
+                  <td class="px-4 py-2 text-base text-gray-600">
+                    <p class="text-wrap w-40">
+                      {{ obs.fecha || "Desconocido" }}
+                    </p>
+                  </td>
+                  <td class="px-4 py-2 text-base">
+                    <button
+                      :disabled="
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                      "
+                      :class="[
+                        'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-base hover:bg-[#48bb78]',
+                      ]"
+                      @click="
+                        authStore.id
+                          ? actualizarRevision(authStore.id)
+                          : mostrarAlerta('ID no disponible')
+                      "
+                    >
+                      Observaciones corregidas
+                    </button>
+                  </td>
+                  <td class="px-4 py-2">
+                    <span
+                      :class="`estado-estilo estado-${obs.estado
+                        .toLowerCase()
+                        .replace(' ', '-')}`"
+                      >{{ obs.estado || "Desconocido" }}</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Tabla de observaciones Secretario -->
+          <div class="overflow-x-auto mt-4">
+            <p class="text-xl py-2 text-[#011B4B] font-bold italic">Correcciones con Jurado Secretario</p>
+            <table
+              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
+            >
+              <thead class="min-w-full leading-normal">
+                <tr class="text-center text-azul border-b-2 bg-gray-300">
+                  <th class="px-4 py-2 text-left tracking-wider">
+                    N° REVISIÓN
+                  </th>
+                  <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
+                  <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
+                  <th class="px-4 py-2 tracking-wider">ESTADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(obs, index) in revision"
+                  :key="obs.id"
+                  class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
+                >
+                  <td class="px-4 py-2 text-base text-gray-600">
+                    <p class="text-wrap w-28">
+                      {{ obs.cantidad || "Desconocido" }}
+                    </p>
+                  </td>
+                  <td class="px-4 py-2 text-base text-gray-600">
+                    <p class="text-wrap w-40">
+                      {{ obs.fecha || "Desconocido" }}
+                    </p>
+                  </td>
+                  <td class="px-4 py-2 text-base">
+                    <button
+                      :disabled="
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                      "
+                      :class="[
+                        'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-base hover:bg-[#48bb78]',
+                      ]"
+                      @click="
+                        authStore.id
+                          ? actualizarRevision(authStore.id)
+                          : mostrarAlerta('ID no disponible')
+                      "
+                    >
+                      Observaciones corregidas
+                    </button>
+                  </td>
+                  <td class="px-4 py-2">
+                    <span
+                      :class="`estado-estilo estado-${obs.estado
+                        .toLowerCase()
+                        .replace(' ', '-')}`"
+                      >{{ obs.estado || "Desconocido" }}</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Tabla de observaciones Vocal -->
+          <div class="overflow-x-auto mt-4">
+            <p class="text-xl py-2 text-[#011B4B] font-bold italic">Correcciones con Jurado Vocal</p>
+            <table
+              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
+            >
+              <thead class="min-w-full leading-normal">
+                <tr class="text-center text-azul border-b-2 bg-gray-300">
+                  <th class="px-4 py-2 text-left tracking-wider">
+                    N° REVISIÓN
+                  </th>
+                  <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
+                  <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
+                  <th class="px-4 py-2 tracking-wider">ESTADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(obs, index) in revision"
+                  :key="obs.id"
+                  class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
+                >
+                  <td class="px-4 py-2 text-base text-gray-600">
+                    <p class="text-wrap w-28">
+                      {{ obs.cantidad || "Desconocido" }}
+                    </p>
+                  </td>
+                  <td class="px-4 py-2 text-base text-gray-600">
+                    <p class="text-wrap w-40">
+                      {{ obs.fecha || "Desconocido" }}
+                    </p>
+                  </td>
+                  <td class="px-4 py-2 text-base">
+                    <button
+                      :disabled="
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                      "
+                      :class="[
+                        'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-base hover:bg-[#48bb78]',
+                      ]"
+                      @click="
+                        authStore.id
+                          ? actualizarRevision(authStore.id)
+                          : mostrarAlerta('ID no disponible')
+                      "
+                    >
+                      Observaciones corregidas
+                    </button>
+                  </td>
+                  <td class="px-4 py-2">
+                    <span
+                      :class="`estado-estilo estado-${obs.estado
+                        .toLowerCase()
+                        .replace(' ', '-')}`"
+                      >{{ obs.estado || "Desconocido" }}</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Documentos -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+            <img
+              src="/icon/info2.svg"
+              alt="Info"
+              class="ml-2 w-4 h-4 cursor-pointer"
+              @mouseover="mostrarModalDocumentos = true"
+              @mouseleave="mostrarModalDocumentos = false"
+            />
+          </div>
+          <div
+            v-if="mostrarModalDocumentos"
+            class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
+          >
+            <p class="text-sm text-gray-600">
+              Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.
+            </p>
+          </div>
+          <div class="mt-4 space-y-4">
+            <div
+              v-for="(documento, index) in documentos"
+              :key="documento.nombre"
+              class="bg-gray-50 p-4 border border-gray-200 rounded-md"
+            >
+              <div
+                class="flex flex-col md:flex-row justify-between md:items-center"
+              >
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg"
+                  >Informe de Conformidad de Observaciones por Presidente</span
+                >
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
+                >
+                  <div
+                    v-if="documento.estado === 'Hecho'"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+                  >
+                    <!-- Botón de Ver -->
+                    <a
+                      :href="`${VIEW_CPA}/${documento.revision_id}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${documento.revision_id}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span
+                    v-else-if="documento.estado === 'pendiente'"
+                    class="text-gray-500 italic"
+                    >El documento aún no se ha cargado</span
+                  >
+                  <span
+                    :class="`estado-estilo estado-${documento.estado
+                      .toLowerCase()
+                      .replace(' ', '-')}`"
+                    >{{ documento.estado || "Estado desconocido" }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 space-y-4">
+            <div
+              v-for="(documento, index) in documentos"
+              :key="documento.nombre"
+              class="bg-gray-50 p-4 border border-gray-200 rounded-md"
+            >
+              <div
+                class="flex flex-col md:flex-row justify-between md:items-center"
+              >
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg"
+                  >Informe de Conformidad de Observaciones por Secretario</span
+                >
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
+                >
+                  <div
+                    v-if="documento.estado === 'Hecho'"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+                  >
+                    <!-- Botón de Ver -->
+                    <a
+                      :href="`${VIEW_CPA}/${documento.revision_id}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${documento.revision_id}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span
+                    v-else-if="documento.estado === 'pendiente'"
+                    class="text-gray-500 italic"
+                    >El documento aún no se ha cargado</span
+                  >
+                  <span
+                    :class="`estado-estilo estado-${documento.estado
+                      .toLowerCase()
+                      .replace(' ', '-')}`"
+                    >{{ documento.estado || "Estado desconocido" }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 space-y-4">
+            <div
+              v-for="(documento, index) in documentos"
+              :key="documento.nombre"
+              class="bg-gray-50 p-4 border border-gray-200 rounded-md"
+            >
+              <div
+                class="flex flex-col md:flex-row justify-between md:items-center"
+              >
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg"
+                  >Informe de Conformidad de Observaciones por vocal</span
+                >
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
+                >
+                  <div
+                    v-if="documento.estado === 'Hecho'"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+                  >
+                    <!-- Botón de Ver -->
+                    <a
+                      :href="`${VIEW_CPA}/${documento.revision_id}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${documento.revision_id}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span
+                    v-else-if="documento.estado === 'pendiente'"
+                    class="text-gray-500 italic"
+                    >El documento aún no se ha cargado</span
+                  >
+                  <span
+                    :class="`estado-estilo estado-${documento.estado
+                      .toLowerCase()
+                      .replace(' ', '-')}`"
+                    >{{ documento.estado || "Estado desconocido" }}</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Botones siguiente y anterior-->
+        <div class="flex justify-between">
+            <!-- Botón de Anterior -->
+            <button
+              @click="$router.push('/estudiante/designacion-jurado')" 
+              class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
+            >
+              Anterior
+            </button>
+
+            <!-- Botón de Siguiente -->
+            <button
+              @click="handleNextButtonClick"
+              :class="[ 
+                'px-4 py-2 text-white rounded-md',
+                isNextButtonDisabled
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600',
+              ]"
+            >
+              Siguiente
+            </button>
+        </div>
+      </div>
+    </div>
+  </template>
 </template>
 
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 400;
   border-radius: 0.375rem;
   display: inline-block;
+}
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-hecho {
+  background-color: #48bb78;
+  color: #ffffff;
+}
+.estado-aprobado {
+  background-color: #48bb78;
+  color: #ffffff;
+}
+.estado-observado {
+  background-color: #e79e38;
+  color: #ffffff;
 }
 
 .break-all {
   word-break: break-all;
+}
+
+.modal-pos {
+  right: 0;
+  top: 100%;
+}
+
+@media (max-width: 640px) {
+  .modal-pos {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 120%;
+  }
 }
 </style>

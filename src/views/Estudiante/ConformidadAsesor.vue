@@ -447,7 +447,7 @@ onMounted(() => {
               class="min-w-full bg-white border border-gray-200 rounded-md shadow"
             >
               <thead class="min-w-full leading-normal">
-                <tr class="text-center text-black border-b-2 bg-gray-300">
+                <tr class="text-center text-azul border-b-2 bg-gray-300">
                   <th class="px-4 py-2 text-left tracking-wider">
                     N° REVISIÓN
                   </th>
