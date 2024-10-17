@@ -443,40 +443,32 @@ onMounted(() => {
           </p>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
-            <table
-              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
-            >
+            <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
               <thead class="min-w-full leading-normal">
                 <tr class="text-center text-azul border-b-2 bg-gray-300">
-                  <th class="px-4 py-2 text-left tracking-wider">
-                    N° REVISIÓN
-                  </th>
+                  <th class="px-4 py-2 text-left tracking-wider">N° REVISIÓN</th>
                   <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
                   <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
                   <th class="px-4 py-2 tracking-wider">ESTADO</th>
                 </tr>
               </thead>
-              <tbody>
+
+              <!-- Verificamos si hay datos en 'revision' -->
+              <tbody v-if="revision.length > 0">
                 <tr
                   v-for="(obs, index) in revision"
                   :key="obs.id"
                   class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
                 >
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-28">
-                      {{ obs.cantidad || "Desconocido" }}
-                    </p>
+                    <p class="text-wrap w-28">{{ obs.cantidad || 'Desconocido' }}</p>
                   </td>
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-40">
-                      {{ obs.fecha || "Desconocido" }}
-                    </p>
+                    <p class="text-wrap w-40">{{ obs.fecha || 'Desconocido' }}</p>
                   </td>
                   <td class="px-4 py-2 text-base">
                     <button
-                      :disabled="
-                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
-                      "
+                      :disabled="obs.estado === 'pendiente' || obs.estado === 'aprobado'"
                       :class="[
                         'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
                         obs.estado === 'pendiente' || obs.estado === 'aprobado'
@@ -494,11 +486,18 @@ onMounted(() => {
                   </td>
                   <td class="px-4 py-2">
                     <span
-                      :class="`estado-estilo estado-${obs.estado
-                        .toLowerCase()
-                        .replace(' ', '-')}`"
-                      >{{ obs.estado || "Desconocido" }}</span
+                      :class="`estado-estilo estado-${obs.estado.toLowerCase().replace(' ', '-')}`"
+                      >{{ obs.estado || 'Desconocido' }}</span
                     >
+                  </td>
+                </tr>
+              </tbody>
+
+              <!-- Mostrar mensaje si no hay observaciones -->
+              <tbody v-else>
+                <tr>
+                  <td colspan="4" class="px-4 py-4 text-center text-gray-600">
+                    No hay observaciones disponibles por el momento.
                   </td>
                 </tr>
               </tbody>

@@ -5,6 +5,8 @@ import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
 import { useAuthStore } from "@/stores/auth";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
 interface Review {
   stu_id: string;
@@ -280,8 +282,14 @@ onMounted(() => {
                         <p class="text-gray-900 text-wrap w-80">{{ u.sol_title_inve || "Título no disponible" }}</p>
                       </td>
                       <td class="px-3 py-5 text-center">
-                        <a :href="u['link-tesis']" target="_blank" class="text-blue-800 hover:text-base ">Ver proyecto</a>
+                        <a :href="u['link-tesis']" target="_blank" class="text-blue-800 hover:text-base flex items-center justify-center group">
+                          <!-- Ícono que se muestra normalmente -->
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                          <span class="text-[#34495e]">Ver proyecto</span>
+                        </a>
                       </td>
+
                       <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                       <td class="px-3 py-5 text-center align-middle">
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">

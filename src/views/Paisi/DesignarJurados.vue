@@ -56,13 +56,13 @@ const totalPages = computed(() => {
 });
 
 // Funciones para cambiar de página
-function goToPreviousPage() {
-  if (currentPage.value > 1) currentPage.value--;
-}
+// function goToPreviousPage() {
+//   if (currentPage.value > 1) currentPage.value--;
+// }
 
-function goToNextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-}
+// function goToNextPage() {
+//   if (currentPage.value < totalPages.value) currentPage.value++;
+// }
 
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 // Estado de carga
