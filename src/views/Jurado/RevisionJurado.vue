@@ -5,9 +5,6 @@ import { alertToast } from "@/functions";
 import { useAuthStore } from "@/stores/auth";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
-import IconArchivo from "@/components/icons/IconArchivo.vue";
-import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
-import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
 // Estados y propiedades
 const showModal = ref(false);
@@ -102,7 +99,11 @@ interface Review {
   vocal_cont: number,
   rev_status: string,
   rev_num_of: number,
-  oficio_generado: boolean; 
+  oficio_generado: boolean,
+  presidente_aprobado: string,
+  secretario_aprobado:string,
+  vocal_aprobado:string,
+  review_id: string,
 
 }
 
@@ -128,8 +129,16 @@ const fetchReviews = async () => {
     tableData.value = response.data.data.map((review: any) => {
       return {
         ...review,
-        oficio_generado: review.rev_status=== 'aprobado',
-        revision_id: review.revision_id
+        oficio_generado: review.rev_status === 'aprobado',
+        revision_id: review.revision_id,
+        presidente_aprobado: review.presidente_estado === 'aprobado',
+        secretario_aprobado: review.secretario_estado === 'aprobado',
+        vocal_aprobado: review.vocal_estado === 'aprobado',
+        presidente_cont: review.presidente_cont,
+        secretario_cont: review.secretario_cont,
+        vocal_cont: review.vocal_cont,
+        estado: review.estado === 'pendiente' ? 'pendiente' : review.estado,  // Actualiza el estado correctamente
+        review_id: review.revision_id
       };
     });
     console.log("Datos transformados con oficio_generado:", tableData.value);
@@ -139,6 +148,7 @@ const fetchReviews = async () => {
     load.value = false;
   }
 };
+
 const sendObservacion = async () => {
   try {
     const solicitudeId = solicitudSeleccionada.value?.revision_id;
@@ -155,7 +165,7 @@ const sendObservacion = async () => {
     console.log("que estoy enviando ", response);
 
     if (response.data.message === "Observacion enviada") {
-      await fetchReviews();
+      await fetchReviews(); // Asegúrate de volver a traer los datos después de la acción
       closeModal();
       alertToast("La solicitud ha sido observada correctamente", "Éxito", "success");      
     } else {
@@ -165,6 +175,7 @@ const sendObservacion = async () => {
     alert("Ocurrió un error al procesar la solicitud");
   }
 };
+
 
 const acceptCorrecion = async () => {
   try {
@@ -178,33 +189,35 @@ const acceptCorrecion = async () => {
       alertToast("El N° de Oficio debe tener exactamente 3 caracteres", "Error", "error");
       return;
     }
-    //console.log("Número de oficio que se está enviando:", nroCarta.value);
+
     const params = {
       rev_status: "aprobado",
       rev_num_of: nroCarta.value,
     };
 
-    const response = await axios.put(`/api/student/review/${solicitudId}/status`, params);
+    const response = await axios.put(`/api/review/${solicitudId}/status`, params);
 
     if (response.status === 200 || response.status === 201) {
-    const solicitud = tableData.value.find((sol) => sol.revision_id === solicitudId);
-    if (solicitud) {
-      solicitud.rev_status = 'aprobado';
-      solicitud.oficio_generado = true;
-      solicitud.rev_num_of = response.data?.data?.rev_num_of || params.rev_num_of;  
-    }
-        alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
-        closeModal();
-      } else {
-        alert("Hubo un problema al aprobar la solicitud.");
+      const solicitud = tableData.value.find((sol) => sol.revision_id === solicitudId);
+      if (solicitud) {
+        solicitud.rev_status = 'aprobado';
+        solicitud.oficio_generado = true;
+        solicitud.rev_num_of = response.data?.data?.rev_num_of || params.rev_num_of;  
       }
-    } catch (error) {
-      alertToast("Error al aceptar la solicitud", "Error", "error");
-      console.error("Error al aceptar la corrección:", error);
+      await fetchReviews(); // Asegúrate de actualizar los datos después de aprobar
+      alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
+      closeModal();
+    } else {
+      alert("Hubo un problema al aprobar la solicitud.");
     }
-  };
+  } catch (error) {
+    alertToast("Error al aceptar la solicitud", "Error", "error");
+    console.error("Error al aceptar la corrección:", error);
+  }
+};
 onMounted(() => {
   fetchReviews();
+  
 });
 </script>
 
@@ -305,43 +318,61 @@ onMounted(() => {
                     </span>
                   </td>
                   <td class="px-2 py-3 text-center">{{ u.vocal_cont }}</td>
-                  <td class="px-2 py-3 text-center">
-                    <span class="px-3 py-1 text-white bg-base rounded-full">
-                      {{ u.rol }}
-                    </span> <br><br>
-                    <span class="px-3 py-1 text-white bg-base rounded-full">
-                      {{ u.rol }}
-                    </span>
-                    
+                  <td class="px-2 py-3 text-center align-middle">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 5px;">
+                      <!-- Mostrar presidente si el asesor no es presidente -->
+                      <div v-if="u.rol !== 'presidente'" class="w-full flex justify-center">
+                        <span class="block px-3 py-1 text-white rounded-full" 
+                          :class="u.presidente_aprobado ? 'bg-green-400' : 'bg-gray-400'">
+                          Presidente: {{ u.presidente_aprobado ? 'Aprobado' : u.presidente_cont + ' revisiones' }}
+                        </span>
+                      </div>
+
+                      <!-- Mostrar secretario si el asesor no es secretario -->
+                      <div v-if="u.rol !== 'secretario'" class="w-full flex justify-center">
+                        <span class="block px-3 py-1 text-white rounded-full" 
+                          :class="u.secretario_aprobado ? 'bg-green-400' : 'bg-gray-400'">
+                          Secretario: {{ u.secretario_aprobado ? 'Aprobado' : u.secretario_cont + ' revisiones' }}
+                        </span>
+                      </div>
+
+                      <!-- Mostrar vocal si el asesor no es vocal -->
+                      <div v-if="u.rol !== 'vocal'" class="w-full flex justify-center">
+                        <span class="block px-3 py-1 text-white rounded-full" 
+                          :class="u.vocal_aprobado ? 'bg-green-400' : 'bg-gray-400'">
+                          Vocal: {{ u.vocal_aprobado ? 'Aprobado' : u.vocal_cont + ' revisiones' }}
+                        </span>
+                      </div>
+                    </div>
                   </td>
+                   
                   <td class="px-2 py-3 text-center align-middle">
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
                         <button
-                          v-if="!u.oficio_generado && u.rev_status !== 'aprobado'" 
-                          :disabled="u.rev_status === 'observado'" 
+                          v-if="!u.oficio_generado && u.estado !== 'aprobado'" 
+                          :disabled="u.estado === 'observado'" 
                           :class="['w-24 px-3  py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400  text-white cursor-not-allowed' : 'bg-green-400 text-white']"
                           @click="openModal(u.revision_id)">Aprobar
                         </button>
                         <button
-                          v-if="!u.oficio_generado && u.rev_status !== 'aprobado'"  
+                          v-if="!u.oficio_generado && u.estado !== 'aprobado'"  
                           :disabled="u.estado === 'observado'" 
                           :class="['w-24 px-3 py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gray-500 text-white']"
                           @click="openRejectModal(u.revision_id)">Observar
                         </button>
                         <a
-                          v-if="u.oficio_generado && u.rev_status === 'aprobado'" 
+                          v-if=" u.estado === 'aprobado'" 
                           :href="`${VIEW_CPA}/${u.revision_id}`"  
                           target="_blank" 
                           class="text-blue-800">
                         <button>
                           <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                         </button>
-                        <!-- <br>
-                          Ver Conformidad -->
                         </a>
 
                         </div>
-                      </td>
+                  </td>
+
                   <td class="px-2 py-3 text-center">
                     <span :class="`estado-estilo estado-${u.estado.toLowerCase().replace(' ', '-')}`">
                       {{ u.estado }}
@@ -439,6 +470,10 @@ onMounted(() => {
 
 .estado-pendiente {
   background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-aprobado {
+  background-color: #48bb78;
   color: #ffffff;
 }
 
