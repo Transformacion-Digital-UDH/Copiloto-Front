@@ -183,11 +183,11 @@ onMounted(() => {
 //   }
 // };
 
-const obtenerRev = async () => {
-  load.value = true;
-  try {
-    const response = await axios.get(`/api/student/get-review/${authStore.id}`);
-    console.log("Datos recibidos de revisión:", response.data);
+// const obtenerRev = async () => {
+//   load.value = true;
+//   try {
+//     const response = await axios.get(`/api/student/get-review/${authStore.id}`);
+//     console.log("Datos recibidos de revisión:", response.data);
 
 //     if (response.data.status) {
 //       console.log("Estructura de los datos recibidos:", response.data);
@@ -386,7 +386,7 @@ const obtenerRev = async () => {
 
           <!-- Explicación breve -->
           <p class="text-sm text-gray-600">
-            Asegurate de tener toda tu informacion corregida y actualizada en el documento de Google Docs.
+            Asegurate de tener toda tu informacion corregida y actualizada en el documento de Google Docs proporcionado y luego haga clic en "Solicitar Revisión".
           </p>
         </div>
 
@@ -426,8 +426,9 @@ const obtenerRev = async () => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h4 class="text-2xl font-medium text-black">
-              1. Revisión de Observaciones
+              2. Revisión de Observaciones
             </h4>
+
             <div class="relative">
               <img
                 src="/icon/info2.svg"
@@ -453,35 +454,43 @@ const obtenerRev = async () => {
           <p class="text-gray-500">
             Después de corregir, haz clic en <strong class="text-[#39B49E]">“Observaciones corregidas”</strong> para que el jurado correspondiente revise nuevamente.<br> Si los 3 jurados aprueban el Proyecto de Tesis, el estado cambiará a <strong class="text-green-500">aprobado</strong>.
           </p>
-         <!-- Tabla de observaciones Presidente -->
+          <!-- Tabla de observaciones Presidente -->
           <div class="overflow-x-auto mt-4">
             <p class="text-xl py-2 text-[#011B4B] font-bold italic">Correcciones con Jurado Presidente</p>
-            <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
+            <table
+              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
+            >
               <thead class="min-w-full leading-normal">
                 <tr class="text-center text-azul border-b-2 bg-gray-300">
-                  <th class="px-4 py-2 text-left tracking-wider">N° REVISIÓN</th>
+                  <th class="px-4 py-2 text-left tracking-wider">
+                    N° REVISIÓN
+                  </th>
                   <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
                   <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
                   <th class="px-4 py-2 tracking-wider">ESTADO</th>
                 </tr>
               </thead>
-
-              <!-- Mostrar contenido de la tabla si hay datos -->
-              <tbody v-if="revision.length > 0">
+              <tbody>
                 <tr
                   v-for="(obs, index) in revision"
                   :key="obs.id"
                   class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
                 >
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-28">{{ obs.cantidad || 'Desconocido' }}</p>
+                    <p class="text-wrap w-28">
+                      {{ obs.cantidad || "Desconocido" }}
+                    </p>
                   </td>
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-40">{{ obs.fecha || 'Desconocido' }}</p>
+                    <p class="text-wrap w-40">
+                      {{ obs.fecha || "Desconocido" }}
+                    </p>
                   </td>
                   <td class="px-4 py-2 text-base">
                     <button
-                      :disabled="obs.estado === 'pendiente' || obs.estado === 'aprobado'"
+                      :disabled="
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                      "
                       :class="[
                         'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
                         obs.estado === 'pendiente' || obs.estado === 'aprobado'
@@ -499,53 +508,53 @@ const obtenerRev = async () => {
                   </td>
                   <td class="px-4 py-2">
                     <span
-                      :class="`estado-estilo estado-${obs.estado.toLowerCase().replace(' ', '-')}`"
+                      :class="`estado-estilo estado-${obs.estado
+                        .toLowerCase()
+                        .replace(' ', '-')}`"
+                      >{{ obs.estado || "Desconocido" }}</span
                     >
-                      {{ obs.estado || 'Desconocido' }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-
-              <!-- Mostrar mensaje si no hay observaciones -->
-              <tbody v-else>
-                <tr>
-                  <td colspan="4" class="px-4 py-4 text-center text-gray-600">
-                    No hay observaciones disponibles para el Jurado Presidente.
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-         <!-- Tabla de observaciones Secretario -->
+          <!-- Tabla de observaciones Secretario -->
           <div class="overflow-x-auto mt-4">
             <p class="text-xl py-2 text-[#011B4B] font-bold italic">Correcciones con Jurado Secretario</p>
-            <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
+            <table
+              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
+            >
               <thead class="min-w-full leading-normal">
                 <tr class="text-center text-azul border-b-2 bg-gray-300">
-                  <th class="px-4 py-2 text-left tracking-wider">N° REVISIÓN</th>
+                  <th class="px-4 py-2 text-left tracking-wider">
+                    N° REVISIÓN
+                  </th>
                   <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
                   <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
                   <th class="px-4 py-2 tracking-wider">ESTADO</th>
                 </tr>
               </thead>
-
-              <!-- Mostrar contenido de la tabla si hay datos -->
-              <tbody v-if="revision.length > 0">
+              <tbody>
                 <tr
                   v-for="(obs, index) in revision"
                   :key="obs.id"
                   class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
                 >
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-28">{{ obs.cantidad || 'Desconocido' }}</p>
+                    <p class="text-wrap w-28">
+                      {{ obs.cantidad || "Desconocido" }}
+                    </p>
                   </td>
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-40">{{ obs.fecha || 'Desconocido' }}</p>
+                    <p class="text-wrap w-40">
+                      {{ obs.fecha || "Desconocido" }}
+                    </p>
                   </td>
                   <td class="px-4 py-2 text-base">
                     <button
-                      :disabled="obs.estado === 'pendiente' || obs.estado === 'aprobado'"
+                      :disabled="
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                      "
                       :class="[
                         'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
                         obs.estado === 'pendiente' || obs.estado === 'aprobado'
@@ -563,54 +572,53 @@ const obtenerRev = async () => {
                   </td>
                   <td class="px-4 py-2">
                     <span
-                      :class="`estado-estilo estado-${obs.estado.toLowerCase().replace(' ', '-')}`"
+                      :class="`estado-estilo estado-${obs.estado
+                        .toLowerCase()
+                        .replace(' ', '-')}`"
+                      >{{ obs.estado || "Desconocido" }}</span
                     >
-                      {{ obs.estado || 'Desconocido' }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-
-              <!-- Mostrar mensaje si no hay observaciones -->
-              <tbody v-else>
-                <tr>
-                  <td colspan="4" class="px-4 py-4 text-center text-gray-600">
-                    No hay observaciones disponibles para el Jurado Secretario.
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-
           <!-- Tabla de observaciones Vocal -->
           <div class="overflow-x-auto mt-4">
             <p class="text-xl py-2 text-[#011B4B] font-bold italic">Correcciones con Jurado Vocal</p>
-            <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
+            <table
+              class="min-w-full bg-white border border-gray-200 rounded-md shadow"
+            >
               <thead class="min-w-full leading-normal">
                 <tr class="text-center text-azul border-b-2 bg-gray-300">
-                  <th class="px-4 py-2 text-left tracking-wider">N° REVISIÓN</th>
+                  <th class="px-4 py-2 text-left tracking-wider">
+                    N° REVISIÓN
+                  </th>
                   <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
                   <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
                   <th class="px-4 py-2 tracking-wider">ESTADO</th>
                 </tr>
               </thead>
-
-              <!-- Mostrar contenido de la tabla si hay datos -->
-              <tbody v-if="revision.length > 0">
+              <tbody>
                 <tr
                   v-for="(obs, index) in revision"
                   :key="obs.id"
                   class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
                 >
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-28">{{ obs.cantidad || 'Desconocido' }}</p>
+                    <p class="text-wrap w-28">
+                      {{ obs.cantidad || "Desconocido" }}
+                    </p>
                   </td>
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-40">{{ obs.fecha || 'Desconocido' }}</p>
+                    <p class="text-wrap w-40">
+                      {{ obs.fecha || "Desconocido" }}
+                    </p>
                   </td>
                   <td class="px-4 py-2 text-base">
                     <button
-                      :disabled="obs.estado === 'pendiente' || obs.estado === 'aprobado'"
+                      :disabled="
+                        obs.estado === 'pendiente' || obs.estado === 'aprobado'
+                      "
                       :class="[
                         'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
                         obs.estado === 'pendiente' || obs.estado === 'aprobado'
@@ -628,19 +636,11 @@ const obtenerRev = async () => {
                   </td>
                   <td class="px-4 py-2">
                     <span
-                      :class="`estado-estilo estado-${obs.estado.toLowerCase().replace(' ', '-')}`"
+                      :class="`estado-estilo estado-${obs.estado
+                        .toLowerCase()
+                        .replace(' ', '-')}`"
+                      >{{ obs.estado || "Desconocido" }}</span
                     >
-                      {{ obs.estado || 'Desconocido' }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-
-              <!-- Mostrar mensaje si no hay observaciones -->
-              <tbody v-else>
-                <tr>
-                  <td colspan="4" class="px-4 py-4 text-center text-gray-600">
-                    No hay observaciones disponibles para el Jurado Vocal.
                   </td>
                 </tr>
               </tbody>
@@ -651,7 +651,7 @@ const obtenerRev = async () => {
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+            <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
             <img
               src="/icon/info2.svg"
               alt="Info"
