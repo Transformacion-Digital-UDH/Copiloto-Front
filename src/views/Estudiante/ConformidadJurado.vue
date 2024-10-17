@@ -7,47 +7,47 @@ import { alertToast } from "@/functions";
 import router from "@/router";
 import Swal from "sweetalert2";
 
-interface Documento {
-  nombre: string;
-  estado: string;
-  documentoUrl: string;
-  revision_id?: string | null;
-}
-interface Asesor {
-  nombre: string;
-  apellido_paterno: string;
-  apellido_materno: string;
-}
+// interface Documento {
+//   nombre: string;
+//   estado: string;
+//   documentoUrl: string;
+//   revision_id?: string | null;
+// }
+// interface Asesor {
+//   nombre: string;
+//   apellido_paterno: string;
+//   apellido_materno: string;
+// }
 
 // Documentos es un array reactivo de tipo Documento usando reactive
-const documentos = reactive<Documento[]>([
-  {
-    nombre: "Informe de Conformidad de Observaciones",
-    estado: "pendiente",
-    documentoUrl: "",
-    revision_id: null,
-  },
-]);
+// const documentos = reactive<Documento[]>([
+//   {
+//     nombre: "Informe de Conformidad de Observaciones",
+//     estado: "pendiente",
+//     documentoUrl: "",
+//     revision_id: null,
+//   },
+// ]);
 
-function estadoClase(estado: string) {
-  switch (estado) {
-    case "aprobado":
-      return "bg-[#48bb78] text-white";
-    case "pendiente":
-      return "bg-[#8898aa] text-white";
-    case "observado":
-      return "bg-[#e79e38] text-white";
-    default:
-      return "";
-  }
-}
+// function estadoClase(estado: string) {
+//   switch (estado) {
+//     case "aprobado":
+//       return "bg-[#48bb78] text-white";
+//     case "pendiente":
+//       return "bg-[#8898aa] text-white";
+//     case "observado":
+//       return "bg-[#e79e38] text-white";
+//     default:
+//       return "";
+//   }
+// }
 
 const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de Proyecto de Tesis por los Jurados";
+const text = "Conformidad de proyecto de tesis por los jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -60,12 +60,42 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
+
+// const handleNextButtonClick = () => {
+//   if (isNextButtonDisabled.value) {
+//     Swal.fire({
+//       icon: "warning",
+//       title: "Pasos incompletos",
+//       text: "Por favor, completa todos los pasos antes de continuar.",
+//       confirmButtonText: "OK",
+//     });
+//   } else {
+//     goToNextPage();
+//   }
+// };
+
+// const goToNextPage = () => {
+//   router.push("/estudiante/aprobacion-proyecto");
+// };
+
+// const isNextButtonDisabled = computed(() => {
+//   const documentoPaso3 = documentos.find(
+//     (doc) => doc.nombre === "Informe de Conformidad de Observaciones"
+//   );
+//   return documentoPaso3?.estado !== "Hecho";
+// });
+
 // ******************************************************
 
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
-const asesor = ref<Asesor | null>(null);
-const titulo = ref("");
-const link = ref("");
+const isLoading = ref(false);
+const titulo = ref<string>('');
+const link = ref<string>('');
+const presidente = ref<string>('');
+const vocal = ref<string>('');
+const secretario = ref<string>('');
+
+// const asesor = ref<Asesor | null>(null);
 const load = ref(false);
 const estado = ref<string>("");
 const cantidad = ref<number>();
@@ -77,251 +107,230 @@ const solicitudEstado2 = ref<string>("");
 const solicitudMensaje = ref("");
 const revision = ref<any[]>([]);
 
+interface Jurado {
+  nombre: string;
+  rol: string;
+}
+
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
-const handleNextButtonClick = () => {
-  if (isNextButtonDisabled.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Pasos incompletos",
-      text: "Por favor, completa todos los pasos antes de continuar.",
-      confirmButtonText: "OK",
-    });
-  } else {
-    goToNextPage();
-  }
-};
-
-const goToNextPage = () => {
-  router.push("/estudiante/aprobacion-proyecto");
-};
 
 const isRevisionDisabled = computed(() => {
-  const estado = solicitudEstado.value?.toLowerCase();
-  console.log("Estado actual para deshabilitar botón:", estado);
-  return ["pendiente", "aprobado", "observado"].includes(estado);
+  const estadoSolicitud = solicitudEstado.value?.toLowerCase();
+  return ["pendiente", "aprobado", "observado"].includes(estadoSolicitud);
 });
 
-const mostrarAlerta = (mensaje: string) => {
-  window.alert(mensaje);
-};
-
-const isNextButtonDisabled = computed(() => {
-  const documentoPaso3 = documentos.find(
-    (doc) => doc.nombre === "Informe de Conformidad de Observaciones"
-  );
-  return documentoPaso3?.estado !== "Hecho";
-});
-
-const primeraRevision = async () => {
-  try {
-    const response = await axios.post(
-      `/api/review/get-review-jury/${authStore.id}`
-    );
-    console.log(response);
-    if (response.data.status) {
-      solicitudEstado.value = "pendiente";
-      alertToast("Solicitud enviada, espere las indicaciones del asesor por favor", "Éxito", "success");
-    }
-  } catch (error: any) {
-    console.log(error);
-    alertToast(error.response.data.message || "Error al enviar la solicitud", "Error", "error");
-  }
-};
-
-const obtenerRevisiones = async () => {
-  try {
-    const response = await axios.get(`/api/review/get-review-jury/${authStore.id}`);
-    if (response.data.status) {
-      console.log(response);
-      solicitudEstado.value = response.data.revision.estado;
-      console.log("Estado de la solicitud:", solicitudEstado.value);
-    }
-  } catch (error: any) {
-    solicitudMensaje.value =
-      error.response?.data.message || "Error desconocido";
-  }
-};
-
-const obtenerRev = async () => {
+const mostrarConformidadJurados = async () => {
   load.value = true;
   try {
-    const response = await axios.get(`/api/review/get-review-jury/${authStore.id}`);
-    console.log("Datos recibidos de revisión:", response.data);
+    const response = await axios.get(`api/review/get-review-jury/${authStore.id}`);
+    const data = response.data;
 
-    if (response.data.status) {
-      console.log("Estructura de los datos recibidos:", response.data);
-      const revisionData = response.data.revision;
+    console.log('Mostrando lo recido: ', data);
 
-      cantidad.value = revisionData.cantidad;
-      fecha.value = revisionData.fecha || "Desconocido";
-      estado.value = revisionData.estado;
-      revision_id.value = revisionData.revision_id;
+    titulo.value = data.titulo;
+    link.value = data.link;
 
-      documentos[0].revision_id = revisionData.revision_id;
+    data.data.forEach((jurado: Jurado) => {
+      if (jurado.rol === 'presidente') presidente.value = jurado.nombre;
+      if (jurado.rol === 'vocal') vocal.value = jurado.nombre;
+      if (jurado.rol === 'secretario') secretario.value = jurado.nombre;
+    });
 
-      if (revisionData.estado === "aprobado") {
-        documentos[0].estado = "Hecho";
-        documentos[0].documentoUrl =
-          "https://titulacion-back.abimaelfv.site/api/view-cpa";
-      } else {
-        documentos[0].estado = "pendiente";
-      }
-
-      revision.value = [
-        {
-          cantidad: revisionData.cantidad,
-          fecha: revisionData.fecha || "Desconocido",
-          accion: "Solicitar Revisión",
-          estado: revisionData.estado,
-        },
-      ];
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      alert(
-        `Error al actualizar la revisión: ${
-          error.response?.data.message || "Error desconocido"
-        }`
-      );
-    } else {
-      alert("Ocurrió un error desconocido.");
-    }
-    console.error(error);
+  } catch (error){
+    console.error('Error al obtener jurados designados: ', error);
   } finally {
     load.value = false;
   }
 };
 
-const actualizarRevision = async (studentId: string) => {
+const solicitarRevision = async () => {
+  isLoading.value = true;
   try {
-    if (!studentId) {
-      alert("No se pudo encontrar el ID del estudiante");
-      return;
+    const response = await axios.put(`/api/review/${authStore.id}/status`);
+    console.log(response);
+
+    if (response.data.rev_status) {
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada, espere las indicaciones de los jurados por favor", "Éxito", "success");
     }
 
-    const response = await axios.put(
-      `/api/student/review/${studentId}/status`,
-      {
-        rev_status: "pendiente",
-      }
-    );
-
-    if (response.status === 200 || response.status === 201) {
-      await obtenerRev();
-
-      alertToast(
-        "Se han enviado las observaciones corregidas.",
-        "Éxito",
-        "success"
-      );
-    } else {
-      alert("Hubo un problema al actualizar la revisión.");
-    }
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      alert(
-        `Error al actualizar la revisión: ${
-          error.response?.data.message || "Error desconocido"
-        }`
-      );
-    } else {
-      alert("Ocurrió un error desconocido.");
-    }
-    console.error(error);
-  }
-};
-
-const obtenerDatosEstudiante = async () => {
-  try {
-    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
-    if (response.data.status) {
-      const solicitud = response.data.solicitud;
-      asesor.value = solicitud.asesor;
-      titulo.value = solicitud.titulo;
-      link.value = solicitud.link;
-    }
-  } catch (error) {
-    console.error("Error al obtener los datos del estudiante:", error);
+  } catch (error: any) {
+    console.log(error);
+    alertToast(error.response.data.message || "Error al enviar la solicitud", "Error", "error");
+  } finally {
+    isLoading.value = false;
   }
 };
 
 onMounted(() => {
-  obtenerRevisiones();
-  obtenerRev();
-  obtenerDatosEstudiante();
-});
+  mostrarConformidadJurados();
+})
+
+// const obtenerRevisiones = async () => {
+//   try {
+//     const response = await axios.get(`/api/student/get-review/${authStore.id}`);
+//     if (response.data.status) {
+//       console.log(response);
+//       solicitudEstado.value = response.data.revision.estado;
+//       console.log("Estado de la solicitud:", solicitudEstado.value);
+//     }
+//   } catch (error: any) {
+//     solicitudMensaje.value =
+//       error.response?.data.message || "Error desconocido";
+//   }
+// };
+
+const obtenerRev = async () => {
+  load.value = true;
+  try {
+    const response = await axios.get(`/api/student/get-review/${authStore.id}`);
+    console.log("Datos recibidos de revisión:", response.data);
+
+//     if (response.data.status) {
+//       console.log("Estructura de los datos recibidos:", response.data);
+//       const revisionData = response.data.revision;
+
+//       cantidad.value = revisionData.cantidad;
+//       fecha.value = revisionData.fecha || "Desconocido";
+//       estado.value = revisionData.estado;
+//       revision_id.value = revisionData.revision_id;
+
+//       documentos[0].revision_id = revisionData.revision_id;
+
+//       if (revisionData.estado === "aprobado") {
+//         documentos[0].estado = "Hecho";
+//         documentos[0].documentoUrl =
+//           "https://titulacion-back.abimaelfv.site/api/view-cpa";
+//       } else {
+//         documentos[0].estado = "pendiente";
+//       }
+
+//       revision.value = [
+//         {
+//           cantidad: revisionData.cantidad,
+//           fecha: revisionData.fecha || "Desconocido",
+//           accion: "Solicitar Revisión",
+//           estado: revisionData.estado,
+//         },
+//       ];
+//     }
+//   } catch (error) {
+//     if (axios.isAxiosError(error)) {
+//       alert(
+//         `Error al actualizar la revisión: ${
+//           error.response?.data.message || "Error desconocido"
+//         }`
+//       );
+//     } else {
+//       alert("Ocurrió un error desconocido.");
+//     }
+//     console.error(error);
+//   } finally {
+//     load.value = false;
+//   }
+// };
+
+// const actualizarRevision = async (studentId: string) => {
+//   try {
+//     if (!studentId) {
+//       alert("No se pudo encontrar el ID del estudiante");
+//       return;
+//     }
+
+//     const response = await axios.put(
+//       `/api/student/review/${studentId}/status`,
+//       {
+//         rev_status: "pendiente",
+//       }
+//     );
+
+//     if (response.status === 200 || response.status === 201) {
+//       await obtenerRev();
+
+//       alertToast(
+//         "Se han enviado las observaciones corregidas.",
+//         "Éxito",
+//         "success"
+//       );
+//     } else {
+//       alert("Hubo un problema al actualizar la revisión.");
+//     }
+//   } catch (error: unknown) {
+//     if (axios.isAxiosError(error)) {
+//       alert(
+//         `Error al actualizar la revisión: ${
+//           error.response?.data.message || "Error desconocido"
+//         }`
+//       );
+//     } else {
+//       alert("Ocurrió un error desconocido.");
+//     }
+//     console.error(error);
+//   }
+// };
+
+// const obtenerDatosEstudiante = async () => {
+//   try {
+//     const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
+//     if (response.data.status) {
+//       const solicitud = response.data.solicitud;
+//       asesor.value = solicitud.asesor;
+//       titulo.value = solicitud.titulo;
+//       link.value = solicitud.link;
+//     }
+//   } catch (error) {
+//     console.error("Error al obtener los datos del estudiante:", error);
+//   }
+// };
+
+// onMounted(() => {
+//   obtenerRevisiones();
+//   obtenerRev();
+//   obtenerDatosEstudiante();
+// });
 </script>
 
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col">
-        <h3
-          class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"
-        ></h3>
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"></h3>
       </div>
       <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"></h2>
             <div class="flex justify-between items-center">
-              <h2
-                class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"
-              ></h2>
+              <h2 class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"></h2>
             </div>
             <div class="h-7">
-              <h2
-                class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"
-              ></h2>
+              <h2 class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"></h2>
             </div>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
         <div class="flex justify-end">
           <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
       </div>
@@ -335,36 +344,82 @@ onMounted(() => {
 
       <div class="mt-6 space-y-10 ">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
-          <!-- Información del Asesor -->
-          <p v-if="asesor">
-            <strong class="space-y-4">JURADO PRESIDENTE:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }} 
-          </p>
-          <p v-if="asesor">
-            <strong class="space-y-4">JURADO SECRETARIO:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }} 
-          </p>
-          <p v-if="asesor">
-            <strong class="space-y-4">JURADO VOCAL:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }} 
-          </p>
-          
+          <!-- mostrar informacion al estudiante conformidad de jurados -->
+          <div class="space-y-2">
+            <div class="flex items-center space-x-2 bg-white bg-opacity-10 p-3 rounded shadow">
+              <i class="fas fa-user-tie text-azul text-2xl"></i>
+              <div>
+                <p class="font-bold text-lg text-azul">PRESIDENTE</p>
+                <p>HUAPAYA CONDORI, FREDDY RONALD</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 bg-white bg-opacity-10 p-3 rounded shadow">
+              <i class="fas fa-user-tie text-azul text-2xl"></i>
+              <div>
+                <p class="font-bold text-lg text-azul">SECRETARIO</p>
+                <p>JARA TRUJILLO, ALBERTO CARLOS</p>
+              </div>
+            </div>
+            <div class="flex items-center space-x-2 bg-white bg-opacity-10 p-3 rounded shadow">
+              <i class="fas fa-user-tie text-azul text-2xl"></i>
+              <div>
+                <p class="font-bold text-lg text-azul">VOCAL</p>
+                <p>CAMPOS RIOS, BERTHA LUCILA</p>
+              </div>
+            </div>
+          </div>
+                    
           <!-- Título de Tesis -->
-          <p v-if="titulo" class="max-w-7xl">
-            <strong>TÍTULO DE TESIS:</strong> {{ titulo }}
-          </p>
+          <div>
+            <p class="max-w-7xl"><strong>TÍTULO DE TESIS: </strong> {{ titulo }}</p>
+          </div>
           
-          <!-- Enlace al Proyecto de Tesis -->
-          <p v-if="link">
-            <strong>PROYECTO DE TESIS: </strong>
+          <!-- Enlace del proyecto de Tesis -->
+          <p><strong>PROYECTO DE TESIS </strong>
             <a
               :href="`${link}`"
               target="_blank"
-              class="inline-block bg-azul text-white px-3 py-2 rounded-lg hover:bg-azulOscuro transition text-base"
-              > Abrir link de Google Docs</a>
+              class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-azulOscuro hover:shadow-lg transition-all duration-300 text-base">
+              <i class="fas fa-external-link-alt"></i> Abrir Google Docs
+            </a>
           </p>
 
           <!-- Explicación breve -->
           <p class="text-sm text-gray-600">
             Asegurate de tener toda tu informacion corregida y actualizada en el documento de Google Docs.
           </p>
+        </div>
+
+
+        <!-- Card 2:  Solicitar revisión para las observaciones -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">1. Observaciones</h2>
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+              @mouseover="mostrarModalRevision = true"
+              @mouseleave="mostrarModalRevision = false"/>
+          </div>
+
+          <div v-show="mostrarModalRevision" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">Este botón permitira empezar el proceso para inciar las correcciones con los jurados</p>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <p class="text-gray-500 text-lg">Haz clic en <strong class="text-[#39B49E]">solicitar Revision</strong> para iniciar con el proceso de correcciones con los jurados.</p>
+            <span :class="['estado-estilo', `estado-${solicitudEstado.toLocaleLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex justify-center mt-2">
+              <button
+                :disabled="isRevisionDisabled" 
+                :class="[ isRevisionDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
+                class="px-4 py-2 text-white rounded-md"
+                @click="solicitarRevision">
+                {{ isLoading ?'SOLICITANDO...' : 'SOLICITAR REVISIÓN' }}
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Revisión de levantamiento de observaciones -->
