@@ -204,10 +204,7 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <!-- Título principal -->
-      <h3 class="text-5xl font-bold text-center text-azul">
-        {{ textoTipiado2 }}
-      </h3>
-      <br>
+      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>   
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite -->
         <!-- <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -279,7 +276,7 @@ onMounted(() => {
           <div class="mt-6 flex justify-center">
             <table class="w-full max-w-2xl text-left uppercase bg-white border border-gray-200 rounded-md shadow-lg">
               <thead>
-                <tr class="text-black border-b-2 bg-gray-200">
+                <tr class="text-azul border-b-2 bg-gray-300">
                   <th class="px-4 py-2 text-azul border-b">ROL</th>
                   <th class="px-4 py-2 text-azul border-b">NOMBRE Y APELLIDO</th>
                 </tr>
