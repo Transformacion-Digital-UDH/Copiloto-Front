@@ -73,6 +73,7 @@ const router = createRouter({
         { path: 'solicitud-asesoria', name: 'SolicitudesAsesoria', component: SolicitudAsesoria, meta: { title: 'Solicitudes de asesoría' } },
         { path: 'solicitud-revision', name: 'SolicitudesRevision', component: SolicitudRevision, meta: { title: 'Solicitudes de revisión' } },
         { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
+        { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { title: 'Revision jurado' } },
       ]
     },
     {
