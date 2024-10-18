@@ -12,12 +12,12 @@ export const useAuthStore = defineStore("auth", () => {
   const email = ref<string | null>(null);
   const role = ref<string | null>(null);
   const image = ref<string | null>(null);
+  const is_jury = ref<boolean>(false);
   const loading = ref(false);
 
   const roleRoutes: Record<string, string> = {
     estudiante: "/estudiante",
     asesor: "/asesor",
-    jurado: "/jurado",
     paisi: "/paisi",
     facultad: "/facultad",
     admin: "/admin",
@@ -42,6 +42,7 @@ export const useAuthStore = defineStore("auth", () => {
         fullName.value = response.data.data.nombre;
         email.value = response.data.data.correo;
         role.value = response.data.data.rol;
+        is_jury.value = response.data.data.es_jurado;
 
         // Redirigir al usuario según su rol
         const userRole = role.value;
@@ -77,7 +78,6 @@ export const useAuthStore = defineStore("auth", () => {
         const response = await axios.post("/api/login/google", {
           email: user.email,
         });
-        console.log(response.data)
 
         // Almacenar datos en Pinia
         id.value = response.data.data.id; 
@@ -86,6 +86,7 @@ export const useAuthStore = defineStore("auth", () => {
         role.value = response.data.data.rol;
         fullName.value = user.name;
         image.value = user.picture;
+        is_jury.value = response.data.data.es_jurado;
   
         const userRole = response.data.data.rol;
         const route: string = roleRoutes[userRole];
@@ -188,6 +189,7 @@ export const useAuthStore = defineStore("auth", () => {
     fullName.value = null;
     email.value = null;
     role.value = null;
+    is_jury.value = false;
     image.value = null;
     router.push("/");  // Redirige al usuario al login
   };
@@ -198,6 +200,7 @@ export const useAuthStore = defineStore("auth", () => {
     fullName,
     email,
     role,
+    is_jury,
     loading,
     handleLogin,
     googleLogin,
