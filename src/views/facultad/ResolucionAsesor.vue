@@ -324,10 +324,11 @@ const rejectResolution = async () => {
                         </a>
                       </td>
                       <td class="px-3 py-5 text-center">
-                        <span :class="`estado-estilo estado-${u.resolucion_estado.toLowerCase().replace(' ', '-')}`">
-                          {{ u.resolucion_estado || 'Estado desconocido' }}
-                        </span>
-                      </td>
+                      <span :class="`estado-estilo estado-${u.resolucion_estado?.toLowerCase().replace(' ', '-')}`">
+                        {{ u.resolucion_estado ? u.resolucion_estado.charAt(0).toUpperCase() + u.resolucion_estado.slice(1).toLowerCase() : 'Estado desconocido' }}
+                      </span>
+                    </td>
+
                     </tr>
                   </tbody>
                 </table>

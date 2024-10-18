@@ -320,8 +320,11 @@ onMounted(() => {
                         </div>
                       </td>
                       <td class="px-3 py-5 text-center">
-                        <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">{{ u.rev_status }}</span>
-                      </td>
+                      <span :class="`estado-estilo estado-${u.rev_status.toLowerCase().replace(' ', '-')}`">
+                        {{ u.rev_status ? u.rev_status.charAt(0).toUpperCase() + u.rev_status.slice(1).toLowerCase() : 'Estado desconocido' }}
+                      </span>
+                    </td>
+
                     </tr>
                   </tbody>
                 </table>

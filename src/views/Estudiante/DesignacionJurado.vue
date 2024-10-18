@@ -21,21 +21,6 @@ onMounted(() => {
   typeWriter();
 });
 
-// Estado y datos para Designación de Jurado
-const procesos = ref([
-  { título: 'TRAMITE: DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS)', estado: 'Hecho' }, 
-  { título: 'Tus jurados seleccionados', estado: 'Hecho' },
-  { título: 'Oficio múltiple con los jurados seleccionados', estado: 'pendiente' },
-  { título: 'Solicitar cambio de jurado', estado: 'No solicitado' },
-]);
-
-// Documentos asociados a la designación
-// const documentos = ref([
-//   { nombre: 'Oficio múltiple', estado: 'Hecho', documentoUrl: '' },
-//   { nombre: 'Solicitud de cambio de jurado', estado: 'No solicitado', documentoUrl: '' },
-// ]);
-
-
 // Estados para los modales
 const mostrarModalTramite = ref(false);
 const mostrarModalJurados = ref(false); 

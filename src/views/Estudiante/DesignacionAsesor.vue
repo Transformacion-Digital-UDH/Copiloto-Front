@@ -437,8 +437,9 @@ const handleNextButtonClick = () => {
               />
             </div>
             <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
-              {{ solicitude.estado }}
+              {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
             </span>
+
          </div>
       </div>
           <!-- Modal informativo para el Punto 1 -->
@@ -573,8 +574,10 @@ const handleNextButtonClick = () => {
                 <span
                   :class="estadoClase(solicitude.estado)"
                   class="estado-estilo"
-                  >{{ solicitude.estado }}</span
                 >
+                  {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                </span>
+
                 <a
                   href="#historial"
                   v-if="solicitude.estado === 'rechazado'"
@@ -637,8 +640,9 @@ const handleNextButtonClick = () => {
             <span
               :class="estadoClase(estadoDocumentos)"
               class="estado-estilo ml-4"
-              >{{ estadoDocumentos }}</span
             >
+              {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() : 'Desconocido' }}
+            </span>
 
           </div>
           <!-- Modal punto 2 -->
@@ -700,8 +704,10 @@ const handleNextButtonClick = () => {
                   <span
                     :class="estadoClase(oficio.estado)"
                     class="estado-estilo ml-4"
-                    >{{ oficio.estado }}</span
                   >
+                    {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                  </span>
+
                 </div>
               </div>
             </div>

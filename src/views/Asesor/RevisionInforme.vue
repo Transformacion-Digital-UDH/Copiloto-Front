@@ -224,12 +224,12 @@ const tableData = ref([
                     <td
                       class="px-3 py-5 text-center"
                     >
-                      <span
-                        :class="`estado-estilo estado-${u.status
-                          .toLowerCase()
-                          .replace(' ', '-')}`"
-                        >{{ u.status }}</span
-                      >
+                    <span
+                      :class="`estado-estilo estado-${u.status.toLowerCase().replace(' ', '-')}`"
+                    >
+                      {{ u.status ? u.status.charAt(0).toUpperCase() + u.status.slice(1).toLowerCase() : 'Desconocido' }}
+                    </span>
+
                     </td>
                   </tr>
                 </tbody>
