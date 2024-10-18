@@ -39,6 +39,7 @@ export default defineComponent({
 
     const role = ref<string>('');  // Tipado explícito para role
     const full_name = ref<string>('');
+    const is_jury = ref<boolean>(false);
     const image_profile = ref<string>('');
     const route = useRoute();
 
@@ -117,37 +118,31 @@ export default defineComponent({
         allSections[0].submenus.push(
           { name: 'SolicitudesAsesoria', label: 'Pendientes de Aceptar', path: '/asesor/solicitud-asesoria' },
           { name: 'SolicitudesRevision', label: 'Revisión de proyectos', path: '/asesor/solicitud-revision' },
-          { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
         );
         allSections[1].submenus.push(
           { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
         );
+
         allSections[2].submenus.push(
           { name: 'Revisión informe', label: 'Revisión de Informes', path: '/asesor/revision-informe' }
         );
+
+        if (is_jury.value) {
+          allSections[0].submenus.push(
+            { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
+            { name: 'revision presidente proyecto', label: 'Revision Presidente Proyecto', path: '/jurado/revision-presidente' }
+          );
+          allSections[2].submenus.push(
+            { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
+            { name: 'revision presidente informe', label: 'Revision Presidente Informe', path: '/jurado/revisionJuradoPresidente-informe' }
+          );
+        }
         // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
-        sections.value = allSections.filter(section => 
-          section.name === 'ProyectoDeTesis' || 
-          section.name === 'Ejecucion' || 
+        sections.value = allSections.filter(section =>
+          section.name === 'ProyectoDeTesis' ||
+          section.name === 'Ejecucion' ||
           section.name === 'InformeFinal'
         );
-      } else if (role.value === 'jurado') {
-        // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
-        allSections[0].submenus.push(
-          { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
-          { name: 'revision presidente proyecto', label: 'Revision Presidente Proyecto', path: '/jurado/revision-presidente' }
-        );
-        allSections[2].submenus.push(
-          { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
-          { name: 'revision presidente informe', label: 'Revision Presidente Informe', path: '/jurado/revisionJuradoPresidente-informe' }
-        );
-        // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
-        sections.value = allSections.filter(section => 
-          section.name === 'ProyectoDeTesis' || 
-          section.name === 'InformeFinal'
-        );
-
-
       } else if (role.value === 'paisi') {
         // Paisi solo tiene Proyecto Tesis, Informe Final y Sustentación
         allSections[0].submenus.push(
@@ -162,9 +157,9 @@ export default defineComponent({
           { name: 'SustentacionPaisi', label: 'Sustentación Paisi', path: '/sustentacion/paisi' }
         );
         // Filtramos las secciones de Proyecto, Informe, y Sustentación
-        sections.value = allSections.filter(section => 
-          section.name === 'ProyectoDeTesis' || 
-          section.name === 'InformeFinal' || 
+        sections.value = allSections.filter(section =>
+          section.name === 'ProyectoDeTesis' ||
+          section.name === 'InformeFinal' ||
           section.name === 'Sustentacion'
         );
       } else if (role.value === 'facultad') {
@@ -184,10 +179,10 @@ export default defineComponent({
           { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
         );
         // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
-        sections.value = allSections.filter(section => 
-          section.name === 'ProyectoDeTesis' || 
-          section.name === 'InformeFinal' || 
-          section.name === 'Sustentacion' || 
+        sections.value = allSections.filter(section =>
+          section.name === 'ProyectoDeTesis' ||
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion' ||
           section.name === 'Cierre'
         );
       }
@@ -211,8 +206,9 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      is_jury.value = authStore.is_jury;
       role.value = authStore.role;
-      full_name.value =  authStore.fullName;
+      full_name.value = authStore.fullName;
       image_profile.value = authStore.image || `https://ui-avatars.com/api/?name=${full_name.value}`;
       setupSectionsForRole();
       openSectionIfActive();
@@ -224,6 +220,7 @@ export default defineComponent({
       toggleSubmenu,
       isDark,
       full_name,
+      is_jury,
       role,
       isActive,
       image_profile
@@ -231,7 +228,7 @@ export default defineComponent({
   }
 });
 </script>
- 
+
 
 
 
@@ -280,15 +277,15 @@ export default defineComponent({
       <hr />
 
       <nav class="mt-5 mb-10">
-      <!-- Secciones Dinámicas -->
-      <div v-for="section in sections" :key="section.name" class="mb-4">
+        <!-- Secciones Dinámicas -->
+        <div v-for="section in sections" :key="section.name" class="mb-4">
         <button
           @click="toggleSubmenu(section.name)"
           class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 group" >
           <component :is="section.icon" class="w-8 h-8 transition-transform transform group-hover:translate-x-2 duration-300" />
           <span class="mx-4 text-left text-sl font-medium transition-transform transform group-hover:translate-x-2 duration-300">
-          {{ section.label }}
-        </span>
+              {{ section.label }}
+            </span>
           <svg
             v-if="!section.isOpen"
             viewBox="0 0 24 24"
@@ -299,10 +296,10 @@ export default defineComponent({
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"
-              d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
+                d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
               fill="currentColor"
             />
-          </svg>
+            </svg>
           <svg
             v-else
             viewBox="0 0 24 24"
@@ -314,27 +311,24 @@ export default defineComponent({
             <path
               fill-rule="evenodd"
               clip-rule="evenodd"
-              d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
+                d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
               fill="currentColor"
             />
-          </svg>
-        </button>
-        <div v-if="section.isOpen">
-          <ul class="pl-8">
-            <li v-for="submenu in section.submenus" :key="submenu.name">
-              <router-link
-                :to="submenu.path"
-                class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-700"
-                :class="[
-                  isActive(submenu) ? 'bg-base text-white hover:bg-base dark:hover:bg-base' : ''
-                ]"
-              >
-                {{ submenu.label }}
-              </router-link>
-            </li>
-          </ul>
+            </svg>
+          </button>
+          <div v-if="section.isOpen">
+            <ul class="pl-8">
+              <li v-for="submenu in section.submenus" :key="submenu.name">
+                <router-link :to="submenu.path" class="block px-4 py-2 text-sm "
+                  :class="[
+                    isActive(submenu) ? 'bg-base text-white hover:bg-base dark:hover:bg-base' : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                  ]">
+                  {{ submenu.label }}
+                </router-link>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
 
       </nav>
     </div>
