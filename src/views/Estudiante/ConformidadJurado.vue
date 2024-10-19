@@ -47,8 +47,6 @@ const isNextButtonDisabled = computed(() => {
   return documentos.value.some(doc => doc.estado !== "Aprobado");
 });
 
-// ******************************************************
-
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 const load = ref(false);
 const authStore = useAuthStore();
