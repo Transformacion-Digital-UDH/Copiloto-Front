@@ -485,11 +485,11 @@ onMounted(() => {
                     </button>
                   </td>
                   <td class="px-4 py-2">
-                    <span
-                      :class="`estado-estilo estado-${obs.estado.toLowerCase().replace(' ', '-')}`"
-                      >{{ obs.estado || 'Desconocido' }}</span
-                    >
+                    <span :class="`estado-estilo estado-${obs.estado ? obs.estado.toLowerCase().replace(' ', '-') : 'desconocido'}`">
+                      {{ obs.estado ? obs.estado.charAt(0).toUpperCase() + obs.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                    </span>
                   </td>
+
                 </tr>
               </tbody>
 

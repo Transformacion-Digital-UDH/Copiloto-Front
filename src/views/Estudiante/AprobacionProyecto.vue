@@ -1,12 +1,14 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue';
 import { computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import axios from 'axios';
+import { alertToast } from "@/functions";
 
-const mostrarModalTramite = ref(false);
 const load = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de Proyecto de Tesis por el Asesor";
+const text = "Aprobación del Proyecto de Tesis";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -26,19 +28,11 @@ interface Documento {
   estado: string;
   documentoUrl: string;
 }
+const mostrarModalAprobar = ref(false); 
 
-const procesos = ref([
-  { título: 'TRAMITE: APROBACIÓN DEL TRABAJO DE INVESTIGACIÓN (TESIS)', estado: 'Hecho' }, 
-]);
+// Estado del trámite de aprobación
+const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
 
-// Estado general del sistema
-const estadoTramite = ref('Pendiente');  // Puede ser: Pendiente, En Proceso, Hecho
-
-// Trámites del sistema
-const tramites = ref([
-  { titulo: 'Trámite en el Sistema', estado: 'Pendiente' },
-  { titulo: 'Pago de Trámite', estado: 'Pendiente' },
-]);
 
 // Documentos para la aprobación del proyecto
 const documentos = ref<Documento[]>([
@@ -46,24 +40,73 @@ const documentos = ref<Documento[]>([
   { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' },
 ]);
 
-// Computed para habilitar el botón "Siguiente" solo si todos los trámites y documentos están en "Hecho"
-const todosCompletos = computed(() => {
-  const tramitesHechos = tramites.value.every(tramite => tramite.estado === 'Hecho');
-  const documentosHechos = documentos.value.every(documento => documento.estado === 'Hecho');
-  return tramitesHechos && documentosHechos;
-});
-
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
   switch (estado) {
     case 'Hecho':
       return 'bg-green-500 text-white';
-    case 'Pendiente':
+    case 'pendiente':
       return 'bg-gray-400 text-white';
     default:
       return '';
   }
 };
+
+///////////////////////////// CONEXION CON EL BACKEND //////////////////////////
+const authStore = useAuthStore();
+const solicitudEstado = ref<string>("No Iniciado"); 
+const isLoading = ref<boolean>(false);  
+axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
+
+// Función para cargar el estado actual de la solicitud desde el backend
+const cargarEstadoSolicitud = async () => {
+  try {
+    const response = await axios.get(`/api/oficio/estado-solicitud-tesis/${authStore.id}`);
+    console.log("Estado actual de la solicitud:", response.data);
+
+    // Asumimos que el backend devuelve el estado como "Pendiente", "Hecho", o "No Iniciado"
+    solicitudEstado.value = response.data.estado || "No Iniciado";  // Establecemos el estado inicial desde el backend
+
+    if (solicitudEstado.value === "Hecho") {
+      alertToast("La solicitud ya fue realizada y está aprobada.", "Información", "info");
+    }
+  } catch (error) {
+    console.error("Error al cargar el estado de la solicitud:", error);
+    alertToast("No se pudo obtener el estado actual de la solicitud", "Error", "error");
+  }
+};
+
+// Función para realizar la solicitud de aprobación
+const primeraRevision = async () => {
+  if (isLoading.value || solicitudEstado.value === "Hecho" || solicitudEstado.value === "pendiente") return;
+
+  isLoading.value = true;
+  solicitudEstado.value = "pendiente";  // Cambiamos el estado mientras enviamos la solicitud
+
+  try {
+    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);  // Cambia la URL si es necesario
+
+    // Verificamos el resultado de la solicitud
+    if (response.data.status) {
+      solicitudEstado.value = "Hecho";  // Si todo va bien, el estado se cambia a "Hecho"
+      alertToast("Aprobación de Tesis creada correctamente", "Éxito", "success");
+    } else {
+      solicitudEstado.value = "pendiente";  // Si falla algo, sigue en pendiente
+    }
+  } catch (error) {
+    console.error("Error en la solicitud de aprobación:", error);
+    alertToast(error.response?.data?.message || "Error al enviar la solicitud", "Error", "error");
+    solicitudEstado.value = "No Iniciado";  // Volvemos al estado inicial si falla
+  } finally {
+    isLoading.value = false;  // Finalizamos la carga
+  }
+};
+
+
+// Cargar el estado de la solicitud al montar el componente
+onMounted(() => {
+  cargarEstadoSolicitud();  // Cargar el estado desde el backend cuando se monta el componente
+});
 
 </script>
 <template>
@@ -138,53 +181,58 @@ const estadoClase = (estado: string) => {
       </div>
     </div>
   </template>
+  
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-5xl font-bold text-center text-azul">
         {{ textoTipiado2 }}
       </h3>
       <br>
-      <!-- Card 1: Pago de Trámite -->
-      <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Pago de Trámite</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalTramite = true"
-                @mouseleave="mostrarModalTramite = false" />
-          </div>
+       <!-- Card 1: Solicitud-->
+    <div class="bg-white rounded-lg shadow-lg p-6 relative">
+      <div class="relative flex items-center">
+        <h2 class="text-2xl font-medium text-black">
+          1. Solicitar Aprobación 
+        </h2>
+        <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+          @mouseover="mostrarModalAprobar = true"
+          @mouseleave="mostrarModalAprobar = false" />
+      </div>
 
-          <div v-show="mostrarModalTramite" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">
-              Asegurate de haber realizado el pago del trámite.
-            </p>
-          </div>
+      <!-- Tooltip que se muestra al hacer hover sobre el ícono de información -->
+      <div v-show="mostrarModalAprobar" class="absolute left-48 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+        <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
+      </div>
 
-          <!-- Listado de trámites dinámico -->
-          <div class="mt-4 space-y-6">
-            <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
-              class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-              <h4 class="text-black flex-1">{{ proceso.título }}</h4>
-              <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
-            </div>
-          </div>
+      <div class="flex items-center justify-between mt-2">
+        <p class="text-gray-500 text-lg">Haz clic en el botón para solicitar la aprobación de tu Proyecto de Tesis</p>
+        <!-- Mostrar el estado de la solicitud -->
+        <span :class="estadoClase(solicitudEstado)" class="estado-estilo">{{ solicitudEstado }}</span>
+      </div>
+
+      <div class="mt-4">
+        <div class="flex justify-center mt-2">
+          <!-- Botón para enviar la solicitud -->
+          <button 
+            @click="primeraRevision"
+            :disabled="solicitudEstado === 'pendiente' || solicitudEstado === 'Hecho' || isLoading"  
+            :class="[
+              solicitudEstado === 'pendiente' || solicitudEstado === 'Hecho' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base cursor-pointer',
+              isLoading ? 'bg-green-500' : ''
+            ]"
+            class="px-4 py-2 text-white rounded-md">
+            {{ isLoading ? 'Solicitando...' : 'Solicitar Aprobación' }}
+          </button>
         </div>
-        <div class="mt-6 space-y-10">
-          <!-- Card 1: Inicio de Trámite -->
-          <div class="bg-white rounded-lg shadow-lg p-6 relative">
-            <h2 class="text-2xl font-medium text-black">1. Inicio de Trámite</h2>
-            <!-- Listado de trámites dinámico -->
-            <div class="mt-4 space-y-6">
-              <div v-for="(tramite, index) in tramites" :key="index"
-                class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-                <h4 class="text-black flex-1">{{ tramite.titulo }}</h4>
-                <span :class="estadoClase(tramite.estado)" class="estado-estilo ml-4">{{ tramite.estado }}</span>
-              </div>
-            </div>
-          </div>
+      </div>
+    </div>
 
+
+
+        <div class="mt-6 space-y-10">
           <!-- Card 2: Documentos -->
           <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+            <h2 class="text-2xl font-medium text-black">2. Documentos para la Aprobacion del Proyecto de Tesis</h2>
 
             <!-- Listado de documentos -->
             <div class="mt-4 space-y-6">
@@ -215,9 +263,8 @@ const estadoClase = (estado: string) => {
 
           <!-- Botón "Siguiente" -->
           <div class="flex justify-end mt-8">
-            <button :disabled="!todosCompletos"
-              :class="todosCompletos ? 'bg-green-600 hover:bg-green-700 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'"
-              class="px-4 py-2 text-white rounded-md">
+            <button 
+              class="px-4 py-2 text-white bg-gray-300 rounded-md">
               Siguiente
             </button>
           </div>

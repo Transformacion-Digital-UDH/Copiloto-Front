@@ -308,12 +308,12 @@ const validateResolution = () => {
                         <p v-else class="italic text-gray-400">No generado</p>
                       </div>
                     </td>
-
                     <td class="px-3 py-5 text-center">
                       <span :class="`estado-estilo estado-${u.estado?.toLowerCase().replace(' ', '-')}`">
-                        {{ u.estado || "Estado desconocido" }}
+                        {{ u.estado ? u.estado.charAt(0).toUpperCase() + u.estado.slice(1).toLowerCase() : "Estado desconocido" }}
                       </span>
                     </td>
+
                   </tr>
                 </tbody>
               </table>

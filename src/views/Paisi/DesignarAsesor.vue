@@ -387,8 +387,11 @@ const formIsValid = computed(() => {
                         </button>
                       </td>
                       <td class="px-3 py-5 text-center">
-                        <span :class="`estado-estilo estado-${solicitude.oficio_estado ? solicitude.oficio_estado.toLowerCase().replace(' ', '-') : ''}`">{{ solicitude.oficio_estado || 'Estado desconocido' }}</span>
+                        <span :class="`estado-estilo estado-${solicitude.oficio_estado ? solicitude.oficio_estado.toLowerCase().replace(' ', '-') : ''}`">
+                          {{ solicitude.oficio_estado ? solicitude.oficio_estado.charAt(0).toUpperCase() + solicitude.oficio_estado.slice(1).toLowerCase() : 'Estado desconocido' }}
+                        </span>
                       </td>
+
                     </tr>
                   </tbody>
                 </table>
