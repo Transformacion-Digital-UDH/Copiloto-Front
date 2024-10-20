@@ -211,7 +211,7 @@ onMounted(() => {
         <h3 class="bg-gray-200 h-12 w-5/6 rounded-lg duration-200 skeleton-loader"></h3>
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-lg p-6 text-lg text-azul space-y-4 animate-pulse duration-200">
+        <div class="bg-white rounded-lg p-6 space-y-4 animate-pulse duration-200">
           <div class="text-center"><p class="h-4 rounded w-2/3"></p></div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-gray-200 rounded-lg h-36 p-6 skeleton-loader duration-200"></div>
@@ -261,7 +261,7 @@ onMounted(() => {
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
         </div>
-    </div>
+      </div>
     </div>
   </template>
   <template v-else>
@@ -275,19 +275,19 @@ onMounted(() => {
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Presidente</p>
-              <p class="text-gray-600">{{ presidente || 'Aún no asignado' }}</p>
+              <p class="text-gray-600">{{ presidente || 'Presidente no asignado' }}</p>
             </div>
             
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Secretario</p>
-              <p class="text-gray-600">{{ secretario || 'Aún no asignado' }}</p>
+              <p class="text-gray-600">{{ secretario || 'Secretario no asignado' }}</p>
             </div>
 
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Vocal</p>
-              <p class="text-gray-600">{{ vocal || 'Aún no asignado' }}</p>
+              <p class="text-gray-600">{{ vocal || 'Vocal no asignado' }}</p>
             </div>
           </div>
           <!-- Título de Tesis -->
@@ -296,14 +296,15 @@ onMounted(() => {
             <p class="max-w-7xl text-2xl font-bold text-gray-800">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace del proyecto de Tesis -->
-          <div class="text-center mt-6">
+          <div v-if="link" class="text-center mt-6">
             <a
-              :href="`${link}`"
+              :href="link"
               target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <i class="fas fa-external-link-alt"></i> Abrir Proyecto
             </a>
           </div>
+
           <!-- Explicación breve -->
           <p class="text-sm text-gray-600 text-center">Asegurate de tener toda tu informacion corregida y actualizada en el documento de Google Docs proporcionado y luego haga clic en "Solicitar Revisión".</p>
         </div>
@@ -521,7 +522,7 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span v-else class="text-gray-700 italic">El documento aún no se ha cargado</span>
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
                   <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado || "Estado desconocido" }}</span>
                 </div>
               </div>
@@ -550,7 +551,7 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span v-else class="text-gray-700 italic">El documento aún no se ha cargado</span>
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
                   <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado || "Estado desconocido" }}</span>
                 </div>
               </div>
@@ -579,7 +580,7 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span v-else class="text-gray-700 italic">El documento aún no se ha cargado</span>
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
                   <span :class="`estado-estilo estado-${documentos[2].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[2].estado || "Estado desconocido" }}</span>
                 </div>
               </div>
