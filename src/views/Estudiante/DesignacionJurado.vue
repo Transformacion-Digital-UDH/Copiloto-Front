@@ -7,7 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designacion de jurados";
+const text = "Designación de jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -257,7 +257,7 @@ onMounted(() => {
           </div>
 
           <div class="mt-6 flex justify-center">
-            <table class="w-full max-w-2xl text-left uppercase bg-white border border-gray-200 rounded-md shadow-lg">
+            <table class="w-full max-w-2xl text-left bg-white border border-gray-200 rounded-md shadow-lg">
               <thead>
                 <tr class="text-azul border-b-2 bg-gray-300">
                   <th class="px-4 py-2 text-azul border-b">ROL</th>
@@ -268,12 +268,11 @@ onMounted(() => {
                 <!-- Si no hay jurados, mostramos un mensaje -->
                 <tr v-if="jurados.length === 0">
                   <td colspan="2" class="px-4 py-6 text-center text-gray-500 text-base">
-                    <i class="fas fa-exclamation-circle mr-2 text-red-400"></i>
-                    AÚN NO SE HAN ASIGNADO JURADOS.
+                    <i class="fas fa-exclamation-circle mr-2 text-red-700"></i> Aún no se han asignado jurados.
                   </td>
                 </tr>
                 <!-- Iteramos los jurados si hay registros -->
-                <tr v-else v-for="jurado in jurados" :key="jurado.id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                <tr v-else v-for="jurado in jurados" :key="jurado.id" class="border-b uppercase border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                   <td class="px-4 py-2 border-b font-bold">{{ jurado.rol }}</td>
                   <td class="px-4 py-2 border-b">{{ jurado.asesor }}</td>
                 </tr>
@@ -319,7 +318,7 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span v-else class="text-gray-500 text-lg italic">El documento aún no se ha cargado.</span>
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
                 </div>
               </div>
             </div>
