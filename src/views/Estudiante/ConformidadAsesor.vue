@@ -47,7 +47,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de Proyecto de Tesis por el Asesor";
+const text = "Conformidad de proyecto de tesis por el asesor";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -76,6 +76,7 @@ const solicitudEstado = ref<string>("");
 const solicitudEstado2 = ref<string>("");
 const solicitudMensaje = ref("");
 const revision = ref<any[]>([]);
+const isLoading = ref(false);
 
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
@@ -116,6 +117,7 @@ const isNextButtonDisabled = computed(() => {
 });
 
 const primeraRevision = async () => {
+  isLoading.value = true;
   try {
     const response = await axios.post(
       `/api/student/first-review/${authStore.id}`
@@ -128,6 +130,8 @@ const primeraRevision = async () => {
   } catch (error: any) {
     console.log(error);
     alertToast(error.response.data.message || "Error al enviar la solicitud", "Error", "error");
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -256,7 +260,7 @@ onMounted(() => {
 </script>
 
 <template>
-<template v-if="load">
+  <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3 class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"></h3>
@@ -459,7 +463,7 @@ onMounted(() => {
               <tbody v-else>
                 <tr>
                   <td colspan="4" class="px-4 py-4 text-center text-gray-600">
-                    No hay observaciones disponibles por el momento.
+                    <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>No hay observaciones disponibles por el momento.
                   </td>
                 </tr>
               </tbody>
@@ -469,99 +473,72 @@ onMounted(() => {
 
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
-            <img
-              src="/icon/info2.svg"
-              alt="Info"
-              class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalDocumentos = true"
-              @mouseleave="mostrarModalDocumentos = false"
-            />
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+                  @mouseover="mostrarModalDocumentos = true"
+                  @mouseleave="mostrarModalDocumentos = false" />
+            </div>
+            <span v-if="documentos.length > 0" class="block mt-2 text-gray-500 text-sm">
+              <span :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
+                {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
+              </span>
+            </span>
           </div>
-          <div
-            v-if="mostrarModalDocumentos"
-            class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
-          >
+
+          <!-- Modal informativo -->
+          <div v-if="mostrarModalDocumentos" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">
               Asegúrate de revisar el documento para verificar las observaciones
               antes de continuar.
             </p>
           </div>
+
           <div class="mt-4 space-y-4">
-            <div
-              v-for="(documento, index) in documentos"
-              :key="documento.nombre"
-              class="bg-gray-50 p-4 border border-gray-200 rounded-md"
-            >
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
-                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg"
-                  >Informe de Conformidad de Observaciones</span
-                >
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
-                  <div
-                    v-if="documento.estado === 'Hecho'"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
+            <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg">Informe de Conformidad de Observaciones</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
                     <a
                       :href="`${VIEW_CPA}/${documento.revision_id}`"
                       target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
                     <!-- Botón de Descargar -->
                     <a
                       :href="`${DOWNLOAD_CPA}/${documento.revision_id}`"
                       download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span
-                    v-else-if="documento.estado === 'pendiente'"
-                    class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-                  <span
-                    :class="`estado-estilo estado-${documento.estado
-                      .toLowerCase()
-                      .replace(' ', '-')}`"
-                    >{{ documento.estado || "Estado desconocido" }}</span
-                  >
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
         <!--Botones siguiente y anteerior-->
         <div class="flex justify-between">
-            <!-- Botón de Anterior -->
-            <button
-              @click="$router.push('/estudiante/designacion-asesor')" 
-              class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
-            >
-              Anterior
-            </button>
-
-            <!-- Botón de Siguiente -->
-            <button
-              @click="handleNextButtonClick"
-              :class="[ 
-                'px-4 py-2 text-white rounded-md',
-                isNextButtonDisabled
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-green-500 hover:bg-green-600',
-              ]"
-            >
-              Siguiente
-            </button>
+          <!-- Botón de Anterior -->
+          <button
+            @click="$router.push('/estudiante/designacion-asesor')" 
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"> Anterior
+          </button>
+          <!-- Botón de Siguiente -->
+          <button
+            @click="handleNextButtonClick"
+            :class="[ 
+              'px-4 py-2 text-white rounded-md',
+              isNextButtonDisabled
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-green-500 hover:bg-green-600',]"> Siguiente
+          </button>
         </div>
       </div>
     </div>
