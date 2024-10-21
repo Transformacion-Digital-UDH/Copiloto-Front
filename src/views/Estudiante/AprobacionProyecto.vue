@@ -1,10 +1,10 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue';
-import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
 import { alertToast } from "@/functions";
 
+// Estado de carga
 const load = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
@@ -28,25 +28,32 @@ interface Documento {
   estado: string;
   documentoUrl: string;
 }
+
 const mostrarModalAprobar = ref(false); 
 
 // Estado del trámite de aprobación
 const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
 
-
 // Documentos para la aprobación del proyecto
 const documentos = ref<Documento[]>([
-  { nombre: 'Oficio de Secretaria PAISI', estado: 'Hecho', documentoUrl: '' },
+  { nombre: 'Oficio de Secretaria PAISI', estado: 'Pendiente', documentoUrl: '' },
   { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' },
 ]);
 
+// Variables de entorno para los enlaces de los documentos
+const VIEW_APAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const DOWNLOAD_APAISI = import.meta.env.VITE_URL_DOWNLOAD_APSISI;
+
 // Método para determinar la clase del estado
 const estadoClase = (estado: string) => {
-  switch (estado) {
-    case 'Hecho':
+  switch (estado.toLowerCase()) {
+    case 'tramitado':
+    case 'hecho':
       return 'bg-green-500 text-white';
     case 'pendiente':
       return 'bg-gray-400 text-white';
+    case 'no iniciado':
+      return 'bg-gray-300 text-white';
     default:
       return '';
   }
@@ -55,24 +62,33 @@ const estadoClase = (estado: string) => {
 ///////////////////////////// CONEXION CON EL BACKEND //////////////////////////
 const authStore = useAuthStore();
 const solicitudEstado = ref<string>("No Iniciado"); 
-const isLoading = ref<boolean>(false);  
+const isLoading = ref<boolean>(false);
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
-// Función para cargar el estado actual de la solicitud desde el backend
-const cargarEstadoSolicitud = async () => {
+// Función para cargar el estado actual de la solicitud y documentos desde el backend
+const cargarDocumentosSolicitud = async () => {
   try {
-    const response = await axios.get(`/api/oficio/estado-solicitud-tesis/${authStore.id}`);
-    console.log("Estado actual de la solicitud:", response.data);
+    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${authStore.id}`);
+    const data = response.data;
 
-    // Asumimos que el backend devuelve el estado como "Pendiente", "Hecho", o "No Iniciado"
-    solicitudEstado.value = response.data.estado || "No Iniciado";  // Establecemos el estado inicial desde el backend
+    // Actualizamos los documentos con la información del backend
+    documentos.value[0].estado = data.oficio_estado;  // Actualizamos el estado del oficio
+    documentos.value[1].estado = data.resolucion_estado;  // Actualizamos el estado de la resolución
 
-    if (solicitudEstado.value === "Hecho") {
-      alertToast("La solicitud ya fue realizada y está aprobada.", "Información", "info");
+    // Generamos las URLs si los documentos están disponibles
+    if (data.oficio_estado === 'tramitado') {
+      documentos.value[0].documentoUrl = `${VIEW_APAISI}/${data.oficio_id}`;
     }
+    if (data.resolucion_estado === 'tramitado') {
+      documentos.value[1].documentoUrl = `${VIEW_APAISI}/${data.resolucion_id}`;
+    }
+
+    // Actualizamos el estado general de la solicitud
+    solicitudEstado.value = data.oficio_estado || "No Iniciado";
+
   } catch (error) {
-    console.error("Error al cargar el estado de la solicitud:", error);
-    alertToast("No se pudo obtener el estado actual de la solicitud", "Error", "error");
+    console.error("Error al cargar los documentos de la solicitud:", error);
+    alertToast("No se pudo cargar los documentos de la solicitud", "Error", "error");
   }
 };
 
@@ -102,122 +118,55 @@ const primeraRevision = async () => {
   }
 };
 
-
 // Cargar el estado de la solicitud al montar el componente
 onMounted(() => {
-  cargarEstadoSolicitud();  // Cargar el estado desde el backend cuando se monta el componente
+  cargarDocumentosSolicitud();  // Cargar el estado desde el backend cuando se monta el componente
 });
 
 </script>
+
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col">
-        <h3
-          class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"
-        ></h3>
-      </div>
-      <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <div class="flex justify-between items-center">
-              <h2
-                class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"
-              ></h2>
-            </div>
-            <div class="h-7">
-              <h2
-                class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"
-              ></h2>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div class="flex justify-end">
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-      </div>
+      <!-- Mostrar una pantalla de carga -->
     </div>
   </template>
-  
+
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-5xl font-bold text-center text-azul">
         {{ textoTipiado2 }}
       </h3>
       <br>
-       <!-- Card 1: Solicitud-->
-    <div class="bg-white rounded-lg shadow-lg p-6 relative">
-      <div class="relative flex items-center">
-        <h2 class="text-2xl font-medium text-black">
-          1. Solicitar Aprobación 
-        </h2>
-        <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-          @mouseover="mostrarModalAprobar = true"
-          @mouseleave="mostrarModalAprobar = false" />
-      </div>
 
-      <!-- Tooltip que se muestra al hacer hover sobre el ícono de información -->
-      <div v-show="mostrarModalAprobar" class="absolute left-48 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-        <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
-      </div>
+      <!-- Card 1: Solicitar Aprobación -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="relative flex items-center">
+          <h2 class="text-2xl font-medium text-black">
+            1. Solicitar Aprobación 
+          </h2>
+          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+            @mouseover="mostrarModalAprobar = true"
+            @mouseleave="mostrarModalAprobar = false" />
+        </div>
 
-      <div class="flex items-center justify-between mt-2">
-        <p class="text-gray-500 text-lg">Haz clic en el botón para solicitar la aprobación de tu Proyecto de Tesis</p>
-        <!-- Mostrar el estado de la solicitud -->
-        <span :class="estadoClase(solicitudEstado)" class="estado-estilo">{{ solicitudEstado }}</span>
-      </div>
+        <!-- Tooltip -->
+        <div v-show="mostrarModalAprobar" class="absolute left-48 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
+        </div>
 
-      <div class="mt-4">
-        <div class="flex justify-center mt-2">
+        <div class="flex items-center justify-between mt-2">
+          <p class="text-gray-500 text-lg">Haz clic en el botón para solicitar la aprobación de tu Proyecto de Tesis</p>
+          
+        </div>
+
+        <div class="mt-4 flex justify-center">
           <!-- Botón para enviar la solicitud -->
           <button 
             @click="primeraRevision"
-            :disabled="solicitudEstado === 'pendiente' || solicitudEstado === 'Hecho' || isLoading"  
+            :disabled="['pendiente', 'observado', 'tramitado', 'Hecho'].includes(solicitudEstado) || isLoading"  
             :class="[
-              solicitudEstado === 'pendiente' || solicitudEstado === 'Hecho' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base cursor-pointer',
+              ['pendiente', 'observado', 'tramitado', 'Hecho'].includes(solicitudEstado) ? 'bg-gray-300 cursor-not-allowed' : 'bg-base cursor-pointer',
               isLoading ? 'bg-green-500' : ''
             ]"
             class="px-4 py-2 text-white rounded-md">
@@ -225,50 +174,36 @@ onMounted(() => {
           </button>
         </div>
       </div>
-    </div>
 
+      <!-- Card 2: Documentos para la Aprobacion del Proyecto de Tesis -->
+      <div class="mt-6 bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-medium text-black">2. Documentos para la Aprobación del Proyecto de Tesis</h2>
 
+        <!-- Listado de documentos -->
+        <div class="mt-4 space-y-6">
+          <div v-for="(documento, index) in documentos" :key="index" class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
+            <!-- Nombre del documento -->
+            <span class="text-black flex-1">{{ documento.nombre }}</span>
 
-        <div class="mt-6 space-y-10">
-          <!-- Card 2: Documentos -->
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-2xl font-medium text-black">2. Documentos para la Aprobacion del Proyecto de Tesis</h2>
+            <div class="flex space-x-4 items-center">
+              <!-- Botón de Ver -->
+              <a v-if="documento.estado === 'tramitado'" :href="documento.documentoUrl" target="_blank"
+                class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
+                <i class="fas fa-eye mr-2"></i> Ver
+              </a>
 
-            <!-- Listado de documentos -->
-            <div class="mt-4 space-y-6">
-              <div v-for="(documento, index) in documentos" :key="index"
-                class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-                <!-- Nombre del documento -->
-                <span class="text-black flex-1">{{ documento.nombre }}</span>
+              <!-- Botón de Descargar -->
+              <a v-if="documento.estado === 'tramitado'" :href="documento.documentoUrl" download
+                class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
+                <i class="fas fa-download mr-2"></i> Descargar
+              </a>
 
-                <div class="flex space-x-4 items-center">
-                  <!-- Botón de Ver -->
-                  <a v-if="documento.estado === 'Hecho'" :href="documento.documentoUrl" target="_blank"
-                    class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
-                    <i class="fas fa-eye mr-2"></i> Ver
-                  </a>
-
-                  <!-- Botón de Descargar -->
-                  <a v-if="documento.estado === 'Hecho'" :href="documento.documentoUrl" download
-                    class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
-                  <i class="fas fa-download mr-2"></i> Descargar
-                  </a>
-
-                  <!-- Estado del documento -->
-                  <span :class="estadoClase(documento.estado)" class="estado-estilo">{{ documento.estado }}</span>
-                </div>
-              </div>
+              <!-- Estado del documento -->
+              <span :class="estadoClase(documento.estado)" class="estado-estilo">{{ documento.estado }}</span>
             </div>
           </div>
-
-          <!-- Botón "Siguiente" -->
-          <div class="flex justify-end mt-8">
-            <button 
-              class="px-4 py-2 text-white bg-gray-300 rounded-md">
-              Siguiente
-            </button>
-          </div>
         </div>
+      </div>
     </div>
   </template>
 </template>
@@ -282,7 +217,5 @@ onMounted(() => {
   display: inline-block;
 }
 
-.break-all {
-  word-break: break-all;
-}
+
 </style>
