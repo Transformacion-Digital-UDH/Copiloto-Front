@@ -1,6 +1,8 @@
 <script setup>
-import AdminHeader from '../components/AdminHeader.vue';
-import Sidebar from '../components/Sidebar.vue';
+import { useRoute } from 'vue-router';
+import AdminHeader from '@/components/AdminHeader.vue';
+import Sidebar from '@/components/Sidebar.vue';
+const route = useRoute();
 </script>
 
 <template>
@@ -15,7 +17,17 @@ import Sidebar from '../components/Sidebar.vue';
 
       <!-- Content area with scroll -->
       <main class="flex-grow overflow-y-auto bg-white">
-        <router-view />
+        <div v-if="route.path === '/estudiante'" class="flex items-center justify-center h-full">
+          <div class="text-center animate-bounce">
+            <h1 class="text-4xl font-bold mb-6 text-azul uppercase">Bienvenido(a) al sistema de titulación</h1>
+          </div>
+        </div>
+        <div v-else-if="route.path === '/paisi'" class="flex items-center justify-center h-full">
+          <div class="text-center animate-bounce">
+            <h1 class="text-4xl font-bold mb-6 text-azul uppercase">Bienvenido(a) Programa Académico de Ingeniería de Sistemas e Informática</h1>
+          </div>
+        </div>
+        <router-view v-else />
       </main>
     </div>
   </div>

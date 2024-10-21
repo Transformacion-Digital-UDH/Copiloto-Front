@@ -24,6 +24,26 @@ npm install
 npm install axios
 ```
 
+```sh
+npm install flowbite
+```
+
+```sh
+npm install vue3-google-login
+```
+
+### Setup variable enviroments
+    - Create file .env
+    - Add variables or copy from file .env.example: 
+        VITE_GOOGLE_CLIENT_ID="CLIENT_ID PASTE HERE"
+        VITE_GOOGLE_CLIENT_SECRET="SECRET PASTE HERE" 
+        VITE_URL_VIEW_LETTER="https://titulacion-back.abimaelfv.site/api/view-letter"
+        VITE_URL_DOWNLOAD_LETTER="https://titulacion-back.abimaelfv.site/api/download-letter"
+        VITE_URL_VIEW_OFFICE="https://titulacion-back.abimaelfv.site/api/view-office"
+        VITE_URL_DOWNLOAD_OFFICE="https://titulacion-back.abimaelfv.site/api/download-office"
+        VITE_URL_VIEW_RESOLUTION="https://titulacion-back.abimaelfv.site/api/view-resolution"
+        VITE_URL_DOWNLOAD_RESOLUTION="https://titulacion-back.abimaelfv.site/api/download-resolution"
+
 ### Compile and Hot-Reload for Development
 
 ```sh

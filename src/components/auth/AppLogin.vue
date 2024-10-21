@@ -1,51 +1,27 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
 import router from "@/router";
+import IconLoading from "@/components/icons/IconLoading.vue";
+import { useAuthStore } from "@/stores/auth";
 
-// Refs para los campos del formulario
-const email = ref("");
-const password = ref("");
-const errorMessage = ref<string | null>(null);
+// Refs para opciones de formulario
 const rememberMe = ref(false);
 
-// Manejo del inicio de sesión
+// Refs locales para los campos del formulario
+const email = ref("");
+const password = ref("");
+
+// Obtenemos el store de autenticación
+const authStore = useAuthStore();
+
+// Llamar a la acción de login desde el store
 const handleLogin = async () => {
-  try {
-    console.log("Email:", email.value);
-    console.log("Password:", password.value);
+  await authStore.handleLogin(email.value, password.value);
+};
 
-    const response = await axios.post("http://192.168.22.122:8000/api/login", {
-      email: email.value,
-      password: password.value,
-    });
-
-    console.log("Response:", response.data); // Verifica la respuesta completa
-
-    if (response.data) {
-      console.log("Login successful:", response.data);
-      // Procesar la respuesta, por ejemplo, guardar el token y redirigir al usuario
-      localStorage.setItem("token", response.data.token);
-
-      // Aquí podrías redirigir al usuario a la página principal o a otra ruta
-      router.push("/estudiante");
-      errorMessage.value = null; // Asegúrate de limpiar el mensaje de error en caso de éxito
-    } else {
-      console.log("Login failed:", response.data.message);
-      errorMessage.value = response.data.message || "Credenciales incorrectas.";
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error)) {
-      console.error("Error en el inicio de sesión:", error.response?.data);
-      errorMessage.value =
-        error.response?.data.message ||
-        "Hubo un error al intentar iniciar sesión. Por favor, inténtelo de nuevo.";
-    } else {
-      console.error("Error en el inicio de sesión:", error);
-      errorMessage.value =
-        "Hubo un error al intentar iniciar sesión. Por favor, inténtelo de nuevo.";
-    }
-  }
+const googleLogin = async (response) => {
+  await authStore.googleLogin(response);  
 };
 </script>
 
@@ -53,7 +29,7 @@ const handleLogin = async () => {
   <div class="bg-gray-100 min-h-screen flex items-center justify-center">
     <div class="w-full max-w-md bg-white shadow-lg rounded-lg px-8 py-6">
       <div class="text-center mb-6">
-        <img src="/img/logo.svg" alt="Logo" class="mx-auto mb-6 w-48" />
+        <img src="/img/logo_light.svg" alt="Logo" class="mx-auto mb-6 w-48" />
         <h6 class="text-2xl text-azul font-semibold">Iniciar sesión</h6>
         <p class="text-sm text-gray-600">
           ¿Aún no tienes una cuenta?
@@ -64,14 +40,21 @@ const handleLogin = async () => {
       </div>
 
       <!-- Botón de Google -->
+
       <div class="mb-4">
-        <button
-          type="button"
-          class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150"
+        <GoogleLogin
+          :callback="googleLogin"
+          prompt
+          class="w-full"
         >
-          <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
-          Continuar con Google
-        </button>
+          <button
+            type="button"
+            class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150"
+          >
+            <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
+            Continuar con Google
+          </button>
+        </GoogleLogin>
       </div>
 
       <div class="relative mb-4 text-center">
@@ -97,6 +80,7 @@ const handleLogin = async () => {
             v-model="email"
             class="input-field"
             required
+            autofocus
           />
         </div>
 
@@ -122,6 +106,7 @@ const handleLogin = async () => {
             v-model="password"
             class="input-field"
             required
+            autocomplete
           />
         </div>
         <div class="flex justify-between items-center mb-4">
@@ -139,13 +124,12 @@ const handleLogin = async () => {
         <div class="text-center mt-6">
           <button
             type="submit"
-            class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150"
+            class="w-full bg-base text-white py-3 rounded-lg hover:bg-azul transition duration-150 disabled:opacity-50 disabled:bg-base flex items-center justify-center"
+            :disabled="authStore.loading"
           >
+            <IconLoading v-if="authStore.loading" />
             INICIAR SESIÓN
           </button>
-        </div>
-        <div v-if="errorMessage" class="mt-4 text-red-600 text-center">
-          {{ errorMessage }}
         </div>
       </form>
     </div>

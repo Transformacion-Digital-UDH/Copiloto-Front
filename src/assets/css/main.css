@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Luego puedes añadir tus estilos personalizados aquí */
+
+@import 'flowbite';
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 .sidebar {
     scrollbar-width: none;
@@ -10,40 +13,14 @@
     width: 5px;
   }
   
-  ::-webkit-scrollbar-track {
-    background: transparent;
-    border-radius: 5px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: px;
-  }
-
-/* Diseño para botones de paginacion */
-.button {
-  --bg: #000;
-  --hover-bg: #2ebaa1;
-  --hover-text: #000;
-  color: #fff;
-  cursor: pointer;
-  border: 1px solid var(--bg);
-  border-radius: 4px;
-  padding: 9px;
-  background: var(--bg);
-  transition: 0.2s;
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 5px;
 }
 
-.button:hover {
-  color: var(--hover-text);
-  transform: translate(-0.25rem, -0.25rem);
-  background: var(--hover-bg);
-  box-shadow: 0.25rem 0.25rem var(--bg);
-}
-
-.button:active {
-  transform: translate(0);
-  box-shadow: none;
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: px;
 }
 
 /* Boton para subir archivos */ 
@@ -52,7 +29,7 @@
   width: 150px;
   display: flex;
   flex-direction: column;
-  align-items: space-between;
+  align-items: center;
   gap: 20px;
   cursor: pointer;
   align-items: center;
@@ -62,6 +39,7 @@
   padding: 1.5rem;
   border-radius: 10px;
   box-shadow: 0px 48px 35px -48px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
 
 .custum-file-upload .icon {
@@ -70,8 +48,8 @@
   justify-content: center;
 }
 
-.custum-file-upload .icon svg {
-  height: 80px;
+.custum-file-upload .icon img {
+  height: 24px;
   fill: rgba(75, 85, 99, 1);
 }
 
@@ -88,4 +66,25 @@
 
 .custum-file-upload input {
   display: none;
+}
+
+.skeleton-loader {
+  display: block;
+  background: linear-gradient(
+      to right,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0.5) 10%,
+      rgba(255, 255, 255, 0) 40%
+    ),
+    lightgray;
+  background-repeat: repeat-y;
+  background-size: 50px 500px;
+  background-position: 0 0;
+  animation: shine 1s infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 100% 0, /* move highlight to right */ 0 0;
+  }
 }

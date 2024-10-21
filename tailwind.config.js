@@ -1,29 +1,33 @@
 /** @type {import('tailwindcss').Config} */
+import flowbite from 'flowbite/plugin';
+
 export default {
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
         'custom-gray': '#838383',
         'base': '#39B49E',
-        'azul': '#0F2757',
+        'baseClarito': '#A0D6C9 ',
+        'azul': '#011B4B',
         'amarillo': '#F2A603',
-        'custom-green': '#2ebaa1',
+        'grisTabla': '#ECECEC',
+        'azulbajo': '#5d6d7e',
       },
       fontFamily: {
-        Roboto: ["Roboto, sans-serif"],
+        Roboto: ["Roboto", "sans-serif"], // Corregido el formato aquí
         Quicksand: ["Quicksand", "sans-serif"],
+        Poppins: ["Poppins", "sans-serif"], 
       },
       fontWeight: {
         Medium: 500,
-        SemiBold: 600, // Define el peso de fuente SemiBold
+        SemiBold: 600,
+        thin1:200,
       },
-      width: {
-        '7/10': '75%',
-        '3/10': '25%',
-      },
-    
     },
   },
-  plugins: [],
+  plugins: [
+    flowbite, // Añadido el plugin de Flowbite
+  ],
 };
