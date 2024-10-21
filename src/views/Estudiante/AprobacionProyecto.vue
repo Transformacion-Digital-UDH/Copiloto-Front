@@ -1,12 +1,12 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue';
-import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
 import { alertToast } from "@/functions";
 import Swal from 'sweetalert2';
 import router from '@/router';
 
+// Estado de carga
 const load = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
@@ -30,13 +30,17 @@ interface Documento {
   estado: string;
   documentoUrl: string;
 }
+
 const mostrarModalAprobar = ref(false); 
 
 // Estado del trámite de aprobación
 const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
 
-
 // Documentos para la aprobación del proyecto
+
+// Variables de entorno para los enlaces de los documentos
+const VIEW_APAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const DOWNLOAD_APAISI = import.meta.env.VITE_URL_DOWNLOAD_APSISI;
 
 // Método para determinar la clase del estado
 // const estadoClase = (estado: string) => {
@@ -146,76 +150,10 @@ onMounted(() =>{
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col">
-        <h3
-          class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"
-        ></h3>
-      </div>
-      <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <div class="flex justify-between items-center">
-              <h2
-                class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"
-              ></h2>
-            </div>
-            <div class="h-7">
-              <h2
-                class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"
-              ></h2>
-            </div>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div class="flex justify-end">
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-      </div>
+      <!-- Mostrar una pantalla de carga -->
     </div>
   </template>
-  
+
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
@@ -329,6 +267,7 @@ onMounted(() =>{
             </button>
           </div>
         </div>
+      </div>
     </div>
   </template>
 </template>

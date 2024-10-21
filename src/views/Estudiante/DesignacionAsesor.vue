@@ -68,6 +68,7 @@ const initSolicitude = ref(false);
 const advisers = ref<{ id: string, nombre: string }[]>([]);
 const load = ref(false);
 const enviado = ref(false);
+
 const solicitude = ref<Solicitude>({
   estudiante_id: "",
   titulo: "",
@@ -77,6 +78,7 @@ const solicitude = ref<Solicitude>({
   observacion: "",
   tipo_investigacion: "",  
 });
+
 const oficio = ref<Oficio>({
   id: "",
   estado: "",
@@ -112,6 +114,14 @@ interface Oficio {
   fecha_creado: string;
   nombre_de_oficio: string;
   observacion: string;
+}
+interface SolicitudeResponse {
+  data: {
+    _id: string;
+    sol_title_inve: string;
+    adviser_id?: string;
+    sol_status: string;
+  };
 }
 
 const resolucion = ref<Resolucion>({
@@ -188,6 +198,7 @@ const sendSolicitude = async (student_id: string) => {
     const params = {
       student_id: student_id,
     };
+
     alertConfirmation(
       "Estás seguro de iniciar este trámite?",
       "Iniciar trámite",
@@ -195,11 +206,13 @@ const sendSolicitude = async (student_id: string) => {
       params,
       "/api/solicitudes-store",
       "POST",
-      (response) => {
+      (response: SolicitudeResponse) => { // Tipamos aquí la respuesta
         solicitude.value.solicitud_id = response.data._id;
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id || "";
         solicitude.value.estado = response.data.sol_status;
+
+        // Lanza confetti en la pantalla
         confetti({
           particleCount: 500,
           spread: 1010,
@@ -209,7 +222,7 @@ const sendSolicitude = async (student_id: string) => {
     );
   } catch (error: any) {
     let description = "";
-    error.response.data.error.map((e: any) => {
+    error.response.data.error.forEach((e: any) => {
       description = description + " " + e;
     });
     alertToast(description, "Error", "error");
@@ -408,11 +421,13 @@ const handleNextButtonClick = () => {
 
           <div class="flex justify-center">
             <button
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)"
-            >
-              Iniciar trámite
-            </button>
+            v-if="authStore.id"
+            class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
+            @click="sendSolicitude(authStore.id!)"
+          >
+            Iniciar trámite
+          </button>
+
           </div>
         </div>
       </div>
@@ -530,7 +545,6 @@ const handleNextButtonClick = () => {
               Enviar
             </button>
           </div>
-
           <!-- Respuesta del asesor -->
           <div
             class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md"
@@ -589,7 +603,6 @@ const handleNextButtonClick = () => {
             </div>
           </div>
           <br />
-
           <!-- Mensaje de espera según el estado -->
           <span
             v-if="solicitude.estado === 'pendiente'"
@@ -765,7 +778,7 @@ const handleNextButtonClick = () => {
         >
           Siguiente
         </button>
-      </div>
+       </div>
         <!-- Card 3: Solicitar Cambio de Asesor -->
         <div
           :disabled="
