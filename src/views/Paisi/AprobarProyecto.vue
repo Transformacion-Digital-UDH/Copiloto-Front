@@ -16,9 +16,9 @@ interface Solicitude {
   oficio_id: number;
   revision_id_asesor: number;
   oficio_estado: string | null;
-  revision_presidente_id: number | null;
-  revision_secretario_id: string | null;
-  revision_vocal_id: string | null;
+  revision_id_presidente: number | null;
+  revision_id_secretario: string | null;
+  revision_id_vocal: string | null;
   estado: string;
 }
 
@@ -362,9 +362,9 @@ function closeDocumentModal() {
                           <!-- Botón de Documentos -->
                           <button 
                             @click="openDocumentModal(
-                              solicitude.revision_presidente_id ? String(solicitude.revision_presidente_id) : null, 
-                              solicitude.revision_secretario_id ? String(solicitude.revision_secretario_id) : null, 
-                              solicitude.revision_vocal_id ? String(solicitude.revision_vocal_id) : null
+                              solicitude.revision_id_presidente ? String(solicitude.revision_id_presidente) : null, 
+                              solicitude.revision_id_secretario ? String(solicitude.revision_id_secretario) : null, 
+                              solicitude.revision_id_vocal ? String(solicitude.revision_id_vocal) : null
                             )" 
                             class="focus:outline-none flex justify-center items-center space-x-1"
                           >

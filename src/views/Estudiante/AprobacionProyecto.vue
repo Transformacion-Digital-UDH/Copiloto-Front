@@ -100,7 +100,7 @@ const primeraRevision = async () => {
   solicitudEstado.value = "pendiente";  // Cambiamos el estado mientras enviamos la solicitud
 
   try {
-    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);  // Cambia la URL si es necesario
+    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);  // Cambia la URL si es necesario
 
     // Verificamos el resultado de la solicitud
     if (response.data.status) {
