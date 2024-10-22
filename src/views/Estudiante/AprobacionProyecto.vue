@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
 import { alertToast } from "@/functions";
@@ -270,8 +270,7 @@ onMounted(() =>{
             </button>
           </div>
         </div>
-      </div>
-    </div>
+      </div>    
   </template>
 </template>
 
