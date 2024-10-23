@@ -1,13 +1,11 @@
 <script lang="ts" setup>
 import { ref, reactive, onMounted } from 'vue';
+import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
 import { alertToast } from "@/functions";
 import Swal from 'sweetalert2';
 import router from '@/router';
-
-// Estado de carga
-const load = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Aprobación del proyecto de tesis";
@@ -24,35 +22,10 @@ onMounted(() => {
   typeWriter();
 });
 
-// Definir tipos para trámites y documentos
-interface Documento {
-  nombre: string;
-  estado: string;
-  documentoUrl: string;
-}
-
 const mostrarModalAprobar = ref(false); 
 
 // Estado del trámite de aprobación
 const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
-
-// Documentos para la aprobación del proyecto
-
-// Variables de entorno para los enlaces de los documentos
-const VIEW_APAISI = import.meta.env.VITE_URL_VIEW_APAISI;
-const DOWNLOAD_APAISI = import.meta.env.VITE_URL_DOWNLOAD_APSISI;
-
-// Método para determinar la clase del estado
-// const estadoClase = (estado: string) => {
-//   switch (estado) {
-//     case 'Hecho':
-//       return 'bg-green-500 text-white';
-//     case 'pendiente':
-//       return 'bg-gray-400 text-white';
-//     default:
-//       return '';
-//   }
-// };
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -72,24 +45,32 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  return documentos.value.some(doc => doc.estado !== "Tramitado");
+  return documentos.value.some(doc => doc.estado !== "tramitado");
 });
 
-///////////////////////////// CONEXION CON EL BACKEND //////////////////////////
+/*************************************** INTEGRACION CON EL BACKEND ************************************************ */
+const load = ref(false);
 const authStore = useAuthStore();
 const solicitudEstado = ref<string>(""); 
 const isLoading = ref(false); 
-const VIEW_APROBACION = import.meta.env.VITE_URL_VIEW_APROBACION;
-const DOWNLOAD_APROBACION = import.meta.env.VITE_URL_DOWNLOAD_APROBACION;
+const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const DOWNLOAD_APROBACIONPAISI = import.meta.env.VITE_URL_DOWNLOAD_APAISI;
+
+const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD;
+const DOWNLOAD_APROBACIONFACULTAD = import.meta.env.VITE_URL_DOWNLOAD_AFACULTAD;
+
 const oficio_id = ref<string>("");
-const documentos = ref([{ nombre: 'Oficio de Secretaria PAISI', estado:'Pendiente' }]);
+const resolucion_id = ref<string>("");
 
+const documentos = ref([
+  { nombre: 'Oficio de Secretaria PAISI', estado: 'Pendiente' }, 
+  { nombre: 'Resolución de Facultad', estado: 'Pendiente' }
+]);
 
-// para que el botón quede deshabilitado
 const isAprobacionDisabled = computed(() => {
-  const estadoSolicitud = solicitudEstado.value?.toLowerCase();
-  return ["pendiente", "tramitado"].includes(estadoSolicitud);// se deshabilita el botón dependiendo del estado
+  return documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
 });
+
 
 const solicitarAprobacion = async () => {
   isLoading.value = true;
@@ -129,9 +110,18 @@ const obtenerDatosEstudiante = async () => {
     const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${authStore.id}`);
     console.log("Datos recibidos: ", response.data);
 
-    if(response.data.oficio_id){
+    if (response.data.oficio_estado === 'tramitado') {
       oficio_id.value = response.data.oficio_id;
-      documentos.value[0].estado = 'Tramitado';
+      documentos.value[0].estado = 'tramitado';
+    } else {
+      documentos.value[0].estado = 'pendiente';
+    }
+
+    if (response.data.resolucion_estado === 'tramitado') {
+      resolucion_id.value = response.data.resolucion_id;
+      documentos.value[1].estado = 'tramitado';
+    } else {
+      documentos.value[1].estado = 'pendiente';
     }
 
   } catch (error: any) {
@@ -150,16 +140,39 @@ onMounted(() =>{
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <!-- Mostrar una pantalla de carga -->
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-12 w-2/5 rounded-lg duration-200 skeleton-loader"></h3><br>
+      </div>
+      <div class="mt-6 space-y-10">
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
+          <div class="block space-y-4">
+            <h2 class="bg-gray-200 h-6 w-72 rounded-md skeleton-loader duration-200 mb-16"></h2>
+            <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+        </div>
+        <div class="flex justify-between">
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+        </div>
+      </div>
     </div>
   </template>
-
+  
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
         <div class="mt-6 space-y-10">
           <!-- Card 1: Solicitud-->
-          <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
+          <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="flex items-center justify-between">
               <div class="flex items-center">
                 <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
@@ -194,57 +207,58 @@ onMounted(() =>{
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">2. Documentos para la aprobacion del proyecto de tesis</h2>
             </div>
+            <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">
               <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
                 <div class="flex flex-col md:flex-row justify-between md:items-center">
                   <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
                   <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <div v-if="documentos[0].estado === 'Tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                       <!-- BOTON VER -->
                       <a
-                        :href="`${VIEW_APROBACION}/${oficio_id}`"
+                        :href="`${VIEW_APROBACIONPAISI}/${oficio_id}`"
                         target="_blank"
                         class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                         <i class="fas fa-eye mr-2"></i> Ver
                       </a>
                       <!-- BOTON DESCARGAR -->
                       <a
-                        :href="`${DOWNLOAD_APROBACION}/${oficio_id}`"
+                        :href="`${DOWNLOAD_APROBACIONPAISI}/${oficio_id}`"
                         download
                         class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                         <i class="fas fa-download mr-2"></i> Descargar
                       </a>
                     </div>
                     <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
-                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado || "Estado desconocido" }}</span>
+                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
                   </div>
                 </div>
               </div>
             </div>
-
+            <!-- Para Resolución de Facultad -->
             <div class="mt-4 space-y-4">
               <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
                 <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
+                  <span class="flex-1 text-lg">{{ documentos[1].nombre }}</span>
                   <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <div v-if="documentos[0].estado === 'Tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                       <!-- BOTON VER -->
                       <a
-                        :href="`${VIEW_APROBACION}/${oficio_id}`"
+                        :href="`${VIEW_APROBACIONFACULTAD}/${resolucion_id}`"
                         target="_blank"
                         class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                         <i class="fas fa-eye mr-2"></i> Ver
                       </a>
                       <!-- BOTON DESCARGAR -->
                       <a
-                        :href="`${DOWNLOAD_APROBACION}/${oficio_id}`"
+                        :href="`${DOWNLOAD_APROBACIONFACULTAD}/${resolucion_id}`"
                         download
                         class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                         <i class="fas fa-download mr-2"></i> Descargar
                       </a>
                     </div>
                     <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
-                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado || "Estado desconocido" }}</span>
+                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
                   </div>
                 </div>
               </div>
@@ -254,7 +268,7 @@ onMounted(() =>{
           <!-- BOTONES ANTERIOR Y SIGUIENTE -->
           <div class="flex justify-between">
             <button 
-              @click="$router.push('/estudiante/designacion-jurado')" 
+              @click="$router.push('/estudiante/conformidad-jurado')" 
               class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
               Anterior
             </button>
@@ -267,7 +281,6 @@ onMounted(() =>{
             </button>
           </div>
         </div>
-      </div>
     </div>
   </template>
 </template>
