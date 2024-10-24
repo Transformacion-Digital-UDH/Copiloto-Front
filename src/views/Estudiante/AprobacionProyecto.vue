@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import router from '@/router';
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del proyecto de tesis";
+const text = "Aprobación del Proyecto de Tesis";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -63,7 +63,7 @@ const oficio_id = ref<string>("");
 const resolucion_id = ref<string>("");
 
 const documentos = ref([
-  { nombre: 'Oficio de Secretaria PAISI', estado: 'Pendiente' }, 
+  { nombre: 'Oficio de Secretaría PAISI', estado: 'Pendiente' }, 
   { nombre: 'Resolución de Facultad', estado: 'Pendiente' }
 ]);
 
@@ -141,12 +141,12 @@ onMounted(() =>{
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-2/5 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-12 w-2/3 rounded-lg duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-6 w-72 rounded-md skeleton-loader duration-200 mb-16"></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
             <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
@@ -173,38 +173,39 @@ onMounted(() =>{
         <div class="mt-6 space-y-10">
           <!-- Card 1: Solicitud-->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
-                  <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                    @mouseover="mostrarModalAprobar = true"
-                    @mouseleave="mostrarModalAprobar = false" />
-              </div>
+            <div class="relative flex items-center">
+              <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
+                <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                  @mouseover="mostrarModalAprobar = true"
+                  @mouseleave="mostrarModalAprobar = false" />
             </div>
-            <div v-show="mostrarModalAprobar" class="absolute left-40 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <div v-show="mostrarModalAprobar" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
               <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
             </div>
 
-            <div class="flex items-center justify-between mt-2">
-              <p class="text-gray-500 text-lg">Haz clic en el botón para enviar tu solicitud de aprobación del proyecto de tesis a la Facultad y al Programa Académico.</p>
+            <div class="flex items-center justify-between">
+              <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
+                <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
+              </p>
             </div>
+            
             <div class="mt-4">
               <div class="flex justify-center mt-2">
                 <button 
                   :disabled="isAprobacionDisabled" 
                   :class="[ isAprobacionDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
-                  class="px-4 py-2 text-white rounded-md"
+                  class="px-4 py-2 w-56 text-white rounded-md text-lg"
                   @click="solicitarAprobacion">
-                  {{ isLoading ?'Solicitando...' : 'SOLICITAR APROBACIÓN' }}
+                  {{ isLoading ?'Solicitando...' : 'Solicitar aprobación' }}
                 </button>
               </div>
             </div>
           </div>
 
           <!-- Card 2: Documentos -->
-          <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos para la aprobacion del proyecto de tesis</h2>
+              <h2 class="text-2xl font-medium text-black">2. Documentos </h2>
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">
@@ -228,7 +229,7 @@ onMounted(() =>{
                         <i class="fas fa-download mr-2"></i> Descargar
                       </a>
                     </div>
-                    <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                    <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
                     <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
                   </div>
                 </div>
@@ -256,13 +257,12 @@ onMounted(() =>{
                         <i class="fas fa-download mr-2"></i> Descargar
                       </a>
                     </div>
-                    <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                    <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
                     <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
           <!-- BOTONES ANTERIOR Y SIGUIENTE -->
           <div class="flex justify-between">
