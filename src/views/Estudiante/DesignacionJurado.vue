@@ -7,7 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de jurados";
+const text = "Designación de Jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -145,19 +145,19 @@ onMounted(() => {
    <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-2/5 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-12 w-2/3 rounded-lg duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-96 rounded-md skeleton-loader duration-200 mb-16"></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
             <h2 class="bg-gray-200 h-10 w-48 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-96 rounded-md skeleton-loader duration-200 mb-16"></h2>
-            <h2 class="bg-gray-200 h-40 w-1/2 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-7 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
+            <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
@@ -170,7 +170,7 @@ onMounted(() => {
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <!-- <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
             <h2 class="bg-gray-200 h-7 w-72 rounded-md skeleton-loader duration-200 mb-14"></h2>
             <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>            
@@ -181,7 +181,7 @@ onMounted(() => {
             <h2 class="bg-gray-200 h-7 w-2/6 rounded-md skeleton-loader duration-200"></h2>
             <h2 class="bg-gray-200 h-40 w-full mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
-        </div>
+        </div> -->
       </div>
     </div>
   </template>
@@ -223,7 +223,7 @@ onMounted(() => {
             @mouseleave="mostrarModalJurados = false" />
           </div>
 
-          <div v-show="mostrarModalJurados" class="absolute left-48 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-show="mostrarModalJurados" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.</p>
           </div>
 
@@ -237,9 +237,9 @@ onMounted(() => {
               <button
                 :disabled="isSolicitarDisabled" 
                 :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
-                class="px-4 py-2 text-white rounded-md"
+                class="px-4 py-2 w-52 text-white rounded-md text-lg"
                 @click="solicitarJurado">
-                {{ isLoading ?'Solicitando...' : 'SOLICITAR JURADOS' }}
+                {{ isLoading ?'Solicitando...' : 'Solicitar jurados' }}
               </button>
             </div>
           </div>
@@ -252,52 +252,54 @@ onMounted(() => {
             <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span>
           </div>
 
-          <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-lg">Aquí puedes ver los jurados que han sido seleccionados para tu solicitud.</p>            
+          <div class="overflow-x-auto mt-4 flex justify-center">
+            <div class="w-full max-w-2xl">
+              <table class="w-full text-left bg-white border border-gray-200 rounded-md shadow-lg">
+                <thead class="leading-normal">
+                  <tr class="text-azul text-left border-b-2 bg-gray-300">
+                    <th class="px-4 py-2 tracking-wide">ROL</th>
+                    <th class="px-4 py-2 tracking-wide">NOMBRE Y APELLIDO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- Si no hay jurados, mostramos un mensaje -->
+                  <tr v-if="jurados.length === 0">
+                    <td colspan="2" class="px-4 py-6 text-center text-gray-500 text-base">
+                      <i class="fas fa-exclamation-circle mr-2 text-red-700"></i> Aún no se han asignado jurados.
+                    </td>
+                  </tr>
+                  <!-- Iteramos los jurados si hay registros -->
+                  <tr v-else v-for="jurado in jurados" :key="jurado.id" class="border-b uppercase border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <td class="px-4 py-2 font-bold">
+                      <p class="text-wrap w-24">{{jurado.rol || "No asignado" }}</p>
+                    </td>
+                    <td class="px-4 py-2">
+                      <p class="text-wrap w-72">{{jurado.asesor || "No asignado" }}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          <div class="mt-6 flex justify-center">
-            <table class="w-full max-w-2xl text-left bg-white border border-gray-200 rounded-md shadow-lg">
-              <thead>
-                <tr class="text-azul border-b-2 bg-gray-300">
-                  <th class="px-4 py-2 text-azul border-b">ROL</th>
-                  <th class="px-4 py-2 text-azul border-b">NOMBRE Y APELLIDO</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Si no hay jurados, mostramos un mensaje -->
-                <tr v-if="jurados.length === 0">
-                  <td colspan="2" class="px-4 py-6 text-center text-gray-500 text-base">
-                    <i class="fas fa-exclamation-circle mr-2 text-red-700"></i> Aún no se han asignado jurados.
-                  </td>
-                </tr>
-                <!-- Iteramos los jurados si hay registros -->
-                <tr v-else v-for="jurado in jurados" :key="jurado.id" class="border-b uppercase border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                  <td class="px-4 py-2 border-b font-bold">{{ jurado.rol }}</td>
-                  <td class="px-4 py-2 border-b">{{ jurado.asesor }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
 
         <!-- Card 3: Oficio múltiple con los jurados seleccionados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">4. Documentos</h2>
+              <h2 class="text-2xl font-medium text-black">4. Documentos </h2>
               <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
                   @mouseover="mostrarModalDocumentos = true"
                   @mouseleave="mostrarModalDocumentos = false" />
-            </div>
-            <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo ml-4">{{ documentos[0].estado }}</span>
+            </div>            
           </div>
 
-          <div v-show="mostrarModalDocumentos" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.</p>
           </div>
 
-          <div class="mt-4">
+          <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
@@ -319,6 +321,7 @@ onMounted(() => {
                     </a>
                   </div>
                   <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                  <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">{{ documentos[0].estado }}</span>
                 </div>
               </div>
             </div>
