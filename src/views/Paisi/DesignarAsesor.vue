@@ -73,8 +73,10 @@ function openRejectModal(oficioId: number) {
 
 // El tipo de solicitude se especifica como `Solicitude`
 const openModalLink = (solicitude: Solicitude) => {
-  showLinkModal.value = true;
-  selectedSolicitude.value = solicitude;
+  if (!solicitude.link) {
+    showLinkModal.value = true;
+    selectedSolicitude.value = solicitude;
+  }
 }
 
 // Función para cerrar modal
@@ -355,31 +357,37 @@ const formIsValid = computed(() => {
                       </td>
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button
-                          v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
+                          v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado ?? '')"
                           :class="['w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
-                            ['tramitado'].includes(solicitude.oficio_estado) 
+                            ['tramitado'].includes(solicitude.oficio_estado ?? '') 
                               ? 'cursor-not-allowed' 
                               : 'hover:bg-green-600'
                           ]"
-                          :disabled="['tramitado'].includes(solicitude.oficio_estado)"
-                          @click="openModal(solicitude.oficio_id)">Generar
+                          :disabled="['tramitado'].includes(solicitude.oficio_estado ?? '')"
+                          @click="openModal(solicitude.oficio_id)"
+                        >
+                          Generar
                         </button>
+
                         <button
-                          v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado)"
+                          v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado ?? '')"
                           :class="['w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
-                            ['tramitado'].includes(solicitude.oficio_estado) 
+                            ['tramitado'].includes(solicitude.oficio_estado ?? '') 
                               ? 'cursor-not-allowed' 
                               : 'hover:bg-gray-400'
                           ]"
-                          :disabled="['tramitado'].includes(solicitude.oficio_estado)"
-                          @click="openRejectModal(solicitude.oficio_id)">Observar
+                          :disabled="['tramitado'].includes(solicitude.oficio_estado ?? '')"
+                          @click="openRejectModal(solicitude.oficio_id)"
+                        >
+                          Observar
                         </button>
+
                         <button>
-                          <a
+                          <a 
                           :href="`${VIEW_OFFICE}/${ solicitude.oficio_id }`" 
                           target="_blank"
                           class="flex items-center m-2 relative group"
-                          v-if="['tramitado'].includes(solicitude.oficio_estado)">
+                          v-if="['tramitado'].includes(solicitude.oficio_estado ?? '')">
                           <IconEyeCerrar class="mr-1 group-hover:hidden" />
                           <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                           <span class="text-[#34495e]">Oficio</span>
@@ -537,8 +545,11 @@ const formIsValid = computed(() => {
                 Cancelar
               </button>
               <button 
-              :disabled="createdoc"
-              v-if="!selectedSolicitude.link" @click="createGoogleDoc(selectedSolicitude.id)" class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl">
+                v-if="selectedSolicitude && !selectedSolicitude.link" 
+                @click="createGoogleDoc(selectedSolicitude.id!)" 
+                class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl"
+              >
+
                 <div v-if="createdoc" class="flex items-center gap-2">
                   <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

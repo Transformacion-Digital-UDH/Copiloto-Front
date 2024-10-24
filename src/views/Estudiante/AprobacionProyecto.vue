@@ -4,11 +4,11 @@ import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
 import { alertToast } from "@/functions";
-
-const load = ref(false);
+import Swal from 'sweetalert2';
+import router from '@/router';
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del Proyecto de Tesis";
+const text = "Aprobación del proyecto de tesis";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -22,161 +22,146 @@ onMounted(() => {
   typeWriter();
 });
 
-// Definir tipos para trámites y documentos
-interface Documento {
-  nombre: string;
-  estado: string;
-  documentoUrl: string;
-}
 const mostrarModalAprobar = ref(false); 
 
 // Estado del trámite de aprobación
 const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
 
-
-// Documentos para la aprobación del proyecto
-const documentos = ref<Documento[]>([
-  { nombre: 'Oficio de Secretaria PAISI', estado: 'Hecho', documentoUrl: '' },
-  { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' },
-]);
-
-// Método para determinar la clase del estado
-const estadoClase = (estado: string) => {
-  switch (estado) {
-    case 'Hecho':
-      return 'bg-green-500 text-white';
-    case 'pendiente':
-      return 'bg-gray-400 text-white';
-    default:
-      return '';
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
+    });
+  } else {
+    goToNextPage();
   }
 };
 
-///////////////////////////// CONEXION CON EL BACKEND //////////////////////////
-const authStore = useAuthStore();
-const solicitudEstado = ref<string>("No Iniciado"); 
-const isLoading = ref<boolean>(false);  
-axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
-
-// Función para cargar el estado actual de la solicitud desde el backend
-const cargarEstadoSolicitud = async () => {
-  try {
-    const response = await axios.get(`/api/oficio/estado-solicitud-tesis/${authStore.id}`);
-    console.log("Estado actual de la solicitud:", response.data);
-
-    // Asumimos que el backend devuelve el estado como "Pendiente", "Hecho", o "No Iniciado"
-    solicitudEstado.value = response.data.estado || "No Iniciado";  // Establecemos el estado inicial desde el backend
-
-    if (solicitudEstado.value === "Hecho") {
-      alertToast("La solicitud ya fue realizada y está aprobada.", "Información", "info");
-    }
-  } catch (error) {
-    console.error("Error al cargar el estado de la solicitud:", error);
-    alertToast("No se pudo obtener el estado actual de la solicitud", "Error", "error");
-  }
+const goToNextPage = () => {
+  router.push("/estudiante/progreso");
 };
 
-// Función para realizar la solicitud de aprobación
-const primeraRevision = async () => {
-  if (isLoading.value || solicitudEstado.value === "Hecho" || solicitudEstado.value === "pendiente") return;
-
-  isLoading.value = true;
-  solicitudEstado.value = "pendiente";  // Cambiamos el estado mientras enviamos la solicitud
-
-  try {
-    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);  // Cambia la URL si es necesario
-
-    // Verificamos el resultado de la solicitud
-    if (response.data.status) {
-      solicitudEstado.value = "Hecho";  // Si todo va bien, el estado se cambia a "Hecho"
-      alertToast("Aprobación de Tesis creada correctamente", "Éxito", "success");
-    } else {
-      solicitudEstado.value = "pendiente";  // Si falla algo, sigue en pendiente
-    }
-  } catch (error) {
-    console.error("Error en la solicitud de aprobación:", error);
-    alertToast(error.response?.data?.message || "Error al enviar la solicitud", "Error", "error");
-    solicitudEstado.value = "No Iniciado";  // Volvemos al estado inicial si falla
-  } finally {
-    isLoading.value = false;  // Finalizamos la carga
-  }
-};
-
-
-// Cargar el estado de la solicitud al montar el componente
-onMounted(() => {
-  cargarEstadoSolicitud();  // Cargar el estado desde el backend cuando se monta el componente
+const isNextButtonDisabled = computed(() => {
+  return documentos.value.some(doc => doc.estado !== "tramitado");
 });
 
+/*************************************** INTEGRACION CON EL BACKEND ************************************************ */
+const load = ref(false);
+const authStore = useAuthStore();
+const solicitudEstado = ref<string>(""); 
+const isLoading = ref(false); 
+const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const DOWNLOAD_APROBACIONPAISI = import.meta.env.VITE_URL_DOWNLOAD_APAISI;
+
+const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD;
+const DOWNLOAD_APROBACIONFACULTAD = import.meta.env.VITE_URL_DOWNLOAD_AFACULTAD;
+
+const oficio_id = ref<string>("");
+const resolucion_id = ref<string>("");
+
+const documentos = ref([
+  { nombre: 'Oficio de Secretaria PAISI', estado: 'Pendiente' }, 
+  { nombre: 'Resolución de Facultad', estado: 'Pendiente' }
+]);
+
+const isAprobacionDisabled = computed(() => {
+  return documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+});
+
+
+const solicitarAprobacion = async () => {
+  isLoading.value = true;
+  try {
+    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);
+    console.log("Mostrando lo recibido: ",response);
+
+    if (response.data.estado){
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
+    }
+
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.mensaje) {
+      const mensaje = error.response.data.mensaje;
+
+      if (mensaje.includes("El estudiante no existe")) {
+        alertToast("El estudiante no existe en el sistema. Verifique los datos.", "Error", "error");
+      } else if (mensaje.includes("El estudiante aún no tiene la conformidad de sus jurados")) {
+        alertToast("Estimado estudiante, no tiene conformidad de jurados", "", "warning");
+      } else if (mensaje.includes("El estudiante ya tiene una solicitud de aprobación de tesis pendiente")) {
+        alertToast("Estimado estudiante, ya solicito su aprobación de tesis", "", "info");
+      } else {
+        alertToast("Error desconocido en la solicitud", "Error", "error");
+      }
+    } else {
+      alertToast("Error en la solicitud.", "Error", "error");
+    }
+  } finally {
+    isLoading.value = false; 
+  }
+};
+
+const obtenerDatosEstudiante = async () => {
+  load.value = true;
+  try {
+    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${authStore.id}`);
+    console.log("Datos recibidos: ", response.data);
+
+    if (response.data.oficio_estado === 'tramitado') {
+      oficio_id.value = response.data.oficio_id;
+      documentos.value[0].estado = 'tramitado';
+    } else {
+      documentos.value[0].estado = 'pendiente';
+    }
+
+    if (response.data.resolucion_estado === 'tramitado') {
+      resolucion_id.value = response.data.resolucion_id;
+      documentos.value[1].estado = 'tramitado';
+    } else {
+      documentos.value[1].estado = 'pendiente';
+    }
+
+  } catch (error: any) {
+    console.error("Error al obtener datos", error.response?.data?.mensaje || error.mensaje);
+  } finally {
+    load.value = false;
+  }
+};
+
+onMounted(() =>{
+  obtenerDatosEstudiante();
+})
+
 </script>
+
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col">
-        <h3
-          class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"
-        ></h3>
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-12 w-2/5 rounded-lg duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
+          <div class="block space-y-4">
+            <h2 class="bg-gray-200 h-6 w-72 rounded-md skeleton-loader duration-200 mb-16"></h2>
+            <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <div class="flex justify-between items-center">
-              <h2
-                class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"
-              ></h2>
-            </div>
-            <div class="h-7">
-              <h2
-                class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"
-              ></h2>
-            </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div class="flex justify-end">
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
+        <div class="flex justify-between">
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
         </div>
       </div>
     </div>
@@ -184,87 +169,113 @@ onMounted(() => {
   
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-5xl font-bold text-center text-azul">
-        {{ textoTipiado2 }}
-      </h3>
-      <br>
-       <!-- Card 1: Solicitud-->
-    <div class="bg-white rounded-lg shadow-lg p-6 relative">
-      <div class="relative flex items-center">
-        <h2 class="text-2xl font-medium text-black">
-          1. Solicitar Aprobación 
-        </h2>
-        <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-          @mouseover="mostrarModalAprobar = true"
-          @mouseleave="mostrarModalAprobar = false" />
-      </div>
-
-      <!-- Tooltip que se muestra al hacer hover sobre el ícono de información -->
-      <div v-show="mostrarModalAprobar" class="absolute left-48 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-        <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
-      </div>
-
-      <div class="flex items-center justify-between mt-2">
-        <p class="text-gray-500 text-lg">Haz clic en el botón para solicitar la aprobación de tu Proyecto de Tesis</p>
-        <!-- Mostrar el estado de la solicitud -->
-        <span :class="estadoClase(solicitudEstado)" class="estado-estilo">{{ solicitudEstado }}</span>
-      </div>
-
-      <div class="mt-4">
-        <div class="flex justify-center mt-2">
-          <!-- Botón para enviar la solicitud -->
-          <button 
-            @click="primeraRevision"
-            :disabled="solicitudEstado === 'pendiente' || solicitudEstado === 'Hecho' || isLoading"  
-            :class="[
-              solicitudEstado === 'pendiente' || solicitudEstado === 'Hecho' ? 'bg-gray-300 cursor-not-allowed' : 'bg-base cursor-pointer',
-              isLoading ? 'bg-green-500' : ''
-            ]"
-            class="px-4 py-2 text-white rounded-md">
-            {{ isLoading ? 'Solicitando...' : 'Solicitar Aprobación' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-
-
+      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
         <div class="mt-6 space-y-10">
-          <!-- Card 2: Documentos -->
-          <div class="bg-white rounded-lg shadow-lg p-6">
-            <h2 class="text-2xl font-medium text-black">2. Documentos para la Aprobacion del Proyecto de Tesis</h2>
+          <!-- Card 1: Solicitud-->
+          <div class="bg-white rounded-lg shadow-lg p-6 relative">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
+                  <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                    @mouseover="mostrarModalAprobar = true"
+                    @mouseleave="mostrarModalAprobar = false" />
+              </div>
+            </div>
+            <div v-show="mostrarModalAprobar" class="absolute left-40 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+              <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
+            </div>
 
-            <!-- Listado de documentos -->
-            <div class="mt-4 space-y-6">
-              <div v-for="(documento, index) in documentos" :key="index"
-                class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-                <!-- Nombre del documento -->
-                <span class="text-black flex-1">{{ documento.nombre }}</span>
-
-                <div class="flex space-x-4 items-center">
-                  <!-- Botón de Ver -->
-                  <a v-if="documento.estado === 'Hecho'" :href="documento.documentoUrl" target="_blank"
-                    class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
-                    <i class="fas fa-eye mr-2"></i> Ver
-                  </a>
-
-                  <!-- Botón de Descargar -->
-                  <a v-if="documento.estado === 'Hecho'" :href="documento.documentoUrl" download
-                    class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
-                  <i class="fas fa-download mr-2"></i> Descargar
-                  </a>
-
-                  <!-- Estado del documento -->
-                  <span :class="estadoClase(documento.estado)" class="estado-estilo">{{ documento.estado }}</span>
-                </div>
+            <div class="flex items-center justify-between mt-2">
+              <p class="text-gray-500 text-lg">Haz clic en el botón para enviar tu solicitud de aprobación del proyecto de tesis a la Facultad y al Programa Académico.</p>
+            </div>
+            <div class="mt-4">
+              <div class="flex justify-center mt-2">
+                <button 
+                  :disabled="isAprobacionDisabled" 
+                  :class="[ isAprobacionDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
+                  class="px-4 py-2 text-white rounded-md"
+                  @click="solicitarAprobacion">
+                  {{ isLoading ?'Solicitando...' : 'SOLICITAR APROBACIÓN' }}
+                </button>
               </div>
             </div>
           </div>
 
-          <!-- Botón "Siguiente" -->
-          <div class="flex justify-end mt-8">
+          <!-- Card 2: Documentos -->
+          <div class="bg-white rounded-lg shadow-lg p-6 relative">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la aprobacion del proyecto de tesis</h2>
+            </div>
+            <!-- Para Oficio de PAISI -->
+            <div class="mt-4 space-y-4">
+              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+                <div class="flex flex-col md:flex-row justify-between md:items-center">
+                  <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
+                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                    <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                      <!-- BOTON VER -->
+                      <a
+                        :href="`${VIEW_APROBACIONPAISI}/${oficio_id}`"
+                        target="_blank"
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-eye mr-2"></i> Ver
+                      </a>
+                      <!-- BOTON DESCARGAR -->
+                      <a
+                        :href="`${DOWNLOAD_APROBACIONPAISI}/${oficio_id}`"
+                        download
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-download mr-2"></i> Descargar
+                      </a>
+                    </div>
+                    <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Para Resolución de Facultad -->
+            <div class="mt-4 space-y-4">
+              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+                <div class="flex flex-col md:flex-row justify-between md:items-center">
+                  <span class="flex-1 text-lg">{{ documentos[1].nombre }}</span>
+                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                    <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                      <!-- BOTON VER -->
+                      <a
+                        :href="`${VIEW_APROBACIONFACULTAD}/${resolucion_id}`"
+                        target="_blank"
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-eye mr-2"></i> Ver
+                      </a>
+                      <!-- BOTON DESCARGAR -->
+                      <a
+                        :href="`${DOWNLOAD_APROBACIONFACULTAD}/${resolucion_id}`"
+                        download
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-download mr-2"></i> Descargar
+                      </a>
+                    </div>
+                    <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <!-- BOTONES ANTERIOR Y SIGUIENTE -->
+          <div class="flex justify-between">
             <button 
-              class="px-4 py-2 text-white bg-gray-300 rounded-md">
+              @click="$router.push('/estudiante/conformidad-jurado')" 
+              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+              Anterior
+            </button>
+            <button
+              @click="handleNextButtonClick"
+              :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled 
+              ? 'bg-gray-300 cursor-not-allowed' 
+              : 'bg-green-500 hover:bg-green-600',]">
               Siguiente
             </button>
           </div>
@@ -277,11 +288,21 @@ onMounted(() => {
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 400;
   border-radius: 0.375rem;
   display: inline-block;
 }
-
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-tramitado {
+  background-color: #38a169;
+  color: #ffffff;
+}
+.estado-no-solicitado {
+  background-color: #718096;
+  color: #ffffff;
+}
 .break-all {
   word-break: break-all;
 }
