@@ -180,7 +180,6 @@ onMounted(() =>{
                     @mouseover="mostrarModalAprobar = true"
                     @mouseleave="mostrarModalAprobar = false" />
               </div>
-              <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase().replace(' ', '-')}`]" class="ml-4">{{ solicitudEstado }}</span>
             </div>
             <div v-show="mostrarModalAprobar" class="absolute left-40 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
               <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
@@ -258,7 +257,7 @@ onMounted(() =>{
                       </a>
                     </div>
                     <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
-                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
+                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
                   </div>
                 </div>
               </div>
