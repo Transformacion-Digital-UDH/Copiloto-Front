@@ -12,7 +12,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de proyecto de tesis por los jurados";
+const text = "Conformidad de Proyecto de Tesis por los Jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
