@@ -22,11 +22,11 @@ interface Asesor {
 // Documentos es un array reactivo de tipo Documento usando reactive
 const documentos = reactive<Documento[]>([
   {
-    nombre: "Informe de Conformidad de Observaciones",
-    estado: "pendiente",
-    documentoUrl: "",
-    revision_id: null,
-  },
+  nombre: "Informe de Conformidad de Observaciones",
+  estado: "pendiente",
+  documentoUrl: "",
+  revision_id: null,
+}
 ]);
 
 function estadoClase(estado: string) {
@@ -47,7 +47,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de proyecto de tesis por el asesor";
+const text = "Conformidad de Proyecto de Tesis por el Asesor";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -115,6 +115,7 @@ const isNextButtonDisabled = computed(() => {
   );
   return documentoPaso3?.estado !== "Hecho";
 });
+
 
 const primeraRevision = async () => {
   isLoading.value = true;
@@ -312,10 +313,10 @@ onMounted(() => {
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
           <!-- Información del Asesor -->
           <div class="grid grid-cols-1 gap-6">
-            <div class="bg-slate-100 rounded-lg p-4 flex flex-col items-center shadow-lg">
+            <div class="bg-gray-100 rounded-lg p-4 flex flex-col items-center shadow-lg">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-              <p class="font-bold text-xl text-azul">Asesor</p>
-              <p class="text-gray-600">
+              <p class="font-bold text-2xl text-azul">Asesor</p>
+              <p class="text-gray-600 text-center">
                 {{ asesor?.nombre && asesor?.apellido_paterno && asesor?.apellido_materno 
                 ? `${asesor.nombre} ${asesor.apellido_paterno} ${asesor.apellido_materno}` 
                 : 'Asesor no asignado' }}
@@ -323,9 +324,9 @@ onMounted(() => {
             </div>
           </div>
           <!-- Título de Tesis -->
-          <div class="bg-slate-100 rounded-lg p-6 shadow-lg">
-            <p class="text-gray-700 uppercase">Título de la tesis:</p>
-            <p class="max-w-7xl text-2xl font-bold text-gray-800">{{ titulo || 'Título no asignado' }}</p>
+          <div class="bg-gray-100 rounded-lg p-6 shadow-lg">
+            <p class="text-azul text-center font-bold text-2xl">Título de tesis</p>
+            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace al Proyecto de Tesis -->
           <div v-if="link" class="text-center mt-6">
@@ -333,9 +334,9 @@ onMounted(() => {
               :href="link"
               target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <i class="fas fa-external-link-alt"></i> Abrir Proyecto
+              <i class="fas fa-external-link-alt"></i> Abrir proyecto
             </a>
-          </div>
+          </div>  
           <!-- Explicación breve -->
           <p class="text-sm text-gray-600 text-center">Sube la información de tu proyecto de tesis en el documento de Google Docs proporcionado y, cuando estés listo, haz clic en 'Solicitar Revisión' para iniciar el proceso.</p>
         </div>
@@ -343,7 +344,7 @@ onMounted(() => {
         <!-- Observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Observaciones</h2>
+            <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
             <img
               src="/icon/info2.svg"
               alt="Info"
@@ -356,8 +357,8 @@ onMounted(() => {
             <p class="text-sm text-gray-600">Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.</p>
           </div>
           <div class="flex items-center justify-between">
-            <p class="text-gray-500 text-lg">
-              Para comenzar con el proceso de correción, haz clic en <strong class="text-[#39B49E]">"Solicitar revisión"</strong>
+            <p class="text-gray-500 text-base mt-2">
+              Para comenzar con el proceso de observaciones en el proyecto de tesis, haz clic en <strong class="text-[#39B49E]">"Solicitar revisión"</strong>
             </p>
             <span
               :class="estadoClase(solicitudEstado2)"
@@ -371,7 +372,7 @@ onMounted(() => {
               :class="[ isRevisionDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
               class="px-4 py-2 text-white rounded-lg text-lg"
               @click="primeraRevision">
-              {{ isLoading ? 'Solicitando...' : 'SOLICITAR REVISIÓN' }}
+              {{ isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
             </button>
           </div>
         </div>
@@ -380,7 +381,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h4 class="text-2xl font-medium text-black">
-              2. Revisión de Observaciones
+              2. Revisión de observaciones
             </h4>
 
             <div class="relative">
@@ -401,11 +402,11 @@ onMounted(() => {
             </div>
             
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
-            <strong class="text-[#8898aa] text-lg">"Pendiente"</strong>. Realiza las correcciones directamente en el documento de Google Docs.
+          <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
+            <strong class="text-[#8898aa] text-base">"Pendiente"</strong>. Realiza las correcciones directamente en el documento de Google Docs.
           </p>
-          <p class="text-gray-500 text-lg">Una vez que hayas corregido, haz clic en 
-            <strong class="text-green-500 text-lg">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está en orden, el estado cambiará a <strong class="text-green-500 text-lg">"Aprobado"</strong>.
+          <p class="text-gray-500 text-base">Una vez que hayas corregido, haz clic en 
+            <strong class="text-green-500 text-base">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está en orden, el estado cambiará a <strong class="text-green-500 text-base">"Aprobado"</strong>.
           </p>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
@@ -473,20 +474,12 @@ onMounted(() => {
 
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
+              <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de tesis por el asesor</h2>
               <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
                   @mouseover="mostrarModalDocumentos = true"
                   @mouseleave="mostrarModalDocumentos = false" />
             </div>
-            <span v-if="documentos.length > 0" class="block mt-2 text-gray-500 text-sm">
-              <span :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
-                {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
-              </span>
-            </span>
-          </div>
-
           <!-- Modal informativo -->
           <div v-if="mostrarModalDocumentos" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">
@@ -494,11 +487,17 @@ onMounted(() => {
               antes de continuar.
             </p>
           </div>
+          <span v-if="documentos.length > 0" 
+              class="absolute right-0 top-0 mt-6 mr-6 text-gray-500 text-sm">
+            <span :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
+              {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
+            </span>
+          </span>
 
           <div class="mt-4 space-y-4">
             <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg">Informe de Conformidad de Observaciones</span>
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-xm bg-gray-50">Informe de conformidad de observaciones por el asesor</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
@@ -523,7 +522,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <!--Botones siguiente y anteerior-->
+        <!--Botones siguiente y anterior-->
         <div class="flex justify-between">
           <!-- Botón de Anterior -->
           <button
@@ -537,8 +536,11 @@ onMounted(() => {
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
                 ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',]"> Siguiente
+                : 'bg-green-500 hover:bg-green-600',]"
+          >
+            Siguiente
           </button>
+
         </div>
       </div>
     </div>

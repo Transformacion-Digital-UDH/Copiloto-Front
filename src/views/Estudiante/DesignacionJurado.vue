@@ -228,7 +228,7 @@ onMounted(() => {
           </div>
 
           <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-lg">Haz clic en el botón para solicitar la designación de jurados.</p>
+            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
             <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span>
           </div>
 
@@ -248,7 +248,7 @@ onMounted(() => {
         <!-- Jurados seleccionados -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div class="flex items-center justify-between mt-2">
-            <h2 class="text-2xl font-medium text-black">2. Tus jurados seleccionados son:</h2>
+            <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
             <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span>
           </div>
 
@@ -270,7 +270,7 @@ onMounted(() => {
                   </tr>
                   <!-- Iteramos los jurados si hay registros -->
                   <tr v-else v-for="jurado in jurados" :key="jurado.id" class="border-b uppercase border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                    <td class="px-4 py-2 font-bold">
+                    <td class="px-4 py-2">
                       <p class="text-wrap w-24">{{jurado.rol || "No asignado" }}</p>
                     </td>
                     <td class="px-4 py-2">
@@ -288,7 +288,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">4. Documentos </h2>
+              <h2 class="text-2xl font-medium text-black">4. Documentos para la conformidad de designacion de jurados</h2>
               <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
                   @mouseover="mostrarModalDocumentos = true"
                   @mouseleave="mostrarModalDocumentos = false" />
@@ -302,7 +302,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
+                <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[0].estado === 'Tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->

@@ -355,7 +355,7 @@ function closeDocumentModal() {
                             </button>
                           </a>
                           <span v-else class="italic text-gray-400">No disponible</span>
-                        </td>
+                      </td>
 
                       <td class="text-center px-4">
                         <div class="flex justify-center items-center">

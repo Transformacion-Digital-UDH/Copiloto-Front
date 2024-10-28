@@ -63,9 +63,10 @@ const oficio_id = ref<string>("");
 const resolucion_id = ref<string>("");
 
 const documentos = ref([
-  { nombre: 'Oficio de Secretaría PAISI', estado: 'Pendiente' }, 
-  { nombre: 'Resolución de Facultad', estado: 'Pendiente' }
+  { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' }, 
+  { nombre: 'Resolución de Facultad de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' }
 ]);
+
 
 const isAprobacionDisabled = computed(() => {
   return documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
@@ -110,16 +111,24 @@ const obtenerDatosEstudiante = async () => {
     const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${authStore.id}`);
     console.log("Datos recibidos: ", response.data);
 
+    // Actualizar el estado y observación de oficio
     if (response.data.oficio_estado === 'tramitado') {
       oficio_id.value = response.data.oficio_id;
       documentos.value[0].estado = 'tramitado';
+    } else if (response.data.oficio_estado === 'observado') {
+      documentos.value[0].estado = 'observado';
+      documentos.value[0].observacion = response.data.oficio_observacion || 'comunicate con secretaria de PAISI';
     } else {
       documentos.value[0].estado = 'pendiente';
     }
 
+    // Actualizar el estado y observación de resolución
     if (response.data.resolucion_estado === 'tramitado') {
       resolucion_id.value = response.data.resolucion_id;
       documentos.value[1].estado = 'tramitado';
+    } else if (response.data.resolucion_estado === 'observado') {
+      documentos.value[1].estado = 'observado';
+      documentos.value[1].observacion = response.data.resolucion_observacion || 'cominicate con secretaria de Facultad';
     } else {
       documentos.value[1].estado = 'pendiente';
     }
@@ -130,6 +139,7 @@ const obtenerDatosEstudiante = async () => {
     load.value = false;
   }
 };
+
 
 onMounted(() =>{
   obtenerDatosEstudiante();
@@ -184,7 +194,7 @@ onMounted(() =>{
             </div>
 
             <div class="flex items-center justify-between">
-              <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
+              <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
                 <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
               </p>
             </div>
@@ -205,41 +215,53 @@ onMounted(() =>{
           <!-- Card 2: Documentos -->
           <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos </h2>
+              <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis </h2>
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">
-              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-                <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
-                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                      <!-- BOTON VER -->
-                      <a
-                        :href="`${VIEW_APROBACIONPAISI}/${oficio_id}`"
-                        target="_blank"
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-eye mr-2"></i> Ver
-                      </a>
-                      <!-- BOTON DESCARGAR -->
-                      <a
-                        :href="`${DOWNLOAD_APROBACIONPAISI}/${oficio_id}`"
-                        download
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-download mr-2"></i> Descargar
-                      </a>
-                    </div>
-                    <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
-                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+  <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+    <div class="flex flex-col md:flex-row justify-between md:items-center">
+      <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
+      <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+        <!-- Condición para cuando el estado es "tramitado" -->
+        <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+          <a
+            :href="`${VIEW_APROBACIONPAISI}/${oficio_id}`"
+            target="_blank"
+            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+            <i class="fas fa-eye mr-2"></i> Ver
+          </a>
+          <a
+            :href="`${DOWNLOAD_APROBACIONPAISI}/${oficio_id}`"
+            download
+            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+            <i class="fas fa-download mr-2"></i> Descargar
+          </a>
+        </div>
+
+        <!-- Condición para mostrar la observación cuando el estado es "observado" -->
+        <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">
+          "{{ documentos[0].observacion || 'Observación no disponible' }}"
+        </p>
+
+        <!-- Mensaje de que aún no está cargado para estado "pendiente" -->
+        <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+
+        <!-- Estado del documento -->
+        <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
+          {{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
             <!-- Para Resolución de Facultad -->
             <div class="mt-4 space-y-4">
               <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
                 <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1 text-lg">{{ documentos[1].nombre }}</span>
+                  <span class="flex-1 text-xm bg-gray-50">{{ documentos[1].nombre }}</span>
                   <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                     <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                       <!-- BOTON VER -->
@@ -301,6 +323,10 @@ onMounted(() =>{
 }
 .estado-no-solicitado {
   background-color: #718096;
+  color: #ffffff;
+}
+.estado-observado {
+  background-color: #e79e38;
   color: #ffffff;
 }
 .break-all {

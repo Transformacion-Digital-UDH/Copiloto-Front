@@ -292,7 +292,7 @@ onMounted(() => {
           </div>
           <!-- Título de Tesis -->
           <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-            <p class="max-w-7xl text-2xl font-bold text-gray-800 uppercase">{{ titulo || 'Título no asignado' }}</p>
+            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace del proyecto de Tesis -->
           <div v-if="link" class="text-center mt-6">
@@ -352,13 +352,13 @@ onMounted(() => {
             <p class="text-sm text-gray-600">En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.</p>
           </div>
 
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Si tu jurado ha dejado observaciones, el estado cambiará a 
+          <p class="text-gray-500 mt-1 text-base">Si tu jurado ha dejado observaciones, el estado cambiará a 
             <strong class="text-[#8898aa] text-lg font-medium">Pendiente</strong>. Por favor, corrige todas las observaciones directamente en el documento de Google Docs.
           </p>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Una vez que hayas realizado las correcciones, haz clic en 
+          <p class="text-gray-500 mt-1  text-base">Una vez que hayas realizado las correcciones, haz clic en 
             <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong>. para que el jurado revise nuevamente.
           </p>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Cuando los 3 jurados aprueben tu proyecto de tesis, el estado cambiará automáticamente
+          <p class="text-gray-500 mt-1 text-base">Cuando los 3 jurados aprueben tu proyecto de tesis, el estado cambiará automáticamente
             <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
           </p>
 
@@ -490,7 +490,7 @@ onMounted(() => {
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+            <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del proyecto de tesis por los jurados</h2>
             <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
               @mouseover="mostrarModalDocumentos = true"
               @mouseleave="mostrarModalDocumentos = false"/>
@@ -503,7 +503,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
+                <span class="flex-1 text-xm">{{ documentos[0].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[0].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->
@@ -532,7 +532,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[1].nombre }}</span>
+                <span class="flex-1 text-xm">{{ documentos[1].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[1].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->
@@ -561,7 +561,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[2].nombre }}</span>
+                <span class="flex-1 text-xm">{{ documentos[2].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[2].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->
