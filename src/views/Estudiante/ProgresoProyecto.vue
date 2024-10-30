@@ -104,7 +104,7 @@ onMounted(() => {
       Ejecución de tu Proyecto de Tesis
     </h2>
 
-    <div class="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-x-16 w-full max-w-7xl mx-auto">
+    <div class="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-x-16 w-full max-w-7xl mx-auto mb-10">
       <!-- Imagen SVG a la izquierda -->
       <div class="w-full lg:w-full flex justify-center items-center h-full">
         <img src="/img/c2.svg" alt="Descripción de la imagen" class="w-full h-full object-contain max-h-screen transform transition duration-500 ease-in-out hover:scale-105 fade-in" />
@@ -167,6 +167,7 @@ onMounted(() => {
     
     <!-- Tabla de documentos aprobados por todas las areas -->
     <div class="bg-white rounded-lg shadow-lg p-6 relative">
+      <p class="text-2xl py-2 text-azul font-bold">Documentos de Proyecto de Tesis</p>
       <div class="overflow-x-auto mt-4">
         <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
           <thead class="min-w-full leading-normal">

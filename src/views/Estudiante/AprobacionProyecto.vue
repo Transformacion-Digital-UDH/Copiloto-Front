@@ -219,43 +219,42 @@ onMounted(() =>{
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">
-  <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-    <div class="flex flex-col md:flex-row justify-between md:items-center">
-      <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-        <!-- Condición para cuando el estado es "tramitado" -->
-        <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-          <a
-            :href="`${VIEW_APROBACIONPAISI}/${oficio_id}`"
-            target="_blank"
-            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-            <i class="fas fa-eye mr-2"></i> Ver
-          </a>
-          <a
-            :href="`${DOWNLOAD_APROBACIONPAISI}/${oficio_id}`"
-            download
-            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-            <i class="fas fa-download mr-2"></i> Descargar
-          </a>
-        </div>
+              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+                <div class="flex flex-col md:flex-row justify-between md:items-center">
+                  <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
+                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                    <!-- Condición para cuando el estado es "tramitado" -->
+                    <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                      <a
+                        :href="`${VIEW_APROBACIONPAISI}/${oficio_id}`"
+                        target="_blank"
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-eye mr-2"></i> Ver
+                      </a>
+                      <a
+                        :href="`${DOWNLOAD_APROBACIONPAISI}/${oficio_id}`"
+                        download
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-download mr-2"></i> Descargar
+                      </a>
+                    </div>
 
-        <!-- Condición para mostrar la observación cuando el estado es "observado" -->
-        <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">
-          "{{ documentos[0].observacion || 'Observación no disponible' }}"
-        </p>
+                    <!-- Condición para mostrar la observación cuando el estado es "observado" -->
+                    <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">
+                      "{{ documentos[0].observacion || 'Observación no disponible' }}"
+                    </p>
 
-        <!-- Mensaje de que aún no está cargado para estado "pendiente" -->
-        <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                    <!-- Mensaje de que aún no está cargado para estado "pendiente" -->
+                    <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
-        <!-- Estado del documento -->
-        <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
-          {{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
-
+                    <!-- Estado del documento -->
+                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
+                      {{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <!-- Para Resolución de Facultad -->
             <div class="mt-4 space-y-4">
