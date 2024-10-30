@@ -147,21 +147,22 @@ onMounted(() => {
         <!-- Fechas de Inicio y Fin -->
         <div class="flex justify-around w-full space-x-8">
           <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-32 md:w-48 lg:w-64 transform transition duration-500 ease-in-out hover:scale-105">
-            <div class="text-lg font-semibold text-gray-600">Inicio</div>
-            <div class="text-2xl font-bold">{{ startDate }}</div>
+            <div class="text-lg font-semibold text-gray-800">Inicio</div>
+            <div class="text-2xl text-azul font-bold">{{ startDate }}</div>
           </div>
           <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-32 md:w-48 lg:w-64 transform transition duration-500 ease-in-out hover:scale-105">
-            <div class="text-lg font-semibold text-gray-600">Fin</div>
-            <div class="text-2xl font-bold">{{ endDate }}</div>
+            <div class="text-lg font-semibold text-gray-800">Fin</div>
+            <div class="text-2xl text-azul font-bold">{{ endDate }}</div>
           </div>
         </div>
 
         <!-- Botones de acción -->
         <div class="flex justify-center gap-6">
-          <button class="px-4 py-2 md:px-8 md:py-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-baseClarito transition text-lg md:text-xl">
+          <button class="px-4 py-2  md:px-8 md:py-4 bg-baseClarito text-white rounded-lg hover:bg-base transition text-lg md:text-xl">
             Ir a Informe Final
           </button>
         </div>
+        <br>
       </div>
     </div>
     

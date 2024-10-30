@@ -30,6 +30,7 @@ import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
 import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
+import LinkInforme from '@/views/Paisi/LinkInforme.vue'
 
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -98,6 +99,7 @@ const router = createRouter({
         { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: {title: 'Designar asesor'}},
         
         { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { title: 'Aprobar informe' } },
+        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { title: 'Link informe' } },
       ]
     },
     {

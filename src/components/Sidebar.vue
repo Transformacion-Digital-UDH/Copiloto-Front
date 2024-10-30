@@ -156,6 +156,7 @@ export default defineComponent({
           { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/paisi/aprobar-proyecto' }
         );
         allSections[2].submenus.push(
+          { name: 'Link de informe', label: 'Link de Informe', path: '/paisi/link-informe' },
           { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' }
         );
         allSections[3].submenus.push(
