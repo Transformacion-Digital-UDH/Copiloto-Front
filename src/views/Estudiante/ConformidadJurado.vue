@@ -12,7 +12,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de proyecto de tesis por los jurados";
+const text = "Conformidad de Proyecto de Tesis por los Jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -269,7 +269,7 @@ onMounted(() => {
       <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
-          <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados asignados a tu proyecto de tesis. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
+          <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados designados a tu proyecto de tesis y el título. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
           <!-- Información de los jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
@@ -292,8 +292,7 @@ onMounted(() => {
           </div>
           <!-- Título de Tesis -->
           <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-            <p class="text-gray-700 uppercase">Título de la tesis:</p>
-            <p class="max-w-7xl text-2xl font-bold text-gray-800">{{ titulo || 'Título no asignado' }}</p>
+            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace del proyecto de Tesis -->
           <div v-if="link" class="text-center mt-6">
@@ -301,12 +300,12 @@ onMounted(() => {
               :href="link"
               target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <i class="fas fa-external-link-alt"></i> Abrir Proyecto
+              <i class="fas fa-external-link-alt"></i> Abrir proyecto
             </a>
           </div>
 
           <!-- Explicación breve -->
-          <p class="text-sm text-gray-600 text-center">Asegurate de tener toda tu informacion corregida y actualizada en el documento de Google Docs proporcionado y luego haga clic en "Solicitar Revisión".</p>
+          <p class="text-sm text-gray-600 text-center">Asegúrate de tener toda tu información corregida y actualizada en el documento de Google Docs proporcionado y luego haga clic en "Solicitar revisión".</p>
         </div>
 
         <!-- Card 2:  Solicitar revisión para las observaciones -->
@@ -342,25 +341,25 @@ onMounted(() => {
 
         <!-- Revisión de levantamiento de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="relative flex items-center">
             <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <div class="relative">
               <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
                 @mouseover="mostrarModalObservaciones = true"
                 @mouseleave="mostrarModalObservaciones = false"/>
-              <div v-show="mostrarModalObservaciones" class="absolute -left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-                <p class="text-sm text-gray-600">En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.</p>
-              </div>
-            </div>
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Si tu jurado ha dejado observaciones, el estado cambiará a 
-            <strong class="text-[#8898aa] text-lg">Pendiente</strong>. Por favor, corrige todas las observaciones directamente en el documento de Google Docs.
+
+          <div v-show="mostrarModalObservaciones" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.</p>
+          </div>
+
+          <p class="text-gray-500 mt-1 text-base">Si tu jurado ha dejado observaciones, el estado cambiará a 
+            <strong class="text-[#8898aa] text-lg font-medium">Pendiente</strong>. Por favor, corrige todas las observaciones directamente en el documento de Google Docs.
           </p>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Una vez que hayas realizado las correcciones, haz clic en 
-            <strong class="text-green-500 text-lg">“Solicitar revisión”</strong>. para que el jurado revise nuevamente.
+          <p class="text-gray-500 mt-1  text-base">Una vez que hayas realizado las correcciones, haz clic en 
+            <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong>. para que el jurado revise nuevamente.
           </p>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Cuando los 3 jurados aprueben tu proyecto de tesis, el estado cambiará automáticamente a 
-            <strong class="text-green-500 text-lg">Aprobado</strong>
+          <p class="text-gray-500 mt-1 text-base">Cuando los 3 jurados aprueben tu proyecto de tesis, el estado cambiará automáticamente
+            <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
           </p>
 
           <!-- Tabla de observaciones Presidente -->
@@ -381,7 +380,7 @@ onMounted(() => {
                     <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>Aún no hay revisiones realizadas por el jurado
                   </td>
                 </tr>
-                <tr v-else v-for="revision in revisionesPresidente" :key="revision.numero_revision" class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300">
+                <tr v-else v-for="revision in revisionesPresidente" :key="revision.numero_revision" class="border-b border-gray-200 text-center">
                   <td class="px-4 py-2 text-base text-gray-600">
                     <p class="text-wrap w-28">{{ revision.numero_revision || "Sin revisión" }}</p>
                   </td>
@@ -391,8 +390,8 @@ onMounted(() => {
                   <td class="px-4 py-2 text-base">
                     <button
                       :disabled="isRevisionDisabled(revision.estado) || !revision.revision_id || revision.isLoading"
-                      :class="[isRevisionDisabled(revision.estado) ? 'w-40 px-3 py-1 bg-gray-400 cursor-not-allowed' : 'bg-green-400', revision.isLoading ? 'bg-green-500' : '']"
-                      class="px-2 py-1 text-white rounded-md"
+                      :class="[isRevisionDisabled(revision.estado) ? 'w-40 px-3 py-1 bg-gray-400 cursor-not-allowed' : 'bg-base', revision.isLoading ? 'bg-azul' : '']"
+                      class="px-4 py-1 w-44 text-white rounded-md text-lg"
                       @click="solicitarRevision(revision)">
                       {{ revision.isLoading ? 'SOLICITANDO...' : 'Solicitar revisión' }}
                     </button>
@@ -422,7 +421,7 @@ onMounted(() => {
                     <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>Aún no hay revisiones realizadas por el jurado
                   </td>
                 </tr>
-                <tr v-else v-for="revision in revisionesSecretario" :key="revision.numero_revision" class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300">
+                <tr v-else v-for="revision in revisionesSecretario" :key="revision.numero_revision" class="border-b border-gray-200 text-center">
                   <td class="px-4 py-2 text-base text-gray-600">
                     <p class="text-wrap w-28">{{ revision.numero_revision || "Sin revisión" }}</p>
                   </td>
@@ -432,10 +431,10 @@ onMounted(() => {
                   <td class="px-4 py-2 text-base">
                     <button
                       :disabled="isRevisionDisabled(revision.estado) || !revision.revision_id || revision.isLoading"
-                      :class="[isRevisionDisabled(revision.estado) ? 'w-40 px-3 py-1 bg-gray-400 cursor-not-allowed' : 'bg-green-400', revision.isLoading ? 'bg-green-500' : '']"
-                      class="px-2 py-1 text-white rounded-md"
+                      :class="[isRevisionDisabled(revision.estado) ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', revision.isLoading ? 'bg-azul' : '']"
+                      class="px-4 py-1 w-44 text-white rounded-md text-lg"
                       @click="solicitarRevision(revision)">
-                      {{ revision.isLoading ? 'SOLICITANDO...' : 'Solicitar revisión' }}
+                      {{ revision.isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
                     </button>
                   </td>
                   <td class="px-4 py-2">
@@ -463,7 +462,7 @@ onMounted(() => {
                     <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>Aún no hay revisiones realizadas por el jurado
                   </td>
                 </tr>
-                <tr v-else v-for="revision in revisionesVocal" :key="revision.numero_revision" class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300">
+                <tr v-else v-for="revision in revisionesVocal" :key="revision.numero_revision" class="border-b border-gray-200 text-center">
                   <td class="px-4 py-2 text-base text-gray-600">
                     <p class="text-wrap w-28">{{ revision.numero_revision || "Sin revisión" }}</p>
                   </td>
@@ -473,10 +472,10 @@ onMounted(() => {
                   <td class="px-4 py-2 text-base">
                     <button
                       :disabled="isRevisionDisabled(revision.estado) || !revision.revision_id || revision.isLoading"
-                      :class="[isRevisionDisabled(revision.estado) ? 'w-40 px-3 py-1 bg-gray-400 cursor-not-allowed' : 'bg-green-400', revision.isLoading ? 'bg-green-500' : '']"
-                      class="px-2 py-1 text-white rounded-md"
+                      :class="[isRevisionDisabled(revision.estado) ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', revision.isLoading ? 'bg-azul' : '']"
+                      class="px-4 py-1 w-44 text-white rounded-md text-lg"
                       @click="solicitarRevision(revision)">
-                      {{ revision.isLoading ? 'SOLICITANDO...' : 'Solicitar revisión' }}
+                      {{ revision.isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
                     </button>
                   </td>
                   <td class="px-4 py-2">
@@ -491,12 +490,12 @@ onMounted(() => {
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+            <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del proyecto de tesis por los jurados</h2>
             <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
               @mouseover="mostrarModalDocumentos = true"
               @mouseleave="mostrarModalDocumentos = false"/>
           </div>
-          <div v-if="mostrarModalDocumentos" class="absolute left-40 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-if="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.</p>
           </div>
 
@@ -504,7 +503,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[0].nombre }}</span>
+                <span class="flex-1 text-xm">{{ documentos[0].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[0].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->
@@ -533,7 +532,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[1].nombre }}</span>
+                <span class="flex-1 text-xm">{{ documentos[1].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[1].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->
@@ -562,7 +561,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-lg">{{ documentos[2].nombre }}</span>
+                <span class="flex-1 text-xm">{{ documentos[2].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[2].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->

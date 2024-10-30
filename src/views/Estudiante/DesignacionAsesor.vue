@@ -442,7 +442,7 @@ const handleNextButtonClick = () => {
       <div class="flex justify-between">
         <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
+              <h2 class="text-2xl font-medium text-black">1. Solicita tu asesor</h2>
               <img
                 src="/icon/info2.svg"
                 alt="Info"
@@ -470,8 +470,8 @@ const handleNextButtonClick = () => {
             <!-- Título de tesis -->
             <label
               for="tituloTesis"
-              class="block text-lg font-medium text-gray-800 mb-2"
-              >Título de Tesis</label
+              class="block text-lg font-medium text-gray-700 mb-2"
+              >Título de tesis</label
             >
             <input
               id="tituloTesis"
@@ -483,8 +483,8 @@ const handleNextButtonClick = () => {
             />
             <label
               for="nombreAsesor"
-              class="block text-lg font-medium text-gray-800 mb-2"
-              >Elige a tu Asesor</label
+              class="block text-lg font-medium text-gray-700 mb-2"
+              >Elige a tu asesor</label
             >
             <select
               id="nombreAsesor"
@@ -505,7 +505,7 @@ const handleNextButtonClick = () => {
             <!-- Select para elegir tipo de investigacion -->
             <label
               for="tipoInvestigacion"
-              class="block text-lg font-medium text-gray-800 mb-2"
+              class="block text-lg font-medium text-gray-700 mb-2"
               >Elige tu tipo de investigación</label
             >
             <select
@@ -618,8 +618,7 @@ const handleNextButtonClick = () => {
           <span
             v-else-if="solicitude.estado === 'aceptado'"
             class="text-green-500 italic"
-            >El asesor ha aceptado tu solicitud, puedes pasar el punto 2.
-            Documentos</span
+            >El asesor ha aceptado tu solicitud, puedes revisar tus documentos de conformidad de designación de asesor en el punto 2.</span
           >
     </div>
     <br>
@@ -641,7 +640,7 @@ const handleNextButtonClick = () => {
         >
           <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la  conformidad de designación de asesor</h2>
               <img
                 src="/icon/info2.svg"
                 alt="Info"
@@ -676,7 +675,7 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Oficio de Secretaria PAISI
+                  Oficio del Programa Académico de Ingeniería de Sistemas.
                   <p v-if="oficio.estado === 'observado'" class="italic">
                     "{{ oficio.observacion }}"
                   </p>
@@ -730,7 +729,7 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Resolución de Facultad
+                  Resolución de Facultad de Ingeniería de Sistemas.
                   <p v-if="resolucion.estado === 'observado'" class="italic">
                     "{{ resolucion.observacion }}"
                   </p>
@@ -796,7 +795,7 @@ const handleNextButtonClick = () => {
           ]"
         >
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de Asesor</h2>
+            <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de asesor</h2>
             <img
               src="/icon/info2.svg"
               alt="Info"
@@ -807,7 +806,7 @@ const handleNextButtonClick = () => {
           </div>
           <br />
           <p class="text-gray-400">
-            Este botón se activará cuando recibas la resolución de Designación de Asesor en '2. Documentos' por parte de Facultad.
+            Este botón se activará cuando recibas la resolución de designación de asesor por parte de la Facultad de Ingeniería de Sistemas.
           </p>
 
 
@@ -840,14 +839,14 @@ const handleNextButtonClick = () => {
                     : 'bg-base hover:bg-green-500 ',
                 ]"
               >
-                Solicitar Cambio de Asesor
+                Solicitar cambio de asesor
               </button>
             </div>
           </div>
         </div>
         <!-- Historial de Acciones -->
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" id="historial">
-          <h2 class="text-2xl font-medium text-azul">Historial de Acciones</h2>
+          <h2 class="text-2xl font-medium text-azul">Historial de acciones</h2>
           <div class="overflow-x-auto mt-4">
             <table class="min-w-full table-auto bg-gray-50 rounded-lg">
               <thead class="bg-gray-100 rounded-lg text-azul">
