@@ -419,7 +419,7 @@ onMounted(() => {
       </div>
 
       <!--Botones siguiente y anteerior-->
-      <div class="flex justify-between">
+      <div class="flex justify-end">
         <button
           @click="handleNextButtonClick"
           :class="[ 
