@@ -151,7 +151,9 @@ export default defineComponent({
           { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/paisi/aprobar-proyecto' }
         );
         allSections[2].submenus.push(
-          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' }
+          { name: 'Link de informe', label: 'Link de Informe', path: '/paisi/link-informe' },
+          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' },
+          { name: 'Designar jurados', label: 'Designar Jurados', path: '/paisi/designar-jurado-informe' }
         );
         allSections[3].submenus.push(
           { name: 'SustentacionPaisi', label: 'Sustentación Paisi', path: '/sustentacion/paisi' }
