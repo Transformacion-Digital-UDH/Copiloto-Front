@@ -3,20 +3,37 @@ import axios from 'axios';
 import { onMounted, reactive, ref, computed } from 'vue';
 import { useAuthStore } from "@/stores/auth";
 import { alertToast } from '@/functions';
+import { watch } from 'vue';
+import Swal from 'sweetalert2';
+import router from '@/router';
 
-interface Documento {
-  nombre: string;
-  estado: string;
-  documentoUrl: string;
-}
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
+    });
+  } else {
+    goToNextPage();
+  }
+};
+
+const goToNextPage = () => {
+  router.push("/estudiante/designacion-informe-jurado");
+};
+
+const isNextButtonDisabled = computed(() => {
+  const documentoPaso3 = documentos.value.find(
+  (doc) => doc.nombre === "Informe de conformidad de observaciones por el asesor"
+);
+  return documentoPaso3?.estado !== "aprobado";
+});
 
 const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
-
-// Documentos asociados a la conformidad
-const documentos = reactive<Documento[]>([
-  { nombre: 'Informe de conformidad de Observaciones', estado: 'Hecho', documentoUrl: 'informe_conformidad' }
-]);
+const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Conformidad de Informe Final por Asesor";
@@ -34,55 +51,78 @@ onMounted(() => {
 });
 // ******************************************************
 
+
+const isSolicitarDisabled = computed(() => {
+  const estado = solicitudEstado.value?.toLowerCase();
+  return ["pendiente", "aprobado", "observado"].includes(estado); // Estados que deshabilitan el botón
+});
+
 /****************************** INTEGRACION CON EL BACKEND *********************************** */
-
-const authStore = useAuthStore();
-const isLoading = ref(false);
-const solicitudEstado = ref<string>("No iniciado");
 const load = ref(false);
+const isLoading = ref(false);
+const adviserName = ref<string>('');
+const thesisTitle = ref<string>('');
+const reportLink = ref<string>('');
+const revisionInfo = ref(null);
+const authStore = useAuthStore();
+const solicitudEstado = ref('');
+const numeroRevision = ref<number | null>(null);
+const fechaRevision = ref<string>('');
+const rev_id = ref('');
+const documentos = ref([{ nombre: 'Informe de conformidad de observaciones por el asesor', estado: 'Pendiente' }]);
+const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
+const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
 
-const asesor = ref<string | null>(null);
-const titulo = ref<string | null>(null);
-const linkInforme = ref<string | null>(null);
-const revision = ref<Revision | null>(null);
+watch(solicitudEstado, (newEstado) => {
+  documentos.value[0].estado = newEstado; // Sincroniza documentos[0].estado con solicitudEstado
+});
 
-interface Revision {
-  rev_id: string;
-  rev_contador: number;
-  rev_estado: string;
-  rev_update: string;
-}
+const isButtonDisabled = computed(() => solicitudEstado.value === 'pendiente' || solicitudEstado.value === 'aprobado');
 
-// para deshabilitar el boton cuando esta pendiente
-const isSolicitarDisabled = computed(() => solicitudEstado.value === 'Pendiente');
+// Función para actualizar el estado de la revisión al hacer clic en "Observaciones corregidas"
+const actualizarEstadoRevision = async (nuevoEstado: string) => {
+  isLoading.value = true;
+  try {
+    const response = await axios.put(`/api/review/${rev_id.value}/status`, {
+      rev_status: nuevoEstado,
+      rev_num_of: nuevoEstado === 'aprobado' ? 'some_value' : null,
+    });
+
+    const data = response.data;
+    solicitudEstado.value = data.estado;
+    alertToast(data.message, 'success');
+  } catch (error) {
+    alertToast('Error al actualizar el estado de la revisión', 'error');
+    console.error("Error en actualizarEstadoRevision:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
 
 const solicitarRevision = async () => {
   isLoading.value = true;
   try {
     const response = await axios.get(`/api/review/create-revision/informe/${authStore.id}`);
+    const data = response.data;
 
-    if (response.data.estado === "pendiente") {
-      solicitudEstado.value = response.data.estado.charAt(0).toUpperCase() + response.data.estado.slice(1); // formatear para mostrar en mayuscula la primera letra
-    } else if (response.data.estado === "no-iniciado") {
-      solicitudEstado.value = "Pendiente";
-      alertToast("Solicitud enviada al asesor, espere las indicaciones correspondientes.", "Éxito", "success");
+    if (data.estado === 'pendiente' && data.message === 'Su solicitud de revisión fue enviada a su asesor') {
+      alertToast('Su solicitud de revisión fue enviada con éxito a su asesor.', 'success');
     }
-  } catch (error: any) {
-    console.error("Error al solicitar revisión", error);
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      const responseData = error.response.data;
 
-    if (error.response?.status === 404) {
-      const message = error.response?.data?.message;
-      if (message.includes("Espere a que su link de informe sea creado")) {
-        alertToast("Estimado alumno, por favor espere a que se cree el enlace de su informe o comuníquese con su escuela académica.", "", "warning");
-      } else if (message.includes("Ya tiene una revisión pendiente")) {
-        solicitudEstado.value = "Pendiente";
-        alertToast("Estimado alumno, ya tiene una revisión pendiente de su asesor", "", "info");
+      if (responseData.estado === 'no iniciado') {
+        alertToast('Estimado alumno, por favor espere a que se cree el enlace de su informe o comuníquese con su escuela académica.', 'warning');
+      } else if (responseData.estado === 'pendiente' && responseData.message === 'Ya tiene una revisión pendiente de su asesor') {
+        alertToast('Estimado alumno, la revisión ya está en proceso.', 'info');
       } else {
-        alertToast("Error desconocido al solicitar la revisión.", "Error", "error");
+        alertToast('Error inesperado.', 'error');
       }
     } else {
-      alertToast("Error en la solicitud.", "Error", "error");
+      alertToast('Error al conectar con el servidor.', 'error');
     }
+    console.error("Error al solicitar la revisión:", error);
   } finally {
     isLoading.value = false;
   }
@@ -92,42 +132,27 @@ const ObtenerDatosInforme = async () => {
   load.value = true;
   try {
     const response = await axios.get(`/api/estudiante/info-conf-asesor/informe/${authStore.id}`);
-    console.log("Mostrando lo recibido: ", response);
-
+    console.log("Mostrando lo recibido", response)
     const data = response.data;
-    asesor.value = data.asesor;
-    titulo.value = data.titulo;
-    linkInforme.value = data['link-informe'];
-    revision.value = data.revision;
 
-    // para verificar que hizo su solicitud en estado pendiente o si falta el link de informe final
-    if (revision.value && revision.value.rev_estado === "pendiente") {
-      solicitudEstado.value = revision.value.rev_estado.charAt(0).toUpperCase() + revision.value.rev_estado.slice(1);
-    } else if (!linkInforme.value) {
-      solicitudEstado.value = "No iniciado";
+    if (data) {
+      adviserName.value = data.asesor || 'Asesor no disponible';
+      thesisTitle.value = data.titulo || 'Título no disponible';
+      reportLink.value = data['link-informe'] || '';
+      revisionInfo.value = data.revision || null;
     }
+
+    // Actualizar datos de la revisión si existen
+    if (data.revision) {
+        rev_id.value = data.revision.rev_id; // Asignar el ID de la revisión
+        solicitudEstado.value = data.revision.rev_estado || 'observado';
+        numeroRevision.value = data.revision.rev_contador;
+        fechaRevision.value = data.revision.rev_update;
+      }
   } catch (error) {
-    console.error("Error al obtener información del estudiante", error);
+    console.error("Error al obtener la información del asesor:", error);
   } finally {
     load.value = false;
-  }
-};
-
-const actualizarEstadoRevision = async (reviewId: string, nuevoEstado: string) => {
-  isLoading.value = true;
-
-  try {
-    const response = await axios.put(`/api/review/${reviewId}/status`, { rev_status: nuevoEstado });
-
-    if (revision.value) {
-      revision.value.rev_estado = response.data.estado;
-    }
-    alertToast(response.data.message, "Éxito", "success");
-
-  } catch (error:any) {
-    console.log("Error al actualizar el estado del boton", error)
-  } finally {
-    isLoading.value = false;
   }
 };
 
@@ -140,24 +165,38 @@ onMounted(() => {
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-2/3 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"></h3>
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-10 w-48 mx-auto rounded-md skeleton-loader duration-200"></h2>
+        <div class="bg-white rounded-lg p-6 space-y-4">
+          <div class="grid grid-cols-1 gap-6">
+            <div class="bg-gray-200 rounded-lg h-36 p-4 flex flex-col items-center skeleton-loader duration-200"></div>
           </div>
+          <div class="bg-gray-200 h-44 rounded-lg p-6 -m-0 skeleton-loader duration-200"></div>
+          <div class="text-center mt-6">
+            <div class="h-10 bg-gray-200 rounded w-44 mx-auto skeleton-loader duration-200"></div>
+          </div><p class="h-4 mt-6"></p>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div class="bg-white rounded-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-7 w-48 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"></h2>
+            <div class="flex justify-between items-center">
+              <h2 class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"></h2>
+            </div>
+            <div class="h-7">
+              <h2 class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2 class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2 class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"></h2>
             <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
@@ -165,18 +204,6 @@ onMounted(() => {
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
         </div>
-        <!-- <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-72 rounded-md skeleton-loader duration-200 mb-14"></h2>
-            <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>            
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-7 w-2/6 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-40 w-full mx-auto rounded-md skeleton-loader duration-200"></h2>
-          </div>
-        </div> -->
       </div>
     </div>
   </template>
@@ -205,19 +232,19 @@ onMounted(() => {
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-2xl text-azul">Asesor</p>
               <p class="text-gray-600 text-center uppercase">
-                {{ asesor || 'Asesor no asignado' }}
+                {{ adviserName }}
               </p>
             </div>
           </div>
           <!-- Título de Tesis -->
           <div class="bg-gray-100 rounded-lg p-6 shadow-lg">
             <p class="text-azul text-center font-bold text-2xl">Título de tesis</p>
-            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
+            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ thesisTitle }}</p>
           </div>
           <!-- Enlace del Informe final -->
-          <div v-if="linkInforme" class="text-center mt-6">
+          <div v-if="reportLink" class="text-center mt-6">
             <a
-              :href="linkInforme"
+              :href="reportLink"
               target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <i class="fas fa-external-link-alt"></i> Abrir proyecto
@@ -252,7 +279,10 @@ onMounted(() => {
           <div class="flex justify-center mt-3">
             <button
               :disabled="isSolicitarDisabled || isLoading"
-              :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
+              :class="[ 
+                isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul',
+                isLoading ? 'cursor-not-allowed' : '' 
+              ]"
               class="px-4 py-2 w-56 text-white rounded-lg text-lg"
               @click="solicitarRevision">
               {{ isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
@@ -302,38 +332,34 @@ onMounted(() => {
                   <th class="px-4 py-2 tracking-wider">ESTADO</th>
                 </tr>
               </thead>
-              <!-- Mostrar la revisión si existe -->
-              <tbody v-if="revision">
+              <tbody v-if="revisionInfo">
                 <tr
                   class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
                 >
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-28">{{ revision.rev_contador || 'Desconocido' }}</p>
+                    <p class="text-wrap w-28">{{ numeroRevision || 'Desconocido' }}</p>
                   </td>
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-40">{{ revision.rev_update || 'Desconocido' }}</p>
+                    <p class="text-wrap text-left w-24">{{ fechaRevision || 'Desconocido' }}</p>
                   </td>
                   <td class="px-4 py-2 text-base">
                     <button
-                      :disabled="revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'"
+                      :disabled="isButtonDisabled || isLoading"
                       :class="[ 
                         'w-56 px-3 py-1 text-base text-white rounded-xl focus:outline-none',
-                        revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'
-                          ? 'bg-gray-300 cursor-not-allowed'
-                          : 'bg-base hover:bg-[#48bb78]'
+                        isButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-[#48bb78]'
                       ]"
-                      @click="authStore.id ? actualizarEstadoRevision(revision.rev_id, 'pendiente') : alertToast('ID no disponible', 'Error', 'error')">
+                      @click="actualizarEstadoRevision('pendiente')">
                       Observaciones corregidas
                     </button>
                   </td>
                   <td class="px-4 py-2">
-                    <span :class="`estado-estilo estado-${revision.rev_estado ? revision.rev_estado.toLowerCase().replace(' ', '-') : 'desconocido'}`">
-                      {{ revision.rev_estado ? revision.rev_estado[0].toUpperCase() + revision.rev_estado.slice(1).toLowerCase() : 'Desconocido' }}
+                    <span :class="`estado-estilo estado-${solicitudEstado.toLowerCase().replace(' ', '-')}`">
+                      {{ solicitudEstado }}
                     </span>
                   </td>
                 </tr>
               </tbody>
-              <!-- Mostrar mensaje si no hay revisión -->
               <tbody v-else>
                 <tr>
                   <td colspan="4" class="px-4 py-4 text-center text-gray-600">
@@ -346,44 +372,62 @@ onMounted(() => {
         </div>
 
       <!-- Sección 4: Informe de conformidad de observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-            <div class="flex items-center">
-                <h2 class="text-2xl font-medium text-black">4. Documentos</h2>
-                <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
-            </div>
-            <br>
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-                <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <!-- Nombre del documento -->
-                <span class="flex-1">{{ documentos[0].nombre }}</span>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <div v-if="documentos[0].estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                    <!-- Botón de Ver -->
-                    <a :href="documentos[0].documentoUrl" target="_blank"
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a :href="documentos[0].documentoUrl" download
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                    </div>
+      <!-- Card 3: Oficio múltiple con los jurados seleccionados -->
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">4. Documento para verificar la conformidad del informe final por el asesor</h2>
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+                @mouseover="mostrarModalDocumentos = true"
+                @mouseleave="mostrarModalDocumentos = false" />
+          </div>            
+        </div>
 
-                    <!-- Mostrar mensaje de espera si el estado es 'Pendiente' -->
-                    <span v-else-if="documentos[0].estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
+        <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <p class="text-sm text-gray-600">Asegúrate de revisar el documento para verificar las observaciones antes de continuar.</p>
+        </div>
 
-                    <!-- Mostrar el estado -->
-                    <!-- <span :class="estadoClase(documentos[0].estado)" class="estado-estilo ml-4">{{ documentos[0].estado }}</span> -->
+        <div class="mt-4 space-y-4">
+          <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <div class="flex flex-col md:flex-row justify-between md:items-center">
+              <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
+              <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                <!-- Mostrar botones de ver y descargar solo si el estado es aprobado -->
+                <div v-if="solicitudEstado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                  <!-- Botón de Ver -->
+                  <a 
+                    :href="`${VIEW_CPA}/${rev_id}`" 
+                    target="_blank"
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                    <i class="fas fa-eye mr-2"></i> Ver
+                  </a>
+                  <!-- Botón de Descargar -->
+                  <a 
+                    :href="`${DOWNLOAD_CPA}/${rev_id}`" 
+                    download
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                    <i class="fas fa-download mr-2"></i> Descargar
+                  </a>
                 </div>
-                </div>
+                <!-- Mensaje de documento no disponible si el estado no es aprobado -->
+                <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">{{ documentos[0].estado }}</span>
+              </div>
             </div>
+          </div>
+        </div>
       </div>
 
-
-      <!-- Botón de siguiente -->
-      <div class="flex justify-end">
-        <button class="px-4 py-2 bg-gray-300 text-white rounded-md cursor-not-allowed" disabled>Siguiente</button>
+      <!--Botones siguiente y anteerior-->
+      <div class="flex justify-between">
+        <button
+          @click="handleNextButtonClick"
+          :class="[ 
+            'px-4 py-2 text-white rounded-md',
+            isNextButtonDisabled
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-green-500 hover:bg-green-600',]">Siguiente
+        </button>
       </div>
 
     </div>

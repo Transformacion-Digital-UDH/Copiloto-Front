@@ -118,7 +118,7 @@ const generarResolucion = async () => {
 
     const params = {
       estado: 'tramitado',
-      expediente: nroExped1.value,
+      numero_resolucion: nroExped1.value,
     };
 
     const response = await axios.put(`/api/resolucion/aprobacion-tesis/${resolucionId}/status`, params);
