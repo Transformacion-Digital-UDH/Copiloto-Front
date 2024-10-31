@@ -19,7 +19,7 @@ interface Review {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Pendientes de revisiones de proyecto de tesis";
+const text = "Pendientes de Revisiones de Proyecto de Tesis";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
