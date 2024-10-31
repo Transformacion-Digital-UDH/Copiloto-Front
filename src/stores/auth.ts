@@ -200,6 +200,7 @@ export const useAuthStore = defineStore("auth", () => {
     fullName,
     email,
     role,
+    image,
     is_jury,
     loading,
     handleLogin,
