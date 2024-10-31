@@ -125,7 +125,7 @@ export default defineComponent({
 
         allSections[2].submenus.push(
           { name: 'Revisión informe', label: 'Revisión de Informes', path: '/asesor/revision-informe' },
-          { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
+          
         );
 
         if (is_jury.value) {
