@@ -123,7 +123,8 @@ export default defineComponent({
           { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
         );
         allSections[2].submenus.push(
-          { name: 'Revisión informe', label: 'Revisión de Informes', path: '/asesor/revision-informe' }
+          { name: 'Revisión informe', label: 'Revisión de Informes', path: '/asesor/revision-informe' },
+          { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
         );
         // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
         sections.value = allSections.filter(section => 
