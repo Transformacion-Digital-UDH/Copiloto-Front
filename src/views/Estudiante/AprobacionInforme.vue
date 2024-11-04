@@ -7,7 +7,7 @@ import { ref, computed, onMounted } from 'vue';
 const mostrarModalAprobar = ref(false); 
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del Informe Final por la facultad";
+const text = "Aprobación del Informe Final por la Facultad";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -72,32 +72,62 @@ const isAprobacionDisabled = computed(() => {
   return documentos.value?.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
 });
 
+// const solicitarAprobacionInforme = async () => {
+//   const student_id = authStore.id;
+//   isLoading.value = true;
+//   try {
+//     // Realiza la solicitud GET con el `student_id` proporcionado
+//     const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${student_id}`);
+//     console.log("Mostrando lo recibido: ", response);
+
+//     // Muestra el mensaje de éxito o información recibido directamente desde el backend
+//     alertToast(response.data.mensaje || "Operación completada.", "Éxito", "success");
+
+//   } catch (error: any) {
+//     // Si hay un mensaje de error en la respuesta, se muestra directamente
+//     const backendMessage = error.response?.data?.mensaje || "Error en la solicitud. Intente nuevamente.";
+//     alertToast(backendMessage, "Error", "error");
+//   } finally {
+//     isLoading.value = false; 
+//   }
+// };
+
+// const solicitarAprobacionInforme = async () => {
+//   isLoading.value = true;
+//   try {
+//     // Realiza la solicitud GET con el `student_id` de `authStore`
+//     const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${authStore.id}`);
+//     console.log("Mostrando lo recibido: ", response);
+
+//     // Mensaje de éxito al enviar la solicitud
+//     alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
+
+//   } catch (error: any) {
+//     // Muestra el mensaje de error directamente desde el backend
+//     const backendMessage = error.response?.data?.mensaje || "Error en la solicitud. Intente nuevamente.";
+//     alertToast(backendMessage, "Error", "error");
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
+
+
 const solicitarAprobacionInforme = async () => {
   isLoading.value = true;
   try {
     const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${authStore.id}`);
     console.log("Mostrando lo recibido: ", response);
 
-    if (response.data && response.data.estado === "pendiente") {
+    if (response.data.estado) {
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
-    } else {
-      alertToast("Solicitud enviada, pero sin estado definido.", "Éxito", "info");
+      //api para obtener los documentos
     }
 
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.mensaje) {
-      const mensaje = error.response.data.mensaje;
-
-      if (mensaje.includes("El estudiante no existe")) {
-        alertToast("El estudiante no existe en el sistema. Verifique los datos.", "Error", "error");
-      } else if (mensaje.includes("El estudiante aún no tiene la conformidad de sus jurados")) {
-        alertToast("Estimado estudiante, no tiene conformidad de jurados", "", "warning");
-      } else if (mensaje.includes("El estudiante ya tiene una solicitud de aprobación de tesis pendiente")) {
-        alertToast("Estimado estudiante, ya solicitó su aprobación de tesis", "", "info");
-      } else {
-        alertToast("Error desconocido en la solicitud", "Error", "error");
-      }
+      const mensaj = error.response.data.mensaje;
+      alertToast(mensaj, "Error", "error");
     } else {
       alertToast("Error en la solicitud.", "Error", "error");
     }
