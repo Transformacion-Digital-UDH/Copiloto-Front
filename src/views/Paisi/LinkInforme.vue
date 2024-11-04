@@ -146,6 +146,7 @@ const createGoogleDoc = async () => {
       solicitude_id: selectedSolicitude.value.solicitude_id,
       student_id: selectedSolicitude.value.id_  // Enviar `id_` como `student_id`
     });
+    console.log(response);
 
     const link = response.data.informe_link;
     if (link && selectedSolicitude.value) {

@@ -1,8 +1,12 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 import IconPdf from "@/components/icons/IconPdf.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+import axios from "axios";
+import { alertToast } from "@/functions";
 
 // Estados y propiedades
 const selectedFilter = ref("");
@@ -10,25 +14,36 @@ const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showModal = ref(false);
 const showRejectModal = ref(false);
-const showSendModal = ref(false);
-const nroExpediente = ref('');
+const nroOficio1 = ref<string>('');
+const nroExped1 = ref<string>(''); 
 
-function openSendModal (){
-  showSendModal.value = true;
-}
+// Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
+const validateNroExped = () => {
+  nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, ''); // Permitir solo números y un guion
+  if (nroExped1.value.length > 17) {
+    nroExped1.value = nroExped1.value.slice(0, 17); // Limitar a 17 caracteres
+  }
+};
 
-function openModal() {
+// Computar si el formulario es válido
+const formIsValid = computed(() => {
+  return nroExped1.value.length === 17;
+});
+
+function openModal(resolucionId: number) {
   showModal.value = true;
+  resolucion_id.value = resolucionId;
 }
 
-function openRejectModal() {
+function openRejectModal(resolucionId: number) {
   showRejectModal.value = true;
+  resolucion_id.value = resolucionId;
 }
 
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
-  showSendModal.value = false;
+  motivoObservacion.value = "";
 }
 
 // Filtrado y paginación
@@ -37,9 +52,10 @@ const filteredTableData = computed(() => {
 
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => data.status === selectedFilter.value
+      (data) => (data.estado?.toLowerCase() ?? '') === selectedFilter.value.toLowerCase()
     );
   }
+ console.log('Filtrando datos:', filteredData);
 
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
   const endIndex = startIndex + rowsPerPage.value;
@@ -48,8 +64,9 @@ const filteredTableData = computed(() => {
 
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.status === selectedFilter.value)
+    ? tableData.value.filter((data) => data.resolucion_estado?.toLowerCase() === selectedFilter.value.toLowerCase())
     : tableData.value;
+
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
@@ -61,34 +78,98 @@ function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
 
-// Datos actuales
-const tableData = ref([
-  {
-    name: "Rodríguez Meléndez, Fabio",
-    title:
-      "Diseño, desarrollo y evaluación de la usabilidad de un sistema de información para la ferretería Huánuco del distrito de Amarilis en el 2022",
-    status: "Pendiente",
-  },
-  {
-    name: "Sulca Correa, Omar Iván",
-    title:
-      "Auditoria informática y propuesta de mejora bajo la metodología cobit al área de compras y abastecimiento de la empresa chapacuete s.a.c de la ciudad de Huánuco en el 2019",
-    status: "Observado",
-  },
-  {
-    name: "Nuñez Vicente, José Antonio",
-    title:
-      "Implementación de una aplicación cliente servidor para la mejora de la Gestión de Ventas de la Empresa Comercial Gómez, Huánuco - 2022",
-    status: "Tramitado",
-  },
-]);
+interface Solicitude {
+  resolucion_id: number;
+  nombre: string;
+  oficio_id: number;
+  titulo: string;
+  estado: string;
+  resolucion_estado: string | null;
+}
+const tableData = ref<Solicitude[]>([]); 
+const motivoObservacion = ref<string>("");
+const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME;
+const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RINFORME
+let resolucion_id = ref<number | null>(null);
+
+
+const obtenerSolicitudes = async () => {
+  try {
+    const response = await axios.get('/api/resolucion/get-aprobar/informe');
+    console.log('Datos recibidos de la APP:', response.data);
+
+    if (response.data && Array.isArray(response.data)) {
+      tableData.value = response.data as Solicitude[];  // Asignamos los datos si existe un array
+      console.log('Datos asignados a tableData:', tableData.value);
+    } else {
+      console.log('Estructura inesperada en la respuesta de la API');
+      tableData.value = [];  // Si no hay datos, asignamos un array vacío
+    }
+
+  } catch (error) {
+    console.error('Error al cargar las solicitudes:', error);
+  }
+};
+
+const generarResolucion = async () => {
+  try {
+    const resolucionId = resolucion_id.value;
+    if (resolucionId === null || !nroExped1.value) return;  // Verificamos que `oficioId` y los valores no sean null
+
+    const params = {
+      estado: 'tramitado',
+      numero_resolucion: nroExped1.value,
+    };
+
+    const response = await axios.put(`/api/resolucion/aprobacion-tesis/${resolucionId}/status`, params);
+    console.log('Datos en update:', response.data);  // Verificación del response
+
+    if (response.data.estado) {
+      const resolucion = tableData.value.find((of) => of.resolucion_id === resolucionId);
+      if (resolucion) {
+        resolucion.estado = 'tramitado';  
+      }
+      closeModal();  
+      alertToast('El oficio ha sido generado', 'Éxito', 'success');
+    }
+  } catch (error) {
+    alertToast('Error al generar oficio', 'Error', 'error');
+  }
+};
+
+const observarResolucion = async () => {
+  try {
+    const resolucionId = resolucion_id.value;
+    if (resolucionId === null) return;  // Verificamos que `oficioId` no sea null
+    const params = {
+      estado: 'observado',
+      observacion: motivoObservacion.value,  // Motivo de rechazo
+    };
+    const response = await axios.put(`/api/resolucion/aprobacion-tesis/${resolucionId}/status`, params);
+    console.log('Datos en rechazo:', response.data);  // Verificación del response
+
+    if (response.data.estado) {
+      const resolucion = tableData.value.find((of) => of.resolucion_id === resolucionId);
+      if (resolucion) resolucion.estado = 'observado';  // Actualizar la tabla localmente
+      closeModal();  // Cerrar el modal tras la actualización
+      alertToast('La solicitud ha sido observada', 'Éxito', 'success');
+    }
+  } catch (error) {
+    alertToast('Error al observar la solicitud', 'Error', 'error');
+  }
+};
+
+onMounted(() => {
+  obtenerSolicitudes()
+})
+
 </script>
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Resolución de informe final
+        Resolución de Informe Final
       </h3>
 
       <div class="mt-8">
@@ -147,69 +228,80 @@ const tableData = ref([
                     <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
                     <th class="py-2 px-4 tracking-wider">JURADO</th>
-                    <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
-                    <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
+                    <!-- <th class="py-2 px-3 tracking-wider">ACCIÓN</th> -->
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr
-                    v-for="(u, index) in filteredTableData"
-                    :key="index"
-                    :class="index % 2 === 0 ? 'bg-white' : 'bg-grisTabla'"
-                    class="border-b border-gray-200"
+                    v-for="(solicitude, index) in filteredTableData"
+                    :key="solicitude.resolucion_id"
+                    class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                   >
-                    <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">
-                        {{ u.name }}
+                    <td class="px-3 border text-base">
+                      <p class="text-gray-900 text-wrap w-40">
+                        {{ solicitude.nombre }}
                       </p>
                     </td>
-                    <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">
-                        {{ u.title }}
+                    <td class="px-3 py-2 border text-base">
+                      <p class="text-gray-900 text-wrap max-w-2xl">
+                        {{ solicitude.titulo }}
                       </p>
                     </td>
                     <td class="text-center px-4">
-                      <button>
-                        <IconPdf />
-                      </button>
+                      <a v-if="solicitude.oficio_id" :href="`${VIEW_AINFORME}/${ solicitude.oficio_id }`" target="_blank">
+                        <button>
+                          <IconPdf />
+                        </button>
+                      </a>
+                      <span v-else class="italic text-gray-400">No disponible</span>
                     </td>
-                    <td class="text-center px-4">
-                      <button>
-                        <IconPdf />
-                      </button>
-                    </td>
+                    <!-- <td class="text-center px-4">
+                      <a v-if="solicitude.resolucion_id" :href="`${VIEW_RINFORME}/${ solicitude.resolucion_id }`" target="_blank">
+                        <button>
+                          <IconPdf />
+                        </button>
+                      </a>
+                      <span v-else class="italic text-gray-400">No disponible</span>
+                    </td> -->
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
-                        class="w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none"
-                        @click="openModal"
+                        v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
+                        :class="[ 'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none','hover:bg-green-600']"  :disabled="['tramitado'].includes(solicitude.estado ?? '')"
+                        @click="openModal(solicitude.resolucion_id)"
                       >
                         Generar
                       </button>
+
                       <button
-                        class="w-24 px-4 py-1 text-sm text-black bg-gray-300 rounded-xl focus:outline-none"
-                        @click="openRejectModal"
-                      >
-                        Observar
-                      </button>
+                          v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
+                          :class="[ 
+                            'w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
+                            'hover:bg-gray-400'
+                          ]" :disabled="['tramitado'].includes(solicitude.estado ?? '')"
+                          @click="openRejectModal(solicitude.resolucion_id)"
+                        >
+                          Observar
+                        </button>
+
+                      <button>
+                          <a
+                            :href="`${VIEW_RINFORME}/${solicitude.resolucion_id}`" 
+                            target="_blank"
+                            class="flex items-center m-2 relative group"
+                            v-if="['tramitado'].includes(solicitude.estado)"
+                          >
+                            <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                            <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                            <span class="text-[#34495e]"> Ver resolución</span>
+                          </a>
+                        </button>
                     </td>
                     <td class="px-3 py-5 text-center">
-                      <button
-                        class="w-24 px-4 py-1 text-sm text-white bg-azulbajo rounded-xl focus:outline-none"
-                        @click="openSendModal"
-                      >
-                        Enviar
-                      </button>
-                    </td>
-                    <td class="px-3 py-5 text-center">
-                      <span
-                        :class="`estado-estilo estado-${u.status
-                          .toLowerCase()
-                          .replace(' ', '-')}`"
-                      >
-                        {{ u.status }}
-                      </span>
-                    </td>
+                        <span :class="`estado-estilo estado-${solicitude.estado ? solicitude.estado.toLowerCase().replace(' ', '-') : ''}`">
+                          {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
+                        </span>
+                      </td>
                   </tr>
                 </tbody>
               </table>
@@ -263,15 +355,23 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará la resolución del informe final
+              Se autogenerará la resolución de aprobación del proyecto de tesis
             </h5>
           </div>
           <div class="p-6">
-            <p class="text-gray-500 text-base text-left mb-2">
-              Escriba el número de expediente correspondiente
+            <p class="text-gray-500 text-lg text-left mb-2">
+              Por favor dígite el N° de expediente.
             </p>
-            <input type="text" id="nroExpediente" v-model="nroExpediente" class="px-2 w-full rounded-md focus:border-gray-900 focus:ring-0">
-          </div>
+            <input 
+              type="text" 
+              id="nroExped1" 
+              v-model="nroExped1" 
+              class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+              maxlength="17" 
+              @input="validateNroExped"
+              required>
+              <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
+            </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
           >
@@ -283,9 +383,9 @@ const tableData = ref([
             </button>
             <button
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-              @click="closeModal"
+              :disabled="!formIsValid" @click="generarResolucion"
             >
-              Generar
+              Enviar
             </button>
           </div>
         </div>
@@ -313,10 +413,10 @@ const tableData = ref([
             </h5>
           </div>
           <div class="p-6 bg-white rounded-lg">
-            <p class="text-gray-600 text-base text-center mb-4">
+            <p class="text-gray-600 text-lg text-center mb-4">
               Por favor escriba el motivo de su observación
             </p>
-            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+            <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
           </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"
@@ -329,49 +429,7 @@ const tableData = ref([
             </button>
             <button
               class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
-              @click="closeModal"
-            >
-              Confirmar
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- modal para enviar tramite a la facultad -->
-      <div
-        v-if="showSendModal"
-        class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50"
-      >
-        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">            
-          <div class="flex justify-end items-start">
-            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-              <IconCerrar />
-            </button>
-          </div>
-          <div
-            class="flex items-start justify-between p-3 border-b border-gray-200"
-          >
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Confirmación
-            </h5>
-          </div>
-          <div class="p-6">
-            <p class="text-gray-900 text-center text-lg mb-4">
-              ¿Desea enviar la resolución al estudiante y asesor?
-            </p>
-          </div>
-          <div
-            class="flex items-center justify-end p-3 border-t border-gray-200"
-          >
-            <button
-              class="px-4 py-2 text-sm text-white bg-[#5d6d7e] rounded-2xl"
-              @click="closeModal"
-            >
-              Cancelar
-            </button>
-            <button
-              class="ml-4 px-4 py-2 text-sm text-white bg-base rounded-xl"
-              @click="closeModal"
+              @click="observarResolucion"
             >
               Confirmar
             </button>

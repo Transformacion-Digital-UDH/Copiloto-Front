@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 // Definición de tipo para documentos
 interface Document {
@@ -20,6 +21,11 @@ const authStore = useAuthStore();
 
 // Array de documentos con URLs de "Ver" y "Descargar"
 const documents = ref<Document[]>([]);
+const router = useRouter();
+
+const goToConformidadInformeAsesor = () => {
+  router.push({ name: 'ConformidadInformeAsesor' });
+};
 
 // Función para abrir y cerrar el modal
 // const openDocumentModal = () => (showDocumentModal.value = true);
@@ -158,10 +164,14 @@ onMounted(() => {
 
         <!-- Botones de acción -->
         <div class="flex justify-center gap-6">
-          <button class="px-4 py-2  md:px-8 md:py-4 bg-baseClarito text-white rounded-lg hover:bg-base transition text-lg md:text-xl">
-            Ir a Informe Final
-          </button>
-        </div>
+    <button 
+      class="px-4 py-2 md:px-8 md:py-4 bg-base text-white rounded-lg hover:bg-baseClarito transition text-lg md:text-xl"
+      @click="goToConformidadInformeAsesor"
+    >
+      Ir a Informe Final
+    </button>
+  </div>
+
         <br>
       </div>
     </div>

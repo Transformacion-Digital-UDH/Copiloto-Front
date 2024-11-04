@@ -58,6 +58,7 @@ const isNextButtonDisabled = computed(() => {
 });
 
 
+
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
 const solicitudEstado = ref<string>("");
@@ -331,11 +332,14 @@ onMounted(() => {
           </button>
           <button
             @click="handleNextButtonClick"
+            :disabled="isNextButtonDisabled"
             :class="[ 
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
                 ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',]">Siguiente
+                : 'bg-green-500 hover:bg-green-600',
+            ]">
+            Siguiente
           </button>
         </div>
 

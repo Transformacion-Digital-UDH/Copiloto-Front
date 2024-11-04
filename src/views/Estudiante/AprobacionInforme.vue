@@ -1,13 +1,14 @@
 <script lang="ts" setup>
-import { alertToast } from '@/functions';
-import { useAuthStore } from '@/stores/auth';
+import { ref, reactive, onMounted } from 'vue';
+import { computed } from "vue";
+import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
-
-const mostrarModalAprobar = ref(false); 
+import { alertToast } from "@/functions";
+import Swal from 'sweetalert2';
+import router from '@/router';
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del Informe Final por la Facultad";
+const text = "Aprobación del Informe Final";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -21,95 +22,55 @@ onMounted(() => {
   typeWriter();
 });
 
-// Definir tipos para trámites y documentos
-interface Documento {
-  nombre: string;
-  estado: string;
-  documentoUrl: string;
-}
+const mostrarModalAprobar = ref(false); 
 
-// Estado general del sistema
-const estadoTramite = ref('Pendiente');  // Puede ser: Pendiente, En Proceso, Hecho
+// Estado del trámite de aprobación
+const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
 
-// Trámites del sistema
-const tramites = ref([
-  { titulo: 'Trámite en el Sistema', estado: 'Pendiente' },
-  { titulo: 'Pago de Trámite', estado: 'Pendiente' },
-]);
-
-// Documentos para la aprobación del proyecto
-const documentos = ref<Documento[]>([
-  { nombre: 'Oficio de Secretaria PAISI', estado: 'Hecho', documentoUrl: '' },
-  { nombre: 'Resolución de Facultad', estado: 'Pendiente', documentoUrl: '' },
-]);
-
-// Computed para habilitar el botón "Siguiente" solo si todos los trámites y documentos están en "Hecho"
-const todosCompletos = computed(() => {
-  const tramitesHechos = tramites.value.every(tramite => tramite.estado === 'Hecho');
-  const documentosHechos = documentos.value.every(documento => documento.estado === 'Hecho');
-  return tramitesHechos && documentosHechos;
-});
-
-// Método para determinar la clase del estado
-const estadoClase = (estado: string) => {
-  switch (estado) {
-    case 'Hecho':
-      return 'bg-green-500 text-white';
-    case 'Pendiente':
-      return 'bg-gray-400 text-white';
-    default:
-      return '';
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
+    });
+  } else {
+    goToNextPage();
   }
 };
+
+const goToNextPage = () => {
+  router.push("/estudiante/conformidad-vri");
+};
+
+const isNextButtonDisabled = computed(() => {
+  return documentos.value.some(doc => doc.estado !== "tramitado");
+});
 
 /*************************************** INTEGRACION CON EL BACKEND ************************************************ */
 const load = ref(false);
 const authStore = useAuthStore();
-const solicitudEstado = ref<string>("");
-const isLoading = ref(false);
+const solicitudEstado = ref<string>(""); 
+const isLoading = ref(false); 
+const VIEW_AINFORME  = import.meta.env.VITE_URL_VIEW_AINFORME ;
+const DOWNLOAD_AINFROME  = import.meta.env.VITE_URL_DOWNLOAD_AINFROME ;
+
+const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RINFORME;
+const DOWNLOAD_RIVIEW_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RINFORME;
+
+const oficio_id = ref<string>("");
+const resolucion_id = ref<string>("");
+
+const documentos = ref([
+  { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' }, 
+  { nombre: 'Resolución de Facultad de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' }
+]);
+
 
 const isAprobacionDisabled = computed(() => {
-  return documentos.value?.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+  return isLoading.value || documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
 });
-
-// const solicitarAprobacionInforme = async () => {
-//   const student_id = authStore.id;
-//   isLoading.value = true;
-//   try {
-//     // Realiza la solicitud GET con el `student_id` proporcionado
-//     const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${student_id}`);
-//     console.log("Mostrando lo recibido: ", response);
-
-//     // Muestra el mensaje de éxito o información recibido directamente desde el backend
-//     alertToast(response.data.mensaje || "Operación completada.", "Éxito", "success");
-
-//   } catch (error: any) {
-//     // Si hay un mensaje de error en la respuesta, se muestra directamente
-//     const backendMessage = error.response?.data?.mensaje || "Error en la solicitud. Intente nuevamente.";
-//     alertToast(backendMessage, "Error", "error");
-//   } finally {
-//     isLoading.value = false; 
-//   }
-// };
-
-// const solicitarAprobacionInforme = async () => {
-//   isLoading.value = true;
-//   try {
-//     // Realiza la solicitud GET con el `student_id` de `authStore`
-//     const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${authStore.id}`);
-//     console.log("Mostrando lo recibido: ", response);
-
-//     // Mensaje de éxito al enviar la solicitud
-//     alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
-
-//   } catch (error: any) {
-//     // Muestra el mensaje de error directamente desde el backend
-//     const backendMessage = error.response?.data?.mensaje || "Error en la solicitud. Intente nuevamente.";
-//     alertToast(backendMessage, "Error", "error");
-//   } finally {
-//     isLoading.value = false;
-//   }
-// };
 
 
 const solicitarAprobacionInforme = async () => {
@@ -135,6 +96,47 @@ const solicitarAprobacionInforme = async () => {
     isLoading.value = false; 
   }
 };
+
+const obtenerDatosEstudiante = async () => {
+  load.value = true;
+  const student_id = authStore.id
+  try {
+    const response = await axios.get(`/api/estudiante/get-info-aprobar/informe/${student_id}`);
+    console.log("Datos recibidos: ", response.data);
+
+    // Actualizar el estado y observación de oficio
+    if (response.data.oficio_estado === 'tramitado') {
+      oficio_id.value = response.data.oficio_id;
+      documentos.value[0].estado = 'tramitado';
+    } else if (response.data.oficio_estado === 'observado') {
+      documentos.value[0].estado = 'observado';
+      documentos.value[0].observacion = response.data.oficio_observacion || 'Comunicate con secretaria de PAISI';
+    } else {
+      documentos.value[0].estado = 'pendiente';
+    }
+
+    // Actualizar el estado y observación de resolución
+    if (response.data.resolucion_estado === 'tramitado') {
+      resolucion_id.value = response.data.resolucion_id;
+      documentos.value[1].estado = 'tramitado';
+    } else if (response.data.resolucion_estado === 'observado') {
+      documentos.value[1].estado = 'observado';
+      documentos.value[1].observacion = response.data.resolucion_observacion || 'Cominicate con secretaria de Facultad';
+    } else {
+      documentos.value[1].estado = 'pendiente';
+    }
+
+  } catch (error: any) {
+    console.error("Error al obtener datos", error.response?.data?.mensaje || error.mensaje);
+  } finally {
+    load.value = false;
+  }
+};
+
+
+onMounted(() =>{
+  obtenerDatosEstudiante();
+})
 
 </script>
 
@@ -167,13 +169,13 @@ const solicitarAprobacionInforme = async () => {
       </div>
     </div>
   </template>
-
+  
   <template v-else>
-  <div class="flex-1 p-10 border-s-2 bg-gray-100 font-Roboto">
-    <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
-      <div class="mt-6 space-y-10">
-        <!-- Card 1: Solicitud-->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+        <div class="mt-6 space-y-10">
+          <!-- Card 1: Solicitud-->
+          <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="relative flex items-center">
               <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
                 <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
@@ -203,60 +205,128 @@ const solicitarAprobacionInforme = async () => {
             </div>
           </div>
 
-        <!-- Card 2: Documentos -->
-        <div class="bg-white rounded-lg shadow-lg p-6">
-          <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+          <!-- Card 2: Documentos -->
+          <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del informe final </h2>
+            </div>
+            <!-- Para Oficio de PAISI -->
+            <div class="mt-4 space-y-4">
+              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+                <div class="flex flex-col md:flex-row justify-between md:items-center">
+                  <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
+                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                    <!-- Condición para cuando el estado es "tramitado" -->
+                    <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                      <a
+                        :href="`${VIEW_AINFORME }/${oficio_id}`"
+                        target="_blank"
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-eye mr-2"></i> Ver
+                      </a>
+                      <a
+                        :href="`${DOWNLOAD_AINFROME }/${oficio_id}`"
+                        download
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-download mr-2"></i> Descargar
+                      </a>
+                    </div>
 
-          <!-- Listado de documentos -->
-          <div class="mt-4 space-y-6">
-            <div v-for="(documento, index) in documentos" :key="index"
-              class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-              <!-- Nombre del documento -->
-              <span class="text-black flex-1">{{ documento.nombre }}</span>
+                    <!-- Condición para mostrar la observación cuando el estado es "observado" -->
+                    <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">
+                      "{{ documentos[0].observacion || 'Observación no disponible' }}"
+                    </p>
 
-              <div class="flex space-x-4 items-center">
-                <!-- Botón de Ver -->
-                <a v-if="documento.estado === 'Hecho'" :href="documento.documentoUrl" target="_blank"
-                  class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
-                  <i class="fas fa-eye mr-2"></i> Ver
-                </a>
+                    <!-- Mensaje de que aún no está cargado para estado "pendiente" -->
+                    <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
-                <!-- Botón de Descargar -->
-                <a v-if="documento.estado === 'Hecho'" :href="documento.documentoUrl" download
-                  class="px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100">
-                <i class="fas fa-download mr-2"></i> Descargar
-                </a>
+                    <!-- Estado del documento -->
+                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
+                      {{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                <!-- Estado del documento -->
-                <span :class="estadoClase(documento.estado)" class="estado-estilo">{{ documento.estado }}</span>
+            <!-- Para Resolución de Facultad -->
+            <div class="mt-4 space-y-4">
+              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+                <div class="flex flex-col md:flex-row justify-between md:items-center">
+                  <span class="flex-1 text-xm bg-gray-50">{{ documentos[1].nombre }}</span>
+                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                    <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                      <!-- BOTON VER -->
+                      <a
+                        :href="`${VIEW_RINFORME}/${resolucion_id}`"
+                        target="_blank"
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-eye mr-2"></i> Ver
+                      </a>
+                      <!-- BOTON DESCARGAR -->
+                      <a
+                        :href="`${DOWNLOAD_RIVIEW_RINFORME}/${resolucion_id}`"
+                        download
+                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                        <i class="fas fa-download mr-2"></i> Descargar
+                      </a>
+                    </div>
+
+                      <!-- Condición para mostrar la observación cuando el estado es "observado" -->
+                      <p v-else-if="documentos[1].estado === 'observado'" class="text-gray-500 italic">
+                        "{{ documentos[1].observacion || 'Observación no disponible' }}"
+                      </p>
+
+                    <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
+                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+          <!-- BOTONES ANTERIOR Y SIGUIENTE -->
+          <div class="flex justify-between">
+            <button 
+              @click="$router.push('/estudiante/conformidad-jurado')" 
+              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
+              Anterior
+            </button>
+            <button
+              @click="handleNextButtonClick"
+              :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled 
+              ? 'bg-gray-300 cursor-not-allowed' 
+              : 'bg-green-500 hover:bg-green-600',]">
+              Siguiente
+            </button>
+          </div>
         </div>
-
-        <!-- Botón "Siguiente" -->
-        <div class="flex justify-end mt-8">
-          <button :disabled="!todosCompletos"
-            :class="todosCompletos ? 'bg-green-600 hover:bg-green-700 cursor-pointer' : 'bg-gray-300 cursor-not-allowed'"
-            class="px-4 py-2 text-white rounded-md">
-            Siguiente
-          </button>
-        </div>
-      </div>
-  </div>
+    </div>
   </template>
 </template>
-
 
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 400;
   border-radius: 0.375rem;
   display: inline-block;
 }
-
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-tramitado {
+  background-color: #38a169;
+  color: #ffffff;
+}
+.estado-no-solicitado {
+  background-color: #718096;
+  color: #ffffff;
+}
+.estado-observado {
+  background-color: #e79e38;
+  color: #ffffff;
+}
 .break-all {
   word-break: break-all;
 }
