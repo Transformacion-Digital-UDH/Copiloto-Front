@@ -20,7 +20,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/conformidad-informe-jurado");
+  router.push("/estudiante/aprobacion-informe");
 };
 
 const isNextButtonDisabled = computed(() => {
@@ -102,7 +102,7 @@ const solicitarRevisionInforme = async (review: Jurado) => {
     if (response.data.estado) {
       const nuevoEstado = response.data.estado.toLowerCase();
       alertToast("Solicitud enviada correctamente", "Éxito", "success");
-      
+      await mostrarConformidadJuradosInforme();
       review.estado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
     } else {
       alertToast("Error al procesar la solicitud", "Error", "error");
@@ -117,8 +117,9 @@ const solicitarRevisionInforme = async (review: Jurado) => {
 
 const mostrarConformidadJuradosInforme = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`api/estudiante/get-revision-jurados/informe/${authStore.id}`);
+    const response = await axios.get(`api/estudiante/get-revision-jurados/informe/${student_id}`);
     const data = response.data;
     console.log("Mostrando lo recibido: ", data);
 
@@ -152,7 +153,6 @@ const mostrarConformidadJuradosInforme = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de presidente:', documentos.value[0]);
       }
 
       if (jurado.rol === 'secretario') {
@@ -168,7 +168,6 @@ const mostrarConformidadJuradosInforme = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de secretario:', documentos.value[1]);
       }
 
       if (jurado.rol === 'vocal') {
@@ -184,7 +183,6 @@ const mostrarConformidadJuradosInforme = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de vocal:', documentos.value[2]);
       }
     });
   } catch (error) {
