@@ -35,6 +35,14 @@ import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import { useAuthStore } from '@/stores/auth'
 
+const roleRoutes: Record<string, string> = {
+  estudiante: "estudiante",
+  asesor: "asesor",
+  paisi: "paisi",
+  facultad: "facultad",
+  admin: "admin",
+};
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -44,6 +52,7 @@ const router = createRouter({
       component: AppLogin,
       meta: {
         title: 'Inicio de sesión',
+        roles: ['']
       }
     },
     {
@@ -52,29 +61,30 @@ const router = createRouter({
       meta: { roles: ['estudiante'], title: 'Estudiante' },
       component: AdminLayout,
       children: [
-        { path: 'designacion-asesor', name: 'DesignacionAsesor', component: DesignacionAsesor, meta: { title: 'Designación asesor' } },
-        { path: 'conformidad-asesor', name: 'ConformidadAsesor', component: ConformidadAsesor, meta: { title: 'Conformidad de asesor' } },
-        { path: 'designacion-jurado', name: 'DesignacionJurado', component: DesignacionJurado, meta: { title: 'Designación de jurado' } },
-        { path: 'conformidad-jurado', name: 'ConformidadJurado', component: ConformidadJurado, meta: { title: 'Conformidad de jurado' } },
-        { path: 'aprobacion-proyecto', name: 'AprobacionProyecto', component: AprobacionProyecto, meta: { title: 'Aprobación de proyecto' } },
-        { path: 'conformidad-informe-asesor', name: 'ConformidadInformeAsesor', component: ConformidadInformeAsesor, meta: { title: 'Conformidad de Informe Final por el Asesor' } },
-        { path: 'designacion-informe-jurado', name: 'DesignacionJuradoInforme', component: DesignacionJuradoInforme, meta: { title: 'Designacion de Jurado para el Informe Final' } },
-        { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: { title: 'Conformidad de Informe Final por los Jurados' } },
-        { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: { title: 'Aprobacion de Informe por los Jurados' } },
-        { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: { title: 'Conformidad por Integridad VRI' } },
-        { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: { title: 'progreso' } },
+        { path: 'designacion-asesor', name: 'DesignacionAsesor', component: DesignacionAsesor, meta: {  roles: ['estudiante'], title: 'Designación asesor' } },
+        { path: 'conformidad-asesor', name: 'ConformidadAsesor', component: ConformidadAsesor, meta: {  roles: ['estudiante'], title: 'Conformidad de asesor' } },
+        { path: 'designacion-jurado', name: 'DesignacionJurado', component: DesignacionJurado, meta: {  roles: ['estudiante'], title: 'Designación de jurado' } },
+        { path: 'conformidad-jurado', name: 'ConformidadJurado', component: ConformidadJurado, meta: {  roles: ['estudiante'], title: 'Conformidad de jurado' } },
+        { path: 'aprobacion-proyecto', name: 'AprobacionProyecto', component: AprobacionProyecto, meta: {  roles: ['estudiante'], title: 'Aprobación de proyecto' } },
+        { path: 'conformidad-informe-asesor', name: 'ConformidadInformeAsesor', component: ConformidadInformeAsesor, meta: {  roles: ['estudiante'], title: 'Conformidad de Informe Final por el Asesor' } },
+        { path: 'designacion-informe-jurado', name: 'DesignacionJuradoInforme', component: DesignacionJuradoInforme, meta: {  roles: ['estudiante'], title: 'Designacion de Jurado para el Informe Final' } },
+        { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: {  roles: ['estudiante'], title: 'Conformidad de Informe Final por los Jurados' } },
+        { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: {  roles: ['estudiante'], title: 'Aprobacion de Informe por los Jurados' } },
+        { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: {  roles: ['estudiante'], title: 'Conformidad por Integridad VRI' } },
+        { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
       ]
     },
     {
       path: '/asesor',
       name: 'asesor',
-      meta: { roles: ['asesor'], title: 'Asesor' },
+      meta: { roles: ['asesor', 'jurado'], title: 'Asesor' },
       component: AdminLayout,
       children: [
         { path: 'solicitud-asesoria', name: 'SolicitudesAsesoria', component: SolicitudAsesoria, meta: { title: 'Solicitudes de asesoría' } },
         { path: 'solicitud-revision', name: 'SolicitudesRevision', component: SolicitudRevision, meta: { title: 'Solicitudes de revisión' } },
         { path: 'revision-informe', name: 'RevisionInforme', component: RevisionInforme, meta: { title: 'Revision informe' } },
         { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { title: 'Revision jurado' } },
+        { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { title: 'Revisión jurado' } },
       ]
     },
     {
@@ -83,44 +93,48 @@ const router = createRouter({
       meta: { roles: ['jurado'], title: 'Jurado' },
       component: AdminLayout,
       children: [
-        { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { title: 'Revision jurado' } },
-        { path: 'revision-presidente', name: 'RevisionPresidente', component: RevisionJuradoPresidente, meta: { title: 'Revisión presidente' } },
-        { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { title: 'Revisión jurado' } },
-        { path: 'revisionJuradoPresidente-informe', name: 'RevisionPresidenteInforme', component: RevisionJuradoPresidenteInforme, meta: { title: 'Revisión presidente' } },
+        { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { roles: ['jurado'], title: 'Revision jurado' } },
+        { path: 'revision-presidente', name: 'RevisionPresidente', component: RevisionJuradoPresidente, meta: { roles: ['jurado'], title: 'Revisión presidente' } },
+        { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { roles: ['jurado'], title: 'Revisión jurado' } },
+        { path: 'revisionJuradoPresidente-informe', name: 'RevisionPresidenteInforme', component: RevisionJuradoPresidenteInforme, meta: { roles: ['jurado'], title: 'Revisión presidente' } },
 
       ]
     },
     {
       path: '/paisi',
       component: AdminLayout,
+      meta: { roles: ['paisi'], title: 'Paisi' },
       children: [
-        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { title: 'Designar Jurados' } },
-        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { title: 'Aprobar proyecto' } },
-        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: {title: 'Designar asesor'}},
-        
-        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { title: 'Aprobar informe' } },
-        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { title: 'Link informe' } },
-        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { title: 'Designar Jurados' } },
+        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
+        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['paisi'], title: 'Aprobar proyecto' } },
+        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['paisi'], title: 'Designar asesor' } },
+
+        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['paisi'], title: 'Aprobar informe' } },
+
+        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['paisi'], title: 'Link informe' } },
+        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
       ]
     },
     {
       path: '/facultad',
       component: AdminLayout,
+      meta: { roles: ['facultad'], title: 'Facultad' },
       children: [
-        { path: 'resolucion-proyecto', name: 'ResolucionProyecto', component: ResolucionProyecto, meta: { title: 'Resolucion proyecto' } },
-        { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { title: 'Resolución asesor' } },
-        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: {title: 'Designar jurados'}},
-        { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { title: 'Resolucion informe' } },
+        { path: 'resolucion-proyecto', name: 'ResolucionProyecto', component: ResolucionProyecto, meta: { roles: ['facultad'], title: 'Resolucion proyecto' } },
+        { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { roles: ['facultad'], title: 'Resolución asesor' } },
+        { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: { roles: ['facultad'], title: 'Designar jurados' } },
+        { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { roles: ['facultad'], title: 'Resolucion informe' } },
 
       ]
     },
     {
       path: '/vri',
       component: AdminLayout,
+      meta: { roles: ['vri'], title: 'VRI' },
       children: [
-        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { title: 'Primer Filtro' } },
-        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { title: 'Segundo Filtro' } },
-        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { title: 'Tercer Filtro' } },
+        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { roles: ['vri'], title: 'Primer Filtro' } },
+        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { roles: ['vri'], title: 'Segundo Filtro' } },
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['vri'], title: 'Tercer Filtro' } },
       ]
     },
     {
@@ -128,7 +142,8 @@ const router = createRouter({
       name: 'register',
       component: AppRegister,
       meta: {
-        title: 'Registrarme',
+        roles: [''],
+        title: 'Registrarme'
       },
     },
   ]
@@ -138,6 +153,7 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   const token = authStore.token;
   const role = authStore.role;
+  const is_jury = authStore.is_jury;
   const title = to.meta?.title as String;
   document.title = title as string;
 
@@ -146,29 +162,15 @@ router.beforeEach((to, from, next) => {
     return next({ name: 'login' });
   }
 
- // Si hay token, verificar el rol del usuario
-  // if (token && !to.meta.roles.includes(role)) {
-  //   // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
-  //   const roleRoutes: Record<string, string> = {
-        // estudiante: "/estudiante",
-        // asesor: "/asesor",
-        // jurado: "/jurado",
-        // paisi: "/paisi",
-        // facultad: "/facultad",
-        // admin: "/admin",
-  //   };
-  //   return next({ name: roleRoutes[role] });
-  // }
+  // Si hay token, verificar el rol del usuario
+  if (token && !to.meta.roles.includes(role)) {
+    // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
+    if (!is_jury) {
+      return next({ name: roleRoutes[role!] });
+    }
+  }
 
   if ((to.name === 'login' || to.name === 'register') && token && role !== null) {
-    const roleRoutes: Record<string, string> = {
-      estudiante: "/estudiante",
-      asesor: "/asesor",
-      jurado: "/jurado",
-      paisi: "/paisi",
-      facultad: "/facultad",
-      admin: "/admin",
-    };
     return next({ name: roleRoutes[role] });
   }
 

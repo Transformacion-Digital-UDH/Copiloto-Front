@@ -52,7 +52,7 @@ const goToNextPage = () => {
 
 const isNextButtonDisabled = computed(() => {
   const documentoResolucion = documentos.value.find(
-    (doc) => doc.nombre === "Resolución de designación de jurados"
+    (doc) => doc.nombre === "Resolución de Designación de Jurados"
   );
   return documentoResolucion?.estado.toLowerCase() !== "tramitado";
 });
@@ -73,8 +73,8 @@ const DOWNLOAD_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RINFORME;
 const resolucion_id = ref<string>(""); 
 const of_id = ref<string>("");
 const documentos = ref([
-  { nombre: 'Oficio múltiple', estado: 'Pendiente' },
-  { nombre: 'Resolución de designación de jurados', estado: 'Pendiente' }
+  { nombre: 'Oficio Múltiple', estado: 'Pendiente' },
+  { nombre: 'Resolución de Designación de Jurados', estado: 'Pendiente' }
 ]);
 
 
