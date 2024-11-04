@@ -54,7 +54,7 @@ let oficio_id = ref<number | null>(null);   // Puede ser null
 //VARIABLES DE ENTORNO
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const VIEW_APAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME ;
 
 
 
@@ -129,7 +129,7 @@ const fetchSolicitudes = async () => {
   load.value = true;
   try {
     const response = await axios.get('/api/oficio/get-aprobar/informe');
-    console.log('Datos recibidos de la API:', response.data);
+    console.log('Datos recibidos de la AP:', response.data);
 
     // Asigna los datos directamente desde response.data, ya que no está en response.data.data
     if (response.data && Array.isArray(response.data)) {
@@ -137,7 +137,7 @@ const fetchSolicitudes = async () => {
       console.log('Datos asignados a tableData:', tableData.value);
     } else {
       console.log('Estructura inesperada en la respuesta de la API');
-      tableData.value = [];  // Si no hay datos, asignamos un array vacío
+      //tableData.value = [];  // Si no hay datos, asignamos un array vacío
     }
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
@@ -403,7 +403,7 @@ function closeDocumentModal() {
                         <!-- Enlace para Visualizar Oficio (deshabilitado por ahora) -->
                         <button>
                           <a
-                            :href="`${VIEW_APAISI}/${solicitude.oficio_id}`" 
+                            :href="`${VIEW_AINFORME }/${solicitude.oficio_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"
