@@ -366,9 +366,6 @@ onMounted(() => {
 
                     </div>
                   </td>
-
-
-
                    
                   <td class="px-2 py-3 text-center align-middle">
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
