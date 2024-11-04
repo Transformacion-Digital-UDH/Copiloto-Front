@@ -57,91 +57,95 @@ const isNextButtonDisabled = computed(() => {
   return documentoResolucion?.estado.toLowerCase() !== "tramitado";
 });
 
-
-
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
 const solicitudEstado = ref<string>("");
 const solicitudEstado2 = ref<string>("");
 const isLoading = ref(false);
 const load = ref(false);
+
 const jurados = ref<Jurado[]>([]);
+
 const VIEW_OFINFORME = import.meta.env.VITE_URL_VIEW_OFINFORME;
 const DOWNLOAD_OFINFORME = import.meta.env.VITE_URL_DOWNLOAD_OFINFORME;
 const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RINFORME;
 const DOWNLOAD_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RINFORME;
+
 const resolucion_id = ref<string>(""); 
 const of_id = ref<string>("");
+
 const documentos = ref([
   { nombre: 'Oficio Múltiple', estado: 'Pendiente' },
   { nombre: 'Resolución de Designación de Jurados', estado: 'Pendiente' }
 ]);
 
-
 interface Jurado {
-  id: string;
   rol: string;
-  nombre: string; // Cambia 'asesor' por 'nombre'
+  nombre: string;
 }
-
 
 // para que el botón quede deshabilitado
 const isSolicitarDisabled = computed(() => {
   const estadoSolicitud = solicitudEstado.value?.toLowerCase();
   const estadoSolicitud2 = solicitudEstado2.value?.toLowerCase();
-  return ["pendiente", "tramitado"].includes(estadoSolicitud) || ["pendiente", "tramitado"].includes(estadoSolicitud2);// se deshabilita el botón dependiendo del estado
+  return ["pendiente", "tramitado"].includes(estadoSolicitud) || ["pendiente", "tramitado"].includes(estadoSolicitud2);;// se deshabilita el botón dependiendo del estado
 });
+
 // funcion para solicitar que me asignen jurados
-const solicitarJurado = async () => {
+const solicitarJuradoInforme = async () => {
   isLoading.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`/api/oficio/crear-solicitud-jurados/informe/${authStore.id}`);
-    console.log(response);
+    const response = await axios.get(`/api/oficio/crear-solicitud-jurados/informe/${student_id}`);
   
     if (response.data.estado) {
-      solicitudEstado.value = "pendiente";  // mostrar el estado de la solicitud
+      solicitudEstado.value = "Pendiente";  // mostrar el estado de la solicitud
       alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
+      await mostrarJuradosInforme();
     }
     
   } catch (error: any) {
-    console.error(error);
-    
-    if (error.response?.status === 404) {
-      const message = error.response?.data?.message;
-      if (message.includes("conformidad")) {
-        alertToast("Estimado estudiante, no tiene conformidad de observaciones", ""); // esto es un mnsaje de falta de conformidad
-      } else if (message.includes("solicitud en proceso")) {
-        alertToast("Estimado estudiante, ya solicito su designacion de jurados", "success"); // esto es un mensaje de que solicito su designacion
-      } else {
-        alertToast("Error desconocido en la solicitud.", "Error", "error");
-      }
+    if (error.response && error.response.data && error.response.data.message) {
+      const mensaje = error.response.data.message;
+      alertToast(mensaje, "Error", "error");
     } else {
-      alertToast("Error en la solicitud.", "Error", "error"); // para otros errores
+      alertToast("Error en la solicitud.", "Error", "error");
     }
   } finally {
-    isLoading.value = false;
+    isLoading.value = false; 
   }
 };
 
 // Función para obtener jurados asignados desde el backend
-const mostrarJurados = async () => {
+const mostrarJuradosInforme = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`api/estudiante/info-juries/informe/${authStore.id}`);
+    const response = await axios.get(`/api/estudiante/info-juries/informe/${student_id}`);
     console.log('Mostrando lo recibido: ', response.data);
+
+    solicitudEstado2.value = response.data.oficio?.of_estado || "";
 
     // Formatear el estado de la solicitud
     if (response.data.estado) {
       solicitudEstado2.value = response.data.estado.charAt(0).toUpperCase() + response.data.estado.slice(1).toLowerCase();
       console.log("Estado de la solicitud: ", solicitudEstado2.value);
     }
-    
-    // Convertir los datos de jurados en un array
+
     jurados.value = [
-      { id: '1', rol: 'presidente', nombre: response.data.presidente.nombre },
-      { id: '2', rol: 'secretario', nombre: response.data.secretario.nombre },
-      { id: '3', rol: 'vocal', nombre: response.data.vocal.nombre }
-    ];
+      {
+        rol: response.data.presidente.rol || "",
+        nombre: response.data.presidente.nombre || "",
+      },
+      {
+        rol: response.data.secretario.rol || "",
+        nombre: response.data.secretario.nombre || "",
+      },
+      {
+        rol: response.data.vocal.rol || "",
+        nombre: response.data.vocal.nombre || "",
+      }
+    ].filter(jurado => jurado.rol && jurado.nombre);
 
     // Actualizar el estado de los documentos en función de la respuesta de la API
     if (response.data.oficio) {
@@ -161,11 +165,9 @@ const mostrarJurados = async () => {
   }
 };
 
-
-
 // montar para ver los jurados asignados
 onMounted(() => {
-  mostrarJurados();
+  mostrarJuradosInforme();
 })
 </script>
 <template>
@@ -214,7 +216,7 @@ onMounted(() => {
   </template>
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-5xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -240,33 +242,35 @@ onMounted(() => {
             </div>
           </div>
         </div> --> 
-
         <!-- Card 2: Solicitar designación de Jurados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-          <h2 class="text-2xl font-medium text-black ">1. Solicitar designación de jurados</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-            @mouseover="mostrarModalJurados = true"
-            @mouseleave="mostrarModalJurados = false" />
+            <h2 class="text-2xl font-medium text-black">1. Solicitar designación de jurados</h2>
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                @mouseover="mostrarModalJurados = true"
+                @mouseleave="mostrarModalJurados = false" />                
           </div>
-
+          
           <div v-show="mostrarModalJurados" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.</p>
           </div>
 
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
-            <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span>
           </div>
 
+          <!-- <div class="flex justify-end">
+            <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]">{{ solicitudEstado2.charAt(0).toUpperCase() + solicitudEstado2.slice(1).toLowerCase() }}</span>
+          </div> -->
+          
           <div class="mt-4">
             <div class="flex justify-center mt-2">
               <button
-               
+                :disabled="isSolicitarDisabled" 
                 :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
                 class="px-4 py-2 w-52 text-white rounded-md text-lg"
-                @click="solicitarJurado">
-                {{ isLoading ?'Solicitando...' : 'Solicitar jurados' }}
+                @click="solicitarJuradoInforme">
+                {{ isLoading ? 'Solicitando...' : 'Solicitar jurados' }}
               </button>
             </div>
           </div>
@@ -276,40 +280,37 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div class="flex items-center justify-between mt-2">
             <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
-            <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span>
+            <!-- <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span> -->
           </div>
 
-  <div class="overflow-x-auto mt-4 flex justify-center">
-    <div class="w-full max-w-2xl">
-      <table class="w-full text-left bg-white border border-gray-200 rounded-md shadow-lg">
-        <thead class="leading-normal">
-          <tr class="text-azul text-left border-b-2 bg-gray-300">
-            <th class="px-4 py-2 tracking-wide">ROL</th>
-            <th class="px-4 py-2 tracking-wide">NOMBRE Y APELLIDO</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Si no hay jurados, mostramos un mensaje -->
-          <tr v-if="jurados.length === 0">
-            <td colspan="2" class="px-4 py-6 text-center text-gray-500 text-base">
-              <i class="fas fa-exclamation-circle mr-2 text-red-700"></i> Aún no se han asignado jurados.
-            </td>
-          </tr>
-          <!-- Iteramos los jurados si hay registros -->
-          <tr v-else v-for="(jurado, index) in jurados" :key="index" class="border-b uppercase border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-            <td class="px-4 py-2">
-              <p class="text-wrap w-24">{{ jurado.rol || "No asignado" }}</p>
-            </td>
-            <td class="px-4 py-2">
-              <p class="text-wrap w-72">{{ jurado.nombre || "No asignado" }}</p>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
+          <div class="overflow-x-auto mt-4 flex justify-center">
+            <div class="w-full max-w-2xl">
+              <table class="w-full text-left bg-white border border-gray-200 rounded-md shadow-lg">
+                <thead class="leading-normal">
+                  <tr class="text-azul text-left border-b-2 bg-gray-300">
+                    <th class="px-4 py-2 tracking-wide">ROL</th>
+                    <th class="px-4 py-2 tracking-wide">NOMBRE Y APELLIDO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-if="jurados.length === 0">
+                    <td colspan="2" class="px-4 py-6 text-center text-gray-500 text-base">
+                      <i class="fas fa-exclamation-circle mr-2 text-red-700"></i> Aún no se han asignado jurados.
+                    </td>
+                  </tr>
+                  <tr v-else v-for="jurado in jurados" :key="jurado.rol" class="border-b uppercase border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <td class="px-4 py-2">
+                      <p class="text-wrap w-24">{{ jurado.rol || "No asignado" }}</p>
+                    </td>
+                    <td class="px-4 py-2">
+                      <p class="text-wrap w-72">{{ jurado.nombre || "No asignado" }}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
         <!-- Card 3: Oficio múltiple con los jurados seleccionados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -322,68 +323,59 @@ onMounted(() => {
             </div>            
           </div>
 
-  <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-    <p class="text-sm text-gray-600">Estos son los documentos oficiales con los jurados designados. Asegúrate de revisarlos antes de continuar.</p>
-  </div>
+          <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">Estos son los documentos oficiales con los jurados designados. Asegúrate de revisarlos antes de continuar.</p>
+          </div>
 
-  <div class="mt-4 space-y-4">
-  <div v-for="(documento, index) in documentos" :key="index" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-    <div class="flex flex-col md:flex-row justify-between md:items-center">
-      <span class="flex-1 text-xm bg-gray-50">{{ documento.nombre }}</span>
-      <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-        
-        <!-- Mostrar botones de Ver y Descargar solo si el estado es Tramitado -->
-        <div v-if="documento.estado.toLowerCase() === 'tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-          <!-- Botón de Ver -->
-          <a 
-            :href="`${documento.nombre === 'Oficio múltiple' ? VIEW_OFINFORME : VIEW_RINFORME}/${documento.nombre === 'Oficio múltiple' ? of_id : resolucion_id}`" 
-            target="_blank"
-            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-            <i class="fas fa-eye mr-2"></i> Ver
-          </a>
-          <!-- Botón de Descargar -->
-          <a 
-            :href="`${documento.nombre === 'Oficio múltiple' ? DOWNLOAD_OFINFORME : DOWNLOAD_RINFORME}/${documento.nombre === 'Oficio múltiple' ? of_id : resolucion_id}`" 
-            download
-            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-            <i class="fas fa-download mr-2"></i> Descargar
-          </a>
-        </div>
-        
-        <!-- Mostrar mensaje cuando el documento aún no está tramitado -->
-        <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
-
-        <!-- Estado del documento -->
-        <span :class="`estado-${documento.estado.toLowerCase()}`" class="estado-estilo">
-          {{ documento.estado ? documento.estado.charAt(0).toUpperCase() + documento.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
-        </span>
-
-      </div>
-    </div>
-  </div>
-</div>
-
-
-</div>
-
-
-       <!--Botones siguiente y anteerior-->
-       <div class="flex justify-between">
-          <button
-            @click="$router.push('/estudiante/conformidad-asesor')" 
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
-          </button>
-          <button
-            @click="handleNextButtonClick"
-            :class="[ 
-              'px-4 py-2 text-white rounded-md',
-              isNextButtonDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',]">Siguiente
-          </button>
+          <div class="mt-4 space-y-4">
+            <div v-for="(documento, index) in documentos" :key="index" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm bg-gray-50">{{ documento.nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <!-- Mostrar botones de Ver y Descargar solo si el estado es Tramitado -->
+                  <div v-if="documento.estado.toLowerCase() === 'tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- Botón de Ver -->
+                    <a 
+                      :href="`${documento.nombre === 'Oficio múltiple' ? VIEW_OFINFORME : VIEW_RINFORME}/${documento.nombre === 'Oficio múltiple' ? of_id : resolucion_id}`" 
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a 
+                      :href="`${documento.nombre === 'Oficio múltiple' ? DOWNLOAD_OFINFORME : DOWNLOAD_RINFORME}/${documento.nombre === 'Oficio múltiple' ? of_id : resolucion_id}`" 
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                  <span :class="`estado-${documento.estado.toLowerCase()}`" class="estado-estilo">
+                    {{ documento.estado ? documento.estado.charAt(0).toUpperCase() + documento.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Card 4: Solicitar cambio de jurado
+        <!--Botones siguiente y anteerior-->
+        <div class="flex justify-between">
+            <button
+              @click="$router.push('/estudiante/conformidad-informe-asesor')" 
+              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
+            </button>
+            <button
+              @click="handleNextButtonClick"
+              :class="[ 
+                'px-4 py-2 text-white rounded-md',
+                isNextButtonDisabled
+                  ? 'bg-gray-300 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600',]">Siguiente
+            </button>
+          </div>
+
+          <!-- Card 4: Solicitar cambio de jurado
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-gray-500"> Solicitar cambio de jurado</h2>
@@ -482,4 +474,5 @@ onMounted(() => {
   background-color: #e79e38;
   color: #ffffff;
 }
+
 </style>

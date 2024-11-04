@@ -5,25 +5,26 @@ import IconCerrar from "@/components/icons/IconCerrar.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
 
-
-// Definir la interfaz para las solicitudes
-interface Estudiante {
-  nombre: string;
+interface Asesor {
+  asesor: string;
 }
 
-interface Asesor {
+interface Estudiante {
   nombre: string;
+  id_: string;  // Este es el ID del estudiante
 }
 
 interface Solicitude {
-  id: number;
-  students: Estudiante;
+  solicitude_id: number;
+  id_: string;  // ID del estudiante
   nombre: string;
-  asesor: Asesor;
-  resolucion_id: number;
+  asesor: string;
+  resolucion_id: string;
   estado: string | null;
   link: string | null;
+  informe_link?: string | null;
 }
+
 
 // ***** Texto que escribe automáticamente ********
 const text = "Generar Link para Informe Final";
@@ -60,17 +61,16 @@ const VIEW_AFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD ;
 // El tipo de solicitude se especifica como `Solicitude`
 const openModalLink = (solicitude: Solicitude) => {
   if (!solicitude.link) {
-    showLinkModal.value = true;
     selectedSolicitude.value = solicitude;
+    showLinkModal.value = true;
   }
-}
+};
 
 // Función para cerrar modal
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false; //cerrar ambos modales
   showLinkModal.value = false;
- 
 }
 
 // Filtrar datos y aplicar paginación
@@ -114,37 +114,44 @@ function goToNextPage() {
 const load = ref<boolean>(false);
 const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser null
 
-// Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
-    const response = await axios.get('/api/estudiante/get-solicitud-informe');
-    tableData.value = response.data.students; // Asegurarse que tableData tiene el formato correcto
-    console.log('LO QUE DA', response.data);
+    const response = await axios.get("/api/estudiante/get-solicitud-informe");
+    tableData.value = response.data.students.map((student: any) => ({
+      solicitude_id: student.id_solicitud,
+      id_: student.id_,  // Asignar el ID del estudiante
+      nombre: student.nombre,
+      asesor: student.asesor,
+      resolucion_id: student.resolucion_id,
+      estado: student.estado,
+      link: student.informe_link || null,
+    }));
   } catch (error) {
-    console.error('Error al cargar las solicitudes:', error);
+    console.error("Error al cargar las solicitudes:", error);
   } finally {
     load.value = false;
   }
 };
 
-onMounted(() => {
-  fetchSolicitudes();
-  typeWriter();
-});
+// Crear documento en Google Docs para informe final
+const createGoogleDoc = async () => {
+  if (!selectedSolicitude.value || !selectedSolicitude.value.id_) {
+    return;
+  }
 
-// Crear documento en Google Docs
-const createGoogleDoc = async (solicitudeId: number) => {
   createdoc.value = true;
   try {
     const response = await axios.post("/api/create-informe", {
-      id_solicitud: solicitudeId,
+      solicitude_id: selectedSolicitude.value.solicitude_id,
+      student_id: selectedSolicitude.value.id_  // Enviar `id_` como `student_id`
     });
-    console.log('prueba',response.data);
+    console.log(response);
 
-    const link = response.data.link;
+    const link = response.data.informe_link;
     if (link && selectedSolicitude.value) {
       selectedSolicitude.value.link = link;
+      selectedSolicitude.value.estado = 'generado';
       closeModal();
     }
   } catch (error) {
@@ -155,8 +162,12 @@ const createGoogleDoc = async (solicitudeId: number) => {
   }
 };
 
-</script>
+onMounted(() => {
+  fetchSolicitudes();
+  typeWriter();
+});
 
+</script>
 
 <template>
   <template v-if="load">
@@ -226,8 +237,7 @@ const createGoogleDoc = async (solicitudeId: number) => {
                   </select>
                 </div>
               </div>
-            </div>
-            <br>
+            </div><br>
 
             <!-- Tabla -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
@@ -237,33 +247,33 @@ const createGoogleDoc = async (solicitudeId: number) => {
                         <tr class="text-center text-azul border-b-2 bg-gray-300">
                         <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                         <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                        <th class="py-2 px-4 tracking-wider">RESOLUCIÓN TESIS</th>
-                        <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
+                        <th class="py-2 px-3 tracking-wider whitespace-nowrap">RESOLUCIÓN TESIS</th>
+                        <th class="py-2 px-3 tracking-wider whitespace-nowrap">GENERAR INFORME</th>
                         <th class="py-2 px-3 tracking-wider">ESTADO</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr
                         v-for="(solicitude, index) in tableData"
-                        :key="solicitude.id"
+                        :key="solicitude.solicitude_id"
                         class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                         >
                         <!-- Nombre del Estudiante -->
-                        <td class="px-3 py-5 text-base">
+                        <td class="px-3 py-2 text-base">
                             <p class="text-black text-wrap w-52">
                             {{ solicitude.nombre }}
                             </p>
                         </td>
 
                         <!-- Nombre del Asesor -->
-                        <td class="px-3 py-5 text-base">
+                        <td class="px-3 py-2 text-base">
                             <p class="text-black text-wrap w-52">
                             {{ solicitude.asesor }}
                             </p>
                         </td>
 
                         <!-- Resolución Tesis (Enlace con resolucion_id) -->
-                        <td class="text-center px-4">
+                        <td class="text-center py-7">
                             <a :href="`${VIEW_AFACULTAD}/${solicitude.resolucion_id}`" target="_blank">
                             <button>
                                 <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003">
@@ -284,11 +294,11 @@ const createGoogleDoc = async (solicitudeId: number) => {
                             </a>
                         </td>
                         <td class="text-center px-4">
-                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)"  class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">
-                          Generar docs
-                        </button>
-                        <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
-                      </td>
+                          <button v-if="!solicitude.link" @click="openModalLink(solicitude)" class="text-white bg-azul w-32 px-3 py-1 text-base rounded-md focus:outline-none">
+                            Generar docs
+                          </button>
+                          <!-- <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a> -->
+                        </td>
 
                         <!-- Estado -->
                         <td class="px-3 py-5 text-center">
@@ -325,16 +335,15 @@ const createGoogleDoc = async (solicitudeId: number) => {
             </div>
             <div class="flex items-center justify-end p-3 border-t border-gray-200">
               <button 
-              :disabled="createdoc"
-              class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+                :disabled="createdoc"
+                class="px-4 py-2 text-lg font-Thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                 Cancelar
               </button>
               <button 
                 v-if="selectedSolicitude && !selectedSolicitude.link" 
-                @click="createGoogleDoc(selectedSolicitude.id!)" 
-                class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl"
-              >
-
+                @click="createGoogleDoc" 
+                class="ml-4 px-4 py-2 text-lg font-Thin text-white bg-base rounded-2xl">
+                
                 <div v-if="createdoc" class="flex items-center gap-2">
                   <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -347,11 +356,9 @@ const createGoogleDoc = async (solicitudeId: number) => {
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </template>
-
 </template>
 
 <style scoped>
@@ -361,32 +368,25 @@ const createGoogleDoc = async (solicitudeId: number) => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
-
 .estado-generado {
   background-color: #39B49E;
   color: #ffffff;
 }
-
 .estado-aceptado {
   background-color: #48bb78;
   color: #ffffff;
 }
-
 .estado-observado {
   background-color: #e79e38;
   color: #ffffff;
 }
-
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
 }
-
 .custom-thead th {
   font-weight: 700; /* Grosor delgado */
   font-size: 16px;  /* Tamaño de la fuente */
   text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
-
-
 </style>

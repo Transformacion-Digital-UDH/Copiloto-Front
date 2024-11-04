@@ -52,9 +52,8 @@ const goToNextPage = () => {
 
 const isNextButtonDisabled = computed(() => {
   const documentoPaso3 = documentos.value.find(
-    (doc) => doc.nombre === "Oficio Múltiple"
-  );
-  // Habilita el botón solo si el estado es "Tramitado"
+  (doc) => doc.nombre === "Oficio Múltiple"
+);
   return documentoPaso3?.estado !== "Tramitado";
 });
 
@@ -87,34 +86,29 @@ const isSolicitarDisabled = computed(() => {
 // funcion para solicitar que me asignen jurados
 const solicitarJurado = async () => {
   isLoading.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`/api/office/solicitude-juries/${authStore.id}`);
+    const response = await axios.get(`/api/office/solicitude-juries/${student_id}`);
     console.log(response);
   
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";  // mostrar el estado de la solicitud
       alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
+      await mostrarJurados();
     }
     
   } catch (error: any) {
-    console.error(error);
-    
-    if (error.response?.status === 404) {
-      const message = error.response?.data?.message;
-      if (message.includes("conformidad")) {
-        alertToast("Estimado estudiante, no tiene conformidad de observaciones", ""); // esto es un mnsaje de falta de conformidad
-      } else if (message.includes("solicitud en proceso")) {
-        alertToast("Estimado estudiante, ya solicito su designacion de jurados", "success"); // esto es un mensaje de que solicito su designacion
-      } else {
-        alertToast("Error desconocido en la solicitud.", "Error", "error");
-      }
+    if (error.response && error.response.data && error.response.data.message) {
+      const mensaje = error.response.data.message;
+      alertToast(mensaje, "Error", "error");
     } else {
-      alertToast("Error en la solicitud.", "Error", "error"); // para otros errores
+      alertToast("Error en la solicitud.", "Error", "error");
     }
   } finally {
-    isLoading.value = false;
+    isLoading.value = false; 
   }
 };
+
 // funcion para ver los jurados asignados
 const mostrarJurados = async () => {
   load.value = true;
@@ -231,7 +225,7 @@ onMounted(() => {
 
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
-            <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span>
+            <!-- <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span> -->
           </div>
 
           <div class="mt-4">

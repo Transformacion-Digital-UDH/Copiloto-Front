@@ -189,7 +189,7 @@ onMounted(() => {
               <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="documents && documents.length > 0">
             <tr v-for="(doc, index) in documents" :key="index" class="border-b border-gray-200 text-left">
               <td class="px-3 py-4 text-base text-gray-600">
                 <p class="block text-wrap w-80 uppercase">{{ doc.nombre || "Sin documento"}}</p>
@@ -213,6 +213,14 @@ onMounted(() => {
                   class="w-full items-center text-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-200 md:w-auto justify-center">
                   <i class="fas fa-download mr-2"></i> Descargar
                 </a>
+              </td>
+            </tr>
+          </tbody>
+          <!-- Mostrar mensaje de no hay documentos si la lista está vacía -->
+          <tbody v-else>
+            <tr>
+              <td colspan="4" class="px-4 py-4 text-center text-gray-600">
+                <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>No hay documentos disponibles por el momento.
               </td>
             </tr>
           </tbody>

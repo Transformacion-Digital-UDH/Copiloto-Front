@@ -92,8 +92,9 @@ const isRevisionDisabled = (estado: string | undefined) => {
 
 const mostrarConformidadJurados = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`api/review/get-review-jury/${authStore.id}`);
+    const response = await axios.get(`api/review/get-review-jury/${student_id}`);
     const data = response.data;
 
     console.log('Mostrando lo recido: ', data);
@@ -128,7 +129,6 @@ const mostrarConformidadJurados = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de presidente:', documentos.value[0]);
       }
 
       if (jurado.rol === 'secretario') {
@@ -144,7 +144,6 @@ const mostrarConformidadJurados = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de secretario:', documentos.value[1]);
       }
 
       if (jurado.rol === 'vocal') {
@@ -160,7 +159,6 @@ const mostrarConformidadJurados = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de vocal:', documentos.value[2]);
       }
     });
   } catch (error) {
@@ -185,15 +183,15 @@ const solicitarRevision = async (review: Jurado) => {
 
     if (response.data.estado) {
       const nuevoEstado = response.data.estado.toLowerCase();
-      alertToast("Solicitud enviada correctamente", "Éxito", "success");
+      alertToast("Solicitud enviada, para su observación correspondiente", "Éxito", "success");
       
       review.estado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
+      await mostrarConformidadJurados();
     } else {
       alertToast("Error al procesar la solicitud", "Error", "error");
     }
   } catch (error) {
     console.error('Error al solicitar la revisión:', error);
-    alertToast("Revisión no encontrada.", "Error", "error");
   } finally {
     review.isLoading = false;
   }

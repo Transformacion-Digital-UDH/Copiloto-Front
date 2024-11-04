@@ -69,34 +69,27 @@ const documentos = ref([
 
 
 const isAprobacionDisabled = computed(() => {
-  return documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+  return isLoading.value || documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
 });
 
 
 const solicitarAprobacion = async () => {
   isLoading.value = true;
+  const student_id = authStore.id;
   try {
-    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);
+    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
     console.log("Mostrando lo recibido: ",response);
 
     if (response.data.estado){
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
+      await obtenerDatosEstudiante();
     }
 
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.mensaje) {
       const mensaje = error.response.data.mensaje;
-
-      if (mensaje.includes("El estudiante no existe")) {
-        alertToast("El estudiante no existe en el sistema. Verifique los datos.", "Error", "error");
-      } else if (mensaje.includes("El estudiante aún no tiene la conformidad de sus jurados")) {
-        alertToast("Estimado estudiante, no tiene conformidad de jurados", "", "warning");
-      } else if (mensaje.includes("El estudiante ya tiene una solicitud de aprobación de tesis pendiente")) {
-        alertToast("Estimado estudiante, ya solicito su aprobación de tesis", "", "info");
-      } else {
-        alertToast("Error desconocido en la solicitud", "Error", "error");
-      }
+      alertToast(mensaje, "Error", "error");
     } else {
       alertToast("Error en la solicitud.", "Error", "error");
     }
@@ -107,8 +100,9 @@ const solicitarAprobacion = async () => {
 
 const obtenerDatosEstudiante = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${authStore.id}`);
+    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${student_id}`);
     console.log("Datos recibidos: ", response.data);
 
     // Actualizar el estado y observación de oficio

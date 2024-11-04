@@ -325,7 +325,6 @@ onMounted(() => {
           </div>
           <!-- Título de Tesis -->
           <div class="bg-gray-100 rounded-lg p-6 shadow-lg">
-            <p class="text-azul text-center font-bold text-2xl">Título de tesis</p>
             <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace al Proyecto de Tesis -->
@@ -353,12 +352,12 @@ onMounted(() => {
               @mouseleave="mostrarModalRevision = false"
             />
           </div>
-          <div v-show="mostrarModalRevision" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-show="mostrarModalRevision" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.</p>
           </div>
           <div class="flex items-center justify-between">
             <p class="text-gray-500 text-base mt-2">
-              Para comenzar con el proceso de observaciones en el proyecto de tesis, haz clic en <strong class="text-[#39B49E]">"Solicitar revisión"</strong>
+              Para comenzar con el proceso de observaciones en el proyecto de tesis, haz clic en <strong class="text-[#39B49E] font-medium">"Solicitar revisión"</strong>
             </p>
             <span
               :class="estadoClase(solicitudEstado2)"
@@ -370,7 +369,7 @@ onMounted(() => {
             <button
               :disabled="isRevisionDisabled || isLoading"
               :class="[ isRevisionDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
-              class="px-4 py-2 text-white rounded-lg text-lg"
+              class="px-4 py-2 w-52 text-white rounded-md text-lg"
               @click="primeraRevision">
               {{ isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
             </button>
@@ -394,7 +393,7 @@ onMounted(() => {
               />
               <div
                 v-show="mostrarModalObservaciones"
-                class="absolute -left-32 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+                class="absolute -left-60 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
                 <p class="text-sm text-gray-600">
                   En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor, hasta que esté todo conforme.
                 </p>
@@ -403,10 +402,10 @@ onMounted(() => {
             
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
-            <strong class="text-[#8898aa] text-base">"Pendiente"</strong>. Realiza las correcciones directamente en el documento de Google Docs.
+            <strong class="text-[#8898aa] text-md font-medium">"Pendiente"</strong>. Realiza las correcciones directamente en el documento de Google Docs.
           </p>
           <p class="text-gray-500 text-base">Una vez que hayas corregido, haz clic en 
-            <strong class="text-green-500 text-base">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está en orden, el estado cambiará a <strong class="text-green-500 text-base">"Aprobado"</strong>.
+            <strong class="text-green-500 text-base font-medium">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está en orden, el estado cambiará a <strong class="text-green-500 text-base font-medium">"Aprobado"</strong>.
           </p>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
@@ -481,18 +480,18 @@ onMounted(() => {
                   @mouseleave="mostrarModalDocumentos = false" />
             </div>
           <!-- Modal informativo -->
-          <div v-if="mostrarModalDocumentos" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-if="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">
               Asegúrate de revisar el documento para verificar las observaciones
               antes de continuar.
             </p>
           </div>
-          <span v-if="documentos.length > 0" 
+          <!-- <span v-if="documentos.length > 0" 
               class="absolute right-0 top-0 mt-6 mr-6 text-gray-500 text-sm">
             <span :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
               {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
             </span>
-          </span>
+          </span> -->
 
           <div class="mt-4 space-y-4">
             <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
@@ -516,6 +515,9 @@ onMounted(() => {
                     </a>
                   </div>
                   <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
+                    {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
+                  </span>
                 </div>
               </div>
             </div>
