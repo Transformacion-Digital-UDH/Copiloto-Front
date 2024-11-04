@@ -145,12 +145,12 @@ onMounted(() => {
           ¡Estás a mitad de camino! Mantente enfocado y recuerda que cada paso te lleva más cerca de tu meta.
         </p>
         <!-- Fechas de Inicio y Fin -->
-        <div class="flex justify-around w-full space-x-8">
-          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-32 md:w-48 lg:w-64 transform transition duration-500 ease-in-out hover:scale-105">
+        <div class="flex flex-col md:flex-row justify-around items-center w-full space-y-4 md:space-y-0 md:space-x-8">
+          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
             <div class="text-lg font-semibold text-gray-800">Inicio</div>
             <div class="text-2xl text-azul font-bold">{{ startDate }}</div>
           </div>
-          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-32 md:w-48 lg:w-64 transform transition duration-500 ease-in-out hover:scale-105">
+          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
             <div class="text-lg font-semibold text-gray-800">Fin</div>
             <div class="text-2xl text-azul font-bold">{{ endDate }}</div>
           </div>
