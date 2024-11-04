@@ -52,10 +52,12 @@ const goToNextPage = () => {
 
 const isNextButtonDisabled = computed(() => {
   const documentoPaso3 = documentos.value.find(
-  (doc) => doc.nombre === "Oficio múltiple"
-);
+    (doc) => doc.nombre === "Oficio Múltiple"
+  );
+  // Habilita el botón solo si el estado es "Tramitado"
   return documentoPaso3?.estado !== "Tramitado";
 });
+
 
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
@@ -336,11 +338,14 @@ onMounted(() => {
           </button>
           <button
             @click="handleNextButtonClick"
+            :disabled="isNextButtonDisabled"
             :class="[ 
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
                 ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',]">Siguiente
+                : 'bg-green-500 hover:bg-green-600',
+            ]">
+            Siguiente
           </button>
         </div>
 

@@ -177,7 +177,7 @@ const acceptCorrecion = async () => {
     const response = await axios.put(`/api/review/${solicitudId}/status`, params);
 
     if (response.status === 200 || response.status === 201) {
-      alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
+      alertToast("El informe final ha sido aprobado", "Éxito", "success");
 
       // Actualiza directamente el estado en `tableData`
       const solicitud = tableData.value.find((sol) => sol.revision_id === solicitudId);

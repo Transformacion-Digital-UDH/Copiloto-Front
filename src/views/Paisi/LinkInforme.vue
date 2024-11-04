@@ -137,10 +137,10 @@ onMounted(() => {
 const createGoogleDoc = async (solicitudeId: number) => {
   createdoc.value = true;
   try {
-    const response = await axios.post("/api/create-document", {
-      solicitude_id: solicitudeId,
+    const response = await axios.post("/api/create-informe", {
+      id_solicitud: solicitudeId,
     });
-    console.log(response);
+    console.log('prueba',response.data);
 
     const link = response.data.link;
     if (link && selectedSolicitude.value) {

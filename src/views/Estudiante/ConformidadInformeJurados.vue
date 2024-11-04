@@ -20,7 +20,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/conformidad-informe-jurado");
+  router.push("/estudiante/aprobacion-informe");
 };
 
 const isNextButtonDisabled = computed(() => {
