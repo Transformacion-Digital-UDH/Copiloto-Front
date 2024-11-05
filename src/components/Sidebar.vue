@@ -107,7 +107,9 @@ export default defineComponent({
           { name: 'Conformidad por integridad VRI', label: 'Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' }
         );
         allSections[3].submenus.push(
-          { name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' }
+          //{ name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' },
+          { name: 'DesignacionJuradosSus', label: 'Designacion Jurados Sustentacion', path: '/estudiante/designacion-jurado-sustentacion' },
+          { name: 'CorrecionSustentacion', label: 'Correccion Sustentacion', path: '/estudiante/correccion-sustentacion' }
         );
         allSections[4].submenus.push(
           { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }

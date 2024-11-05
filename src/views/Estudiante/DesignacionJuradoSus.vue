@@ -7,7 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Jurados para el Informe Final";
+const text = "Designación de Jurados para Sustentación";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -47,12 +47,12 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/conformidad-informe-jurado");
+  router.push("/estudiante/correccion-sustentacion");
 };
 
 const isNextButtonDisabled = computed(() => {
   const documentoResolucion = documentos.value.find(
-    (doc) => doc.nombre === "Resolución de Designación de Jurados"
+    (doc) => doc.nombre === "Resolución de Designación de Jurados para Sustentación"
   );
   return documentoResolucion?.estado.toLowerCase() !== "tramitado";
 });
@@ -76,7 +76,7 @@ const of_id = ref<string>("");
 
 const documentos = ref([
   { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente' },
-  { nombre: 'Resolución de Designación de Jurados', estado: 'Pendiente' }
+  { nombre: 'Resolución de Designación de Jurados para Sustentación', estado: 'Pendiente' }
 ]);
 
 interface Jurado {
@@ -155,7 +155,7 @@ const mostrarJuradosInforme = async () => {
 
     if (response.data.resolucion) {
       resolucion_id.value = response.data.resolucion.of_id;  // ID de la resolución
-      documentos.value[1].estado = response.data.resolucion.of_estado || 'Pendiente'; // Estado de la Resolución de designación de jurados
+      documentos.value[1].estado = response.data.resolucion.of_estado || 'Pendiente'; // Estado de la Resolución de Designación de Jurados para Sustentación
     }
 
   } catch (error) {
