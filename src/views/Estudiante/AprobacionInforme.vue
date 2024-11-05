@@ -75,14 +75,15 @@ const isAprobacionDisabled = computed(() => {
 
 const solicitarAprobacionInforme = async () => {
   isLoading.value = true;
+  const student_id = authStore.id;
   try {
-    const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${authStore.id}`);
+    const response = await axios.get(`/api/oficio/solicitud-aprobar/informe/${student_id}`);
     console.log("Mostrando lo recibido: ", response);
 
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
-      //api para obtener los documentos
+      await obtenerDatosEstudiante();
     }
 
   } catch (error: any) {

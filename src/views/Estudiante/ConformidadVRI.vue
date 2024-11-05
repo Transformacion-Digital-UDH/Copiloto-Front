@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from "@/stores/auth";
+import axios from 'axios';
 
 // Estado de los trámites
 const tramites = ref([
@@ -64,6 +66,38 @@ function estadoClase(estado: string) {
     default: return '';
   }
 }
+
+/*************************************** INTEGRACION CON EL BACKEND ************************************************ */
+const authStore = useAuthStore();
+const load = ref(false);
+const certificado = ref<Certificado | null>(null);
+
+interface Certificado {
+  doc_name: string;
+  doc_estado: string;
+  doc_ver?: string;
+}
+
+const obtenerCertificadoEstudiante = async () => {
+  load.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(`api/estudiante/get-certificado-buenas-practicas/${student_id}`);
+    console.log("Mostrando lo recibido: ", response);
+    
+    certificado.value = response.data;
+
+  } catch (error) {
+    console.log("Error al obtener certificado", error);
+  } finally {
+    load.value = false;
+  }
+}
+
+onMounted(() => {
+  obtenerCertificadoEstudiante();
+});
+
 </script>
 
 <template>
