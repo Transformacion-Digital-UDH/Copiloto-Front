@@ -352,7 +352,7 @@ onMounted(() => {
               @mouseleave="mostrarModalRevision = false"
             />
           </div>
-          <div v-show="mostrarModalRevision" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-show="mostrarModalRevision" class="absolute left-28 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.</p>
           </div>
           <div class="flex items-center justify-between">
@@ -480,7 +480,7 @@ onMounted(() => {
                   @mouseleave="mostrarModalDocumentos = false" />
             </div>
           <!-- Modal informativo -->
-          <div v-if="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-if="mostrarModalDocumentos" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">
               Asegúrate de revisar el documento para verificar las observaciones
               antes de continuar.

@@ -259,7 +259,7 @@ onMounted(() => {
   </template>
   <template v-else>
   <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-    <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+    <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
     <div class="mt-6 space-y-10">
       <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
         <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados designados a tu informe final y el título. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
