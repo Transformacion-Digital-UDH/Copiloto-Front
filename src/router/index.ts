@@ -36,7 +36,7 @@ import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import DesignacionJuradoSus from '@/views/Estudiante/DesignacionJuradoSus.vue'
 import AptoSustentacion from '@/views/Paisi/AptoSustentacion.vue'
 import CorrecionJuradosSus from '@/views/Estudiante/CorrecionJuradosSus.vue'
-import AptoParaSustentar from '@/views/facultad/AptoParaSustentar.vue'
+import AptoParaSustentarR from '@/views/facultad/AptoParaSustentarR.vue'
 import DesignarFechaHora from '@/views/Paisi/DesignarFechaHora.vue'
 import ResolucionFechaHora from '@/views/facultad/ResolucionFechaHora.vue'
 import { useAuthStore } from '@/stores/auth'
@@ -134,7 +134,7 @@ const router = createRouter({
         { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { roles: ['facultad'], title: 'Resolución asesor' } },
         { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: { roles: ['facultad'], title: 'Designar jurados' } },
         { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { roles: ['facultad'], title: 'Resolucion informe' } },
-        { path: 'resolucion-apto', name: 'ResolucionApto', component: AptoParaSustentar, meta: { roles: ['facultad'], title: 'Resolucion apto para sustentar' } },
+        { path: 'resolucion-apto', name: 'ResolucionApto', component: AptoParaSustentarR, meta: { roles: ['facultad'], title: 'Resolucion apto para sustentar' } },
         { path: 'resolucion-fecha-hora', name: 'ResolucionFechaHora', component: ResolucionFechaHora, meta: { roles: ['facultad'], title: 'Resolucion fecha y hora para sustentar' } },
 
       ]
