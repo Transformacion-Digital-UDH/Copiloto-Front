@@ -29,6 +29,7 @@ const typeWriter = () => {
     setTimeout(typeWriter, 80);
   }
 };
+
 onMounted(() => {
   typeWriter();
 });
@@ -229,7 +230,7 @@ onMounted(() => {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-5xl font-semibold text-center text-azul">
+        <h3 class="text-4xl font-semibold text-center text-azul">
           {{ textoTipiado2 }}
         </h3>
         <div class="mt-8">

@@ -207,7 +207,7 @@ const rejectResolution = async () => {
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
         <!-- Texto tipiado -->
-        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
+        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
         <!-- Tabla de datos -->
         <div>
