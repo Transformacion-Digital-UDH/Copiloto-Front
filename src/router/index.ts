@@ -36,6 +36,7 @@ import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import DesignacionJuradoSus from '@/views/Estudiante/DesignacionJuradoSus.vue'
 import CorrecionJuradosSus from '@/views/Estudiante/CorrecionJuradosSus.vue'
 import { useAuthStore } from '@/stores/auth'
+import AptoParaSustentar from '@/views/Estudiante/AptoParaSustentar.vue'
 
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
@@ -74,6 +75,7 @@ const router = createRouter({
         { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: {  roles: ['estudiante'], title: 'Aprobacion de Informe por los Jurados' } },
         { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: {  roles: ['estudiante'], title: 'Conformidad por Integridad VRI' } },
         { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
+        { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
         { path: 'designacion-jurado-sustentacion', name: 'DesignacionJuradosSus', component: DesignacionJuradoSus, meta: { roles:['estudiante'], title: 'Designación Jurados Sustentación' } },
         { path: 'correccion-sustentacion', name: 'Correccion Sustentacion', component: CorrecionJuradosSus, meta: {  roles:['estudiante'], title: 'Correcciones de Sustentación' } },
       ]
