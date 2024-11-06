@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import ModalToolTip from '@/components/modalToolTip.vue';
 import { alertToast } from '@/functions';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
@@ -305,13 +306,7 @@ onMounted(() => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
           <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalObservaciones = true"
-              @mouseleave="mostrarModalObservaciones = false"/>
-        </div>
-
-        <div v-show="mostrarModalObservaciones" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.</p>
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
         </div>
 
         <p class="text-gray-500 mt-1 text-base">Si tu jurado ha dejado observaciones, el estado cambiará a 
@@ -453,12 +448,7 @@ onMounted(() => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del informe final por los jurados</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-            @mouseover="mostrarModalDocumentos = true"
-            @mouseleave="mostrarModalDocumentos = false"/>
-        </div>
-        <div v-if="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.</p>
+          <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
         </div>
 
         <!-- INFORME DE CONFORMIDAD POR EL PRESIDENTE -->

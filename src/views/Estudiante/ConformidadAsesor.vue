@@ -6,6 +6,7 @@ import { computed } from "vue";
 import { alertToast } from "@/functions";
 import router from "@/router";
 import Swal from "sweetalert2";
+import ModalToolTip from "@/components/modalToolTip.vue";
 
 interface Documento {
   nombre: string;
@@ -347,19 +348,8 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
-            <div class="relative group">
-              <!-- Ícono de información -->
-              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" />
-
-              <!-- Tooltip -->
-              <div
-                class="absolute -left-60 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <p class="text-sm text-gray-600">
-                  Asegúrate de haber subido tu proyecto de tesis en el documento de google
-                  para que el asesor pueda revisar y realizar las correcciones.
-                </p>
-              </div>
-            </div>
+            <ModalToolTip
+              :infoModal="[{ info: 'Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
           </div>
 
           <div class="flex items-center justify-between">
@@ -385,20 +375,8 @@ onMounted(() => {
             <h4 class="text-2xl font-medium text-black">
               2. Revisión de observaciones
             </h4>
-
-            <div class="relative group">
-              <!-- Ícono de información -->
-              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" />
-
-              <!-- Tooltip -->
-              <div
-                class="absolute -left-60 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <p class="text-sm text-gray-600">
-                  En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor,
-                  hasta que esté todo conforme.
-                </p>
-              </div>
-            </div>
+            <ModalToolTip
+              :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor, hasta que esté todo conforme.' },]" />
           </div>
 
           <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión
@@ -476,19 +454,10 @@ onMounted(() => {
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de tesis
               por el asesor</h2>
-            <div class="relative group">
-              <!-- Ícono de información -->
-              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" />
 
-              <!-- Tooltip -->
-              <div
-                class="absolute -left-60 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                <p class="text-sm text-gray-600">
-                  Asegúrate de revisar el documento para verificar las observaciones
-                  antes de continuar.
-                </p>
-              </div>
-            </div>
+            <!--toolTip-->
+            <ModalToolTip
+              :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>
           <!-- <span v-if="documentos.length > 0" 
               class="absolute right-0 top-0 mt-6 mr-6 text-gray-500 text-sm">

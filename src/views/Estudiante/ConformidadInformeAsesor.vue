@@ -6,6 +6,7 @@ import { alertToast } from '@/functions';
 import { watch } from 'vue';
 import Swal from 'sweetalert2';
 import router from '@/router';
+import ModalToolTip from '@/components/modalToolTip.vue';
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -247,18 +248,11 @@ const actualizarEstadoRevision = async (review_id: string) => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
-            <img
-              src="/icon/info2.svg"
-              alt="Info"
-              class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalRevision = true"
-              @mouseleave="mostrarModalRevision = false"
-            />
+            <ModalToolTip
+            :infoModal="[{ info: 'Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
             <!-- <span :class="['estado-estilo', `estado-${solicitudEstado.replace(/\s+/g, '-').toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span> -->
           </div>
-          <div v-show="mostrarModalRevision" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.</p>
-          </div>
+          
           <div class="flex items-center justify-between">
             <p class="text-gray-500 text-base mt-2">
               Para comenzar con el proceso de observaciones en el informe final de proyecto de tesis, haz clic en <strong class="text-[#39B49E] font-medium">"Solicitar revisión"</strong>
@@ -290,22 +284,8 @@ const actualizarEstadoRevision = async (review_id: string) => {
               2. Revisión de observaciones
             </h4>
 
-            <div class="relative">
-              <img
-                src="/icon/info2.svg"
-                alt="Info"
-                class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalObservaciones = true"
-                @mouseleave="mostrarModalObservaciones = false"
-              />
-              <div
-                v-show="mostrarModalObservaciones"
-                class="absolute -left-60 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-                <p class="text-sm text-gray-600">
-                  En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.
-                </p>
-              </div>
-            </div>
+            <ModalToolTip
+            :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.' },]" />
             
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
@@ -373,15 +353,9 @@ const actualizarEstadoRevision = async (review_id: string) => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">4. Documento para verificar la conformidad del informe final por el asesor</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-                @mouseover="mostrarModalDocumentos = true"
-                @mouseleave="mostrarModalDocumentos = false" />
+            <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del informe final por el asesor</h2>
+            <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
-        </div>
-
-        <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">Asegúrate de revisar el documento para verificar las observaciones antes de continuar.</p>
         </div>
 
         <div class="mt-4 space-y-4">
