@@ -117,7 +117,7 @@ onMounted(() => {
 
 <template>
   <div class="flex-1 p-4 sm:p-10 bg-gray-100 font-roboto">
-    <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{textoTipiado2}}</h3>
+    <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado2 }}</h3>
 
     <!-- Información del Título de Tesis -->
     <div class="bg-baseClarito text-white rounded-lg shadow-lg p-4 sm:p-6  mb-4">
