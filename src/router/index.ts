@@ -41,6 +41,9 @@ import DesignarFechaHora from '@/views/Paisi/DesignarFechaHora.vue'
 import ResolucionFechaHora from '@/views/facultad/ResolucionFechaHora.vue'
 import { useAuthStore } from '@/stores/auth'
 import AptoParaSustentar from '@/views/Estudiante/AptoParaSustentar.vue'
+import AppProfile from '@/components/auth/AppProfile.vue'
+import Dashboard from '@/views/Admin/Dashboard.vue'
+import Lista from '@/views/Admin/Usuarios/Lista.vue'
 
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
@@ -112,6 +115,7 @@ const router = createRouter({
     },
     {
       path: '/paisi',
+      name: 'paisi',
       component: AdminLayout,
       meta: { roles: ['paisi'], title: 'Paisi' },
       children: [
@@ -127,6 +131,7 @@ const router = createRouter({
     },
     {
       path: '/facultad',
+      name: 'facultad',
       component: AdminLayout,
       meta: { roles: ['facultad'], title: 'Facultad' },
       children: [
@@ -150,6 +155,15 @@ const router = createRouter({
       ]
     },
     {
+      path: '/admin',
+      component: AdminLayout,
+      meta: { roles: ['admin'], title: 'Administrador' },
+      children: [
+        { path: 'usuarios', name: 'Users', component: Lista, meta: { roles: ['admin'], title: 'Usuarios' } },
+        { path: 'dashboard', name: 'dashboard', component: Dashboard, meta: { roles: ['admin'], title: 'Usuarios' } },
+      ]
+    },
+    {
       path: '/register',
       name: 'register',
       component: AppRegister,
@@ -158,34 +172,46 @@ const router = createRouter({
         title: 'Registrarme'
       },
     },
+    {
+      path: '/perfil',
+      name: 'profile',
+      component: AppProfile,
+      meta: {
+        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri'],
+        title: 'Mi perfil'
+      },
+    },
   ]
 })
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
-  const token = authStore.token;
-  const role = authStore.role;
-  const is_jury = authStore.is_jury;
+  const { token, fullName, role, is_jury } = authStore; 
   const title = to.meta?.title as String;
   document.title = title as string;
 
+  const publicRoutes = ['login', 'register'];
+
   // Si no hay token y la ruta requiere autenticación, redirigir al login
-  if (!token && to.name !== 'login' && to.name !== 'register') {
+  if (!token && !publicRoutes.includes(to.name as string)) {
     return next({ name: 'login' });
   }
 
-  // Si hay token, verificar el rol del usuario
-  if (token && !to.meta.roles.includes(role)) {
-    // Si el usuario no tiene permiso para acceder a la ruta, redirigir a la ruta de su rol
+  if (token && !fullName && to.name !== 'profile' && !publicRoutes.includes(to.name as string)) {
+    return next({ name: 'profile' });
+  }
+
+  // Si el usuario está autenticado e intenta acceder a login/register
+  if (token && publicRoutes.includes(to.name as string) && role !== null) {
+    return next({ name: roleRoutes[role] });
+  }
+
+   // Verificar permisos de rol
+   if (token && !to.meta.roles.includes(role)) {
     if (!is_jury) {
       return next({ name: roleRoutes[role!] });
     }
   }
-
-  if ((to.name === 'login' || to.name === 'register') && token && role !== null) {
-    return next({ name: roleRoutes[role] });
-  }
-
 
   // Si todo está bien, continuar con la navegación
   next();
