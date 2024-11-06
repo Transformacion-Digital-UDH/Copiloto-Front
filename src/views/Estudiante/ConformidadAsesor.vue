@@ -480,7 +480,7 @@ onMounted(() => {
                   @mouseleave="mostrarModalDocumentos = false" />
             </div>
           <!-- Modal informativo -->
-          <div v-if="mostrarModalDocumentos" class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+          <div v-if="mostrarModalDocumentos" class="absolute left-[12rem] sm:left-[18rem] md:left-[28rem] lg:left-[32.5rem] xl:left-[39.5rem] p-4 mt-0 bg-white border border-gray-300 rounded-lg shadow-lg w-64 xs:w-[16rem] z-10">
             <p class="text-sm text-gray-600">
               Asegúrate de revisar el documento para verificar las observaciones
               antes de continuar.
