@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from "@/stores/auth";
+import axios from 'axios';
 
 // Estado de los trámites
 const tramites = ref([
@@ -64,11 +66,58 @@ function estadoClase(estado: string) {
     default: return '';
   }
 }
+
+/*************************************** INTEGRACION CON EL BACKEND ************************************************ */
+const authStore = useAuthStore();
+const load = ref(false);
+const certificado = ref<Certificado | null>(null);
+
+interface Certificado {
+  doc_name: string;
+  doc_estado: string;
+  doc_ver?: string;
+}
+
+const obtenerCertificadoEstudiante = async () => {
+  load.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(`api/estudiante/get-certificado-buenas-practicas/${student_id}`);
+    console.log("Mostrando lo recibido: ", response);
+    
+    certificado.value = response.data;
+
+  } catch (error) {
+    console.log("Error al obtener certificado", error);
+  } finally {
+    load.value = false;
+  }
+}
+
+onMounted(() => {
+  obtenerCertificadoEstudiante();
+});
+
+// ***** Texto que se escribe automáticamente ********
+const text = "Conformidad por Integridad VRI";
+const textoTipiado2 = ref("");
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado2.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+onMounted(() => {
+  typeWriter();
+});
+
 </script>
 
 <template>
   <div class="flex-1 p-4 sm:p-10 bg-gray-100 font-roboto">
-    <h3 class="text-2xl sm:text-4xl font-bold text-center text-azul mb-4">Conformidad por Integridad VRI</h3>
+    <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado2 }}</h3>
 
     <!-- Información del Título de Tesis -->
     <div class="bg-baseClarito text-white rounded-lg shadow-lg p-4 sm:p-6  mb-4">

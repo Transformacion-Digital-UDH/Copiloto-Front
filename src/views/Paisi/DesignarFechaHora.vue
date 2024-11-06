@@ -23,7 +23,7 @@ interface Solicitude {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Aprobacion de Proyecto de Tesis";
+const text = "Designar fecha y hora para sustentación";
 const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {
@@ -54,7 +54,7 @@ let oficio_id = ref<number | null>(null);   // Puede ser null
 //VARIABLES DE ENTORNO
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const VIEW_APAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME ;
 
 
 
@@ -128,8 +128,8 @@ let solicitudSeleccionada = ref<string | null>(null);
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
-    const response = await axios.get('/api/oficio/get-aprobar-tesis');
-    console.log('Datos recibidos de la API:', response.data);
+    const response = await axios.get('/api/oficio/get-aprobar/informe');
+    console.log('Datos recibidos de la AP:', response.data);
 
     // Asigna los datos directamente desde response.data, ya que no está en response.data.data
     if (response.data && Array.isArray(response.data)) {
@@ -137,7 +137,7 @@ const fetchSolicitudes = async () => {
       console.log('Datos asignados a tableData:', tableData.value);
     } else {
       console.log('Estructura inesperada en la respuesta de la API');
-      tableData.value = [];  // Si no hay datos, asignamos un array vacío
+      //tableData.value = [];  // Si no hay datos, asignamos un array vacío
     }
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
@@ -276,7 +276,7 @@ function closeDocumentModal() {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
+        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
         <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
@@ -403,7 +403,7 @@ function closeDocumentModal() {
                         <!-- Enlace para Visualizar Oficio (deshabilitado por ahora) -->
                         <button>
                           <a
-                            :href="`${VIEW_APAISI}/${solicitude.oficio_id}`" 
+                            :href="`${VIEW_AINFORME }/${solicitude.oficio_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"

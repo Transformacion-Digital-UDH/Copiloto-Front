@@ -247,7 +247,7 @@ onMounted(() => {
   <!-- Contenido principal -->
   <div v-else class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
+      <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
       <div class="mt-8">
         <!-- Filtros de tabla -->
@@ -311,7 +311,7 @@ onMounted(() => {
                     <p class="text-gray-900 text-wrap w-58">{{ u.nombre }}</p>
                   </td>
                   <td class="px-2 py-3 text-base">
-                    <p class="text-gray-900 text-wrap w-64">{{ u.titulo }}</p>
+                    <a :href="u.link" target="_blank" class="text-gray-900 text-wrap w-64 hover:text-blue-700">{{ u.titulo }}</a>
                   </td>
                   <td class="px-2 py-3 text-center">
                     <span class="px-3 py-1 text-white bg-base rounded-full">
@@ -366,9 +366,6 @@ onMounted(() => {
 
                     </div>
                   </td>
-
-
-
                    
                   <td class="px-2 py-3 text-center align-middle">
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">

@@ -6,6 +6,7 @@ import { computed } from "vue";
 import { alertToast } from "@/functions";
 import router from "@/router";
 import Swal from "sweetalert2";
+import ModalToolTip from "@/components/modalToolTip.vue";
 
 const mostrarModalRevision = ref(false);
 const mostrarModalObservaciones = ref(false);
@@ -92,8 +93,9 @@ const isRevisionDisabled = (estado: string | undefined) => {
 
 const mostrarConformidadJurados = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`api/review/get-review-jury/${authStore.id}`);
+    const response = await axios.get(`api/review/get-review-jury/${student_id}`);
     const data = response.data;
 
     console.log('Mostrando lo recido: ', data);
@@ -128,7 +130,6 @@ const mostrarConformidadJurados = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de presidente:', documentos.value[0]);
       }
 
       if (jurado.rol === 'secretario') {
@@ -144,7 +145,6 @@ const mostrarConformidadJurados = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de secretario:', documentos.value[1]);
       }
 
       if (jurado.rol === 'vocal') {
@@ -160,7 +160,6 @@ const mostrarConformidadJurados = async () => {
           revision_id: jurado.revision_id,
           isLoading: false,
         });
-        console.log('Estado del documento de vocal:', documentos.value[2]);
       }
     });
   } catch (error) {
@@ -185,15 +184,15 @@ const solicitarRevision = async (review: Jurado) => {
 
     if (response.data.estado) {
       const nuevoEstado = response.data.estado.toLowerCase();
-      alertToast("Solicitud enviada correctamente", "Éxito", "success");
+      alertToast("Solicitud enviada, para su observación correspondiente", "Éxito", "success");
       
       review.estado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
+      await mostrarConformidadJurados();
     } else {
       alertToast("Error al procesar la solicitud", "Error", "error");
     }
   } catch (error) {
     console.error('Error al solicitar la revisión:', error);
-    alertToast("Revisión no encontrada.", "Error", "error");
   } finally {
     review.isLoading = false;
   }
@@ -266,7 +265,7 @@ onMounted(() => {
   </template>
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
           <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados designados a tu proyecto de tesis y el título. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
@@ -292,7 +291,7 @@ onMounted(() => {
           </div>
           <!-- Título de Tesis -->
           <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
+            <p class="max-full text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace del proyecto de Tesis -->
           <div v-if="link" class="text-center mt-6">
@@ -343,13 +342,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalObservaciones = true"
-                @mouseleave="mostrarModalObservaciones = false"/>
-          </div>
-
-          <div v-show="mostrarModalObservaciones" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.</p>
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
           <p class="text-gray-500 mt-1 text-base">Si tu jurado ha dejado observaciones, el estado cambiará a 
@@ -491,12 +484,8 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del proyecto de tesis por los jurados</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalDocumentos = true"
-              @mouseleave="mostrarModalDocumentos = false"/>
-          </div>
-          <div v-if="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.</p>
+            <ModalToolTip
+            :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL PRESIDENTE -->

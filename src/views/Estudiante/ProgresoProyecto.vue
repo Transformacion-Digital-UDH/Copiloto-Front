@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 // Definición de tipo para documentos
 interface Document {
@@ -20,6 +21,11 @@ const authStore = useAuthStore();
 
 // Array de documentos con URLs de "Ver" y "Descargar"
 const documents = ref<Document[]>([]);
+const router = useRouter();
+
+const goToConformidadInformeAsesor = () => {
+  router.push({ name: 'ConformidadInformeAsesor' });
+};
 
 // Función para abrir y cerrar el modal
 // const openDocumentModal = () => (showDocumentModal.value = true);
@@ -100,7 +106,7 @@ onMounted(() => {
 <template>
   <div class="min-h-screen bg-gray-50 p-8">
     <!-- Título principal -->
-    <h2 class="text-6xl md:text-6xl lg:text-6xl font-bold text-center text-azul mb-12">
+    <h2 class="text-4xl md:text-6xl lg:text-6xl font-bold text-center text-azul mb-12">
       Ejecución de tu Proyecto de Tesis
     </h2>
 
@@ -145,12 +151,12 @@ onMounted(() => {
           ¡Estás a mitad de camino! Mantente enfocado y recuerda que cada paso te lleva más cerca de tu meta.
         </p>
         <!-- Fechas de Inicio y Fin -->
-        <div class="flex justify-around w-full space-x-8">
-          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-32 md:w-48 lg:w-64 transform transition duration-500 ease-in-out hover:scale-105">
+        <div class="flex flex-col md:flex-row justify-around items-center w-full space-y-4 md:space-y-0 md:space-x-8">
+          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
             <div class="text-lg font-semibold text-gray-800">Inicio</div>
             <div class="text-2xl text-azul font-bold">{{ startDate }}</div>
           </div>
-          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-32 md:w-48 lg:w-64 transform transition duration-500 ease-in-out hover:scale-105">
+          <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
             <div class="text-lg font-semibold text-gray-800">Fin</div>
             <div class="text-2xl text-azul font-bold">{{ endDate }}</div>
           </div>
@@ -158,10 +164,14 @@ onMounted(() => {
 
         <!-- Botones de acción -->
         <div class="flex justify-center gap-6">
-          <button class="px-4 py-2  md:px-8 md:py-4 bg-baseClarito text-white rounded-lg hover:bg-base transition text-lg md:text-xl">
-            Ir a Informe Final
-          </button>
-        </div>
+    <button 
+      class="px-4 py-2 md:px-8 md:py-4 bg-base text-white rounded-lg hover:bg-baseClarito transition text-lg md:text-xl"
+      @click="goToConformidadInformeAsesor"
+    >
+      Ir a Informe Final
+    </button>
+  </div>
+
         <br>
       </div>
     </div>
@@ -179,7 +189,7 @@ onMounted(() => {
               <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="documents && documents.length > 0">
             <tr v-for="(doc, index) in documents" :key="index" class="border-b border-gray-200 text-left">
               <td class="px-3 py-4 text-base text-gray-600">
                 <p class="block text-wrap w-80 uppercase">{{ doc.nombre || "Sin documento"}}</p>
@@ -203,6 +213,14 @@ onMounted(() => {
                   class="w-full items-center text-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-200 md:w-auto justify-center">
                   <i class="fas fa-download mr-2"></i> Descargar
                 </a>
+              </td>
+            </tr>
+          </tbody>
+          <!-- Mostrar mensaje de no hay documentos si la lista está vacía -->
+          <tbody v-else>
+            <tr>
+              <td colspan="4" class="px-4 py-4 text-center text-gray-600">
+                <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>No hay documentos disponibles por el momento.
               </td>
             </tr>
           </tbody>

@@ -6,6 +6,7 @@ import { alertToast } from '@/functions';
 import { watch } from 'vue';
 import Swal from 'sweetalert2';
 import router from '@/router';
+import ModalToolTip from '@/components/modalToolTip.vue';
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -25,10 +26,7 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  const documentoPaso3 = documentos.value.find(
-  (doc) => doc.nombre === "Informe de conformidad de observaciones por el asesor"
-);
-  return documentoPaso3?.estado !== "aprobado";
+  return documentos.value[0].estado.toLowerCase() !== "aprobado";
 });
 
 const mostrarModalRevision = ref(false);
@@ -51,114 +49,107 @@ onMounted(() => {
 });
 // ******************************************************
 
-
-const isSolicitarDisabled = computed(() => {
-  const estado = solicitudEstado.value?.toLowerCase();
-  return ["pendiente", "aprobado", "observado"].includes(estado); // Estados que deshabilitan el botón
-});
-
 /****************************** INTEGRACION CON EL BACKEND *********************************** */
 const load = ref(false);
 const isLoading = ref(false);
-const adviserName = ref<string>('');
-const thesisTitle = ref<string>('');
-const reportLink = ref<string>('');
-const revisionInfo = ref(null);
 const authStore = useAuthStore();
-const solicitudEstado = ref('');
-const numeroRevision = ref<number | null>(null);
-const fechaRevision = ref<string>('');
 const rev_id = ref('');
+const solicitudEstado = ref('');
+const obtener = ref<Estudiante | null>(null);
 const documentos = ref([{ nombre: 'Informe de conformidad de observaciones por el asesor', estado: 'Pendiente' }]);
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
 
-watch(solicitudEstado, (newEstado) => {
-  documentos.value[0].estado = newEstado; // Sincroniza documentos[0].estado con solicitudEstado
+const isSolicitarDisabled = computed(() => {
+  const estadoSolicitud = solicitudEstado.value?.toLowerCase();
+  return ["pendiente", "aprobado", "observado"].includes(estadoSolicitud) // se deshabilita el botón dependiendo del estado
 });
 
-const isButtonDisabled = computed(() => solicitudEstado.value === 'pendiente' || solicitudEstado.value === 'aprobado');
+interface Revision {
+  rev_id: string;
+  rev_contador: number;
+  rev_estado: string;
+  rev_update: string;
+}
 
-// Función para actualizar el estado de la revisión al hacer clic en "Observaciones corregidas"
-const actualizarEstadoRevision = async (nuevoEstado: string) => {
-  isLoading.value = true;
-  try {
-    const response = await axios.put(`/api/review/${rev_id.value}/status`, {
-      rev_status: nuevoEstado,
-      rev_num_of: nuevoEstado === 'aprobado' ? 'some_value' : null,
-    });
+interface Estudiante {
+  asesor: string;
+  titulo: string;
+  'link-informe': string;
+  revision: Revision | null;
+}
 
-    const data = response.data;
-    solicitudEstado.value = data.estado;
-    alertToast(data.message, 'success');
-  } catch (error) {
-    alertToast('Error al actualizar el estado de la revisión', 'error');
-    console.error("Error en actualizarEstadoRevision:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const solicitarRevision = async () => {
-  isLoading.value = true;
-  try {
-    const response = await axios.get(`/api/review/create-revision/informe/${authStore.id}`);
-    const data = response.data;
-
-    if (data.estado === 'pendiente' && data.message === 'Su solicitud de revisión fue enviada a su asesor') {
-      alertToast('Su solicitud de revisión fue enviada con éxito a su asesor.', 'success');
-    }
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      const responseData = error.response.data;
-
-      if (responseData.estado === 'no iniciado') {
-        alertToast('Estimado alumno, por favor espere a que se cree el enlace de su informe o comuníquese con su escuela académica.', 'warning');
-      } else if (responseData.estado === 'pendiente' && responseData.message === 'Ya tiene una revisión pendiente de su asesor') {
-        alertToast('Estimado alumno, la revisión ya está en proceso.', 'info');
-      } else {
-        alertToast('Error inesperado.', 'error');
-      }
-    } else {
-      alertToast('Error al conectar con el servidor.', 'error');
-    }
-    console.error("Error al solicitar la revisión:", error);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const ObtenerDatosInforme = async () => {
+const obtenerDatosEstudianteInforme = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`/api/estudiante/info-conf-asesor/informe/${authStore.id}`);
+    const response = await axios.get(`/api/estudiante/info-conf-asesor/informe/${student_id}`);
     console.log("Mostrando lo recibido", response)
-    const data = response.data;
 
-    if (data) {
-      adviserName.value = data.asesor || 'Asesor no disponible';
-      thesisTitle.value = data.titulo || 'Título no disponible';
-      reportLink.value = data['link-informe'] || '';
-      revisionInfo.value = data.revision || null;
+    obtener.value = response.data;
+
+    if (obtener.value?.revision) {
+      rev_id.value = obtener.value.revision.rev_id;
+      solicitudEstado.value = obtener.value.revision.rev_estado;
+
+      documentos.value[0].estado = solicitudEstado.value.charAt(0).toUpperCase() + solicitudEstado.value.slice(1).toLowerCase();
     }
 
-    // Actualizar datos de la revisión si existen
-    if (data.revision) {
-        rev_id.value = data.revision.rev_id; // Asignar el ID de la revisión
-        solicitudEstado.value = data.revision.rev_estado || 'observado';
-        numeroRevision.value = data.revision.rev_contador;
-        fechaRevision.value = data.revision.rev_update;
-      }
   } catch (error) {
-    console.error("Error al obtener la información del asesor:", error);
+    console.error("Error al obtener información", error);
   } finally {
     load.value = false;
   }
 };
 
 onMounted(() => {
-  ObtenerDatosInforme();
+  obtenerDatosEstudianteInforme();
 });
+
+const solicitarRevision = async () => {
+  isLoading.value = true;
+  const student_id = authStore.id
+  try {
+    const response = await axios.get(`/api/review/create-revision/informe/${student_id}`);
+
+    if (response.data.estado) {
+      solicitudEstado.value = 'pendiente';
+      alertToast('Su solicitud de revisión fue enviada con éxito a su asesor.', 'success');
+      await obtenerDatosEstudianteInforme();
+    }
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      const mensaje = error.response.data.message;
+      alertToast(mensaje, "Error", "error");
+    } else {
+      alertToast("Error en la solicitud.", "Error", "error");
+    }
+  } finally {
+    isLoading.value = false; 
+  }
+};
+
+const actualizarEstadoRevision = async (review_id: string) => {
+  try {
+    // Construimos el payload para cambiar el estado a "pendiente"
+    const payload = { rev_status: "pendiente" };
+    const response = await axios.put(`/api/review/${review_id}/status`, payload);
+
+    if (response.data.estado) {
+      const nuevoEstado = response.data.estado.toLowerCase();
+      alertToast("Observaciones enviadas correctamente", "Éxito", "success");
+
+      // Actualizamos el estado en el objeto obtener
+      if (obtener.value && obtener.value.revision) {
+        obtener.value.revision.rev_estado = nuevoEstado.charAt(0).toUpperCase() + nuevoEstado.slice(1);
+      }
+      await obtenerDatosEstudianteInforme();
+    }
+  } catch (error) {
+    console.error("Error al actualizar el estado de la revisión", error);
+    alertToast("Hubo un error al actualizar la revisión.", "Error", "error");
+  }
+};
 
 </script>
 <template>
@@ -209,7 +200,7 @@ onMounted(() => {
   </template>
   <template v-else>
   <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-    <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+    <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
 
     <div class="mt-6 space-y-10">
       <!-- Sección 1: Solicitar link para cargar el Informe Final -->
@@ -232,19 +223,18 @@ onMounted(() => {
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-2xl text-azul">Asesor</p>
               <p class="text-gray-600 text-center uppercase">
-                {{ adviserName }}
+                {{ obtener?.asesor || 'Asesor no asignado' }}
               </p>
             </div>
           </div>
           <!-- Título de Tesis -->
           <div class="bg-gray-100 rounded-lg p-6 shadow-lg">
-            <p class="text-azul text-center font-bold text-2xl">Título de tesis</p>
-            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ thesisTitle }}</p>
+            <p class="max-full text-xm text-gray-600 uppercase text-center">{{ obtener?.titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace del Informe final -->
-          <div v-if="reportLink" class="text-center mt-6">
+          <div v-if="obtener?.['link-informe']" class="text-center mt-6">
             <a
-              :href="reportLink"
+              :href="obtener?.['link-informe']"
               target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <i class="fas fa-external-link-alt"></i> Abrir proyecto
@@ -258,35 +248,32 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
-            <img
-              src="/icon/info2.svg"
-              alt="Info"
-              class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalRevision = true"
-              @mouseleave="mostrarModalRevision = false"
-            />
+            <ModalToolTip
+            :infoModal="[{ info: 'Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
             <!-- <span :class="['estado-estilo', `estado-${solicitudEstado.replace(/\s+/g, '-').toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span> -->
           </div>
-          <div v-show="mostrarModalRevision" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.</p>
-          </div>
+          
           <div class="flex items-center justify-between">
             <p class="text-gray-500 text-base mt-2">
               Para comenzar con el proceso de observaciones en el informe final de proyecto de tesis, haz clic en <strong class="text-[#39B49E] font-medium">"Solicitar revisión"</strong>
             </p>
-            
           </div>
-          <div class="flex justify-center mt-3">
-            <button
-              :disabled="isSolicitarDisabled || isLoading"
-              :class="[ 
-                isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul',
-                isLoading ? 'cursor-not-allowed' : '' 
-              ]"
-              class="px-4 py-2 w-56 text-white rounded-lg text-lg"
-              @click="solicitarRevision">
-              {{ isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
-            </button>
+          <!-- <div class="flex justify-end">
+            <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase()}`]">{{ solicitudEstado.charAt(0).toUpperCase() + solicitudEstado.slice(1).toLowerCase() }}</span>
+          </div> -->
+          <div class="mt-4">
+            <div class="flex justify-center mt-2">
+              <button
+                :disabled="isSolicitarDisabled || isLoading"
+                :class="[ 
+                  isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul',
+                  isLoading ? 'cursor-not-allowed' : '' 
+                ]"
+                class="px-4 py-2 w-56 text-white rounded-lg text-lg"
+                @click="solicitarRevision">
+                {{ isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -297,22 +284,8 @@ onMounted(() => {
               2. Revisión de observaciones
             </h4>
 
-            <div class="relative">
-              <img
-                src="/icon/info2.svg"
-                alt="Info"
-                class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalObservaciones = true"
-                @mouseleave="mostrarModalObservaciones = false"
-              />
-              <div
-                v-show="mostrarModalObservaciones"
-                class="absolute -left-60 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-                <p class="text-sm text-gray-600">
-                  En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.
-                </p>
-              </div>
-            </div>
+            <ModalToolTip
+            :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.' },]" />
             
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
@@ -332,30 +305,35 @@ onMounted(() => {
                   <th class="px-4 py-2 tracking-wider">ESTADO</th>
                 </tr>
               </thead>
-              <tbody v-if="revisionInfo">
+              <tbody v-if="obtener?.revision">
                 <tr
+                  v-for="(obs, index) in [obtener.revision]"
+                  :key="obs.rev_id"
                   class="border-b border-gray-200 text-center hover:bg-gray-200 transition-colors duration-300"
                 >
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap w-28">{{ numeroRevision || 'Desconocido' }}</p>
+                    <p class="text-wrap w-28">{{ obs.rev_contador  || 'Sin revisión' }}</p>
                   </td>
                   <td class="px-4 py-2 text-base text-gray-600">
-                    <p class="text-wrap text-left w-24">{{ fechaRevision || 'Desconocido' }}</p>
+                    <p class="text-wrap text-left w-24">{{ obs.rev_update   || 'Sin fecha' }}</p>
                   </td>
                   <td class="px-4 py-2 text-base">
                     <button
-                      :disabled="isButtonDisabled || isLoading"
-                      :class="[ 
-                        'w-56 px-3 py-1 text-base text-white rounded-xl focus:outline-none',
-                        isButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-base hover:bg-[#48bb78]'
+                      :disabled="obs.rev_estado === 'pendiente' || obs.rev_estado === 'aprobado'"
+                      :class="[
+                        'w-56 px-3 py-1 text-base text-white bg-base rounded-xl focus:outline-none',
+                        obs.rev_estado === 'pendiente' || obs.rev_estado === 'aprobado'
+                          ? 'bg-gray-300 cursor-not-allowed'
+                          : 'bg-base hover:bg-[#48bb78]',
                       ]"
-                      @click="actualizarEstadoRevision('pendiente')">
+                      @click="actualizarEstadoRevision(obs.rev_id)"
+                    >
                       Observaciones corregidas
                     </button>
                   </td>
                   <td class="px-4 py-2">
-                    <span :class="`estado-estilo estado-${solicitudEstado.toLowerCase().replace(' ', '-')}`">
-                      {{ solicitudEstado }}
+                    <span :class="`estado-estilo estado-${ obs.rev_estado.toLowerCase().replace(' ', '-')}`">
+                      {{ obs.rev_estado.charAt(0).toUpperCase() + obs.rev_estado.slice(1).toLowerCase() }}
                     </span>
                   </td>
                 </tr>
@@ -372,19 +350,12 @@ onMounted(() => {
         </div>
 
       <!-- Sección 4: Informe de conformidad de observaciones -->
-      <!-- Card 3: Oficio múltiple con los jurados seleccionados -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center justify-between">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">4. Documento para verificar la conformidad del informe final por el asesor</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-                @mouseover="mostrarModalDocumentos = true"
-                @mouseleave="mostrarModalDocumentos = false" />
+            <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del informe final por el asesor</h2>
+            <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
-        </div>
-
-        <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-          <p class="text-sm text-gray-600">Asegúrate de revisar el documento para verificar las observaciones antes de continuar.</p>
         </div>
 
         <div class="mt-4 space-y-4">
@@ -393,7 +364,7 @@ onMounted(() => {
               <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
               <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                 <!-- Mostrar botones de ver y descargar solo si el estado es aprobado -->
-                <div v-if="solicitudEstado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                <div v-if="documentos[0].estado.toLowerCase() === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                   <!-- Botón de Ver -->
                   <a 
                     :href="`${VIEW_CPA}/${rev_id}`" 
@@ -411,7 +382,9 @@ onMounted(() => {
                 </div>
                 <!-- Mensaje de documento no disponible si el estado no es aprobado -->
                 <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
-                <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">{{ documentos[0].estado }}</span>
+                <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">
+                  {{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() }}
+                </span>
               </div>
             </div>
           </div>

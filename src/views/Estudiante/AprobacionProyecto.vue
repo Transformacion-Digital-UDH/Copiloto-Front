@@ -6,6 +6,8 @@ import axios from 'axios';
 import { alertToast } from "@/functions";
 import Swal from 'sweetalert2';
 import router from '@/router';
+import { Modal } from 'flowbite';
+import ModalToolTip from '@/components/modalToolTip.vue';
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Aprobación del Proyecto de Tesis";
@@ -69,34 +71,27 @@ const documentos = ref([
 
 
 const isAprobacionDisabled = computed(() => {
-  return documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+  return isLoading.value || documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
 });
 
 
 const solicitarAprobacion = async () => {
   isLoading.value = true;
+  const student_id = authStore.id;
   try {
-    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${authStore.id}`);
+    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
     console.log("Mostrando lo recibido: ",response);
 
     if (response.data.estado){
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada correctamente, espere las indicaciones", "Éxito", "success");
+      await obtenerDatosEstudiante();
     }
 
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.mensaje) {
       const mensaje = error.response.data.mensaje;
-
-      if (mensaje.includes("El estudiante no existe")) {
-        alertToast("El estudiante no existe en el sistema. Verifique los datos.", "Error", "error");
-      } else if (mensaje.includes("El estudiante aún no tiene la conformidad de sus jurados")) {
-        alertToast("Estimado estudiante, no tiene conformidad de jurados", "", "warning");
-      } else if (mensaje.includes("El estudiante ya tiene una solicitud de aprobación de tesis pendiente")) {
-        alertToast("Estimado estudiante, ya solicito su aprobación de tesis", "", "info");
-      } else {
-        alertToast("Error desconocido en la solicitud", "Error", "error");
-      }
+      alertToast(mensaje, "Error", "error");
     } else {
       alertToast("Error en la solicitud.", "Error", "error");
     }
@@ -107,8 +102,9 @@ const solicitarAprobacion = async () => {
 
 const obtenerDatosEstudiante = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${authStore.id}`);
+    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${student_id}`);
     console.log("Datos recibidos: ", response.data);
 
     // Actualizar el estado y observación de oficio
@@ -179,18 +175,13 @@ onMounted(() =>{
   
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
         <div class="mt-6 space-y-10">
           <!-- Card 1: Solicitud-->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="relative flex items-center">
               <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
-                <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                  @mouseover="mostrarModalAprobar = true"
-                  @mouseleave="mostrarModalAprobar = false" />
-            </div>
-            <div v-show="mostrarModalAprobar" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-              <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
+                <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
             </div>
 
             <div class="flex items-center justify-between">

@@ -88,15 +88,15 @@ interface Solicitude {
 }
 const tableData = ref<Solicitude[]>([]); 
 const motivoObservacion = ref<string>("");
-const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME;
-const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RINFORME
+const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD
 let resolucion_id = ref<number | null>(null);
 
 
 const obtenerSolicitudes = async () => {
   try {
-    const response = await axios.get('/api/resolucion/get-aprobar/informe');
-    console.log('Datos recibidos de la APP:', response.data);
+    const response = await axios.get('/api/resolucion/get/declarar-apto/informe');
+    console.log('Datos recibidos de la API:', response.data);
 
     if (response.data && Array.isArray(response.data)) {
       tableData.value = response.data as Solicitude[];  // Asignamos los datos si existe un array
@@ -158,21 +158,9 @@ const observarResolucion = async () => {
     alertToast('Error al observar la solicitud', 'Error', 'error');
   }
 };
-// ***** Texto que escribe automáticamente ********
-const text = "Resolución de Informe Final";
-const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
 
 onMounted(() => {
-  obtenerSolicitudes(),
-  typeWriter();
+  obtenerSolicitudes()
 })
 
 </script>
@@ -181,7 +169,7 @@ onMounted(() => {
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        {{ textoTipiado }}
+        Resolución apto para sustentación
       </h3>
 
       <div class="mt-8">
@@ -236,12 +224,10 @@ onMounted(() => {
                   <tr
                     class="text-center text-black border-b-2 bg-gray-300"
                   >
-                    <th class="px-4 py-2 tracking-wider text-left">ESTUDIANTE</th>
-                    <th class="px-4 py-2 tracking-wider text-left">TÍTULO</th>
-                    <th class="px-4 py-2 tracking-wider whitespace-nowrap">OFICIO PAISI</th>
-                    <th class="px-4 py-2 tracking-wider whitespace-nowrap">VALIDAR TRÁMITE</th>
-                    <!-- <th class="py-2 px-3 tracking-wider">ACCIÓN</th> -->
-                    <th class="px-4 py-2 tracking-wider">ESTADO</th>
+                    <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
+                    <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
+                    <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
+                    <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -250,33 +236,25 @@ onMounted(() => {
                     :key="solicitude.resolucion_id"
                     class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                   >
-                    <td class="px-4 py-2 text-base">
+                    <td class="px-3 border text-base">
                       <p class="text-gray-900 text-wrap w-40">
                         {{ solicitude.nombre }}
                       </p>
                     </td>
-                    <td class="px-3 py-2 text-base w-80 min-w-80 max-w-80 p-0">
-                      <p class="text-gray-900 break-words p-1">
+                    <td class="px-3 py-2 border text-base">
+                      <p class="text-gray-900 text-wrap max-w-2xl">
                         {{ solicitude.titulo }}
                       </p>
                     </td>
                     <td class="text-center px-4">
-                        <a v-if="solicitude.oficio_id" :href="`${VIEW_AINFORME}/${ solicitude.oficio_id }`" target="_blank">
-                          <button>
-                            <svg fill="#39B49E" class="w-6 h-6" version="1.1"oficio_id="XMoficio_id_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
-                          </button>
-                        </a>
-                        <span v-else class="italic text-gray-400">No disponible</span>
-                      </td>
-                    <!-- <td class="text-center px-4">
-                      <a v-if="solicitude.resolucion_id" :href="`${VIEW_RINFORME}/${ solicitude.resolucion_id }`" target="_blank">
+                      <a v-if="solicitude.oficio_id" :href="`${VIEW_APROBACIONPAISI}/${ solicitude.oficio_id }`" target="_blank">
                         <button>
                           <IconPdf />
                         </button>
                       </a>
                       <span v-else class="italic text-gray-400">No disponible</span>
-                    </td> -->
-                    <td class="px-3 py-5 flex items-center justify-center min-h-[140px]">
+                    </td>
+                    <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
                         :class="[ 'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none','hover:bg-green-600']"  :disabled="['tramitado'].includes(solicitude.estado ?? '')"
@@ -297,16 +275,17 @@ onMounted(() => {
                         </button>
 
                       <button>
-                        <a
-                          :href="`${VIEW_RINFORME}/${solicitude.resolucion_id}`" 
-                          target="_blank"
-                          class="flex items-center m-2 relative group"
-                          v-if="['tramitado'].includes(solicitude.estado)">
-                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
-                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
-                          <span class="text-[#34495e]"> Ver resolución</span>
-                        </a>
-                      </button>
+                          <a
+                            :href="`${VIEW_APROBACIONFACULTAD}/${solicitude.resolucion_id}`" 
+                            target="_blank"
+                            class="flex items-center m-2 relative group"
+                            v-if="['tramitado'].includes(solicitude.estado)"
+                          >
+                            <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                            <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                            <span class="text-[#34495e]"> Ver resolución</span>
+                          </a>
+                        </button>
                     </td>
                     <td class="px-3 py-5 text-center">
                         <span :class="`estado-estilo estado-${solicitude.estado ? solicitude.estado.toLowerCase().replace(' ', '-') : ''}`">

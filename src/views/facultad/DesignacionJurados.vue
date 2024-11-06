@@ -26,6 +26,7 @@ interface Resolucion {
   titulo: string;
   estado: string;
   resolucion_id: string;
+  oficio_id:string;
 }
 
 // Estados y propiedades
@@ -120,7 +121,8 @@ const fetchOffices = async () => {
       nombre: item.nombre,               // El nombre del estudiante
       titulo: item.titulo,               // Título de la tesis o informe
       estado: item.estado,               // Estado del trámite
-      resolucion_id: item.resolucion_id  // ID de la resolución para visualizar o descargar
+      resolucion_id: item.resolucion_id,  // ID de la resolución para visualizar o descargar
+      oficio_id: item.oficio_id  
     }));
   } catch (error) {
     console.error("Error al cargar las solicitudes:", error);
@@ -178,7 +180,7 @@ const rejectResolution = async () => {
 
     if (response.data.estado) {
       // Actualizar el estado del oficio en `tableData` localmente
-      const oficio = tableData.value.find((of) => of.id === oficioId);
+      const oficio = tableData.value.find((of) => of.oficio_id   === oficioId);
       if (oficio) {
         oficio.estado = "observado";
       }
@@ -230,7 +232,7 @@ function closeModal() {
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
         <!-- Texto tipiado -->
-        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
+        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
         <!-- Tabla de datos -->
         <div>
@@ -301,9 +303,9 @@ function closeModal() {
                         <p class="text-gray-900 text-wrap w-64">{{ u.titulo|| 'Asesor desconocido' }}</p>
                       </td>
                       <td class="text-center px-4">
-                        <a :href="`${VIEW_OFINFORME}/${u.id}`" target="_blank">
+                        <a :href="`${VIEW_OFINFORME}/${u.oficio_id}`" target="_blank">
                           <button>
-                            <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
+                            <svg fill="#39B49E" class="w-6 h-6" version="1.1"oficio_id="XMoficio_id_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                           </button>
                         </a>
                       </td>
