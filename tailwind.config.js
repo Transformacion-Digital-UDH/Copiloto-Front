@@ -25,6 +25,14 @@ export default {
         SemiBold: 600,
         thin1:200,
       },
+      screens: {
+        '2xl': '1536px',
+        'xl': '1280px',
+        'lg': '1024px',
+        'md': '768px',
+        'sm': '640px',
+        'xs': '360px',
+      },
     },
   },
   plugins: [

@@ -6,6 +6,7 @@ import axios from 'axios';
 import { alertToast } from "@/functions";
 import Swal from 'sweetalert2';
 import router from '@/router';
+import ModalToolTip from '@/components/modalToolTip.vue';
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Aprobación del Informe Final";
@@ -173,18 +174,13 @@ onMounted(() =>{
   
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
         <div class="mt-6 space-y-10">
           <!-- Card 1: Solicitud-->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="relative flex items-center">
               <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
-                <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                  @mouseover="mostrarModalAprobar = true"
-                  @mouseleave="mostrarModalAprobar = false" />
-            </div>
-            <div v-show="mostrarModalAprobar" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-              <p class="text-sm text-gray-600">Se enviará tu solicitud al Programa Académico y a la Facultad.</p>
+                <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />       
             </div>
 
             <div class="flex items-center justify-between">
