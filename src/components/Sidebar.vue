@@ -9,6 +9,8 @@ import informe from '@/components/icons/informe.vue';
 import sustentacion from '@/components/icons/sustentacion.vue';
 import cierre from '@/components/icons/cierre.vue';
 import { useAuthStore } from '@/stores/auth'
+import IconUser from './icons/IconUser.vue';
+import IconPanel from './icons/IconPanel.vue';
 
 // Definir tipos para las secciones y submenús
 interface Submenu {
@@ -83,6 +85,20 @@ export default defineComponent({
           isOpen: false,
           icon: markRaw(cierre),
           submenus: [] // Se llenará según el rol
+        },
+        {
+          name: 'Panel',
+          label: 'Panel',
+          isOpen: false,
+          icon: markRaw(IconPanel),
+          submenus: [] 
+        },
+        {
+          name: 'Usuarios',
+          label: 'Usuarios',
+          isOpen: false,
+          icon: markRaw(IconUser),
+          submenus: []
         }
       ];
 
@@ -193,6 +209,17 @@ export default defineComponent({
           section.name === 'Sustentacion' ||
           section.name === 'Cierre'
         );
+      } else if (role.value === 'admin') {
+        allSections[5].submenus.push(
+          { name: 'dashboard', label: 'Dashboard', path: '/admin/dashboard' }
+        );
+        allSections[6].submenus.push(
+          { name: 'users', label: 'Usuarios', path: '/admin/usuarios' }
+        );
+        sections.value = allSections.filter(section =>
+          section.name === 'Panel' ||
+          section.name === 'Usuarios'
+        );
       }
     };
 
@@ -215,8 +242,8 @@ export default defineComponent({
 
     onMounted(() => {
       is_jury.value = authStore.is_jury;
-      role.value = authStore.role;
-      full_name.value = authStore.fullName;
+      role.value = authStore.role!;
+      full_name.value = authStore.fullName!;
       image_profile.value = authStore.image || `https://ui-avatars.com/api/?name=${full_name.value}`;
       setupSectionsForRole();
       openSectionIfActive();
