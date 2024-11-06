@@ -126,7 +126,7 @@ onMounted(() => {
             class="absolute right-0 z-20 w-48 py-2 mt-2 bg-white rounded-md shadow-xl"
           >
             <a
-              href="#"
+              href="/perfil"
               class="block px-4 py-2 text-sm text-gray-900 hover:bg-base hover:text-white"
               >Perfil</a
             >
