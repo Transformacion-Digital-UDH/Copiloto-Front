@@ -156,10 +156,11 @@ export default defineComponent({
         allSections[2].submenus.push(
           { name: 'Link de informe', label: 'Link de Informe', path: '/paisi/link-informe' },
           { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' },
-          { name: 'Designar jurados', label: 'Designar Jurados', path: '/paisi/designar-jurado-informe' }
+          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/paisi/designar-jurado-informe' }
         );
         allSections[3].submenus.push(
-          { name: 'SustentacionPaisi', label: 'Sustentación Paisi', path: '/sustentacion/paisi' }
+          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/paisi/apto-sustentacion' },
+          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/paisi/designar-fecha-hora' },
         );
         // Filtramos las secciones de Proyecto, Informe, y Sustentación
         sections.value = allSections.filter(section =>
@@ -178,7 +179,8 @@ export default defineComponent({
           { name: 'Resolución informe', label: 'Resolución Informe', path: '/facultad/resolucion-informe' }
         );
         allSections[3].submenus.push(
-          { name: 'SustentacionFacultad', label: 'Sustentación Facultad', path: '/sustentacion/facultad' }
+          { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },
+          { name: 'ResolucionFechaHora', label: 'Resolución Fecha y Hora para Sustentar', path: '/facultad/resolucion-fecha-hora' },
         );
         allSections[4].submenus.push(
           { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
