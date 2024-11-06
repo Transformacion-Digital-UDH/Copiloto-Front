@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconArchivo from "@/components/icons/IconArchivo.vue";
@@ -11,6 +11,22 @@ const rowsPerPage = ref(5);
 const currentPage = ref(1);
 const showSendModal = ref(false); //modal para enviar las revisiones de todos los jurados
 const showArchivoModal = ref(false);
+
+// ***** Texto que escribe automáticamente ********
+const text = "Pendientes de corrección de proyecto de tesis";
+const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+
+onMounted(() => {
+  typeWriter();
+});
 
 function openModal() {
   showModal.value = true;
@@ -95,13 +111,15 @@ const tableData = ref([
     status: "Pendiente",
   },
 ]);
+
+
 </script>
 
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Pendientes de corrección de proyecto de tesis
+        {{textoTipiado}}
       </h3>
 
       <div class="mt-8">

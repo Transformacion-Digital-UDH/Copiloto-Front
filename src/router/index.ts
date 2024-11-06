@@ -33,7 +33,14 @@ import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
 import LinkInforme from '@/views/Paisi/LinkInforme.vue'
 import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
+import DesignacionJuradoSus from '@/views/Estudiante/DesignacionJuradoSus.vue'
+import AptoSustentacion from '@/views/Paisi/AptoSustentacion.vue'
+import CorrecionJuradosSus from '@/views/Estudiante/CorrecionJuradosSus.vue'
+import AptoParaSustentar from '@/views/facultad/AptoParaSustentar.vue'
+import DesignarFechaHora from '@/views/Paisi/DesignarFechaHora.vue'
+import ResolucionFechaHora from '@/views/facultad/ResolucionFechaHora.vue'
 import { useAuthStore } from '@/stores/auth'
+import AptoParaSustentar from '@/views/Estudiante/AptoParaSustentar.vue'
 
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
@@ -72,6 +79,9 @@ const router = createRouter({
         { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: {  roles: ['estudiante'], title: 'Aprobacion de Informe por los Jurados' } },
         { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: {  roles: ['estudiante'], title: 'Conformidad por Integridad VRI' } },
         { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
+        { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
+        { path: 'designacion-jurado-sustentacion', name: 'DesignacionJuradosSus', component: DesignacionJuradoSus, meta: { roles:['estudiante'], title: 'Designación Jurados Sustentación' } },
+        { path: 'correccion-sustentacion', name: 'Correccion Sustentacion', component: CorrecionJuradosSus, meta: {  roles:['estudiante'], title: 'Correcciones de Sustentación' } },
       ]
     },
     {
@@ -108,11 +118,11 @@ const router = createRouter({
         { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
         { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['paisi'], title: 'Aprobar proyecto' } },
         { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['paisi'], title: 'Designar asesor' } },
-
         { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['paisi'], title: 'Aprobar informe' } },
-
         { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['paisi'], title: 'Link informe' } },
-        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
+        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['paisi'], title: 'Designar Jurados Informe' } },
+        { path: 'apto-sustentacion', name: 'AptoParaSustentar', component: AptoSustentacion, meta: { roles: ['paisi'], title: 'Apto para Sustentar' } },
+        { path: 'designar-fecha-hora', name: 'DesignarFechaHora', component: DesignarFechaHora, meta: { roles: ['paisi'], title: 'Designar Fecha y Hora' } },
       ]
     },
     {
@@ -124,6 +134,8 @@ const router = createRouter({
         { path: 'resolucion-asesor', name: 'ResoluciónAsesor', component: ResolucionAsesor, meta: { roles: ['facultad'], title: 'Resolución asesor' } },
         { path: 'designarJurado-informe', name: 'DesignarJurado', component: DesignacionJurados, meta: { roles: ['facultad'], title: 'Designar jurados' } },
         { path: 'resolucion-informe', name: 'ResolucionInforme', component: ResolucionInforme, meta: { roles: ['facultad'], title: 'Resolucion informe' } },
+        { path: 'resolucion-apto', name: 'ResolucionApto', component: AptoParaSustentar, meta: { roles: ['facultad'], title: 'Resolucion apto para sustentar' } },
+        { path: 'resolucion-fecha-hora', name: 'ResolucionFechaHora', component: ResolucionFechaHora, meta: { roles: ['facultad'], title: 'Resolucion fecha y hora para sustentar' } },
 
       ]
     },

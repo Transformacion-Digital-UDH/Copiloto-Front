@@ -159,8 +159,21 @@ const observarResolucion = async () => {
   }
 };
 
+// ***** Texto que escribe automáticamente ********
+const text = "Resolución de proyecto de tesis";
+const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+
 onMounted(() => {
-  obtenerSolicitudes()
+  obtenerSolicitudes(),
+  typeWriter();
 })
 
 </script>
@@ -168,9 +181,7 @@ onMounted(() => {
 <template>
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
-      <h3 class="text-4xl font-semibold text-center text-azul">
-        Resolución de proyecto de tesis
-      </h3>
+      <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
       <div class="mt-8">
         <!-- Filtros de tabla -->

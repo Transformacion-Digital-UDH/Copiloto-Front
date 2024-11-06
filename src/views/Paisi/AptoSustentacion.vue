@@ -13,17 +13,15 @@ import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 interface Solicitude {
   id: number;
   nombre: string;
+  titulo: string;
   oficio_id: number;
   revision_id_asesor: number;
   oficio_estado: string | null;
-  revision_id_presidente: number | null;
-  revision_id_secretario: string | null;
-  revision_id_vocal: string | null;
   estado: string;
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Aprobacion de Proyecto de Tesis";
+const text = "Apto para la sustentación";
 const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {
@@ -54,7 +52,7 @@ let oficio_id = ref<number | null>(null);   // Puede ser null
 //VARIABLES DE ENTORNO
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const VIEW_APAISI = import.meta.env.VITE_URL_VIEW_APAISI;
+const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME ;
 
 
 
@@ -128,16 +126,15 @@ let solicitudSeleccionada = ref<string | null>(null);
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
-    const response = await axios.get('/api/oficio/get-aprobar-tesis');
-    console.log('Datos recibidos de la API:', response.data);
+    const response = await axios.get('/api/oficio/get/declarar-apto');
+    console.log('Datos recibidos de la APPPP:', response.data);
 
-    // Asigna los datos directamente desde response.data, ya que no está en response.data.data
-    if (response.data && Array.isArray(response.data)) {
-      tableData.value = response.data as Solicitude[];  // Asignamos los datos si existe un array
+    // Verificamos que el array esté en el primer elemento
+    if (response.data && Array.isArray(response.data) && Array.isArray(response.data[0])) {
+      tableData.value = response.data[0]; // Asignamos solo el array de datos
       console.log('Datos asignados a tableData:', tableData.value);
     } else {
       console.log('Estructura inesperada en la respuesta de la API');
-      tableData.value = [];  // Si no hay datos, asignamos un array vacío
     }
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
@@ -145,6 +142,7 @@ const fetchSolicitudes = async () => {
     load.value = false;
   }
 };
+
 
 
 onMounted(() => {
@@ -164,7 +162,7 @@ const updateOffice = async () => {
       expediente: nroExped1.value,
     };
 
-    const response = await axios.put(`/api/oficio/aprobacion-tesis/${oficioId}/status`, params);
+    const response = await axios.put(`/api/resolucion/aprobacion-tesis/${oficioId}/status`, params);
     console.log('Datos en update:', response.data);  // Verificación del response
 
     if (response.data.estado) {
@@ -190,7 +188,7 @@ const rejectSolicitude = async () => {
       estado: 'observado',
       observacion: motivoObservacion.value,  // Motivo de rechazo
     };
-    const response = await axios.put(`/api/oficio/aprobacion-tesis/${oficioId}/status`, params);
+    const response = await axios.put(`/api/resolucion/aprobacion-tesis/${oficioId}/status`, params);
     console.log('Datos en rechazo:', response.data);  // Verificación del response
 
     if (response.data.estado) {
@@ -276,7 +274,7 @@ function closeDocumentModal() {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
+        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
         <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
@@ -331,8 +329,7 @@ function closeDocumentModal() {
                       class="text-center text-azul border-b-2 bg-gray-300"
                     >
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
-                      <th class="py-2 px-3 text-left tracking-wider">CONFORMIDAD ASESOR </th>
-                      <th class="py-2 px-4 tracking-wider">CONFORMIDAD JURADO</th>
+                      <th class="py-2 px-3 text-left font-thin tracking-wider">TÍTULO</th>
                       <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                       <th class="py-2 px-3 tracking-wider">ESTADO</th>
                     </tr>
@@ -348,31 +345,10 @@ function closeDocumentModal() {
                           {{ solicitude.nombre }} 
                         </p>
                       </td>
-                      <td class="text-center px-3">
-                          <a v-if="solicitude.oficio_id" :href="`${VIEW_CPA}/${ solicitude.revision_id_asesor }`" target="_blank">
-                            <button>
-                              <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
-                            </button>
-                          </a>
-                          <span v-else class="italic text-gray-400">No disponible</span>
-                      </td>
-
-                      <td class="text-center px-4">
-                        <div class="flex justify-center items-center">
-                          <!-- Botón de Documentos -->
-                          <button 
-                            @click="openDocumentModal(
-                              solicitude.revision_id_presidente ? String(solicitude.revision_id_presidente) : null, 
-                              solicitude.revision_id_secretario ? String(solicitude.revision_id_secretario) : null, 
-                              solicitude.revision_id_vocal ? String(solicitude.revision_id_vocal) : null
-                            )" 
-                            class="focus:outline-none flex justify-center items-center space-x-1"
-                          >
-                            <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                            <IconEyeAbrir v-else class="mr-1"/>
-                            <span class="text-[#34495e]">Informes de Conformidad</span>
-                          </button>
-                        </div>
+                      <td class="px-3 py-5 text-base">
+                        <p class="text-black text-wrap w-52">
+                          {{ solicitude.titulo }} 
+                        </p>
                       </td>
 
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
@@ -403,7 +379,7 @@ function closeDocumentModal() {
                         <!-- Enlace para Visualizar Oficio (deshabilitado por ahora) -->
                         <button>
                           <a
-                            :href="`${VIEW_APAISI}/${solicitude.oficio_id}`" 
+                            :href="`${VIEW_AINFORME }/${solicitude.oficio_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"
@@ -537,72 +513,6 @@ function closeDocumentModal() {
                 @click="rejectSolicitude">
                 Confirmar
               </button>
-            </div>
-          </div>
-        </div>
-
-         <!-- Modal de documentos -->
-         <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeDocumentModal">
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
-                <IconCerrar />
-              </button>
-            </div>
-            <div class="flex items-start justify-between p-8 border-b border-gray-200">
-              <h5 class="text-2xl font-medium text-gray-900 text-center flex-1">Documentos Adjuntos</h5>
-            </div>
-            <div class="p-6 bg-white rounded-lg">
-              <!-- Conformidad Presidente -->
-              <div class="flex justify-between items-center" v-if="presidenteId">
-                <p class="text-gray-600 text-lg">Conformidad Presidente</p>
-                <a
-                  :href="`${VIEW_CPA}/${presidenteId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-              <hr>
-        <br>
-
-              <!-- Conformidad Secretario -->
-              <div class="flex justify-between items-center" v-if="secretarioId">
-                <p class="text-gray-600 text-lg">Conformidad Secretario</p>
-                <a
-                  :href="`${VIEW_CPA}/${secretarioId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-        <hr>
-        <br>
-              <!-- Conformidad Vocal -->
-              <div class="flex justify-between items-center" v-if="vocalId">
-                <p class="text-gray-600 text-lg">Conformidad Vocal</p>
-                <a
-                  :href="`${VIEW_CPA}/${vocalId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-            </div>
-            <div class="flex items-center justify-center p-6 border-t border-gray-200">
-              <button class="px-3 py-2 text-xm font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cancelar</button>
             </div>
           </div>
         </div>
