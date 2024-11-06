@@ -5,6 +5,7 @@ import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import router from "@/router";
 import Swal from "sweetalert2";
+import ModalToolTip from '@/components/modalToolTip.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Jurados para el Informe Final";
@@ -246,13 +247,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar designación de jurados</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalJurados = true"
-                @mouseleave="mostrarModalJurados = false" />                
-          </div>
-          
-          <div v-show="mostrarModalJurados" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.</p>
+            <ModalToolTip :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />               
           </div>
 
           <div class="flex items-center justify-between mt-2">
@@ -317,14 +312,8 @@ onMounted(() => {
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
-              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
-                  @mouseover="mostrarModalDocumentos = true"
-                  @mouseleave="mostrarModalDocumentos = false" />
+              <ModalToolTip :infoModal="[{ info: 'Estos son los documentos oficiales con los jurados designados. Asegúrate de revisarlos antes de continuar.' },]" />       
             </div>            
-          </div>
-
-          <div v-show="mostrarModalDocumentos" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">Estos son los documentos oficiales con los jurados designados. Asegúrate de revisarlos antes de continuar.</p>
           </div>
 
           <div class="mt-4 space-y-4">

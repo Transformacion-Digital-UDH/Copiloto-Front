@@ -106,7 +106,7 @@ onMounted(() => {
 <template>
   <div class="min-h-screen bg-gray-50 p-8">
     <!-- Título principal -->
-    <h2 class="text-6xl md:text-6xl lg:text-6xl font-bold text-center text-azul mb-12">
+    <h2 class="text-4xl md:text-6xl lg:text-6xl font-bold text-center text-azul mb-12">
       Ejecución de tu Proyecto de Tesis
     </h2>
 
