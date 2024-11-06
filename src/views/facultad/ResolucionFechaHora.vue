@@ -95,7 +95,7 @@ let resolucion_id = ref<number | null>(null);
 
 const obtenerSolicitudes = async () => {
   try {
-    const response = await axios.get('/api/resolucion/get-aprobar-tesis');
+    const response = await axios.get('/api/resolucion/get/desigancion-fecha-hora-sustentacion');
     console.log('Datos recibidos de la API:', response.data);
 
     if (response.data && Array.isArray(response.data)) {
