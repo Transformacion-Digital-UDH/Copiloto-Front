@@ -30,7 +30,8 @@ import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
 import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
-
+import LinkInforme from '@/views/Paisi/LinkInforme.vue'
+import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import { useAuthStore } from '@/stores/auth'
 import AppProfile from '@/components/auth/AppProfile.vue'
@@ -112,6 +113,9 @@ const router = createRouter({
         { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['paisi'], title: 'Designar asesor' } },
 
         { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['paisi'], title: 'Aprobar informe' } },
+
+        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['paisi'], title: 'Link informe' } },
+        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
       ]
     },
     {

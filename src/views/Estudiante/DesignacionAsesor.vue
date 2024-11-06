@@ -68,6 +68,7 @@ const initSolicitude = ref(false);
 const advisers = ref<{ id: string, nombre: string }[]>([]);
 const load = ref(false);
 const enviado = ref(false);
+
 const solicitude = ref<Solicitude>({
   estudiante_id: "",
   titulo: "",
@@ -77,6 +78,7 @@ const solicitude = ref<Solicitude>({
   observacion: "",
   tipo_investigacion: "",  
 });
+
 const oficio = ref<Oficio>({
   id: "",
   estado: "",
@@ -112,6 +114,14 @@ interface Oficio {
   fecha_creado: string;
   nombre_de_oficio: string;
   observacion: string;
+}
+interface SolicitudeResponse {
+  data: {
+    _id: string;
+    sol_title_inve: string;
+    adviser_id?: string;
+    sol_status: string;
+  };
 }
 
 const resolucion = ref<Resolucion>({
@@ -188,6 +198,7 @@ const sendSolicitude = async (student_id: string) => {
     const params = {
       student_id: student_id,
     };
+
     alertConfirmation(
       "Estás seguro de iniciar este trámite?",
       "Iniciar trámite",
@@ -195,11 +206,13 @@ const sendSolicitude = async (student_id: string) => {
       params,
       "/api/solicitudes-store",
       "POST",
-      (response) => {
+      (response: SolicitudeResponse) => { // Tipamos aquí la respuesta
         solicitude.value.solicitud_id = response.data._id;
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id || "";
         solicitude.value.estado = response.data.sol_status;
+
+        // Lanza confetti en la pantalla
         confetti({
           particleCount: 500,
           spread: 1010,
@@ -209,7 +222,7 @@ const sendSolicitude = async (student_id: string) => {
     );
   } catch (error: any) {
     let description = "";
-    error.response.data.error.map((e: any) => {
+    error.response.data.error.forEach((e: any) => {
       description = description + " " + e;
     });
     alertToast(description, "Error", "error");
@@ -408,11 +421,13 @@ const handleNextButtonClick = () => {
 
           <div class="flex justify-center">
             <button
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)"
-            >
-              Iniciar trámite
-            </button>
+            v-if="authStore.id"
+            class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
+            @click="sendSolicitude(authStore.id!)"
+          >
+            Iniciar trámite
+          </button>
+
           </div>
         </div>
       </div>
@@ -427,7 +442,7 @@ const handleNextButtonClick = () => {
       <div class="flex justify-between">
         <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Solicitud de Asesor</h2>
+              <h2 class="text-2xl font-medium text-black">1. Solicita tu asesor</h2>
               <img
                 src="/icon/info2.svg"
                 alt="Info"
@@ -437,8 +452,9 @@ const handleNextButtonClick = () => {
               />
             </div>
             <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
-              {{ solicitude.estado }}
+              {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
             </span>
+
          </div>
       </div>
           <!-- Modal informativo para el Punto 1 -->
@@ -454,8 +470,8 @@ const handleNextButtonClick = () => {
             <!-- Título de tesis -->
             <label
               for="tituloTesis"
-              class="block text-lg font-medium text-gray-800 mb-2"
-              >Título de Tesis</label
+              class="block text-lg font-medium text-gray-700 mb-2"
+              >Título de tesis</label
             >
             <input
               id="tituloTesis"
@@ -467,8 +483,8 @@ const handleNextButtonClick = () => {
             />
             <label
               for="nombreAsesor"
-              class="block text-lg font-medium text-gray-800 mb-2"
-              >Elige a tu Asesor</label
+              class="block text-lg font-medium text-gray-700 mb-2"
+              >Elige a tu asesor</label
             >
             <select
               id="nombreAsesor"
@@ -489,7 +505,7 @@ const handleNextButtonClick = () => {
             <!-- Select para elegir tipo de investigacion -->
             <label
               for="tipoInvestigacion"
-              class="block text-lg font-medium text-gray-800 mb-2"
+              class="block text-lg font-medium text-gray-700 mb-2"
               >Elige tu tipo de investigación</label
             >
             <select
@@ -529,7 +545,6 @@ const handleNextButtonClick = () => {
               Enviar
             </button>
           </div>
-
           <!-- Respuesta del asesor -->
           <div
             class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md"
@@ -573,8 +588,10 @@ const handleNextButtonClick = () => {
                 <span
                   :class="estadoClase(solicitude.estado)"
                   class="estado-estilo"
-                  >{{ solicitude.estado }}</span
                 >
+                  {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                </span>
+
                 <a
                   href="#historial"
                   v-if="solicitude.estado === 'rechazado'"
@@ -586,7 +603,6 @@ const handleNextButtonClick = () => {
             </div>
           </div>
           <br />
-
           <!-- Mensaje de espera según el estado -->
           <span
             v-if="solicitude.estado === 'pendiente'"
@@ -602,8 +618,7 @@ const handleNextButtonClick = () => {
           <span
             v-else-if="solicitude.estado === 'aceptado'"
             class="text-green-500 italic"
-            >El asesor ha aceptado tu solicitud, puedes pasar el punto 2.
-            Documentos</span
+            >El asesor ha aceptado tu solicitud, puedes revisar tus documentos de conformidad de designación de asesor en el punto 2.</span
           >
     </div>
     <br>
@@ -625,7 +640,7 @@ const handleNextButtonClick = () => {
         >
           <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la  conformidad de designación de asesor</h2>
               <img
                 src="/icon/info2.svg"
                 alt="Info"
@@ -637,8 +652,9 @@ const handleNextButtonClick = () => {
             <span
               :class="estadoClase(estadoDocumentos)"
               class="estado-estilo ml-4"
-              >{{ estadoDocumentos }}</span
             >
+              {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() : 'Desconocido' }}
+            </span>
 
           </div>
           <!-- Modal punto 2 -->
@@ -659,7 +675,7 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Oficio de Secretaria PAISI
+                  Oficio del Programa Académico de Ingeniería de Sistemas.
                   <p v-if="oficio.estado === 'observado'" class="italic">
                     "{{ oficio.observacion }}"
                   </p>
@@ -700,8 +716,10 @@ const handleNextButtonClick = () => {
                   <span
                     :class="estadoClase(oficio.estado)"
                     class="estado-estilo ml-4"
-                    >{{ oficio.estado }}</span
                   >
+                    {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                  </span>
+
                 </div>
               </div>
             </div>
@@ -711,7 +729,7 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Resolución de Facultad
+                  Resolución de Facultad de Ingeniería de Sistemas.
                   <p v-if="resolucion.estado === 'observado'" class="italic">
                     "{{ resolucion.observacion }}"
                   </p>
@@ -759,7 +777,7 @@ const handleNextButtonClick = () => {
         >
           Siguiente
         </button>
-      </div>
+       </div>
         <!-- Card 3: Solicitar Cambio de Asesor -->
         <div
           :disabled="
@@ -777,7 +795,7 @@ const handleNextButtonClick = () => {
           ]"
         >
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de Asesor</h2>
+            <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de asesor</h2>
             <img
               src="/icon/info2.svg"
               alt="Info"
@@ -788,7 +806,7 @@ const handleNextButtonClick = () => {
           </div>
           <br />
           <p class="text-gray-400">
-            Este botón se activará cuando recibas la resolución de Designación de Asesor en '2. Documentos' por parte de Facultad.
+            Este botón se activará cuando recibas la resolución de designación de asesor por parte de la Facultad de Ingeniería de Sistemas.
           </p>
 
 
@@ -821,14 +839,14 @@ const handleNextButtonClick = () => {
                     : 'bg-base hover:bg-green-500 ',
                 ]"
               >
-                Solicitar Cambio de Asesor
+                Solicitar cambio de asesor
               </button>
             </div>
           </div>
         </div>
         <!-- Historial de Acciones -->
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" id="historial">
-          <h2 class="text-2xl font-medium text-azul">Historial de Acciones</h2>
+          <h2 class="text-2xl font-medium text-azul">Historial de acciones</h2>
           <div class="overflow-x-auto mt-4">
             <table class="min-w-full table-auto bg-gray-50 rounded-lg">
               <thead class="bg-gray-100 rounded-lg text-azul">

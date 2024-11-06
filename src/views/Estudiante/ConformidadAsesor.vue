@@ -22,11 +22,11 @@ interface Asesor {
 // Documentos es un array reactivo de tipo Documento usando reactive
 const documentos = reactive<Documento[]>([
   {
-    nombre: "Informe de Conformidad de Observaciones",
-    estado: "pendiente",
-    documentoUrl: "",
-    revision_id: null,
-  },
+  nombre: "Informe de Conformidad de Observaciones",
+  estado: "pendiente",
+  documentoUrl: "",
+  revision_id: null,
+}
 ]);
 
 function estadoClase(estado: string) {
@@ -76,6 +76,7 @@ const solicitudEstado = ref<string>("");
 const solicitudEstado2 = ref<string>("");
 const solicitudMensaje = ref("");
 const revision = ref<any[]>([]);
+const isLoading = ref(false);
 
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
@@ -115,7 +116,9 @@ const isNextButtonDisabled = computed(() => {
   return documentoPaso3?.estado !== "Hecho";
 });
 
+
 const primeraRevision = async () => {
+  isLoading.value = true;
   try {
     const response = await axios.post(
       `/api/student/first-review/${authStore.id}`
@@ -128,6 +131,8 @@ const primeraRevision = async () => {
   } catch (error: any) {
     console.log(error);
     alertToast(error.response.data.message || "Error al enviar la solicitud", "Error", "error");
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -258,114 +263,88 @@ onMounted(() => {
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col">
-        <h3
-          class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"
-        ></h3>
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-11 w-4/5 rounded-lg duration-200 skeleton-loader"></h3>
       </div>
       <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-28 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+        <div class="bg-white rounded-lg p-6 space-y-4">
+          <div class="grid grid-cols-1 gap-6">
+            <div class="bg-gray-200 rounded-lg h-36 p-4 flex flex-col items-center skeleton-loader duration-200"></div>
           </div>
+          <div class="bg-gray-200 h-44 rounded-lg p-6 -m-0 skeleton-loader duration-200"></div>
+          <div class="text-center mt-6">
+            <div class="h-10 bg-gray-200 rounded w-44 mx-auto skeleton-loader duration-200"></div>
+          </div><p class="h-4 mt-6"></p>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-8 w-1/6 rounded-md skeleton-loader duration-200"></h2>
             <div class="flex justify-between items-center">
-              <h2
-                class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"
-              ></h2>
+              <h2 class="bg-gray-200 h-6 w-96 rounded-md skeleton-loader duration-200"></h2>
             </div>
             <div class="h-7">
-              <h2
-                class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"
-              ></h2>
+              <h2 class="bg-gray-200 h-10 w-40 mx-auto rounded-md skeleton-loader duration-200"></h2>
             </div>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div class="flex justify-end">
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-24 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
+        <div class="flex justify-between">
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
         </div>
       </div>
     </div>
   </template>
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-5xl font-bold text-center text-azul">
-        {{ textoTipiado2 }}
-      </h3>
-
-      <div class="mt-6 space-y-10 ">
+      <h3 class="text-5xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <div class="mt-6 space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
           <!-- Información del Asesor -->
-          <p v-if="asesor">
-            <strong >ASESOR:</strong> {{ asesor.nombre }} {{ asesor.apellido_paterno }} {{ asesor.apellido_materno }}
-          </p>
-          
+          <div class="grid grid-cols-1 gap-6">
+            <div class="bg-gray-100 rounded-lg p-4 flex flex-col items-center shadow-lg">
+              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+              <p class="font-bold text-2xl text-azul">Asesor</p>
+              <p class="text-gray-600 text-center">
+                {{ asesor?.nombre && asesor?.apellido_paterno && asesor?.apellido_materno 
+                ? `${asesor.nombre} ${asesor.apellido_paterno} ${asesor.apellido_materno}` 
+                : 'Asesor no asignado' }}
+              </p>
+            </div>
+          </div>
           <!-- Título de Tesis -->
-          <p v-if="titulo" class="max-w-7xl">
-            <strong>TÍTULO DE TESIS:</strong> {{ titulo }}
-          </p>
-          
+          <div class="bg-gray-100 rounded-lg p-6 shadow-lg">
+            <p class="text-azul text-center font-bold text-2xl">Título de tesis</p>
+            <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
+          </div>
           <!-- Enlace al Proyecto de Tesis -->
-          <p v-if="link">
-            <strong>PROYECTO DE TESIS: </strong>
+          <div v-if="link" class="text-center mt-6">
             <a
-              :href="`${link}`"
+              :href="link"
               target="_blank"
-              class="inline-block bg-azul text-white px-3 py-2 rounded-lg hover:bg-azulOscuro transition text-base"
-              > Abrir link de Google Docs</a>
-          </p>
-
+              class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <i class="fas fa-external-link-alt"></i> Abrir proyecto
+            </a>
+          </div>  
           <!-- Explicación breve -->
-          <p class="text-sm text-gray-600">
-            Suba su información del proyecto de tesis en el documento de Google Docs proporcionado y luego haga clic en "Solicitar Revisión".
-          </p>
+          <p class="text-sm text-gray-600 text-center">Sube la información de tu proyecto de tesis en el documento de Google Docs proporcionado y, cuando estés listo, haz clic en 'Solicitar Revisión' para iniciar el proceso.</p>
         </div>
-
 
         <!-- Observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Observaciones</h2>
+            <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
             <img
               src="/icon/info2.svg"
               alt="Info"
@@ -374,17 +353,12 @@ onMounted(() => {
               @mouseleave="mostrarModalRevision = false"
             />
           </div>
-          <div
-            v-show="mostrarModalRevision"
-            class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
-          >
-            <p class="text-sm text-gray-600">
-              Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.
-            </p>
+          <div v-show="mostrarModalRevision" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.</p>
           </div>
           <div class="flex items-center justify-between">
-            <p class="text-gray-500 text-lg">
-              Haz click en <strong class="text-[#39B49E]">Solicitar Revision</strong> para iniciar con el proceso de correcciones.
+            <p class="text-gray-500 text-base mt-2">
+              Para comenzar con el proceso de observaciones en el proyecto de tesis, haz clic en <strong class="text-[#39B49E]">"Solicitar revisión"</strong>
             </p>
             <span
               :class="estadoClase(solicitudEstado2)"
@@ -394,26 +368,20 @@ onMounted(() => {
           </div>
           <div class="flex justify-center mt-3">
             <button
-              :disabled="isRevisionDisabled"
-              :class="
-                isRevisionDisabled
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-base'
-              "
+              :disabled="isRevisionDisabled || isLoading"
+              :class="[ isRevisionDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
               class="px-4 py-2 text-white rounded-lg text-lg"
-              @click="primeraRevision"
-            >
-              Solicitar revisión
+              @click="primeraRevision">
+              {{ isLoading ? 'Solicitando...' : 'Solicitar revisión' }}
             </button>
           </div>
-          <div v-if="solicitudMensaje">{{ solicitudMensaje }}</div>
         </div>
 
         <!-- Revisión de levantamiento de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h4 class="text-2xl font-medium text-black">
-              2. Revisión de Observaciones
+              2. Revisión de observaciones
             </h4>
 
             <div class="relative">
@@ -426,8 +394,7 @@ onMounted(() => {
               />
               <div
                 v-show="mostrarModalObservaciones"
-                class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10 modal-pos"
-              >
+                class="absolute -left-32 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
                 <p class="text-sm text-gray-600">
                   En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor, hasta que esté todo conforme.
                 </p>
@@ -435,11 +402,11 @@ onMounted(() => {
             </div>
             
           </div>
-          <p class="text-gray-500 mt-2 mb-1">
-            Si tu asesor dejó observaciones, el estado será <strong class="text-gray-400">pendiente</strong>. Corrige las observaciones en el documento de Google Docs.
+          <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
+            <strong class="text-[#8898aa] text-base">"Pendiente"</strong>. Realiza las correcciones directamente en el documento de Google Docs.
           </p>
-          <p class="text-gray-500">
-            Después de corregir, haz clic en <strong class="text-[#39B49E]">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está bien, el estado cambiará a <strong class="text-green-500">aprobado</strong>.
+          <p class="text-gray-500 text-base">Una vez que hayas corregido, haz clic en 
+            <strong class="text-green-500 text-base">“Observaciones corregidas”</strong> para que el asesor revise nuevamente. Si todo está en orden, el estado cambiará a <strong class="text-green-500 text-base">"Aprobado"</strong>.
           </p>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
@@ -485,11 +452,11 @@ onMounted(() => {
                     </button>
                   </td>
                   <td class="px-4 py-2">
-                    <span
-                      :class="`estado-estilo estado-${obs.estado.toLowerCase().replace(' ', '-')}`"
-                      >{{ obs.estado || 'Desconocido' }}</span
-                    >
+                    <span :class="`estado-estilo estado-${obs.estado ? obs.estado.toLowerCase().replace(' ', '-') : 'desconocido'}`">
+                      {{ obs.estado ? obs.estado.charAt(0).toUpperCase() + obs.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                    </span>
                   </td>
+
                 </tr>
               </tbody>
 
@@ -497,7 +464,7 @@ onMounted(() => {
               <tbody v-else>
                 <tr>
                   <td colspan="4" class="px-4 py-4 text-center text-gray-600">
-                    No hay observaciones disponibles por el momento.
+                    <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>No hay observaciones disponibles por el momento.
                   </td>
                 </tr>
               </tbody>
@@ -507,99 +474,73 @@ onMounted(() => {
 
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documentos</h2>
-            <img
-              src="/icon/info2.svg"
-              alt="Info"
-              class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalDocumentos = true"
-              @mouseleave="mostrarModalDocumentos = false"
-            />
-          </div>
-          <div
-            v-if="mostrarModalDocumentos"
-            class="absolute mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
-          >
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de tesis por el asesor</h2>
+              <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
+                  @mouseover="mostrarModalDocumentos = true"
+                  @mouseleave="mostrarModalDocumentos = false" />
+            </div>
+          <!-- Modal informativo -->
+          <div v-if="mostrarModalDocumentos" class="absolute left-20 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
             <p class="text-sm text-gray-600">
               Asegúrate de revisar el documento para verificar las observaciones
               antes de continuar.
             </p>
           </div>
+          <span v-if="documentos.length > 0" 
+              class="absolute right-0 top-0 mt-6 mr-6 text-gray-500 text-sm">
+            <span :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
+              {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
+            </span>
+          </span>
+
           <div class="mt-4 space-y-4">
-            <div
-              v-for="(documento, index) in documentos"
-              :key="documento.nombre"
-              class="bg-gray-50 p-4 border border-gray-200 rounded-md"
-            >
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
-                <span class="w-full md:w-auto mb-2 md:mb-0 text-lg"
-                  >Informe de Conformidad de Observaciones</span
-                >
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
-                  <div
-                    v-if="documento.estado === 'Hecho'"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
+            <div v-for="(documento, index) in documentos" :key="documento.nombre" class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-xm bg-gray-50">Informe de conformidad de observaciones por el asesor</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documento.estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
                     <a
                       :href="`${VIEW_CPA}/${documento.revision_id}`"
                       target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
                     <!-- Botón de Descargar -->
                     <a
                       :href="`${DOWNLOAD_CPA}/${documento.revision_id}`"
                       download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span
-                    v-else-if="documento.estado === 'pendiente'"
-                    class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-                  <span
-                    :class="`estado-estilo estado-${documento.estado
-                      .toLowerCase()
-                      .replace(' ', '-')}`"
-                    >{{ documento.estado || "Estado desconocido" }}</span
-                  >
+                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <!--Botones siguiente y anteerior-->
-        <div class="flex justify-between">
-            <!-- Botón de Anterior -->
-            <button
-              @click="$router.push('/estudiante/designacion-asesor')" 
-              class="px-4 py-2 bg-gray-300 text-white rounded-md hover:bg-gray-400"
-            >
-              Anterior
-            </button>
 
-            <!-- Botón de Siguiente -->
-            <button
-              @click="handleNextButtonClick"
-              :class="[ 
-                'px-4 py-2 text-white rounded-md',
-                isNextButtonDisabled
-                  ? 'bg-gray-300 cursor-not-allowed'
-                  : 'bg-green-500 hover:bg-green-600',
-              ]"
-            >
-              Siguiente
-            </button>
+        <!--Botones siguiente y anterior-->
+        <div class="flex justify-between">
+          <!-- Botón de Anterior -->
+          <button
+            @click="$router.push('/estudiante/designacion-asesor')" 
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"> Anterior
+          </button>
+          <!-- Botón de Siguiente -->
+          <button
+            @click="handleNextButtonClick"
+            :class="[ 
+              'px-4 py-2 text-white rounded-md',
+              isNextButtonDisabled
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-green-500 hover:bg-green-600',]"
+          >
+            Siguiente
+          </button>
+
         </div>
       </div>
     </div>

@@ -89,8 +89,9 @@ interface Review {
   revision_id: string;
   nombre: string;
   titulo: string;
-  estado: string;
+  estado: string,
   rol: string;
+  count: number,
   presidente_estado: string,
   presidente_cont: number,
   secretario_estado: string,
@@ -299,7 +300,7 @@ onMounted(() => {
                   <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
                   <th class="py-2 px-3 tracking-wider">ROL</th>
                   <th class="py-2 px-3 tracking-wider">N° REVISIÓN</th>
-                  <th class="py-2 px-3 tracking-wider">APROBADO</th>
+                  <th class="py-2 px-3 tracking-wider">REVISIONES</th>
                   <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                   <th class="py-2 px-3 tracking-wider">ESTADO</th>
                 </tr>
@@ -307,7 +308,7 @@ onMounted(() => {
               <tbody>
                 <tr v-for="(u, index) in filteredTableData" :key="u.revision_id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                   <td class="px-2 py-3 text-base">
-                    <p class="text-gray-900 text-wrap w-48">{{ u.nombre }}</p>
+                    <p class="text-gray-900 text-wrap w-58">{{ u.nombre }}</p>
                   </td>
                   <td class="px-2 py-3 text-base">
                     <p class="text-gray-900 text-wrap w-64">{{ u.titulo }}</p>
@@ -317,34 +318,57 @@ onMounted(() => {
                       {{ u.rol }}
                     </span>
                   </td>
-                  <td class="px-2 py-3 text-center">{{ u.vocal_cont }}</td>
+                  <td class="px-2 py-3 text-center">{{ u.count }}</td>
                   <td class="px-2 py-3 text-center align-middle">
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 5px;">
+
                       <!-- Mostrar presidente si el asesor no es presidente -->
                       <div v-if="u.rol !== 'presidente'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-white rounded-full" 
-                          :class="u.presidente_aprobado ? 'bg-green-400' : 'bg-gray-400'">
-                          Presidente: {{ u.presidente_aprobado ? 'Aprobado' : u.presidente_cont + ' revisiones' }}
+                        <span class="block px-3 py-1 text-black rounded-full" 
+                        >
+                          Presidente: 
+                          <span v-if="u.presidente_aprobado">
+                            <i class="fas fa-check-circle text-green-500"></i>
+                          </span>
+                          <span v-else>
+                            {{ u.presidente_cont }}  <!-- Mostrar contador si no está aprobado -->
+                          </span>
                         </span>
                       </div>
 
                       <!-- Mostrar secretario si el asesor no es secretario -->
                       <div v-if="u.rol !== 'secretario'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-white rounded-full" 
-                          :class="u.secretario_aprobado ? 'bg-green-400' : 'bg-gray-400'">
-                          Secretario: {{ u.secretario_aprobado ? 'Aprobado' : u.secretario_cont + ' revisiones' }}
+                        <span class="block px-3 py-1 text-black rounded-full" 
+                        >
+                          Secretario: 
+                          <span v-if="u.secretario_aprobado">
+                            <i class="fas fa-check-circle text-green-500"></i>  <!-- Ícono de aprobado -->
+                          </span>
+                          <span v-else>
+                            {{ u.secretario_cont }}  <!-- Mostrar contador si no está aprobado -->
+                          </span>
                         </span>
                       </div>
 
                       <!-- Mostrar vocal si el asesor no es vocal -->
                       <div v-if="u.rol !== 'vocal'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-white rounded-full" 
-                          :class="u.vocal_aprobado ? 'bg-green-400' : 'bg-gray-400'">
-                          Vocal: {{ u.vocal_aprobado ? 'Aprobado' : u.vocal_cont + ' revisiones' }}
+                        <span class="block px-3 py-1 text-black rounded-full" 
+                        >
+                          Vocal: 
+                          <span v-if="u.vocal_aprobado">
+                            <i class="fas fa-check-circle text-green-500"></i>  <!-- Ícono de aprobado -->
+                          </span>
+                          <span v-else>
+                            {{ u.vocal_cont }}  <!-- Mostrar contador si no está aprobado -->
+                          </span>
                         </span>
                       </div>
+
                     </div>
                   </td>
+
+
+
                    
                   <td class="px-2 py-3 text-center align-middle">
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
@@ -375,7 +399,7 @@ onMounted(() => {
 
                   <td class="px-2 py-3 text-center">
                     <span :class="`estado-estilo estado-${u.estado.toLowerCase().replace(' ', '-')}`">
-                      {{ u.estado }}
+                      {{ u.estado.charAt(0).toUpperCase() + u.estado.slice(1).toLowerCase() }}
                     </span>
                   </td>
                 </tr>
@@ -477,18 +501,11 @@ onMounted(() => {
   color: #ffffff;
 }
 
-.custom-thead th {
-  font-weight: 600;
-  font-size: 14px; /* Tamaño reducido */
-  text-transform: uppercase;
-}
+
 .estado-observado {
   background-color: #e79e38;
   color: #ffffff;
 }
 
-.compact-table td {
-  padding: 4px 8px; /* Se reduce el padding para compactar más las celdas */
-  font-size: 0.875rem; /* Texto más pequeño para compactar */
-}
+
 </style>
