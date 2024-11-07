@@ -321,8 +321,14 @@ onMounted(() => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <span class="flex-1 text-xm bg-gray-50">{{ documento.nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  
+                  <!-- Mostrar mensaje si el estado es "observado" y el nombre es "Resolución de Designación de Jurados" -->
+                  <p v-if="documento.nombre === 'Resolución de Designación de Jurados' && documento.estado.toLowerCase() === 'observado'" class="text-gray-500 italic">
+                    Este documento ha sido observado, comunícate con Facultad.
+                  </p>
+
                   <!-- Mostrar botones de Ver y Descargar solo si el estado es Tramitado -->
-                  <div v-if="documento.estado.toLowerCase() === 'tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                  <div v-else-if="documento.estado.toLowerCase() === 'tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
                     <a 
                       :href="`${documento.nombre === 'Oficio del Programa Académico de Ingeniería de Sistemas.' ? VIEW_OFINFORME : VIEW_RINFORME}/${documento.nombre === 'Oficio del Programa Académico de Ingeniería de Sistemas.' ? of_id : resolucion_id}`" 
@@ -338,7 +344,11 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
+
+                  <!-- Mensaje de documento no cargado -->
                   <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                  
+                  <!-- Estado del documento -->
                   <span :class="`estado-${documento.estado.toLowerCase()}`" class="estado-estilo">
                     {{ documento.estado ? documento.estado.charAt(0).toUpperCase() + documento.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
                   </span>

@@ -112,7 +112,7 @@ const obtenerDatosEstudiante = async () => {
       documentos.value[0].estado = 'tramitado';
     } else if (response.data.oficio_estado === 'observado') {
       documentos.value[0].estado = 'observado';
-      documentos.value[0].observacion = response.data.oficio_observacion || 'Comunicate con secretaria de PAISI';
+      documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
     } else {
       documentos.value[0].estado = 'pendiente';
     }
@@ -123,7 +123,7 @@ const obtenerDatosEstudiante = async () => {
       documentos.value[1].estado = 'tramitado';
     } else if (response.data.resolucion_estado === 'observado') {
       documentos.value[1].estado = 'observado';
-      documentos.value[1].observacion = response.data.resolucion_observacion || 'Cominicate con secretaria de Facultad';
+      documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
     } else {
       documentos.value[1].estado = 'pendiente';
     }
