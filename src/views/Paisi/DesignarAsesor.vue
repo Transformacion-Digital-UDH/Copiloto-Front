@@ -355,6 +355,7 @@ const formIsValid = computed(() => {
                         </button>
                         <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
                       </td>
+                      
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button
                           v-if="['pendiente', 'observado'].includes(solicitude.oficio_estado ?? '')"
