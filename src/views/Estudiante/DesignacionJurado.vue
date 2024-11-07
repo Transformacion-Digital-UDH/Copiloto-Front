@@ -123,9 +123,11 @@ const mostrarJurados = async () => {
     
     jurados.value = response.data.jurados// la lista de jurados asignados
 
-    if(response.data.docof_id){
+    if (response.data.estado === 'tramitado' && response.data.docof_id) {
       docof_id.value = response.data.docof_id;
       documentos.value[0].estado = 'Tramitado';
+    } else {
+      documentos.value[0].estado = 'Pendiente';
     }
   } catch (error) {
     console.error('Error al obtener jurados designados: ', error);

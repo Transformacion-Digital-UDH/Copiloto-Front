@@ -5,6 +5,7 @@ import axios from 'axios';
 import { ref, computed, onMounted } from 'vue';
 import router from "@/router";
 import Swal from "sweetalert2";
+import ModalToolTip from '@/components/modalToolTip.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Declaración de Apto para Sustentar";
@@ -39,15 +40,16 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/correccion-sustentacion");
+  router.push("/estudiante/designacion-jurado-sustentacion");
 };
 
 const isNextButtonDisabled = computed(() => {
   const documentoResolucion = documentos.value.find(
-    (doc) => doc.nombre === "Resolución de Designación de Jurados para Sustentación"
+    (doc) => doc.nombre === "Resolución de Declaración de Apto para Sustentación"
   );
   return documentoResolucion?.estado.toLowerCase() !== "tramitado";
 });
+
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -71,7 +73,7 @@ const documentos = ref([
 
 // para que el botón quede deshabilitado
 const isSolicitarDisabled = computed(() => {
-  return isLoading.value || documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+  return isLoading.value || documentos.value.some(doc => doc.estado.toLowerCase() === 'tramitado');
 });
 
 // funcion para solicitar que me asignen jurados
@@ -84,7 +86,7 @@ const solicitarDeclaracionAptoSustentar= async () => {
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";  // mostrar el estado de la solicitud
       alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
-      await obtenerrDocumentosSustentancion();
+      await obtenerDocumentosSustentancion();
     }
     
   } catch (error: any) {
@@ -100,12 +102,12 @@ const solicitarDeclaracionAptoSustentar= async () => {
 };
 
 // Función para obtener jurados asignados desde el backend
-const obtenerrDocumentosSustentancion = async () => {
+const obtenerDocumentosSustentancion = async () => {
   load.value = true;
   const student_id = authStore.id
   try {
     const response = await axios.get(`api/estudiante/get-info/declarar-apto/${student_id}`);
-    console.log('Mostrando lo recibido: ', response.data);
+    console.log("Datos recibidos: ", response.data);
 
     // Actualizar el estado y observación de oficio
     if (response.data.oficio_estado === 'tramitado') {
@@ -113,7 +115,7 @@ const obtenerrDocumentosSustentancion = async () => {
       documentos.value[0].estado = 'tramitado';
     } else if (response.data.oficio_estado === 'observado') {
       documentos.value[0].estado = 'observado';
-      documentos.value[0].observacion = response.data.oficio_observacion || 'Comunicate con secretaria de PAISI';
+      documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
     } else {
       documentos.value[0].estado = 'pendiente';
     }
@@ -124,7 +126,7 @@ const obtenerrDocumentosSustentancion = async () => {
       documentos.value[1].estado = 'tramitado';
     } else if (response.data.resolucion_estado === 'observado') {
       documentos.value[1].estado = 'observado';
-      documentos.value[1].observacion = response.data.resolucion_observacion || 'Cominicate con secretaria de Facultad';
+      documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
     } else {
       documentos.value[1].estado = 'pendiente';
     }
@@ -138,7 +140,7 @@ const obtenerrDocumentosSustentancion = async () => {
 
 // montar para ver los jurados asignados
 onMounted(() => {
-    obtenerrDocumentosSustentancion();
+    obtenerDocumentosSustentancion();
 })
 </script>
 <template>
@@ -176,11 +178,10 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <!-- Card 2: Solicitar designación de Jurados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para sustentar</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalSustentacion = true"
-                @mouseleave="mostrarModalSustentacion = false" />                
+            <ModalToolTip 
+              :infoModal="[{ info: 'Falta definir la información' },]" />                
           </div>
           
           <div v-show="mostrarModalSustentacion" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
@@ -188,7 +189,7 @@ onMounted(() => {
           </div>
 
           <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
+            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio de aprobación necesario para sustentar.</p>
           </div>
           
           <div class="mt-4">
@@ -207,7 +208,9 @@ onMounted(() => {
         <!-- Card 2: Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos</h2>
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
+              <ModalToolTip 
+                :infoModal="[{ info: 'Falta definir la información' },]" /> 
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">
@@ -322,6 +325,10 @@ onMounted(() => {
 }
 .estado-pendiente {
   background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-observado {
+  background-color: #e79e38;
   color: #ffffff;
 }
 </style>

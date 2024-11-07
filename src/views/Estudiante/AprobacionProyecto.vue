@@ -113,7 +113,7 @@ const obtenerDatosEstudiante = async () => {
       documentos.value[0].estado = 'tramitado';
     } else if (response.data.oficio_estado === 'observado') {
       documentos.value[0].estado = 'observado';
-      documentos.value[0].observacion = response.data.oficio_observacion || 'comunicate con secretaria de PAISI';
+      documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
     } else {
       documentos.value[0].estado = 'pendiente';
     }
@@ -124,7 +124,7 @@ const obtenerDatosEstudiante = async () => {
       documentos.value[1].estado = 'tramitado';
     } else if (response.data.resolucion_estado === 'observado') {
       documentos.value[1].estado = 'observado';
-      documentos.value[1].observacion = response.data.resolucion_observacion || 'cominicate con secretaria de Facultad';
+      documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
     } else {
       documentos.value[1].estado = 'pendiente';
     }
@@ -269,8 +269,20 @@ onMounted(() =>{
                         <i class="fas fa-download mr-2"></i> Descargar
                       </a>
                     </div>
-                    <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
-                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
+                      <!-- Mostrar observación si el estado es "observado" -->
+                    <p v-else-if="documentos[1].estado === 'observado'" class="text-gray-500 italic">
+                      {{ documentos[1].observacion || 'Observación no disponible' }}
+                    </p>
+
+                    <!-- Mensaje cuando el estado es "pendiente" o no se ha cargado -->
+                    <span v-else class="text-gray-500 italic text-base">
+                      El documento aún no se ha cargado
+                    </span>
+
+                    <!-- Mostrar estado general con estilo específico para todos los estados -->
+                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">
+                      {{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}
+                    </span>
                   </div>
                 </div>
               </div>
