@@ -87,6 +87,7 @@ function goToNextPage() {
 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 interface Review {
+  link: string;
   revision_id: string;
   nombre: string;
   titulo: string;
