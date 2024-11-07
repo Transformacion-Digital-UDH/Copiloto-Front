@@ -434,7 +434,7 @@ const handleNextButtonClick = () => {
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-        <h3 class="text-5xl font-semibold text-center text-azul">
+        <h3 class="text-4xl font-semibold text-center text-azul">
           {{ textoTipiado }}
         </h3>
         <br>
