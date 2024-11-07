@@ -125,6 +125,7 @@ export default defineComponent({
         allSections[3].submenus.push(
           //{ name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' },
           { name: 'AptoParaSustentar', label: 'Declaración Apto para Sustentar', path: '/estudiante/declaracion-apto-sustentar' },
+          { name: 'DesginacionFechayHora', label: 'Designación de Fecha y Hora', path: '/estudiante/designacion-fecha-hora' },
           { name: 'DesignacionJuradosSus', label: 'Designacion Jurados Sustentacion', path: '/estudiante/designacion-jurado-sustentacion' },
           { name: 'CorrecionSustentacion', label: 'Correccion Sustentacion', path: '/estudiante/correccion-sustentacion' }
         );
