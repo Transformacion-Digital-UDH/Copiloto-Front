@@ -13,7 +13,7 @@ const showSendModal = ref(false); //modal para enviar las revisiones de todos lo
 const showArchivoModal = ref(false);
 
 // ***** Texto que escribe automáticamente ********
-const text = "Pendientes de corrección de proyecto de tesis";
+const text = "Correcciones Pendientes de Proyecto de Tesis";
 const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
 let index = 0;
 const typeWriter = () => {
@@ -225,10 +225,10 @@ const tableData = ref([
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">{{ u.name }}</p>
+                      <p class="text-gray-900 text-wrap w-64 uppercase">{{ u.name }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">
+                      <p class="text-gray-900 text-wrap w-80 uppercase">
                         {{ u.title }}
                       </p>
                     </td>

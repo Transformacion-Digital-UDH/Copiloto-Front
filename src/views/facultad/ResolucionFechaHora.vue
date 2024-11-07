@@ -169,7 +169,7 @@ onMounted(() => {
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Resolución de fecha y hora para sustentación
+        Resoluciones de Fecha y Hora para Sustentación
       </h3>
 
       <div class="mt-8">
@@ -185,13 +185,13 @@ onMounted(() => {
                 </span>
                 <input
                   placeholder="Buscar"
-                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
-                />
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
+                  />
               </div>
               <div class="relative">
                 <select
                   v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
@@ -203,7 +203,7 @@ onMounted(() => {
               <div class="relative">
                 <select
                   v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
@@ -238,20 +238,20 @@ onMounted(() => {
                     :key="solicitude.resolucion_id"
                     class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                   >
-                    <td class="px-3 border text-base">
-                      <p class="text-gray-900 text-wrap w-40">
+                    <td class="px-3 text-base">
+                      <p class="text-gray-900 text-wrap w-40 uppercase">
                         {{ solicitude.nombre }}
                       </p>
                     </td>
-                    <td class="px-3 py-2 border text-base">
-                      <p class="text-gray-900 text-wrap max-w-2xl">
+                    <td class="px-3 py-2 text-base">
+                      <p class="text-gray-900 text-wrap max-w-2xl uppercase">
                         {{ solicitude.titulo }}
                       </p>
                     </td>
                     <td class="text-center px-4">
                       <a v-if="solicitude.oficio_id" :href="`${VIEW_FYH}/${ solicitude.oficio_id }`" target="_blank">
                         <button>
-                          <IconPdf />
+                          <svg fill="#39B49E" class="w-6 h-6" version="1.1"oficio_id="XMoficio_id_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                         </button>
                       </a>
                       <span v-else class="italic text-gray-400">No disponible</span>
@@ -307,29 +307,11 @@ onMounted(() => {
               </table>
 
               <!-- Paginación -->
-              <div
-                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
-              >
-                <span class="text-sm text-gray-900 xs:text-sm"
-                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}</span
-                >
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button
-                    :disabled="currentPage === 1"
-                    @click="goToPreviousPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    :disabled="currentPage === totalPages"
-                    @click="goToNextPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
-                  >
-                    Siguiente
-                  </button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
