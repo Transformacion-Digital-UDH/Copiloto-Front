@@ -263,7 +263,7 @@ const validateResolution = () => {
                       </p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-black text-wrap w-80 ">{{ u.titulo || "Título no disponible" }}</p>
+                      <p class="text-black text-wrap w-80 uppercase">{{ u.titulo || "Título no disponible" }}</p>
                     </td>
                     <td class="px-3 py-5 text-center align-middle">
                       <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">

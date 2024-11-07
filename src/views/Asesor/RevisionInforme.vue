@@ -286,7 +286,7 @@ onMounted(() => {
                         <p class="text-gray-900 whitespace-nowrap w-64">{{ u.estudiante_nombre || "Nombre desconocido" }}</p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-80">{{ u.titulo || "Título no disponible" }}</p>
+                        <p class="text-gray-900 text-wrap w-80 uppercase">{{ u.titulo || "Título no disponible" }}</p>
                       </td>
                       <td class="px-3 py-5 text-center">
                         <a :href="u['link-tesis']" target="_blank" class="text-blue-800 hover:text-base flex items-center justify-center group">
