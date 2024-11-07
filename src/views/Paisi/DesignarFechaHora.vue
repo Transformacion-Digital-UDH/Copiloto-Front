@@ -277,7 +277,7 @@ function closeDocumentModal() {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
+        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
         <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
@@ -404,32 +404,18 @@ function closeDocumentModal() {
 
                 </table>
 
-                <!-- Paginación -->
-                <div
-                  class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
-                >
-                  <span class="text-sm text-gray-900 xs:text-sm"
-                    >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                    {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                    {{ tableData.length }}</span
-                  >
-                  <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                    <button
-                      :disabled="currentPage === 1"
-                      @click="goToPreviousPage"
-                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
-                    >
-                      Anterior
-                    </button>
-                    <button
-                      :disabled="currentPage === totalPages"
-                      @click="goToNextPage"
-                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
-                    >
-                      Siguiente
-                    </button>
-                  </div>
+                 <!-- Paginación -->
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage +
+                  1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage"
+                    class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage"
+                    class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
+              </div>
+
               </div>
             </div>
           </div>

@@ -47,10 +47,10 @@ const nroOficio1 = ref<string>('');  // Tipo explícito string
 const nroExped1 = ref<string>('');   // Tipo explícito string
 const motivoObservacion = ref<string>("");  // Tipo explícito string
 let oficio_id = ref<number | null>(null);   // Puede ser null
-  
+
 
 //VARIABLES DE ENTORNO
-const VIEW_OSINFORME = import.meta.env.VITE_URL_VIEW_OSINFORME ;
+const VIEW_OSINFORME = import.meta.env.VITE_URL_VIEW_OSINFORME;
 
 
 
@@ -77,7 +77,7 @@ function closeModal() {
 
 // Filtrar datos y aplicar paginación
 const tableData = ref<Solicitude[]>([]); // Tipo explícito: Array de Solicitude
-  const filteredTableData = computed(() => {
+const filteredTableData = computed(() => {
   let filteredData = tableData.value ?? [];  // Si tableData.value es null o undefined, usa []
 
   // Aplicar filtro por estado
@@ -118,7 +118,7 @@ function goToNextPage() {
 const load = ref<boolean>(false);
 const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser null
 const showDocumentModal = ref(false); // Modal de documentos
-let solicitudSeleccionada = ref<string | null>(null); 
+let solicitudSeleccionada = ref<string | null>(null);
 
 // Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
@@ -156,7 +156,7 @@ const updateOffice = async () => {
 
     const params = {
       estado: 'tramitado',
-      numero_oficio: nroOficio1.value,  
+      numero_oficio: nroOficio1.value,
       expediente: nroExped1.value,
     };
 
@@ -166,9 +166,9 @@ const updateOffice = async () => {
     if (response.data.estado) {
       const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
       if (oficio) {
-        oficio.estado = 'tramitado';  
+        oficio.estado = 'tramitado';
       }
-      closeModal();  
+      closeModal();
       alertToast('El oficio ha sido generado', 'Éxito', 'success');
     }
   } catch (error) {
@@ -250,8 +250,7 @@ function closeDocumentModal() {
     <div class="flex h-screen border-s-2 bg-gray-100">
       <div class="flex-1 p-10">
         <div class="flex justify-center items-center content-center px-14 flex-col">
-          <h3 
-            class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
+          <h3 class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
           </h3>
         </div>
         <div class="mt-8">
@@ -262,7 +261,7 @@ function closeDocumentModal() {
               </div>
             </div>
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
-                <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
+              <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
             </div>
           </div>
         </div>
@@ -272,7 +271,7 @@ function closeDocumentModal() {
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-5xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
+        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
         <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
@@ -284,16 +283,12 @@ function closeDocumentModal() {
                   <span class="absolute inset-y-0 left-0 flex items-center pl-2">
                     <IconBuscar />
                   </span>
-                  <input
-                    placeholder="Buscar"
-                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
-                   />
+                  <input placeholder="Buscar"
+                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300" />
                 </div>
                 <div class="relative">
-                  <select
-                  v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                  <select v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -302,10 +297,8 @@ function closeDocumentModal() {
 
                 <!-- Filtro de estado -->
                 <div class="relative">
-                  <select
-                  v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                  <select v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="">Todos</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="Observado">Observado</option>
@@ -318,14 +311,10 @@ function closeDocumentModal() {
 
             <!-- Tabla -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
-              <div
-                class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
-              >
+              <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
-                    <tr
-                      class="text-center text-azul border-b-2 bg-gray-300"
-                    >
+                    <tr class="text-center text-azul border-b-2 bg-gray-300">
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left font-thin tracking-wider">TÍTULO</th>
                       <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
@@ -333,55 +322,43 @@ function closeDocumentModal() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      v-for="(solicitude, index) in filteredTableData"
-                      :key="solicitude.oficio_id"
-                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
-                    >
+                    <tr v-for="(solicitude, index) in filteredTableData" :key="solicitude.oficio_id"
+                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
-                          {{ solicitude.nombre }} 
+                        <p class="text-black text-wrap w-52 uppercase">
+                          {{ solicitude.nombre }}
                         </p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
-                          {{ solicitude.titulo }} 
+                        <p class="text-black text-wrap w-52 uppercase">
+                          {{ solicitude.titulo }}
                         </p>
                       </td>
 
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <!-- Botón para Generar -->
-                        <button
-                        v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
-                          :class="[ 
-                            'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
-                            'hover:bg-green-600' 
-                          ]"  :disabled="['tramitado'].includes(solicitude.estado ?? '')"
-                          @click="openModal(solicitude.oficio_id)"
-                        >
+                        <button v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')" :class="[
+                          'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none',
+                          'hover:bg-green-600'
+                        ]" :disabled="['tramitado'].includes(solicitude.estado ?? '')"
+                          @click="openModal(solicitude.oficio_id)">
                           Generar
                         </button>
 
                         <!-- Botón para Observar -->
-                        <button
-                          v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
-                          :class="[ 
-                            'w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
-                            'hover:bg-gray-400'
-                          ]" :disabled="['tramitado'].includes(solicitude.estado ?? '')"
-                          @click="openRejectModal(solicitude.oficio_id)"
-                        >
+                        <button v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')" :class="[
+                          'w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none',
+                          'hover:bg-gray-400'
+                        ]" :disabled="['tramitado'].includes(solicitude.estado ?? '')"
+                          @click="openRejectModal(solicitude.oficio_id)">
                           Observar
                         </button>
 
                         <!-- Enlace para Visualizar Oficio (deshabilitado por ahora) -->
                         <button>
-                          <a
-                            :href="`${VIEW_OSINFORME}/${solicitude.oficio_id}`" 
-                            target="_blank"
+                          <a :href="`${VIEW_OSINFORME}/${solicitude.oficio_id}`" target="_blank"
                             class="flex items-center m-2 relative group"
-                            v-if="['tramitado'].includes(solicitude.estado)"
-                          >
+                            v-if="['tramitado'].includes(solicitude.estado)">
                             <IconEyeCerrar class="mr-1 group-hover:hidden" />
                             <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                             <span class="text-[#34495e]">Oficio</span>
@@ -390,8 +367,10 @@ function closeDocumentModal() {
                       </td>
 
                       <td class="px-3 py-5 text-center">
-                        <span :class="`estado-estilo estado-${solicitude.estado ? solicitude.estado.toLowerCase().replace(' ', '-') : ''}`">
-                          {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
+                        <span
+                          :class="`estado-estilo estado-${solicitude.estado ? solicitude.estado.toLowerCase().replace(' ', '-') : ''}`">
+                          {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() +
+                            solicitude.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
                         </span>
                       </td>
                     </tr>
@@ -400,30 +379,17 @@ function closeDocumentModal() {
                 </table>
 
                 <!-- Paginación -->
-                <div
-                  class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
-                >
-                  <span class="text-sm text-gray-900 xs:text-sm"
-                    >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                    {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                    {{ tableData.length }}</span
-                  >
+                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                  <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage
+                    +
+                    1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                   <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                    <button
-                      :disabled="currentPage === 1"
-                      @click="goToPreviousPage"
-                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
-                    >
-                      Anterior
-                    </button>
-                    <button
-                      :disabled="currentPage === totalPages"
-                      @click="goToNextPage"
-                      class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
-                    >
-                      Siguiente
-                    </button>
+                    <button :disabled="currentPage === 1" @click="goToPreviousPage"
+                      class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                    <button :disabled="currentPage === totalPages" @click="goToNextPage"
+                      class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                   </div>
+
                 </div>
               </div>
             </div>
@@ -431,10 +397,14 @@ function closeDocumentModal() {
         </div>
 
         <!-- Modal para generar un oficio al estudiante -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
+        <div v-if="showModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out"
+          @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -447,35 +417,25 @@ function closeDocumentModal() {
               <p class="text-gray-500 text-lg text-left mb-2">
                 Por favor dígite el N° de oficio.
               </p>
-              <input 
-                type="text" 
-                id="nroOficio1" 
-                v-model="nroOficio1" 
-                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                maxlength="3" 
-                @input="validateNroOficio"
-                required>
-                <p v-if="nroOficio1.length !== 3 && nroOficio1 !== ''" class="text-red-800 mb-3">Debe ingresar 3 dígitos</p>
+              <input type="text" id="nroOficio1" v-model="nroOficio1"
+                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3"
+                @input="validateNroOficio" required>
+              <p v-if="nroOficio1.length !== 3 && nroOficio1 !== ''" class="text-red-800 mb-3">Debe ingresar 3 dígitos
+              </p>
               <p class="text-gray-500 text-lg text-left mb-2">
                 Por favor dígite el N° de expediente.
               </p>
-              <input 
-                type="text" 
-                id="nroExped1" 
-                v-model="nroExped1" 
-                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                maxlength="17" 
-                @input="validateNroExped"
-                required>
-                <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
+              <input type="text" id="nroExped1" v-model="nroExped1"
+                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17"
+                @input="validateNroExped" required>
+              <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
             </div>
             <div class="flex items-center justify-center p-3  border-gray-200">
-              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal">
+              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                 Cancelar
               </button>
-              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="!formIsValid" 
-                @click="updateOffice">
+              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
+                :disabled="!formIsValid" @click="updateOffice">
                 Enviar
               </button>
             </div>
@@ -483,10 +443,14 @@ function closeDocumentModal() {
         </div>
 
         <!-- Modal de observacion -->
-        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
+        <div v-if="showRejectModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out"
+          @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -499,12 +463,12 @@ function closeDocumentModal() {
               <p class="text-gray-600 text-lg text-center mb-4">
                 Por favor escriba el motivo de su observación
               </p>
-              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
+              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0"
+                name="observarTesis" id="observarTesis" v-model="motivoObservacion"
+                placeholder="Escriba aquí..."></textarea>
             </div>
             <div class="flex items-center justify-center p-3  border-gray-200">
-              <button
-                class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal">
+              <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                 Cancelar
               </button>
               <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
@@ -549,10 +513,11 @@ function closeDocumentModal() {
 }
 
 .custom-thead th {
-  font-weight: 700; /* Grosor delgado */
-  font-size: 16px;  /* Tamaño de la fuente */
-  text-transform: uppercase; /* Todo el texto en mayúsculas */
+  font-weight: 700;
+  /* Grosor delgado */
+  font-size: 16px;
+  /* Tamaño de la fuente */
+  text-transform: uppercase;
+  /* Todo el texto en mayúsculas */
 }
-
-
 </style>
