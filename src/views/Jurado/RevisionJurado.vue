@@ -105,6 +105,7 @@ interface Review {
   secretario_aprobado:string,
   vocal_aprobado:string,
   review_id: string,
+  link:string,
 
 }
 
