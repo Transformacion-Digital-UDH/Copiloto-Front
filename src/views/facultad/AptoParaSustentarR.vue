@@ -185,13 +185,13 @@ onMounted(() => {
                 </span>
                 <input
                   placeholder="Buscar"
-                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-gray-400 bg-white border border-gray-400 rounded-lg appearance-none focus:bg-white focus:placeholder-gray-600 focus:text-gray-700 focus:outline-none"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
                 />
               </div>
               <div class="relative">
                 <select
                   v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-none focus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
                 >
                   <option value="5">5</option>
                   <option value="10">10</option>
@@ -203,7 +203,7 @@ onMounted(() => {
               <div class="relative">
                 <select
                   v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight font-Thin 100 text-gray-700 bg-white border border-gray-400 rounded-lg appearance-none focus:outline-nonefocus:bg-white focus:border-gray-500"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
                 >
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
@@ -298,29 +298,11 @@ onMounted(() => {
               </table>
 
               <!-- Paginación -->
-              <div
-                class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between"
-              >
-                <span class="text-sm text-gray-900 xs:text-sm"
-                  >Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al
-                  {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de
-                  {{ tableData.length }}</span
-                >
+              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button
-                    :disabled="currentPage === 1"
-                    @click="goToPreviousPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-s-2xl"
-                  >
-                    Anterior
-                  </button>
-                  <button
-                    :disabled="currentPage === totalPages"
-                    @click="goToNextPage"
-                    class="px-4 py-2 text-base text-white bg-gray-400 hover:bg-base rounded-e-2xl"
-                  >
-                    Siguiente
-                  </button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>

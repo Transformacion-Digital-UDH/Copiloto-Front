@@ -29,7 +29,15 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
+// Cambiar página a la anterior
+function goToPreviousPage() {
+  if (currentPage.value > 1) currentPage.value--;
+}
 
+// Cambiar página a la siguiente
+function goToNextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
 // Filtrado de datos y paginación
 const filteredTableData = computed(() => {
   // Asegurarse de que `tableData` esté inicializado
@@ -40,6 +48,8 @@ const filteredTableData = computed(() => {
       (data) => data.estado === selectedFilter.value
     );
   }
+
+
 
 // Paginación de los datos filtrados
 const startIndex = (currentPage.value - 1) * rowsPerPage.value;
@@ -348,12 +358,12 @@ onMounted(() => {
                 >
                   <!-- Nombre del Estudiante -->
                   <td class="px-3 py-5 text-base">
-                    <p class="text-black text-wrap w-72">{{ u.nombre }}</p>
+                    <p class="text-black text-wrap w-72 uppercase">{{ u.nombre }}</p>
                   </td>
 
                   <!-- Título del Proyecto -->
                   <td class="px-3 py-5 text-base">
-                    <p class="text-black text-wrap w-80">{{ u.titulo }}</p>
+                    <p class="text-black text-wrap w-80 uppercase">{{ u.titulo }}</p>
                   </td>
 
                   <!-- Botón Asignar en una celda separada -->
@@ -388,6 +398,17 @@ onMounted(() => {
                 </tr>
               </tbody>
             </table>
+            <!-- Paginación -->
+            <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage +
+                  1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage"
+                    class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage"
+                    class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
+                </div>
+              </div>
           </div>
         </div>
 

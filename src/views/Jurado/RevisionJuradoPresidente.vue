@@ -225,10 +225,10 @@ const tableData = ref([
                     class="border-b border-gray-200"
                   >
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-64">{{ u.name }}</p>
+                      <p class="text-gray-900 text-wrap w-64 uppercase">{{ u.name }}</p>
                     </td>
                     <td class="px-3 py-5 text-base">
-                      <p class="text-gray-900 text-wrap w-80">
+                      <p class="text-gray-900 text-wrap w-80 uppercase">
                         {{ u.title }}
                       </p>
                     </td>
