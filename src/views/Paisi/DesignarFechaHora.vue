@@ -29,7 +29,15 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
+// Cambiar página a la anterior
+function goToPreviousPage() {
+  if (currentPage.value > 1) currentPage.value--;
+}
 
+// Cambiar página a la siguiente
+function goToNextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
 // Filtrado de datos y paginación
 const filteredTableData = computed(() => {
   // Asegurarse de que `tableData` esté inicializado
@@ -40,6 +48,8 @@ const filteredTableData = computed(() => {
       (data) => data.estado === selectedFilter.value
     );
   }
+
+
 
 // Paginación de los datos filtrados
 const startIndex = (currentPage.value - 1) * rowsPerPage.value;
@@ -292,14 +302,12 @@ onMounted(() => {
   </template>
 
   <template v-else>
-    <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
-      <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
-        <div class="mt-8">
-          <!-- Filtros de tabla -->
-          <div class="mt-6">
-            <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
-              <!-- Filtro de cantidad de entradas -->
+  <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
+    <div class="flex-1 p-10 overflow-auto">
+      <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
+
+      <div class="mt-8">
+        <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
               <div class="w-full flex justify-end items-center space-x-2">
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 flex items-center pl-2">
@@ -330,109 +338,6 @@ onMounted(() => {
                 </div>
               </div>
             </div>
-<<<<<<< HEAD
-            <br>
-
-            <!-- Tabla -->
-            <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
-              <div
-                class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
-              >
-                <table class="min-w-full leading-normal">
-                  <thead class="custom-thead font-Quicksand">
-                    <tr
-                      class="text-center text-azul border-b-2 bg-gray-300"
-                    >
-                      <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
-                      <th class="py-2 px-3 text-left tracking-wider">TÍTULO </th>
-                      <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
-                      <th class="py-2 px-3 tracking-wider">ESTADO</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      v-for="(solicitude, index) in filteredTableData"
-                      :key="solicitude.oficio_id"
-                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
-                    >
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
-                          {{ solicitude.nombre }} 
-                        </p>
-                      </td>
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
-                          {{ solicitude.titulo }} 
-                        </p>
-                      </td>
-
-                      <td class="px-3 py-5 flex flex-col items-center justify-center">
-                        <!-- Botón para Generar -->
-                        <button
-                        v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
-                          :class="[ 
-                            'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
-                            'hover:bg-green-600' 
-                          ]"  :disabled="['tramitado'].includes(solicitude.estado ?? '')"
-                          @click="openModal(solicitude.oficio_id)"
-                        >
-                          Generar
-                        </button>
-
-                        <!-- Botón para Observar -->
-                        <button
-                          v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
-                          :class="[ 
-                            'w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
-                            'hover:bg-gray-400'
-                          ]" :disabled="['tramitado'].includes(solicitude.estado ?? '')"
-                          @click="openRejectModal(solicitude.oficio_id)"
-                        >
-                          Observar
-                        </button>
-
-                        <!-- Enlace para Visualizar Oficio (deshabilitado por ahora) -->
-                        <button>
-                          <a
-                            :href="`${VIEW_AINFORME }/${solicitude.oficio_id}`" 
-                            target="_blank"
-                            class="flex items-center m-2 relative group"
-                            v-if="['tramitado'].includes(solicitude.estado)"
-                          >
-                            <IconEyeCerrar class="mr-1 group-hover:hidden" />
-                            <IconEyeAbrir class="mr-1 hidden group-hover:block" />
-                            <span class="text-[#34495e]">Oficio</span>
-                          </a>
-                        </button>
-                      </td>
-
-                      <td class="px-3 py-5 text-center">
-                        <span :class="`estado-estilo estado-${solicitude.estado ? solicitude.estado.toLowerCase().replace(' ', '-') : ''}`">
-                          {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Estado desconocido' }}
-                        </span>
-                      </td>
-                    </tr>
-                  </tbody>
-
-                </table>
-
-                 <!-- Paginación -->
-              <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage +
-                  1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
-                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage"
-                    class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage"
-                    class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
-                </div>
-              </div>
-
-              </div>
-            </div>
-          </div>
-        </div>
-=======
         <!-- Tabla de solicitudes -->
         <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
           <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
@@ -453,13 +358,12 @@ onMounted(() => {
                 >
                   <!-- Nombre del Estudiante -->
                   <td class="px-3 py-5 text-base">
-                    <p class="text-black text-wrap w-72">{{ u.nombre }}</p>
+                    <p class="text-black text-wrap w-72 uppercase">{{ u.nombre }}</p>
                   </td>
->>>>>>> f29a23c609353b74bfb12c3744aaadaf5baed178
 
                   <!-- Título del Proyecto -->
                   <td class="px-3 py-5 text-base">
-                    <p class="text-black text-wrap w-80">{{ u.titulo }}</p>
+                    <p class="text-black text-wrap w-80 uppercase">{{ u.titulo }}</p>
                   </td>
 
                   <!-- Botón Asignar en una celda separada -->
@@ -494,6 +398,17 @@ onMounted(() => {
                 </tr>
               </tbody>
             </table>
+            <!-- Paginación -->
+            <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage +
+                  1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage"
+                    class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage"
+                    class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
+                </div>
+              </div>
           </div>
         </div>
 
