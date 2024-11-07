@@ -39,15 +39,16 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/correccion-sustentacion");
+  router.push("/estudiante/designacion-jurado-sustentacion");
 };
 
 const isNextButtonDisabled = computed(() => {
   const documentoResolucion = documentos.value.find(
-    (doc) => doc.nombre === "Resolución de Designación de Jurados para Sustentación"
+    (doc) => doc.nombre === "Resolución de Declaración de Apto para Sustentación"
   );
   return documentoResolucion?.estado.toLowerCase() !== "tramitado";
 });
+
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -322,6 +323,11 @@ onMounted(() => {
 }
 .estado-pendiente {
   background-color: #8898aa;
+  color: #ffffff;
+}
+
+.estado-observado {
+  background-color: #e79e38;
   color: #ffffff;
 }
 </style>

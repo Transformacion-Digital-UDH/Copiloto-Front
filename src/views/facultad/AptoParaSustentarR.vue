@@ -88,8 +88,8 @@ interface Solicitude {
 }
 const tableData = ref<Solicitude[]>([]); 
 const motivoObservacion = ref<string>("");
-const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
-const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD
+const VIEW_OSINFORME = import.meta.env.VITE_URL_VIEW_OSINFORME;
+const VIEW_RSNFORME = import.meta.env.VITE_URL_VIEW_RSNFORME;
 let resolucion_id = ref<number | null>(null);
 
 
@@ -247,7 +247,7 @@ onMounted(() => {
                       </p>
                     </td>
                     <td class="text-center px-4">
-                      <a v-if="solicitude.oficio_id" :href="`${VIEW_APROBACIONPAISI}/${ solicitude.oficio_id }`" target="_blank">
+                      <a v-if="solicitude.oficio_id" :href="`${VIEW_OSINFORME}/${ solicitude.oficio_id }`" target="_blank">
                         <button>
                           <IconPdf />
                         </button>
@@ -276,7 +276,7 @@ onMounted(() => {
 
                       <button>
                           <a
-                            :href="`${VIEW_APROBACIONFACULTAD}/${solicitude.resolucion_id}`" 
+                            :href="`${VIEW_RSNFORME}/${solicitude.resolucion_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"

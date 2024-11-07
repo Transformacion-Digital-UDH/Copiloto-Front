@@ -50,9 +50,7 @@ let oficio_id = ref<number | null>(null);   // Puede ser null
   
 
 //VARIABLES DE ENTORNO
-const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
-const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME ;
+const VIEW_OSINFORME = import.meta.env.VITE_URL_VIEW_OSINFORME ;
 
 
 
@@ -162,7 +160,7 @@ const updateOffice = async () => {
       expediente: nroExped1.value,
     };
 
-    const response = await axios.put(`/api/resolucion/aprobacion-tesis/${oficioId}/status`, params);
+    const response = await axios.put(`/api/oficio/aprobacion-tesis/${oficioId}/status`, params);
     console.log('Datos en update:', response.data);  // Verificación del response
 
     if (response.data.estado) {
@@ -188,7 +186,7 @@ const rejectSolicitude = async () => {
       estado: 'observado',
       observacion: motivoObservacion.value,  // Motivo de rechazo
     };
-    const response = await axios.put(`/api/resolucion/aprobacion-tesis/${oficioId}/status`, params);
+    const response = await axios.put(`/api/oficio/aprobacion-tesis/${oficioId}/status`, params);
     console.log('Datos en rechazo:', response.data);  // Verificación del response
 
     if (response.data.estado) {
@@ -379,7 +377,7 @@ function closeDocumentModal() {
                         <!-- Enlace para Visualizar Oficio (deshabilitado por ahora) -->
                         <button>
                           <a
-                            :href="`${VIEW_AINFORME }/${solicitude.oficio_id}`" 
+                            :href="`${VIEW_OSINFORME}/${solicitude.oficio_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"
