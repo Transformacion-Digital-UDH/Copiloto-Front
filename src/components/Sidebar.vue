@@ -126,7 +126,6 @@ export default defineComponent({
           //{ name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' },
           { name: 'AptoParaSustentar', label: 'Declaración Apto para Sustentar', path: '/estudiante/declaracion-apto-sustentar' },
           { name: 'DesginacionFechayHora', label: 'Designación de Fecha y Hora', path: '/estudiante/designacion-fecha-hora' },
-          { name: 'DesignacionJuradosSus', label: 'Designacion Jurados Sustentacion', path: '/estudiante/designacion-jurado-sustentacion' },
           { name: 'CorrecionSustentacion', label: 'Correccion Sustentacion', path: '/estudiante/correccion-sustentacion' }
         );
         allSections[4].submenus.push(
@@ -151,11 +150,9 @@ export default defineComponent({
         if (is_jury.value) {
           allSections[0].submenus.push(
             { name: 'revision jurado proyecto', label: 'Revision Jurado Proyecto', path: '/jurado/revision-jurado' },
-            { name: 'revision presidente proyecto', label: 'Revision Presidente Proyecto', path: '/jurado/revision-presidente' }
           );
           allSections[2].submenus.push(
             { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
-            { name: 'revision presidente informe', label: 'Revision Presidente Informe', path: '/jurado/revisionJuradoPresidente-informe' }
           );
         }
         // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
@@ -173,8 +170,8 @@ export default defineComponent({
         );
         allSections[2].submenus.push(
           { name: 'Link de informe', label: 'Link de Informe', path: '/paisi/link-informe' },
+          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/paisi/designar-jurado-informe' },
           { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' },
-          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/paisi/designar-jurado-informe' }
         );
         allSections[3].submenus.push(
           { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/paisi/apto-sustentacion' },

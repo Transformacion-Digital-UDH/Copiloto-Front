@@ -56,6 +56,10 @@ const authStore = useAuthStore();
 const solicitudEstado = ref<string>("");
 const isLoading = ref(false);
 const load = ref(false);
+// Estados para accesitario, fecha y hora
+const accesitario = ref<string>("");  // Nombre del accesitario
+const fechaSustentacion = ref<string>("");  // Fecha de la sustentación
+const horaSustentacion = ref<string>(""); 
 
 const VIEW_OSINFORME  = import.meta.env.VITE_URL_VIEW_OSINFORME ;
 const DOWNLOAD_OSINFORME  = import.meta.env.VITE_URL_DOWNLOAD_OSINFORME ;
@@ -101,47 +105,27 @@ const solicitarSustentacionFechayHora= async () => {
   }
 };
 
-// Función para obtener jurados asignados desde el backend
-// const obtenerDocumentosSustentancion = async () => {
-//   load.value = true;
-//   const student_id = authStore.id
-//   try {
-//     const response = await axios.get(`api/estudiante/get-info/declarar-apto/${student_id}`);
-//     console.log('Mostrando lo recibido: ', response.data);
+// Función para obtener datos de sustentación (accesitario, fecha y hora)
+const obtenerDatosSustentacion = async () => {
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(`/api/oficio/datos-sustentacion/${student_id}`);
+    if (response.data) {
+      accesitario.value = response.data.accesitario || "No asignado";
+      fechaSustentacion.value = response.data.fecha || "Fecha no asignada";
+      horaSustentacion.value = response.data.hora || "Hora no asignada";
+    }
+  } catch (error: any) {
+    console.error("Error al obtener datos de sustentación:", error.response?.data?.message || error.message);
+  }
+};
 
-//     // Actualizar el estado y observación de oficio
-//     if (response.data.oficio_estado === 'tramitado') {
-//       oficio_id.value = response.data.oficio_id;
-//       documentos.value[0].estado = 'tramitado';
-//     } else if (response.data.oficio_estado === 'observado') {
-//       documentos.value[0].estado = 'observado';
-//       documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
-//     } else {
-//       documentos.value[0].estado = 'pendiente';
-//     }
+// Llama a `obtenerDatosSustentacion` al montar el componente
+onMounted(() => {
+  obtenerDatosSustentacion();
+  // También puedes llamar a otras funciones de carga aquí, como obtenerDocumentosSustentancion
+});
 
-//     // Actualizar el estado y observación de resolución
-//     if (response.data.resolucion_estado === 'tramitado') {
-//       resolucion_id.value = response.data.resolucion_id;
-//       documentos.value[1].estado = 'tramitado';
-//     } else if (response.data.resolucion_estado === 'observado') {
-//       documentos.value[1].estado = 'observado';
-//       documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
-//     } else {
-//       documentos.value[1].estado = 'pendiente';
-//     }
-
-//   } catch (error: any) {
-//     console.error("Error al obtener datos", error.response?.data?.message || error.message);
-//   } finally {
-//     load.value = false;
-//   }
-// };
-
-// // montar para ver los jurados asignados
-// onMounted(() => {
-//     obtenerDocumentosSustentancion();
-// })
 </script>
 <template>
    <template v-if="load">
@@ -195,11 +179,38 @@ const solicitarSustentacionFechayHora= async () => {
                 :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
                 class="px-4 py-2 w-52 text-white rounded-md text-lg"
                 @click="solicitarSustentacionFechayHora">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar aprobación' }}
+                {{ isLoading ? 'Solicitando...' : 'Solicitar' }}
               </button>
             </div>
           </div>
         </div>
+
+       <!-- Nueva Sección: Detalles de Accesitario, Fecha y Hora -->
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 relative mb-8">
+          <!-- Tarjeta de Accesitario -->
+          <div class="bg-gray-50 rounded-md shadow-lg p-4 mb-4 flex flex-col items-center justify-center text-center">
+            <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+            <span class="text-2xl font-semibold text-azul">Jurado Accesitario</span>
+            <span class="text-gray-600 text-center">{{ accesitario || 'No asignado' }}</span>
+          </div>
+
+          <!-- Tarjetas de Fecha y Hora en Paralelo -->
+          <div class="flex flex-col md:flex-row gap-4 mt-4">
+            <!-- Tarjeta de Fecha de Sustentación -->
+            <div class="flex-1 bg-gray-50 rounded-md shadow-lg p-4 text-center">
+              <span class="block text-lg font-semibold text-[#1d3557]">Fecha de Sustentación</span>
+              <span class="text-gray-600 text-center">{{ fechaSustentacion || 'Fecha no asignada' }}</span>
+            </div>
+
+            <!-- Tarjeta de Hora de Sustentación -->
+            <div class="flex-1 bg-gray-50 rounded-md shadow-lg p-4 text-center">
+              <span class="block text-lg font-semibold text-[#1d3557]">Hora de Sustentación</span>
+              <span class="text-gray-600 text-center">{{ horaSustentacion || 'Hora no asignada' }}</span>
+            </div>
+          </div>
+        </div>
+
+
 
         <!-- Card 2: Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">

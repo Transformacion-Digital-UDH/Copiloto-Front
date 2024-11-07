@@ -297,10 +297,10 @@ function closeModal() {
                       :key="u.id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-64">{{ u.nombre || 'Nombre desconocido' }}</p>
+                        <p class="text-gray-900 text-wrap w-64 uppercase">{{ u.nombre || 'Nombre desconocido' }}</p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-64">{{ u.titulo|| 'Asesor desconocido' }}</p>
+                        <p class="text-gray-900 text-wrap w-64 uppercase">{{ u.titulo|| 'Asesor desconocido' }}</p>
                       </td>
                       <td class="text-center px-4">
                         <a :href="`${VIEW_OFINFORME}/${u.oficio_id}`" target="_blank">
