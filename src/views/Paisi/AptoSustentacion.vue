@@ -21,7 +21,7 @@ interface Solicitude {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Apto para la sustentación";
+const text = "Aptos para la Sustentación";
 const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {

@@ -16,7 +16,7 @@ const showModal = ref(false);  // modal para elegir jurado
 const showRejectModal = ref(false); // modal para editar jurado
 
 // Texto que se escribe automáticamente
-const text = "Designar fecha y hora para sustentación";
+const text = "Designar Fecha y Hora para Sustentación";
 const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {

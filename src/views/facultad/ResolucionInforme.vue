@@ -159,7 +159,7 @@ const observarResolucion = async () => {
   }
 };
 // ***** Texto que escribe automáticamente ********
-const text = "Resolución de Informe Final";
+const text = "Resoluciones de Informe Final";
 const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
 let index = 0;
 const typeWriter = () => {

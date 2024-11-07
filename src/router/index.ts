@@ -85,7 +85,6 @@ const router = createRouter({
         { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
         { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
         { path: 'designacion-fecha-hora', name: 'Designación de Fecha y Hora', component: DesignacionFechayHora, meta: {  roles: ['estudiante'], title: 'Designación de Fecha y Hora' } },
-        { path: 'designacion-jurado-sustentacion', name: 'DesignacionJuradosSus', component: DesignacionJuradoSus, meta: { roles:['estudiante'], title: 'Designación Jurados Sustentación' } },
         { path: 'correccion-sustentacion', name: 'Correccion Sustentacion', component: CorrecionJuradosSus, meta: {  roles:['estudiante'], title: 'Correcciones de Sustentación' } },
       ]
     },
@@ -109,9 +108,7 @@ const router = createRouter({
       component: AdminLayout,
       children: [
         { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { roles: ['jurado'], title: 'Revision jurado' } },
-        { path: 'revision-presidente', name: 'RevisionPresidente', component: RevisionJuradoPresidente, meta: { roles: ['jurado'], title: 'Revisión presidente' } },
         { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { roles: ['jurado'], title: 'Revisión jurado' } },
-        { path: 'revisionJuradoPresidente-informe', name: 'RevisionPresidenteInforme', component: RevisionJuradoPresidenteInforme, meta: { roles: ['jurado'], title: 'Revisión presidente' } },
 
       ]
     },

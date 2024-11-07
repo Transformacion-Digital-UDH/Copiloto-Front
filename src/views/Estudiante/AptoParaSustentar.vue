@@ -40,7 +40,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/designacion-jurado-sustentacion");
+  router.push("/estudiante/designacion-fecha-hora");
 };
 
 const isNextButtonDisabled = computed(() => {
@@ -199,7 +199,7 @@ onMounted(() => {
                 :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
                 class="px-4 py-2 w-52 text-white rounded-md text-lg"
                 @click="solicitarDeclaracionAptoSustentar">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar aprobación' }}
+                {{ isLoading ? 'Solicitando...' : 'Solicitar' }}
               </button>
             </div>
           </div>

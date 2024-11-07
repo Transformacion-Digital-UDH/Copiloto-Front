@@ -19,7 +19,7 @@ interface Solicitud {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Pendientes de solicitudes de asesoría";
+const text = "Solicitudes Pendientes de Asesoría";
 const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {

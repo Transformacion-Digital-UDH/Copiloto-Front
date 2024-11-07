@@ -23,7 +23,7 @@ interface Solicitude {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Aprobacion de Proyecto de Tesis";
+const text = "Aprobación de Proyecto de Tesis";
 const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {
