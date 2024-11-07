@@ -311,7 +311,9 @@ onMounted(() => {
                     <p class="text-gray-900 text-wrap w-58">{{ u.nombre }}</p>
                   </td>
                   <td class="px-2 py-3 text-base">
-                    <a :href="u.link" target="_blank" class="text-gray-900 text-wrap w-64 hover:text-blue-700">{{ u.titulo }}</a>
+                    <a :href="u.link" target="_blank">
+                    <p class="text-gray-900 text-wrap w-64 hover:text-blue-700">{{ u.titulo }}</p>
+                    </a>
                   </td>
                   <td class="px-2 py-3 text-center">
                     <span class="px-3 py-1 text-white bg-base rounded-full">
@@ -503,6 +505,5 @@ onMounted(() => {
   background-color: #e79e38;
   color: #ffffff;
 }
-
 
 </style>
