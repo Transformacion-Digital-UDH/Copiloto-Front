@@ -88,15 +88,15 @@ interface Solicitude {
 }
 const tableData = ref<Solicitude[]>([]); 
 const motivoObservacion = ref<string>("");
-const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
-const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD
+const VIEW_FYH = import.meta.env.VITE_URL_VIEW_FYH;
+const VIEW_RFYH = import.meta.env.VITE_URL_VIEW_RFYH
 let resolucion_id = ref<number | null>(null);
 
 
 const obtenerSolicitudes = async () => {
   try {
     const response = await axios.get('/api/resolucion/get/desigancion-fecha-hora-sustentacion');
-    console.log('Datos recibidos de la API:', response.data);
+    console.log('Datos recibidos de la APII:', response.data);
 
     if (response.data && Array.isArray(response.data)) {
       tableData.value = response.data as Solicitude[];  // Asignamos los datos si existe un array
@@ -227,7 +227,7 @@ onMounted(() => {
                     <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
                     <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
-                    <th class="py-2 px-4 tracking-wider">JURADO</th>
+                    <th class="py-2 px-4 tracking-wider">RESOLUCIÓN</th>
                     <!-- <th class="py-2 px-3 tracking-wider">ACCIÓN</th> -->
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
@@ -249,7 +249,7 @@ onMounted(() => {
                       </p>
                     </td>
                     <td class="text-center px-4">
-                      <a v-if="solicitude.oficio_id" :href="`${VIEW_APROBACIONPAISI}/${ solicitude.oficio_id }`" target="_blank">
+                      <a v-if="solicitude.oficio_id" :href="`${VIEW_FYH}/${ solicitude.oficio_id }`" target="_blank">
                         <button>
                           <svg fill="#39B49E" class="w-6 h-6" version="1.1"oficio_id="XMoficio_id_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
                         </button>
@@ -257,7 +257,7 @@ onMounted(() => {
                       <span v-else class="italic text-gray-400">No disponible</span>
                     </td>
                     <!-- <td class="text-center px-4">
-                      <a v-if="solicitude.resolucion_id" :href="`${VIEW_APROBACIONFACULTAD}/${ solicitude.resolucion_id }`" target="_blank">
+                      <a v-if="solicitude.resolucion_id" :href="`${VIEW_RFYH}/${ solicitude.resolucion_id }`" target="_blank">
                         <button>
                           <IconPdf />
                         </button>
@@ -286,7 +286,7 @@ onMounted(() => {
 
                       <button>
                           <a
-                            :href="`${VIEW_APROBACIONFACULTAD}/${solicitude.resolucion_id}`" 
+                            :href="`${VIEW_RFYH}/${solicitude.resolucion_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"

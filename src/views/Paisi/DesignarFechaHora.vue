@@ -1,35 +1,27 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from "vue";
-import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
-// Definir la interfaz para las solicitudes
 
+// Configuración de la tabla
+const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
+const selectedFilter = ref(""); // para seleccionar el estado
+const currentPage = ref(1); // página actual
+const showModal = ref(false);  // modal para elegir jurado
+const showRejectModal = ref(false); // modal para editar jurado
 
-interface Solicitude {
-  id: number;
-  nombre: string;
-  titulo: string;
-  oficio_id: number;
-  revision_id_asesor: number;
-  oficio_estado: string | null;
-  revision_id_presidente: number | null;
-  revision_id_secretario: string | null;
-  revision_id_vocal: string | null;
-  estado: string;
-}
-
-// ***** Texto que escribe automáticamente ********
+// Texto que se escribe automáticamente
 const text = "Designar fecha y hora para sustentación";
-const textoTipiado1 = ref('');
+const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    textoTipiado1.value += text.charAt(index);
+    textoTipiado.value += text.charAt(index);
     index++;
     setTimeout(typeWriter, 80);
   }
@@ -37,108 +29,63 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
-// *******************************************************
 
-// Estados y propiedades
-const isHovered = ref(false);
-const selectedFilter = ref<string>("");  // Tipo explícito string
-const rowsPerPage = ref<number>(5);      // Tipo explícito number
-const currentPage = ref<number>(1);      // Tipo explícito number
-const showModal = ref<boolean>(false);   // Tipo explícito boolean
-const showRejectModal = ref<boolean>(false);  // Tipo explícito boolean
-const nroOficio1 = ref<string>('');  // Tipo explícito string
-const nroExped1 = ref<string>('');   // Tipo explícito string
-const motivoObservacion = ref<string>("");  // Tipo explícito string
-let oficio_id = ref<number | null>(null);   // Puede ser null
-  
+// Filtrado de datos y paginación
+const filteredTableData = computed(() => {
+  // Asegurarse de que `tableData` esté inicializado
+  let filteredData = tableData.value ?? [];
 
-//VARIABLES DE ENTORNO
-const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
-const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const VIEW_AINFORME = import.meta.env.VITE_URL_VIEW_AINFORME ;
-
-
-
-// Función para abrir modal
-function openModal(oficioId: number) {
-  showModal.value = true;
-  oficio_id.value = oficioId;
-}
-
-// Función para abrir modal de rechazo
-function openRejectModal(oficioId: number) {
-  showRejectModal.value = true;
-  oficio_id.value = oficioId;
-}
-
-// Función para cerrar modal
-function closeModal() {
-  console.log('Ejecutando closeModal');  // Verificación
-  showModal.value = false;
-  showRejectModal.value = false;
-  motivoObservacion.value = "";
-}
-
-
-// Filtrar datos y aplicar paginación
-const tableData = ref<Solicitude[]>([]); // Tipo explícito: Array de Solicitude
-  const filteredTableData = computed(() => {
-  let filteredData = tableData.value ?? [];  // Si tableData.value es null o undefined, usa []
-
-  // Aplicar filtro por estado
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
-      (data) => (data.estado?.toLowerCase() ?? '') === selectedFilter.value.toLowerCase()
+      (data) => data.estado === selectedFilter.value
     );
   }
 
-  console.log('Filtrando datos:', filteredData);
-
-  // Asegúrate de que siempre se obtenga un valor válido para startIndex y endIndex
-  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
-  const endIndex = startIndex + rowsPerPage.value;
-  return filteredData.slice(startIndex, endIndex);
+// Paginación de los datos filtrados
+const startIndex = (currentPage.value - 1) * rowsPerPage.value;
+const endIndex = startIndex + rowsPerPage.value;
+return filteredData.slice(startIndex, endIndex);
 });
 
-// Calcular el total de páginas
+// Total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.oficio_estado?.toLowerCase() === selectedFilter.value.toLowerCase())
-    : tableData.value;
-
+    ? tableData.value.filter((data) => data.estado === selectedFilter.value)
+    : tableData.value ?? [];
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
-// Cambiar página a la anterior
-function goToPreviousPage() {
-  if (currentPage.value > 1) currentPage.value--;
-}
-
-// Cambiar página a la siguiente
-function goToNextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-}
 
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
-const load = ref<boolean>(false);
-const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser null
-const showDocumentModal = ref(false); // Modal de documentos
-let solicitudSeleccionada = ref<string | null>(null); 
+// Estado de carga
+const load = ref(false); 
+const tableData = ref<Solicitude[]>([]); // Inicializar como un array vacío
+
+interface Solicitude {
+  nombre: string | null;
+  titulo: string | null;
+  estado: string;
+  oficio_id:string;
+}
 
 // Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
     const response = await axios.get('/api/oficio/get/desigancion-fecha-hora-sustentacion');
-    console.log('Datos recibidos de la AP:', response.data);
-
-    // Asigna los datos directamente desde response.data, ya que no está en response.data.data
-    if (response.data && Array.isArray(response.data)) {
-      tableData.value = response.data as Solicitude[];  // Asignamos los datos si existe un array
-      console.log('Datos asignados a tableData:', tableData.value);
+    console.log('api', response);
+    
+    // Verifica si response.data[0] está definido y es un array
+    if (response.data && Array.isArray(response.data[0])) {
+      // Mapea los datos directamente desde response.data[0]
+      tableData.value = response.data[0].map((item: any) => ({
+        nombre: item.nombre || 'N/A', 
+        titulo: item.titulo || 'N/A', 
+        estado: item.estado || 'Desconocido', 
+        oficio_id: item.oficio_id || 'N/A'
+      }));
     } else {
-      console.log('Estructura inesperada en la respuesta de la API');
-      //tableData.value = [];  // Si no hay datos, asignamos un array vacío
+      console.error('La respuesta de la API no contiene datos válidos:', response);
     }
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
@@ -148,62 +95,24 @@ const fetchSolicitudes = async () => {
 };
 
 
-onMounted(() => {
-  fetchSolicitudes();
-  typeWriter();
-});
+///////////////////////////////////////////////// MODAL JURADOS /////////////////////////////////////////////////////////////////////////
+// Estado de carga y datos para jurados
+const jurados = ref<{ asesor: string, asesor_id: string, revisiones: { rol: string, estudiante: string, tiempo_dias: number }[] }[]>([]);
+const selectedPresidente = ref('');
+const selectedSecretario = ref('');
+const selectedVocal = ref('');
+const selectedRevisiones = ref<Revision[]>([]); // Aquí decimos que es un array de objetos de tipo Revision
+const loadJurados = ref(false);
+const nroOficio1 = ref<string>(''); 
+const nroExped1 = ref<string>('');  
+const selectedOficioId = ref<string | null>(null); // Variable para almacenar el oficio_id seleccionado
+const VIEW_FYH = import.meta.env.VITE_URL_VIEW_FYH;
+// Estado para jurado accesitario
+const selectedAccesitario = ref('');
+// Estados para fecha y hora
+const selectedDate = ref('');  
+const selectedTime = ref('');
 
-// Función para actualizar o generar oficio
-const updateOffice = async () => {
-  try {
-    const oficioId = oficio_id.value;
-    if (oficioId === null || !nroOficio1.value || !nroExped1.value) return;  // Verificamos que `oficioId` y los valores no sean null
-
-    const params = {
-      estado: 'tramitado',
-      numero_oficio: nroOficio1.value,  
-      expediente: nroExped1.value,
-    };
-
-    const response = await axios.put(`/api/oficio/aprobacion-tesis/${oficioId}/status`, params);
-    console.log('Datos en update:', response.data);  // Verificación del response
-
-    if (response.data.estado) {
-      const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
-      if (oficio) {
-        oficio.estado = 'tramitado';  
-      }
-      closeModal();  
-      alertToast('El oficio ha sido generado', 'Éxito', 'success');
-    }
-  } catch (error) {
-    alertToast('Error al generar oficio', 'Error', 'error');
-  }
-};
-
-
-// Función para observar la solicitud
-const rejectSolicitude = async () => {
-  try {
-    const oficioId = oficio_id.value;
-    if (oficioId === null) return;  // Verificamos que `oficioId` no sea null
-    const params = {
-      estado: 'observado',
-      observacion: motivoObservacion.value,  // Motivo de rechazo
-    };
-    const response = await axios.put(`/api/oficio/aprobacion-tesis/${oficioId}/status`, params);
-    console.log('Datos en rechazo:', response.data);  // Verificación del response
-
-    if (response.data.estado) {
-      const oficio = tableData.value.find((of) => of.oficio_id === oficioId);
-      if (oficio) oficio.estado = 'observado';  // Actualizar la tabla localmente
-      closeModal();  // Cerrar el modal tras la actualización
-      alertToast('La solicitud ha sido observada', 'Éxito', 'success');
-    }
-  } catch (error) {
-    alertToast('Error al observar la solicitud', 'Error', 'error');
-  }
-};
 
 // Validación para N° de oficio: exactamente 3 dígitos
 const validateNroOficio = () => {
@@ -212,7 +121,6 @@ const validateNroOficio = () => {
     nroOficio1.value = nroOficio1.value.slice(0, 3); // Limitar a 3 caracteres
   }
 };
-
 // Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
 const validateNroExped = () => {
   nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, ''); // Permitir solo números y un guion
@@ -226,38 +134,146 @@ const formIsValid = computed(() => {
   return nroOficio1.value.length === 3 && nroExped1.value.length === 17;
 });
 
-// Variables para almacenar los IDs de los documentos
-let presidenteId = ref<string | null>(null);
-let secretarioId = ref<string | null>(null);
-let vocalId = ref<string | null>(null);
+interface Revision {
+  rol: string;
+  estudiante: string;
+  tiempo_dias: number;
+}
 
-function openDocumentModal(presidente: string | null, secretario: string | null, vocal: string | null) {
-  // Asignamos los valores de los IDs a las variables reactivas
-  presidenteId.value = presidente;
-  secretarioId.value = secretario;
-  vocalId.value = vocal;
+interface Jurado {
+  asesor: string;
+  asesor_id: string;
+  revisiones: Revision[];
+  oficio_id: string;
+}
 
-  // Solo mostramos el modal si alguno de los tres IDs no es null
-  if (presidente !== null || secretario !== null || vocal !== null) {
-    showDocumentModal.value = true;
+// Función para obtener los jurados desde el backend
+const fetchJurados = async () => {
+  loadJurados.value = true;
+  try {
+    const response = await axios.get('/api/juries/get-select');
+    console.log('Respuesta cruda de la API:', response); // Verifica la estructura de la respuesta completa
+    let data = response.data.data; // Acceder a los datos internos correctamente
+    if (Array.isArray(data) && data.length > 0) {
+      // Asignar los datos de los jurados al estado
+      jurados.value = data.map((item) => ({
+        asesor: item.asesor,
+        asesor_id: item.asesor_id,
+        revisiones: item.revisiones || [],
+        oficio_id: item.oficio_id || null 
+      }));
+      //console.log('Jurados procesados desde la API:', jurados.value); // Confirmar los datos cargados
+    } else {
+      console.error('La respuesta de la API no contiene jurados válidos');
+    }
+  } catch (error) {
+    console.error('Error al cargar los jurados:', error);
+  } finally {
+    loadJurados.value = false;
   }
-}
+};
+
+// Función para asignar jurado
+const asignarJurado = () => {
+  // Validar que se haya seleccionado un jurado accesitario, una fecha y una hora
+  if (!selectedAccesitario.value) {
+    alertToast('Por favor, selecciona un docente para el rol de accesitario.', 'error');
+    return;
+  }
+  if (!selectedDate.value) {
+    alertToast('Por favor, selecciona una fecha de sustentación.', 'error');
+    return;
+  }
+  if (!selectedTime.value) {
+    alertToast('Por favor, selecciona una hora de sustentación.', 'error');
+    return;
+  }
+
+  // Mostrar mensaje de éxito y abrir el modal de "Enviar"
+  alertToast('Jurado accesitario asignado correctamente.', "Éxito", "success");  
+  openSendModal();
+};
+
+// Función para manejar la selección de un jurado y mostrar sus revisiones
+const handleJuradoSelect = (rol: string, value: string) => {
+  const juradoSeleccionado = jurados.value.find(jurado => jurado.asesor_id === value);
+
+  if (juradoSeleccionado) {
+    // Asignamos las revisiones del jurado accesitario
+    selectedRevisiones.value = juradoSeleccionado.revisiones;
+    console.log(`Revisiones para el ${rol}:`, selectedRevisiones.value);
+  } else {
+    selectedRevisiones.value = [];
+  }
+};
+
+const sendToBackend = async () => {
+  if (!formIsValid.value) {
+    alertToast('Formulario inválido. Verifica los campos.', 'error');
+    return;
+  }
+
+  const payload = {
+    estado: 'tramitado',
+    numero_oficio: nroOficio1.value,
+    expediente: nroExped1.value,
+    fecha: selectedDate.value,
+    hora: selectedTime.value,
+    accesitario_id: selectedAccesitario.value
+  };
+
+  try {
+    if (selectedOficioId.value) {
+      const response = await axios.put(`/api/oficio/aprobacion-tesis/${selectedOficioId.value}/status`, payload);
+      alertToast('Datos enviados correctamente', "Éxito", "success");  
+
+      // Recargar las solicitudes desde el backend
+      await fetchSolicitudes();
+
+      closeModal(); // Cerrar modal después de enviar
+    } else {
+      alertToast('No se ha seleccionado un oficio.', 'error');
+    }
+  } catch (error) {
+    alertToast('Error al enviar los datos al backend', 'error');
+    console.error('Error al enviar datos:', error);
+  }
+};
 
 
-function closeDocumentModal() {
-  showDocumentModal.value = false;
+
+function openSendModal() {
+  showRejectModal.value = true;
 }
+
+const openModal = (oficio_id: string) => {
+  selectedOficioId.value = oficio_id;  // Guardar el oficio_id seleccionado
+  if (!jurados.value.length) {
+    fetchJurados();  // Solo cargamos los jurados si no están ya cargados
+  }
+  showModal.value = true;
+};
+
+function closeModal() {
+  showModal.value = false;
+  showRejectModal.value = false; 
+}
+
+// Llamar a la función fetchJurados al montar el componente
+onMounted(() => {
+  fetchSolicitudes(); // Cargar solicitudes
+  fetchJurados();     // Cargar jurados
+});
+
+
 </script>
-
 
 <template>
   <template v-if="load">
     <div class="flex h-screen border-s-2 bg-gray-100">
       <div class="flex-1 p-10">
         <div class="flex justify-center items-center content-center px-14 flex-col">
-          <h3 
-            class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
-          </h3>
+          <h3 class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader"></h3>
         </div>
         <div class="mt-8">
           <div class="mt-6">
@@ -267,58 +283,54 @@ function closeDocumentModal() {
               </div>
             </div>
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-5">
-                <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
+              <h3 class="bg-gray-200 h-[500px] w-[100%] rounded-lg duration-200 skeleton-loader"></h3>
             </div>
           </div>
         </div>
       </div>
     </div>
   </template>
+
   <template v-else>
     <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
       <div class="flex-1 p-10 overflow-auto">
-        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado1 }}</h3>
+        <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
         <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
             <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
               <!-- Filtro de cantidad de entradas -->
               <div class="w-full flex justify-end items-center space-x-2">
-                <!-- Búsqueda -->
                 <div class="relative">
                   <span class="absolute inset-y-0 left-0 flex items-center pl-2">
                     <IconBuscar />
                   </span>
                   <input
-                    placeholder="Buscar"
-                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
-                   />
+                      placeholder="Buscar"
+                      class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"/>
                 </div>
                 <div class="relative">
                   <select
-                  v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                    v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
                   </select>
                 </div>
-
-                <!-- Filtro de estado -->
                 <div class="relative">
                   <select
-                  v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                    v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="">Todos</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Observado">Observado</option>
-                    <option value="Tramitado">Tramitado</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="observado">Observado</option>
+                    <option value="tramitado">Tramitado</option>
                   </select>
                 </div>
               </div>
             </div>
+<<<<<<< HEAD
             <br>
 
             <!-- Tabla -->
@@ -420,161 +432,180 @@ function closeDocumentModal() {
             </div>
           </div>
         </div>
+=======
+        <!-- Tabla de solicitudes -->
+        <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
+          <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
+            <table class="min-w-full leading-normal">
+              <thead class="custom-thead font-Quicksand">
+                <tr class="text-center text-azul border-b-2 bg-gray-300">
+                  <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
+                  <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
+                  <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
+                  <th class="py-2 px-3 tracking-wider">ESTADO</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  v-for="(u, index) in filteredTableData" 
+                  :key="index"
+                  class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
+                >
+                  <!-- Nombre del Estudiante -->
+                  <td class="px-3 py-5 text-base">
+                    <p class="text-black text-wrap w-72">{{ u.nombre }}</p>
+                  </td>
+>>>>>>> f29a23c609353b74bfb12c3744aaadaf5baed178
 
-        <!-- Modal para generar un oficio al estudiante -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                <IconCerrar />
-              </button>
-            </div>
-            <div class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-                Se autogenerará el oficio para este estudiante
-              </h5>
-            </div>
-            <div class="p-6">
-              <p class="text-gray-500 text-lg text-left mb-2">
-                Por favor dígite el N° de oficio.
-              </p>
-              <input 
-                type="text" 
-                id="nroOficio1" 
-                v-model="nroOficio1" 
-                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                maxlength="3" 
-                @input="validateNroOficio"
-                required>
-                <p v-if="nroOficio1.length !== 3 && nroOficio1 !== ''" class="text-red-800 mb-3">Debe ingresar 3 dígitos</p>
-              <p class="text-gray-500 text-lg text-left mb-2">
-                Por favor dígite el N° de expediente.
-              </p>
-              <input 
-                type="text" 
-                id="nroExped1" 
-                v-model="nroExped1" 
-                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                maxlength="17" 
-                @input="validateNroExped"
-                required>
-                <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
-            </div>
-            <div class="flex items-center justify-center p-3  border-gray-200">
-              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal">
-                Cancelar
-              </button>
-              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="!formIsValid" 
-                @click="updateOffice">
-                Enviar
-              </button>
-            </div>
-          </div>
-        </div>
+                  <!-- Título del Proyecto -->
+                  <td class="px-3 py-5 text-base">
+                    <p class="text-black text-wrap w-80">{{ u.titulo }}</p>
+                  </td>
 
-        <!-- Modal de observacion -->
-        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                <IconCerrar />
-              </button>
-            </div>
-            <div class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-                Observación
-              </h5>
-            </div>
-            <div class="p-6 bg-white rounded-lg">
-              <p class="text-gray-600 text-lg text-center mb-4">
-                Por favor escriba el motivo de su observación
-              </p>
-              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" v-model="motivoObservacion" placeholder="Escriba aquí..."></textarea>
-            </div>
-            <div class="flex items-center justify-center p-3  border-gray-200">
-              <button
-                class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
-                @click="closeModal">
-                Cancelar
-              </button>
-              <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
-                @click="rejectSolicitude">
-                Confirmar
-              </button>
-            </div>
-          </div>
-        </div>
+                  <!-- Botón Asignar en una celda separada -->
+                  <td class="px-3 py-5 text-center">
+                    <div class="flex justify-center items-center">
+                      <!-- Si el estado es "tramitado", mostrar enlace para ver el oficio -->
+                      <a 
+                        v-if="u.estado.toLowerCase() === 'tramitado'" 
+                        :href="`${VIEW_FYH}/${u.oficio_id}`" 
+                        target="_blank" 
+                        class="flex items-center m-2 relative group">
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                          <span class="text-[#34495e]">Oficio <br> Múltiple</span>
+                      </a>
 
-         <!-- Modal de documentos -->
-         <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeDocumentModal">
-          <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
-                <IconCerrar />
-              </button>
-            </div>
-            <div class="flex items-start justify-between p-8 border-b border-gray-200">
-              <h5 class="text-2xl font-medium text-gray-900 text-center flex-1">Documentos Adjuntos</h5>
-            </div>
-            <div class="p-6 bg-white rounded-lg">
-              <!-- Conformidad Presidente -->
-              <div class="flex justify-between items-center" v-if="presidenteId">
-                <p class="text-gray-600 text-lg">Conformidad Presidente</p>
-                <a
-                  :href="`${VIEW_CPA}/${presidenteId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-              <hr>
-        <br>
+                      <!-- Si el estado no es "tramitado", mostrar el botón de Asignar -->
+                      <button 
+                        v-else
+                        class="w-24 px-5 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none hover:bg-baseClarito"
+                        @click="openModal(u.oficio_id)">
+                        Asignar
+                      </button>
+                    </div>
+                  </td>
 
-              <!-- Conformidad Secretario -->
-              <div class="flex justify-between items-center" v-if="secretarioId">
-                <p class="text-gray-600 text-lg">Conformidad Secretario</p>
-                <a
-                  :href="`${VIEW_CPA}/${secretarioId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-        <hr>
-        <br>
-              <!-- Conformidad Vocal -->
-              <div class="flex justify-between items-center" v-if="vocalId">
-                <p class="text-gray-600 text-lg">Conformidad Vocal</p>
-                <a
-                  :href="`${VIEW_CPA}/${vocalId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-            </div>
-            <div class="flex items-center justify-center p-6 border-t border-gray-200">
-              <button class="px-3 py-2 text-xm font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cancelar</button>
-            </div>
+
+                  <!-- Estado del Proyecto -->
+                  <td class="px-3 py-5 text-center">
+                    <span :class="`estado-estilo estado-${u.estado.toLowerCase().replace(' ', '-')}`">{{ u.estado }}</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
 
       </div>
+      
+    <!-- Modal para la designación de un jurado accesitario -->
+<div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+  <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
+    <div class="flex justify-end items-start">
+      <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+        <IconCerrar />
+      </button>
     </div>
-  </template>
+    <div class="w-full pr-4">
+      <div class="flex items-start justify-between p-3">
+        <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Designación de jurado accesitario</h5>
+      </div>
+      <div class="p-6">
+        <div class="flex-1">
+          <!-- Selección de fecha -->
+          <label class="block text-gray-700 mb-1">Fecha de sustentación:</label>
+          <input type="date" v-model="selectedDate" class="w-full p-2 border border-gray-300 rounded mb-4" required />
+
+          <!-- Selección de hora -->
+          <label class="block text-gray-700 mb-1">Hora de sustentación:</label>
+          <input type="time" v-model="selectedTime" class="w-full p-2 border border-gray-300 rounded mb-4" required />
+
+          <!-- Selección de jurado accesitario -->
+          <label class="block text-gray-700 mb-1">Jurado accesitario:</label>
+          <select v-model="selectedAccesitario" id="accesitario" class="w-full p-2 border border-gray-300 rounded mb-4" 
+                  @change="handleJuradoSelect('Accesitario', selectedAccesitario)">
+            <option disabled value="">Selecciona un jurado accesitario</option>
+            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+              {{ jurado.asesor }}
+            </option>
+          </select>
+        </div>
+      </div>
+      <!-- Botón para asignar -->
+      <div class="mt-6 flex justify-center">
+        <button @click="asignarJurado" class="px-4 py-2 text-base justify-center text-white bg-[#5d6d7e] rounded-lg w-60">Asignar</button>
+      </div>
+      <br>
+
+      <!-- Tabla para mostrar las revisiones si existen -->
+      <div v-if="selectedRevisiones.length" class="mt-6">
+        <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
+        <div class="overflow-y-auto max-h-48">
+          <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
+            <thead>
+              <tr class="bg-gray-200 text-left">
+                <th class="px-4 py-2">Rol</th>
+                <th class="px-4 py-2">Estudiante</th>
+                <th class="px-4 py-2">Días</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(revision, index) in selectedRevisiones" :key="index">
+                <td class="border px-4 py-2">{{ revision.rol }}</td>
+                <td class="border px-4 py-2">{{ revision.estudiante }}</td>
+                <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div v-else class="mt-6 text-gray-500 text-center">
+        <p>No hay revisiones disponibles para el jurado seleccionado.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+      <!-- Modal para el envío de oficio -->
+      <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+        <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+          <div class="flex justify-end items-start">
+            <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <IconCerrar />
+            </button>
+          </div>
+          <div class="flex items-start justify-between p-3 border-b border-gray-200">
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Se autogenerará el oficio para este estudiante</h5>
+          </div>
+          <div class="p-6">
+            <p class="text-gray-500 text-lg text-left mb-2">Por favor dígite el N° de oficio.</p>
+            <input type="text" id="nroOficio1" v-model="nroOficio1" class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" @input="validateNroOficio" required />
+            <p v-if="nroOficio1.length !== 3 && nroOficio1 !== ''" class="text-red-800 mb-3">Debe ingresar 3 dígitos</p>
+            
+            <p class="text-gray-500 text-lg text-left mb-2">Por favor dígite el N° de expediente.</p>
+            <input type="text" id="nroExped1" v-model="nroExped1" class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="17" @input="validateNroExped" required />
+            <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
+          </div>
+          <div class="flex items-center justify-center p-3 border-gray-200">
+            <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+              Cancelar
+            </button>
+            <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" 
+                  :disabled="!formIsValid" 
+                  @click="sendToBackend">
+            Enviar
+          </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</template>
+
 </template>
 
 <style scoped>
@@ -584,19 +615,13 @@ function closeDocumentModal() {
   font-weight: 400;
   border-radius: 0.375rem;
 }
-
-.estado-tramitado {
-  background-color: #39B49E;
-  color: #ffffff;
-}
-
-.estado-aceptado {
+.estado-asignado {
   background-color: #48bb78;
   color: #ffffff;
 }
 
-.estado-observado {
-  background-color: #e79e38;
+.estado-solicitud {
+  background-color: #5dade2;
   color: #ffffff;
 }
 
@@ -604,12 +629,14 @@ function closeDocumentModal() {
   background-color: #8898aa;
   color: #ffffff;
 }
-
-.custom-thead th {
-  font-weight: 700; /* Grosor delgado */
-  font-size: 16px;  /* Tamaño de la fuente */
-  text-transform: uppercase; /* Todo el texto en mayúsculas */
+.estado-tramitado {
+  background-color: #39B49E;
+  color: #ffffff;
 }
 
-
+.custom-thead th {
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase;
+}
 </style>
