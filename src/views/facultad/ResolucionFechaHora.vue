@@ -88,15 +88,15 @@ interface Solicitude {
 }
 const tableData = ref<Solicitude[]>([]); 
 const motivoObservacion = ref<string>("");
-const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
-const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD
+const VIEW_FYH = import.meta.env.VITE_URL_VIEW_FYH;
+const VIEW_RFYH = import.meta.env.VITE_URL_VIEW_RFYH
 let resolucion_id = ref<number | null>(null);
 
 
 const obtenerSolicitudes = async () => {
   try {
-    const response = await axios.get('/api/resolucion/get-aprobar-tesis');
-    console.log('Datos recibidos de la API:', response.data);
+    const response = await axios.get('/api/resolucion/get/desigancion-fecha-hora-sustentacion');
+    console.log('Datos recibidos de la APII:', response.data);
 
     if (response.data && Array.isArray(response.data)) {
       tableData.value = response.data as Solicitude[];  // Asignamos los datos si existe un array
@@ -227,7 +227,7 @@ onMounted(() => {
                     <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
                     <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
-                    <th class="py-2 px-4 tracking-wider">JURADO</th>
+                    <th class="py-2 px-4 tracking-wider">RESOLUCIÓN</th>
                     <!-- <th class="py-2 px-3 tracking-wider">ACCIÓN</th> -->
                     <th class="py-2 px-3 tracking-wider">ESTADO</th>
                   </tr>
@@ -249,7 +249,7 @@ onMounted(() => {
                       </p>
                     </td>
                     <td class="text-center px-4">
-                      <a v-if="solicitude.oficio_id" :href="`${VIEW_APROBACIONPAISI}/${ solicitude.oficio_id }`" target="_blank">
+                      <a v-if="solicitude.oficio_id" :href="`${VIEW_FYH}/${ solicitude.oficio_id }`" target="_blank">
                         <button>
                           <IconPdf />
                         </button>
@@ -257,7 +257,7 @@ onMounted(() => {
                       <span v-else class="italic text-gray-400">No disponible</span>
                     </td>
                     <!-- <td class="text-center px-4">
-                      <a v-if="solicitude.resolucion_id" :href="`${VIEW_APROBACIONFACULTAD}/${ solicitude.resolucion_id }`" target="_blank">
+                      <a v-if="solicitude.resolucion_id" :href="`${VIEW_RFYH}/${ solicitude.resolucion_id }`" target="_blank">
                         <button>
                           <IconPdf />
                         </button>
@@ -286,7 +286,7 @@ onMounted(() => {
 
                       <button>
                           <a
-                            :href="`${VIEW_APROBACIONFACULTAD}/${solicitude.resolucion_id}`" 
+                            :href="`${VIEW_RFYH}/${solicitude.resolucion_id}`" 
                             target="_blank"
                             class="flex items-center m-2 relative group"
                             v-if="['tramitado'].includes(solicitude.estado)"

@@ -81,22 +81,29 @@ interface Estudiante {
 
 const obtenerDatosEstudianteInforme = async () => {
   load.value = true;
-  const student_id = authStore.id
+  const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/estudiante/info-conf-asesor/informe/${student_id}`);
-    console.log("Mostrando lo recibido", response)
+    console.log("Mostrando lo recibido", response);
 
     obtener.value = response.data;
 
     if (obtener.value?.revision) {
       rev_id.value = obtener.value.revision.rev_id;
-      solicitudEstado.value = obtener.value.revision.rev_estado;
 
-      documentos.value[0].estado = solicitudEstado.value.charAt(0).toUpperCase() + solicitudEstado.value.slice(1).toLowerCase();
+      // Asignación de estado para solicitudEstado y documentos[0].estado de manera independiente
+      solicitudEstado.value = obtener.value.revision.rev_estado; // Esto se maneja como estado separado
+      
+      // Actualizar documentos[0].estado solo si se cumple una condición específica (por ejemplo, si es "aprobado")
+      if (obtener.value.revision.rev_estado === 'aprobado') {
+        documentos.value[0].estado = "Aprobado"; // Mantiene un estado específico solo cuando es "aprobado"
+      } else {
+        documentos.value[0].estado = "Pendiente"; // Otro estado fijo para documentos[0]
+      }
     }
 
   } catch (error) {
-    console.error("Error al obtener información", error);
+    console.error("Error al obtener información del estudiante:", error);
   } finally {
     load.value = false;
   }

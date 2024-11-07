@@ -35,6 +35,7 @@ import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
 import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import DesignacionJuradoSus from '@/views/Estudiante/DesignacionJuradoSus.vue'
 import AptoSustentacion from '@/views/Paisi/AptoSustentacion.vue'
+import DesignacionFechayHora from '@/views/Estudiante/DesignacionFechayHora.vue'
 import CorrecionJuradosSus from '@/views/Estudiante/CorrecionJuradosSus.vue'
 import AptoParaSustentarR from '@/views/facultad/AptoParaSustentarR.vue'
 import DesignarFechaHora from '@/views/Paisi/DesignarFechaHora.vue'
@@ -83,6 +84,7 @@ const router = createRouter({
         { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: {  roles: ['estudiante'], title: 'Conformidad por Integridad VRI' } },
         { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
         { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
+        { path: 'designacion-fecha-hora', name: 'Designación de Fecha y Hora', component: DesignacionFechayHora, meta: {  roles: ['estudiante'], title: 'Designación de Fecha y Hora' } },
         { path: 'designacion-jurado-sustentacion', name: 'DesignacionJuradosSus', component: DesignacionJuradoSus, meta: { roles:['estudiante'], title: 'Designación Jurados Sustentación' } },
         { path: 'correccion-sustentacion', name: 'Correccion Sustentacion', component: CorrecionJuradosSus, meta: {  roles:['estudiante'], title: 'Correcciones de Sustentación' } },
       ]
