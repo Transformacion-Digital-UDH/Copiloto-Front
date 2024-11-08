@@ -255,9 +255,9 @@ onMounted(() => {
                       </a>
                       <span v-else class="italic text-gray-400">No disponible</span>
                     </td>
-                    <td class="px-3 py-5 flex items-center justify-center min-h-[140px]">
+                    <td class="px-3 py-5 flex flex-col items-center justify-center min-h-[140px]">
                       <button
-                        v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
+                       
                         :class="[ 'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none','hover:bg-green-600']"  :disabled="['tramitado'].includes(solicitude.estado ?? '')"
                         @click="openModal(solicitude.resolucion_id)"
                       >
@@ -265,7 +265,7 @@ onMounted(() => {
                       </button>
 
                       <button
-                          v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
+                          
                           :class="[ 
                             'w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
                             'hover:bg-gray-400'
