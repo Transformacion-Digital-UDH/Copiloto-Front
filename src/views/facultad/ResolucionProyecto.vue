@@ -160,7 +160,7 @@ const observarResolucion = async () => {
 };
 
 // ***** Texto que escribe automáticamente ********
-const text = "Resolución de proyecto de tesis";
+const text = "Resoluciones de Proyecto de Tesis";
 const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
 let index = 0;
 const typeWriter = () => {

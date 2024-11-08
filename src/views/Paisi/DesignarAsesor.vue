@@ -26,7 +26,7 @@ interface Solicitude {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Oficio para designación de asesor";
+const text = "Designación de Asesor";
 const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {
