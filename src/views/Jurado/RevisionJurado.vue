@@ -16,7 +16,7 @@ const showArchivoModal = ref(false);
 const load = ref(false);
 
 // Texto que se escribe automáticamente
-const text = "Pendientes de correción de Proyecto de Tesis";
+const text = "Correciones Pendientes de Proyecto de Tesis";
 const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -106,7 +106,6 @@ interface Review {
   secretario_aprobado:string,
   vocal_aprobado:string,
   review_id: string,
-
 }
 
 const validateObservaciones = () => {

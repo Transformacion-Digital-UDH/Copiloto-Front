@@ -13,7 +13,7 @@ const showSendModal = ref(false); //modal para enviar las revisiones de todos lo
 const showArchivoModal = ref(false);
 
 // ***** Texto que escribe automáticamente ********
-const text = "Pendientes de corrección de informe final";
+const text = "Correcciones Pendientes de Informe Final";
 const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
 let index = 0;
 const typeWriter = () => {
