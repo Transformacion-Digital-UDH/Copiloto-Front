@@ -87,6 +87,7 @@ function goToNextPage() {
 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 interface Review {
+  link: string;
   revision_id: string;
   nombre: string;
   titulo: string;
@@ -106,8 +107,6 @@ interface Review {
   secretario_aprobado: string,
   vocal_aprobado: string,
   review_id: string,
-  link:string,
-
 }
 
 const validateObservaciones = () => {

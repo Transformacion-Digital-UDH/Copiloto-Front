@@ -86,6 +86,7 @@ function goToNextPage() {
 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 interface Review {
+  link: string;
   revision_id: string;
   nombre: string;
   titulo: string;
@@ -105,8 +106,6 @@ interface Review {
   secretario_aprobado:string,
   vocal_aprobado:string,
   review_id: string,
-  link:string,
-
 }
 
 const validateObservaciones = () => {
@@ -311,6 +310,7 @@ onMounted(() => {
                   <td class="px-2 py-3 text-base">
                     <p class="text-gray-900 text-wrap w-58">{{ u.nombre }}</p>
                   </td>
+
                   <td class="px-2 py-3 text-base">
                     <template v-if="u.link">
                       <a :href="u.link" target="_blank"
@@ -324,6 +324,7 @@ onMounted(() => {
                       </p>
                     </template>
                   </td>
+
                   <td class="px-2 py-3 text-center">
                     <span class="px-3 py-1 text-white bg-base rounded-full">
                       {{ u.rol }}
