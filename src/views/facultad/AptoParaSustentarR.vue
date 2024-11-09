@@ -158,9 +158,22 @@ const observarResolucion = async () => {
     alertToast('Error al observar la solicitud', 'Error', 'error');
   }
 };
+// ***** Texto que escribe automáticamente ********
+const text = "Resoluciones de apto para sustentación";
+const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
 
 onMounted(() => {
-  obtenerSolicitudes()
+  obtenerSolicitudes();
+  typeWriter();
+
 })
 
 </script>
@@ -169,7 +182,7 @@ onMounted(() => {
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Resoluciones de apto para sustentación
+        {{ textoTipiado }}
       </h3>
 
       <div class="mt-8">
@@ -255,9 +268,9 @@ onMounted(() => {
                       </a>
                       <span v-else class="italic text-gray-400">No disponible</span>
                     </td>
-                    <td class="px-3 py-5 flex items-center justify-center min-h-[140px]">
+                    <td class="px-3 py-5 flex flex-col items-center justify-center min-h-[140px]">
                       <button
-                        v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
+                       
                         :class="[ 'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none','hover:bg-green-600']"  :disabled="['tramitado'].includes(solicitude.estado ?? '')"
                         @click="openModal(solicitude.resolucion_id)"
                       >
@@ -265,7 +278,7 @@ onMounted(() => {
                       </button>
 
                       <button
-                          v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')"
+                          
                           :class="[ 
                             'w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
                             'hover:bg-gray-400'

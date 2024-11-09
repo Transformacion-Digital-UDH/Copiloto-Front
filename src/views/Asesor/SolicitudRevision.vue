@@ -9,6 +9,7 @@ import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
 interface Review {
+  solicitude_id: string;
   stu_id: string;
   stu_name: string;
   sol_title_inve: string;
@@ -42,18 +43,21 @@ const showModal = ref(false); // Modal para aprobar proyecto
 const showRejectModal = ref(false); // Modal para observar proyecto
 
 // Funciones para abrir y cerrar modales
-function openModal(id: string) {
-  const solicitud = tableData.value.find((sol) => sol.stu_id === id);
+function openModal(solicitudeId: string, stuId: string) {
+  const solicitud = tableData.value.find((sol) => sol.solicitude_id === solicitudeId);
   if (solicitud) {
-    solicitudSeleccionada.value = solicitud;
+    solicitudSeleccionada.value = { ...solicitud, stu_id: stuId, solicitude_id: solicitudeId };
     showModal.value = true;
+    console.log("ID DE LA SOLICITUD: ", solicitudeId);
+    console.log("ID DEL ESTUDIANTE: ", stuId);
   }
 }
-function openRejectModal(id: string) {
-  const solicitud = tableData.value.find((sol) => sol.stu_id === id);
+function openRejectModal(solicitudeId: string) {
+  const solicitud = tableData.value.find((sol) => sol.solicitude_id === solicitudeId);
   if (solicitud) {
     solicitudSeleccionada.value = solicitud;
     showRejectModal.value = true;
+    console.log("ID DE LA SOLICITUD: ", solicitudeId)
   }
 }
 function closeModal() {
@@ -108,8 +112,9 @@ const validateObservaciones = () => {
 
 const fetchReviews = async () => {
   load.value = true;
+  const adviser_id = authStore.id;
   try {
-    const response = await axios.get(`/api/adviser/get-review/${authStore.id}`);
+    const response = await axios.get(`/api/adviser/get-review/${adviser_id}`);
     console.log("Datos recibidos de la API:", response.data.data);
 
     tableData.value = response.data.data.map((review: any) => {
@@ -117,7 +122,8 @@ const fetchReviews = async () => {
         ...review,
         oficio_generado: review.rev_status === 'aprobado',
         rev_num_of: review.rev_num_of,
-        review_id: review.review_id
+        review_id: review.review_id,
+        solicitude_id: review.solicitude_id
       };
     });
     console.log("Datos transformados con oficio_generado:", tableData.value);
@@ -130,8 +136,8 @@ const fetchReviews = async () => {
 
 const sendObservacion = async () => {
   try {
-    const solicitudeId = solicitudSeleccionada.value?.stu_id;
-    if (!solicitudeId) {
+    const studentId = solicitudSeleccionada.value?.stu_id;
+    if (!studentId) {
       alert("Debe seleccionar una solicitud");
       return;
     }
@@ -140,7 +146,7 @@ const sendObservacion = async () => {
       rev_status: "observado",
     };
 
-    const response = await axios.put(`/api/student/review/${solicitudeId}/status`, params);
+    const response = await axios.put(`/api/student/review/${studentId}/status`, params);
 
     if (response.data.message === "Observacion enviada") {
       await fetchReviews();
@@ -154,43 +160,64 @@ const sendObservacion = async () => {
   }
 };
 
+const extractAndSaveComments = async (solicitudeId: string) => {
+  try {
+    const response = await axios.post(`api/solicitudes/${solicitudeId}/comments/extract`);
+
+    if(!response.data.success){
+      alertToast("Error al extraer los comentarios", "Error", "error");
+    }
+  } catch (error: any){
+    alertToast("Ocurrió un error al extraer comentarios", "Error", "error");
+    console.error("Error al extraer y guardar comentarios:", error);
+  }
+}
+
 const acceptCorrecion = async () => {
   try {
-    const solicitudId = solicitudSeleccionada.value?.stu_id;
-    if (!solicitudId) {
+    const studentId = solicitudSeleccionada.value?.stu_id;
+    const solicitudeId = solicitudSeleccionada.value?.solicitude_id;
+
+    if (!studentId || !solicitudeId) {
       alert("Debe seleccionar una solicitud");
       return;
     }
+
+    console.log("ID DEL ESTUDIANTE: ", studentId);
+    console.log("ID DE LA SOLICITUD: ", solicitudeId);
 
     if (!nroCarta.value || nroCarta.value.length !== 3) {
       alertToast("El N° de Oficio debe tener exactamente 3 caracteres", "Error", "error");
       return;
     }
-    //console.log("Número de oficio que se está enviando:", nroCarta.value);
+
     const params = {
       rev_status: "aprobado",
       rev_num_of: nroCarta.value,
     };
 
-    const response = await axios.put(`/api/student/review/${solicitudId}/status`, params);
+    const response = await axios.put(`/api/student/review/${studentId}/status`, params);
 
     if (response.status === 200 || response.status === 201) {
-    const solicitud = tableData.value.find((sol) => sol.stu_id === solicitudId);
-    if (solicitud) {
-      solicitud.rev_status = 'aprobado';
-      solicitud.oficio_generado = true;
-      solicitud.rev_num_of = response.data?.data?.rev_num_of || params.rev_num_of;  
-    }
-        alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
-        closeModal();
-      } else {
-        alert("Hubo un problema al aprobar la solicitud.");
+      const solicitud = tableData.value.find((sol) => sol.stu_id === studentId);
+      if (solicitud) {
+        solicitud.rev_status = 'aprobado';
+        solicitud.oficio_generado = true;
+        solicitud.rev_num_of = response.data?.data?.rev_num_of || params.rev_num_of;
       }
-    } catch (error) {
-      alertToast("Error al aceptar la solicitud", "Error", "error");
-      console.error("Error al aceptar la corrección:", error);
+
+      await extractAndSaveComments(solicitudeId);
+
+      alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
+      closeModal();
+    } else {
+      alert("Hubo un problema al aprobar la solicitud.");
     }
-  };
+  } catch (error) {
+    alertToast("Error al aceptar la solicitud", "Error", "error");
+    console.error("Error al aceptar la corrección:", error);
+  }
+};
 onMounted(() => {
   fetchReviews();
 });
@@ -274,7 +301,7 @@ onMounted(() => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(u, index) in filteredTableData" :key="u.stu_id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                    <tr v-for="(u, index) in filteredTableData" :key="u.solicitude_id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
                         <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
                       </td>
@@ -297,13 +324,13 @@ onMounted(() => {
                           v-if="!u.oficio_generado && u.rev_status !== 'aprobado'" 
                           :disabled="u.rev_status === 'observado'" 
                           :class="['w-24 px-4 py-1 text-sm rounded-xl focus:outline-none', u.rev_status === 'observado' ? 'bg-gray-400  text-white cursor-not-allowed' : 'bg-base text-white']"
-                          @click="openModal(u.stu_id)">Aprobar
+                          @click="openModal(u.solicitude_id, u.stu_id)">Aprobar
                         </button>
                         <button
                           v-if="!u.oficio_generado && u.rev_status !== 'aprobado'"  
                           :disabled="u.rev_status === 'observado'" 
                           :class="['w-24 px-4 py-1 text-sm rounded-xl focus:outline-none', u.rev_status === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gray-500 text-white']"
-                          @click="openRejectModal(u.stu_id)">Observar
+                          @click="openRejectModal(u.solicitude_id)">Observar
                         </button>
                         <a
                           v-if="u.oficio_generado && u.rev_status === 'aprobado'" 
