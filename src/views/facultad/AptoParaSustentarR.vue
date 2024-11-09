@@ -158,9 +158,22 @@ const observarResolucion = async () => {
     alertToast('Error al observar la solicitud', 'Error', 'error');
   }
 };
+// ***** Texto que escribe automáticamente ********
+const text = "Resoluciones de apto para sustentación";
+const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
+let index = 0;
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
 
 onMounted(() => {
-  obtenerSolicitudes()
+  obtenerSolicitudes();
+  typeWriter();
+
 })
 
 </script>
@@ -169,7 +182,7 @@ onMounted(() => {
   <div class="flex h-screen border-s-2 font-Roboto bg-gray-100">
     <div class="flex-1 p-10 overflow-auto">
       <h3 class="text-4xl font-semibold text-center text-azul">
-        Resoluciones de apto para sustentación
+        {{ textoTipiado }}
       </h3>
 
       <div class="mt-8">
