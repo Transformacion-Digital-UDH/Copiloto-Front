@@ -1,141 +1,49 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from "vue";
-import IconCerrar from "@/components/icons/IconCerrar.vue";
-import IconBuscar from "@/components/icons/IconBuscar.vue";
+import { ref, computed, onMounted,nextTick  } from "vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
+import IconCerrar from "@/components/icons/IconCerrar.vue";
+import IconBuscar from "@/components/icons/IconBuscar.vue";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
+// Variables de entorno
+const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO as string;
 
-// Configuración de la tabla
-const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
-const selectedFilter = ref(""); // para seleccionar el estado
-const currentPage = ref(1); // página actual
-const showModal = ref(false);  // modal para elegir jurado
-const showRejectModal = ref(false); // modal para editar jurado
+// Estado de la tabla y filtros
+const rowsPerPage = ref(5);
+const selectedFilter = ref("");
+const currentPage = ref(1);
+const showModal = ref(false);
+const showRejectModal = ref(false);
+const tableData = ref<Solicitude[]>([]);
+const load = ref(false);
 
-// Texto que se escribe automáticamente
+// Datos de jurados y estados de carga
+const jurados = ref<Jurado[]>([]);
+const loadJurados = ref(false);
+const selectedPresidente = ref<string>('');
+const selectedSecretario = ref<string>('');
+const selectedVocal = ref<string>('');
+const selectedRevisiones = ref<Revision[]>([]);
+const selectedOficioId = ref<string | null>(null);
+
+// Control para inputs de oficio y expediente
+const nroOficio1 = ref<string>('');
+const nroExped1 = ref<string>('');
+
+// Variables para la animación del título
 const text = "Designación de Jurados";
 const textoTipiado = ref("");
 let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
 
-// Filtrado de datos y paginación
-const filteredTableData = computed(() => {
-  // Asegurarse de que `tableData` esté inicializado
-  let filteredData = tableData.value ?? [];
-
-  if (selectedFilter.value) {
-    filteredData = filteredData.filter(
-      (data) => data.of_status === selectedFilter.value
-    );
-  }
-
-  // Paginación de los datos filtrados
-  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
-  const endIndex = startIndex + rowsPerPage.value;
-  return filteredData.slice(startIndex, endIndex);
-});
-
-// Total de páginas
-const totalPages = computed(() => {
-  const filteredData = selectedFilter.value
-    ? tableData.value.filter((data) => data.of_status === selectedFilter.value)
-    : tableData.value ?? [];
-  return Math.ceil(filteredData.length / rowsPerPage.value);
-});
-
-// Funciones para cambiar de página
-// function goToPreviousPage() {
-//   if (currentPage.value > 1) currentPage.value--;
-// }
-
-// function goToNextPage() {
-//   if (currentPage.value < totalPages.value) currentPage.value++;
-// }
-
-//*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
-// Estado de carga
-const load = ref(false);
-const tableData = ref<Solicitude[]>([]); // Inicializar como un array vacío
-
+// Tipado de datos
 interface Solicitude {
   name: string | null;
   title: string | null;
   of_status: string;
   oficio_id: string;
 }
-
-// Función para obtener solicitudes desde el backend
-const fetchSolicitudes = async () => {
-  load.value = true;
-  try {
-    const response = await axios.get('/api/office/get-solicitude-juries');
-    console.log('api', response);
-
-    // Verifica si response.data está definido
-    if (response.data && Array.isArray(response.data)) {
-      // Mapea los datos directamente desde response.data
-      tableData.value = response.data.map((item: any) => ({
-        name: item.nombre || 'N/A',
-        title: item.titulo || 'N/A',
-        of_status: item.estado || 'Desconocido',
-        oficio_id: item.oficio_id || 'N/A'
-
-      }));
-    } else {
-      console.error('La respuesta de la API no contiene datos válidos:', response);
-    }
-  } catch (error) {
-    console.error('Error al cargar las solicitudes:', error);
-  } finally {
-    load.value = false;
-  }
-};
-
-///////////////////////////////////////////////// MODAL JURADOS /////////////////////////////////////////////////////////////////////////
-// Estado de carga y datos para jurados
-const jurados = ref<{ asesor: string, asesor_id: string, revisiones: { rol: string, estudiante: string, tiempo_dias: number }[] }[]>([]);
-const selectedPresidente = ref('');
-const selectedSecretario = ref('');
-const selectedVocal = ref('');
-const selectedRevisiones = ref<Revision[]>([]); // Aquí decimos que es un array de objetos de tipo Revision
-const loadJurados = ref(false);
-const nroOficio1 = ref<string>('');
-const nroExped1 = ref<string>('');
-const selectedOficioId = ref<string | null>(null); // Variable para almacenar el oficio_id seleccionado
-const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
-
-
-// Validación para N° de oficio: exactamente 3 dígitos
-const validateNroOficio = () => {
-  nroOficio1.value = nroOficio1.value.replace(/[^0-9]/g, ''); // Solo permite números
-  if (nroOficio1.value.length > 3) {
-    nroOficio1.value = nroOficio1.value.slice(0, 3); // Limitar a 3 caracteres
-  }
-};
-// Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
-const validateNroExped = () => {
-  nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, ''); // Permitir solo números y un guion
-  if (nroExped1.value.length > 17) {
-    nroExped1.value = nroExped1.value.slice(0, 17); // Limitar a 17 caracteres
-  }
-};
-
-// Computar si el formulario es válido
-const formIsValid = computed(() => {
-  return nroOficio1.value.length === 3 && nroExped1.value.length === 17;
-});
 
 interface Revision {
   rol: string;
@@ -147,28 +55,33 @@ interface Jurado {
   asesor: string;
   asesor_id: string;
   revisiones: Revision[];
-  oficio_id: string;
+  oficio_id?: string | null;  // Hacer que oficio_id sea opcional
 }
 
-// Función para obtener los jurados desde el backend
-const fetchJurados = async () => {
+// Animación de tipeo del título
+const typeWriter = () => {
+  if (index < text.length) {
+    textoTipiado.value += text.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80);
+  }
+};
+
+// Llamada a la API para obtener los jurados de un oficio específico
+const fetchJurados = async (oficio_id: string) => {
+  if (!oficio_id) {
+    console.error('Oficio ID es requerido para obtener los jurados');
+    return;
+  }
   loadJurados.value = true;
   try {
-    const response = await axios.get('/api/juries/get-select');
-    console.log('Respuesta cruda de la API:', response); // Verifica la estructura de la respuesta completa
-    let data = response.data.data; // Acceder a los datos internos correctamente
-    if (Array.isArray(data) && data.length > 0) {
-      // Asignar los datos de los jurados al estado
-      jurados.value = data.map((item) => ({
-        asesor: item.asesor,
-        asesor_id: item.asesor_id,
-        revisiones: item.revisiones || [],
-        oficio_id: item.oficio_id || null
-      }));
-      //console.log('Jurados procesados desde la API:', jurados.value); // Confirmar los datos cargados
-    } else {
-      console.error('La respuesta de la API no contiene jurados válidos');
-    }
+    const response = await axios.get(`/api/juries/get-select/${oficio_id}`);
+    console.log('Respuesta de la API para jurados:', response.data.data); // Verificar la respuesta de la API
+
+    // Asigna `data` directamente a `jurados.value` sin modificarlo
+    jurados.value = response.data.data;
+
+    console.log("Datos asignados a jurados:", jurados.value); // Verificar que jurados se haya asignado correctamente
   } catch (error) {
     console.error('Error al cargar los jurados:', error);
   } finally {
@@ -176,51 +89,101 @@ const fetchJurados = async () => {
   }
 };
 
+
+
+
+
+// Función para abrir el modal y cargar los jurados del oficio seleccionado
+const openModal = async (oficio_id: string) => {
+  console.log("Abriendo modal para oficio:", oficio_id);
+  selectedOficioId.value = oficio_id;
+  await fetchJurados(oficio_id); // Cargar jurados antes de abrir el modal
+  nextTick(() => { showModal.value = true; }); // Forzar apertura del modal
+  console.log("Modal abierto con jurados:", jurados.value);
+};
+
+
+
+
+
+// Función para cerrar el modal
+const closeModal = () => {
+  showModal.value = false;
+  showRejectModal.value = false;
+};
+
+// Validación para N° de oficio: exactamente 3 dígitos
+const validateNroOficio = () => {
+  nroOficio1.value = nroOficio1.value.replace(/[^0-9]/g, '');
+  if (nroOficio1.value.length > 3) {
+    nroOficio1.value = nroOficio1.value.slice(0, 3);
+  }
+};
+
+// Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
+const validateNroExped = () => {
+  nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, '');
+  if (nroExped1.value.length > 17) {
+    nroExped1.value = nroExped1.value.slice(0, 17);
+  }
+};
+
+// Computar si el formulario es válido
+const formIsValid = computed(() => {
+  return nroOficio1.value.length === 3 && nroExped1.value.length === 17;
+});
+
+// Llamada a la API para obtener solicitudes
+const fetchSolicitudes = async () => {
+  load.value = true;
+  try {
+    const response = await axios.get('/api/office/get-solicitude-juries');
+    if (response.data && Array.isArray(response.data)) {
+      tableData.value = response.data.map((item: any) => ({
+        name: item.nombre || 'N/A',
+        title: item.titulo || 'N/A',
+        of_status: item.estado || 'Desconocido',
+        oficio_id: item.oficio_id || 'N/A'
+      }));
+    } else {
+      console.error('La respuesta de la API no contiene datos válidos:', response);
+    }
+  } catch (error) {
+    console.error('Error al cargar las solicitudes:', error);
+  } finally {
+    load.value = false;
+  }
+};
+
 // Función para asignar jurado
 const asignarJurado = () => {
-  // Validar que los tres roles tengan un asesor seleccionado
   if (!selectedPresidente.value || !selectedSecretario.value || !selectedVocal.value) {
     alertToast('Por favor, selecciona un docente para cada rol.', 'error');
     return;
   }
-
-  // Validación para asegurar que no se seleccione el mismo asesor en más de un rol
-  if (
-    selectedPresidente.value === selectedSecretario.value ||
-    selectedPresidente.value === selectedVocal.value ||
-    selectedSecretario.value === selectedVocal.value
-  ) {
+  if (selectedPresidente.value === selectedSecretario.value ||
+      selectedPresidente.value === selectedVocal.value ||
+      selectedSecretario.value === selectedVocal.value) {
     alertToast('No puedes seleccionar al mismo docente en roles diferentes', 'error');
     return;
   }
-
-  // Mostrar un mensaje genérico de éxito
   alertToast('Jurados asignados correctamente.', "Éxito", "success");
-
-  // Abre el modal de "Enviar"
   openSendModal();
 };
 
 // Función para manejar la selección de un jurado y mostrar sus revisiones
 const handleJuradoSelect = (rol: string, value: string) => {
   const juradoSeleccionado = jurados.value.find(jurado => jurado.asesor_id === value);
-
-  if (juradoSeleccionado) {
-    // Asignamos las revisiones
-    selectedRevisiones.value = juradoSeleccionado.revisiones;
-    console.log(`Revisiones para el ${rol}:`, selectedRevisiones.value);
-  } else {
-    // Si no hay revisiones
-    selectedRevisiones.value = [];
-  }
+  selectedRevisiones.value = juradoSeleccionado ? juradoSeleccionado.revisiones : [];
 };
 
+// Función para enviar datos al backend
 const sendToBackend = async () => {
   if (!formIsValid.value) {
     alertToast('Formulario inválido. Verifica los campos.', 'error');
     return;
   }
-
+  
   const payload = {
     estado: 'tramitado',
     numero_oficio: nroOficio1.value,
@@ -232,13 +195,11 @@ const sendToBackend = async () => {
 
   try {
     if (selectedOficioId.value) {
+      // Asegúrate de que sea una solicitud PUT
       const response = await axios.put(`/api/office/djt/${selectedOficioId.value}/status`, payload);
       alertToast('Datos enviados correctamente', "Éxito", "success");
-
-      // Recargar las solicitudes desde el backend
       await fetchSolicitudes();
-
-      closeModal(); // Cerrar modal después de enviar
+      closeModal();
     } else {
       alertToast('No se ha seleccionado un oficio.', 'error');
     }
@@ -247,12 +208,31 @@ const sendToBackend = async () => {
     console.error('Error al enviar datos:', error);
   }
 };
-// Cambiar página a la anterior
+
+
+
+// Filtrado de datos y paginación
+const filteredTableData = computed(() => {
+  let filteredData = tableData.value ?? [];
+  if (selectedFilter.value) {
+    filteredData = filteredData.filter(data => data.of_status === selectedFilter.value);
+  }
+  const startIndex = (currentPage.value - 1) * rowsPerPage.value;
+  const endIndex = startIndex + rowsPerPage.value;
+  return filteredData.slice(startIndex, endIndex);
+});
+
+const totalPages = computed(() => {
+  const filteredData = selectedFilter.value
+    ? tableData.value.filter(data => data.of_status === selectedFilter.value)
+    : tableData.value ?? [];
+  return Math.ceil(filteredData.length / rowsPerPage.value);
+});
+
 function goToPreviousPage() {
   if (currentPage.value > 1) currentPage.value--;
 }
 
-// Cambiar página a la siguiente
 function goToNextPage() {
   if (currentPage.value < totalPages.value) currentPage.value++;
 }
@@ -261,27 +241,15 @@ function openSendModal() {
   showRejectModal.value = true;
 }
 
-const openModal = (oficio_id: string) => {
-  selectedOficioId.value = oficio_id;  // Guardar el oficio_id seleccionado
-  if (!jurados.value.length) {
-    fetchJurados();  // Solo cargamos los jurados si no están ya cargados
-  }
-  showModal.value = true;
-};
-
-function closeModal() {
-  showModal.value = false;
-  showRejectModal.value = false;
-}
-
-// Llamar a la función fetchJurados al montar el componente
+// Cargar datos al montar el componente
 onMounted(() => {
-  fetchSolicitudes(); // Cargar solicitudes
-  fetchJurados();     // Cargar jurados
+  fetchSolicitudes();
+  typeWriter();
 });
 
-
 </script>
+
+
 
 <template>
   <template v-if="load">
@@ -414,91 +382,95 @@ onMounted(() => {
         </div>
 
         <!-- Modal para la designación de jurados -->
-        <div v-if="showModal"
-          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-          <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-end items-start">
-              <button
-                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
-                @click="closeModal">
-                <IconCerrar />
-              </button>
-            </div>
-            <div class="w-full pr-4">
-              <div class="flex items-start justify-between p-3">
-                <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Designación de jurados</h5>
-              </div>
-              <div class="p-6">
-                <div class="flex-1">
-                  <!-- Selección del presidente -->
-                  <select v-model="selectedPresidente" id="presidente"
-                    class="w-full p-2 border border-gray-300 rounded mb-4"
-                    @change="handleJuradoSelect('Presidente', selectedPresidente)">
-                    <option disabled value="">Selecciona un presidente</option>
-                    <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
-                      {{ jurado.asesor }}
-                    </option>
-                  </select>
+<div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+  <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
+    
+    <!-- Botón de cierre -->
+    <div class="flex justify-end items-start">
+      <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+        <IconCerrar />
+      </button>
+    </div>
 
-                  <!-- Selección del secretario -->
-                  <select v-model="selectedSecretario" id="secretario"
-                    class="w-full p-2 border border-gray-300 rounded mb-4"
-                    @change="handleJuradoSelect('Secretario', selectedSecretario)">
-                    <option disabled value="">Selecciona un secretario</option>
-                    <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
-                      {{ jurado.asesor }}
-                    </option>
-                  </select>
+    <!-- Título del modal -->
+    <div class="w-full pr-4">
+      <div class="flex items-start justify-between p-3">
+        <h5 class="text-2xl font-light text-gray-900 text-center flex-1">Designación de jurados</h5>
+      </div>
 
-                  <!-- Selección del vocal -->
-                  <select v-model="selectedVocal" id="vocal" class="w-full p-2 border border-gray-300 rounded"
-                    @change="handleJuradoSelect('Vocal', selectedVocal)">
-                    <option disabled value="">Selecciona un vocal</option>
-                    <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
-                      {{ jurado.asesor }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-              <!-- Botón para asignar -->
-              <div class="mt-6 flex justify-center">
-                <button @click="asignarJurado"
-                  class="px-4 py-2 text-base justify-center text-white bg-[#5d6d7e] rounded-lg w-60">Asignar</button>
-              </div>
-              <br>
+      <!-- Sección de selección de jurados -->
+      <div class="p-6">
+        <div class="flex-1">
 
-              <!-- Tabla para mostrar las revisiones si existen -->
-              <div v-if="selectedRevisiones.length" class="mt-6">
-                <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
-                <!-- Aplicamos un contenedor con scroll si la tabla crece mucho -->
-                <div class="overflow-y-auto max-h-48"> <!-- Aquí se agrega el scroll -->
-                  <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
-                    <thead>
-                      <tr class="bg-gray-200 text-left">
-                        <th class="px-4 py-2">Rol</th>
-                        <th class="px-4 py-2">Estudiante</th>
-                        <th class="px-4 py-2">Días</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(revision, index) in selectedRevisiones" :key="index">
-                        <td class="border px-4 py-2">{{ revision.rol }}</td>
-                        <td class="border px-4 py-2">{{ revision.estudiante }}</td>
-                        <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div> <!-- Fin del contenedor con scroll -->
-              </div>
+          <!-- Selección del presidente -->
+          <select v-model="selectedPresidente" id="presidente" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Presidente', selectedPresidente)">
+            <option disabled value="">Selecciona un presidente</option>
+            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+              {{ jurado.asesor }}
+            </option>
+          </select>
 
-              <!-- Mensaje cuando no hay revisiones -->
-              <div v-else class="mt-6 text-gray-500 text-center">
-                <p>No hay revisiones disponibles para el jurado seleccionado.</p>
-              </div>
+          <!-- Selección del secretario -->
+          <select v-model="selectedSecretario" id="secretario" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Secretario', selectedSecretario)">
+            <option disabled value="">Selecciona un secretario</option>
+            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+              {{ jurado.asesor }}
+            </option>
+          </select>
 
-            </div>
-          </div>
+          <!-- Selección del vocal -->
+          <select v-model="selectedVocal" id="vocal" class="w-full p-2 border border-gray-300 rounded" @change="handleJuradoSelect('Vocal', selectedVocal)">
+            <option disabled value="">Selecciona un vocal</option>
+            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+              {{ jurado.asesor }}
+            </option>
+          </select>
+
         </div>
+      </div>
+
+      <!-- Botón para asignar los jurados seleccionados -->
+      <div class="mt-6 flex justify-center">
+        <button @click="asignarJurado" class="px-4 py-2 text-base text-white bg-[#5d6d7e] rounded-lg w-60">
+          Asignar
+        </button>
+      </div>
+      <br>
+
+      <!-- Tabla para mostrar las revisiones si existen -->
+      <div v-if="selectedRevisiones.length" class="mt-6">
+        <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
+        
+        <!-- Contenedor con scroll para la tabla de revisiones -->
+        <div class="overflow-y-auto max-h-48">
+          <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
+            <thead>
+              <tr class="bg-gray-200 text-left">
+                <th class="px-4 py-2">Rol</th>
+                <th class="px-4 py-2">Estudiante</th>
+                <th class="px-4 py-2">Días</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(revision, index) in selectedRevisiones" :key="index">
+                <td class="border px-4 py-2">{{ revision.rol }}</td>
+                <td class="border px-4 py-2">{{ revision.estudiante }}</td>
+                <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div> <!-- Fin del contenedor con scroll -->
+      </div>
+
+      <!-- Mensaje cuando no hay revisiones -->
+      <div v-else class="mt-6 text-gray-500 text-center">
+        <p>No hay revisiones disponibles para el jurado seleccionado.</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
         <!-- Modal para el envío de oficio -->
         <div v-if="showRejectModal"

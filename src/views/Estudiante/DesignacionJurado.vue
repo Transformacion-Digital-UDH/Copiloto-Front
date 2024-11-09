@@ -169,18 +169,6 @@ onMounted(() => {
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
           <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
         </div>
-        <!-- <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-72 rounded-md skeleton-loader duration-200 mb-14"></h2>
-            <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>            
-          </div>
-        </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-7 w-2/6 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-40 w-full mx-auto rounded-md skeleton-loader duration-200"></h2>
-          </div>
-        </div> -->
       </div>
     </div>
   </template>
@@ -188,30 +176,6 @@ onMounted(() => {
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <!-- Card 1: Pago de Trámite
-        <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Pago de Trámite</h2>
-            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalTramite = true"
-                @mouseleave="mostrarModalTramite = false" />
-          </div>
-
-          <div v-show="mostrarModalTramite" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">
-              Asegurate de haber realizado el pago del trámite.
-            </p>
-          </div>
-
-           Listado de trámites dinámico -->
-          <!-- <div class="mt-4 space-y-6">
-            <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
-              class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
-              <h4 class="text-black flex-1">{{ proceso.título }}</h4>
-              <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
-            </div>
-          </div>
-        </div> --> 
 
         <!-- Card 2: Solicitar designación de Jurados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -221,7 +185,6 @@ onMounted(() => {
               :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />
           </div>
 
-         
 
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
