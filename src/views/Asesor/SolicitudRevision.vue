@@ -49,7 +49,7 @@ function openModal(solicitudeId: string, stuId: string) {
     solicitudSeleccionada.value = { ...solicitud, stu_id: stuId, solicitude_id: solicitudeId };
     showModal.value = true;
     console.log("ID DE LA SOLICITUD: ", solicitudeId);
-    console.log("ID DEL ESTUDIANTE: ", stuId);
+    console.log("ID DEL ESTUDIANTEa: ", stuId);
   }
 }
 function openRejectModal(solicitudeId: string) {
