@@ -6,6 +6,7 @@ import axios from "axios";
 import { alertToast, alertConfirmation } from "@/functions";
 import confetti from "canvas-confetti";
 import router from "@/router";
+import ModalToolTip from "@/components/modalToolTip.vue";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Asesor";
@@ -76,7 +77,7 @@ const solicitude = ref<Solicitude>({
   estado: "",
   solicitud_id: "",
   observacion: "",
-  tipo_investigacion: "",  
+  tipo_investigacion: "",
 });
 
 const oficio = ref<Oficio>({
@@ -173,7 +174,7 @@ const getInfoStudent = async () => {
           resolucion.value.estado = response.data.resolucion.estado;
           resolucion.value.observacion = response.data.resolucion.observacion;
         }
-        
+
         if (response.data.oficio) {
           oficio.value.id = response.data.oficio.id;
           oficio.value.estado = response.data.oficio.estado;
@@ -254,7 +255,7 @@ const updateSolicitude = async (
       "Error",
       "error"
     );
-    return;             
+    return;
   }
   try {
     const params = {
@@ -335,68 +336,32 @@ const handleNextButtonClick = () => {
   <!-- Muestra si hay una solicitud ya sea pendiente rechazada o aceptada -->
   <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col"
-      >
-        <h3
-          class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"
-        ></h3>
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"></h3>
       </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
+      <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
         <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-10 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+          <h2 class="bg-gray-200 h-10 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"></h2>
         </div>
       </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
+      <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
         <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+          <h2 class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
         </div>
       </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
+      <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
         <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-1 w-15 rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+          <h2 class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 mt-1 w-15 rounded-md skeleton-loader duration-200"></h2>
+          <h2 class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"></h2>
         </div>
       </div>
     </div>
@@ -412,21 +377,16 @@ const handleNextButtonClick = () => {
           <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
 
           <div class="flex justify-center">
-            <img
-              src="/img/notInitSolicitude.svg"
-              alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md"
-            />
+            <img src="/img/notInitSolicitude.svg" alt="Iniciar trámite o solicitar asesor"
+              class="w-[40%] h-auto object-cover rounded-md shadow-md" />
           </div>
 
           <div class="flex justify-center">
-            <button
-            v-if="authStore.id"
-            class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-            @click="sendSolicitude(authStore.id!)"
-          >
-            Iniciar trámite
-          </button>
+            <button v-if="authStore.id"
+              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
+              @click="sendSolicitude(authStore.id!)">
+              Iniciar trámite
+            </button>
 
           </div>
         </div>
@@ -438,82 +398,52 @@ const handleNextButtonClick = () => {
           {{ textoTipiado }}
         </h3>
         <br>
-    <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative "> 
-      <div class="flex justify-between">
-        <div class="flex flex-col sm:flex-row items-center justify-between w-full">
-            <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Solicita tu asesor</h2>
-              <img
-                src="/icon/info2.svg"
-                alt="Info"
-                class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalSolicitudAsesor = true"
-                @mouseleave="mostrarModalSolicitudAsesor = false"
-              />
-            </div>
-            <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
-              {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
-            </span>
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative ">
+          <div class="flex justify-between">
+            <div class="flex flex-col sm:flex-row items-center justify-between w-full">
+              <div class="flex items-center">
+                <h2 class="text-2xl font-medium text-black">1. Solicita tu asesor</h2>
+                <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                  @mouseover="mostrarModalSolicitudAsesor = true" @mouseleave="mostrarModalSolicitudAsesor = false" />
+              </div>
+              <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
+                {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() +
+                  solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
+              </span>
 
-         </div>
-      </div>
+            </div>
+          </div>
           <!-- Modal informativo para el Punto 1 -->
-          <div
-              v-show="mostrarModalSolicitudAsesor"
-              class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
-            >
-              <p class="text-sm text-gray-600">
-                Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.
-              </p>
+          <div v-show="mostrarModalSolicitudAsesor"
+            class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">
+              Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la
+              respuesta.
+            </p>
           </div>
           <div class="mt-4">
             <!-- Título de tesis -->
-            <label
-              for="tituloTesis"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Título de tesis</label
-            >
-            <input
-              id="tituloTesis"
-              type="text"
-              v-model="solicitude.titulo"
+            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título de tesis</label>
+            <input id="tituloTesis" type="text" v-model="solicitude.titulo"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-              placeholder="Escribe tu título de tesis aquí..."
-            />
-            <label
-              for="nombreAsesor"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Elige a tu asesor</label
-            >
-            <select
-              id="nombreAsesor"
-              v-model="solicitude.asesor_id"
+              placeholder="Escribe tu título de tesis aquí..." />
+            <label for="nombreAsesor" class="block text-lg font-medium text-gray-700 mb-2">Elige a tu asesor</label>
+            <select id="nombreAsesor" v-model="solicitude.asesor_id"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-            >
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
               <option disabled value="">Selecciona un asesor...</option>
-              <option
-                v-for="asesor in advisers"
-                :key="asesor.id"
-                :value="asesor.id"
-              >
+              <option v-for="asesor in advisers" :key="asesor.id" :value="asesor.id">
                 {{ asesor.nombre }}
               </option>
             </select>
-           
+
             <!-- Select para elegir tipo de investigacion -->
-            <label
-              for="tipoInvestigacion"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Elige tu tipo de investigación</label
-            >
-            <select
-              id="tipoInvestigacion"
-              v-model="solicitude.tipo_investigacion"
+            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Elige tu tipo de
+              investigación</label>
+            <select id="tipoInvestigacion" v-model="solicitude.tipo_investigacion"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-            >
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
               <option disabled value="">Selecciona un tipo...</option>
               <option value="cientifica">
                 CIENTÍFICA
@@ -524,79 +454,53 @@ const handleNextButtonClick = () => {
             </select>
 
             <!-- Botón de enviar -->
-            <button
-              @click="
-                updateSolicitude(
-                  solicitude.solicitud_id,
-                  solicitude.titulo,
-                  solicitude.asesor_id,
-                  solicitude.estado,
-                  solicitude.tipo_investigacion
-                )
-              "
-              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              :class="[
+            <button @click="
+              updateSolicitude(
+                solicitude.solicitud_id,
+                solicitude.titulo,
+                solicitude.asesor_id,
+                solicitude.estado,
+                solicitude.tipo_investigacion
+              )
+              " :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)" :class="[
                 'px-3 py-2 text-white rounded-md focus:outline-none',
                 ['pendiente', 'aceptado'].includes(solicitude.estado)
                   ? 'bg-gray-400 cursor-not-allowed'
                   : 'bg-green-500 hover:bg-green-600',
-              ]"
-            >
+              ]">
               Enviar
             </button>
           </div>
           <!-- Respuesta del asesor -->
-          <div
-            class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md"
-            v-if="solicitude.estado !== 'en progreso'"
-          >
+          <div class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md" v-if="solicitude.estado !== 'en progreso'">
             <div class="flex flex-col md:flex-row justify-between md:items-center">
               <h4 class="text-black">
                 Respuesta del asesor:
-                <span
-                  v-if="solicitude.estado === 'rechazado'"
-                  class="text-red-500 italic"
-                >
-                  "{{ solicitude.observacion }}"</span
-                >
+                <span v-if="solicitude.estado === 'rechazado'" class="text-red-500 italic">
+                  "{{ solicitude.observacion }}"</span>
               </h4>
 
               <div
-                class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-              >
-                <div
-                  v-if="['aceptado'].includes(solicitude.estado)"
-                  class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                >
+                class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                <div v-if="['aceptado'].includes(solicitude.estado)"
+                  class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                   <!-- Botón de Ver -->
-                  <a
-                    :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
-                    target="_blank"
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                  >
+                  <a :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`" target="_blank"
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                     <i class="fas fa-eye mr-2"></i> Ver
                   </a>
                   <!-- Botón de Descargar -->
-                  <a
-                    :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`"
-                    download
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                  >
+                  <a :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`" download
+                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                     <i class="fas fa-download mr-2"></i> Descargar
                   </a>
                 </div>
-                <span
-                  :class="estadoClase(solicitude.estado)"
-                  class="estado-estilo"
-                >
-                  {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() + solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
+                  {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() +
+                    solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
                 </span>
 
-                <a
-                  href="#historial"
-                  v-if="solicitude.estado === 'rechazado'"
-                  class="ml-4 p-1 text-blue-500"
-                >
+                <a href="#historial" v-if="solicitude.estado === 'rechazado'" class="ml-4 p-1 text-blue-500">
                   ver motivo
                 </a>
               </div>
@@ -604,70 +508,41 @@ const handleNextButtonClick = () => {
           </div>
           <br />
           <!-- Mensaje de espera según el estado -->
-          <span
-            v-if="solicitude.estado === 'pendiente'"
-            class="text-gray-500 italic"
-            >Estamos esperando la respuesta del asesor. Se mostrará aquí cuando esté disponible.</span
-          >
-          <span
-            v-else-if="solicitude.estado === 'rechazado'"
-            class="text-red-500 italic"
-            >El asesor ha rechazado la solicitud, revise el historial de
-            acciones y porfavor vuelve a seleccionar tu asesor.</span
-          >
-          <span
-            v-else-if="solicitude.estado === 'aceptado'"
-            class="text-green-500 italic"
-            >El asesor ha aceptado tu solicitud, puedes revisar tus documentos de conformidad de designación de asesor en el punto 2.</span
-          >
-    </div>
-    <br>
-       <!-- Card 2: Documentos -->
-        <div class="mt-4"
-          :disabled="
-            ['en progreso', 'pendiente', 'rechazado'].includes(
-              solicitude.estado
-            )
-          "
-          :class="[ 
+          <span v-if="solicitude.estado === 'pendiente'" class="text-gray-500 italic">Estamos esperando la respuesta del
+            asesor. Se mostrará aquí cuando esté disponible.</span>
+          <span v-else-if="solicitude.estado === 'rechazado'" class="text-red-500 italic">El asesor ha rechazado la
+            solicitud, revise el historial de
+            acciones y porfavor vuelve a seleccionar tu asesor.</span>
+          <span v-else-if="solicitude.estado === 'aceptado'" class="text-green-500 italic">El asesor ha aceptado tu
+            solicitud, puedes revisar tus documentos de conformidad de designación de asesor en el punto 2.</span>
+        </div>
+        <br>
+        <!-- Card 2: Documentos -->
+        <div class="mt-4" :disabled="['en progreso', 'pendiente', 'rechazado'].includes(
+          solicitude.estado
+        )
+          " :class="[
             'rounded-lg shadow-lg p-6 relative mt-6',
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado
             )
               ? 'cursor-not-allowed bg-gray-50'
               : 'bg-white',
-          ]"
-        >
+          ]">
           <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos para la  conformidad de designación de asesor</h2>
-              <img
-                src="/icon/info2.svg"
-                alt="Info"
-                class="ml-2 w-4 h-4 cursor-pointer"
-                @mouseover="mostrarModalDocumentos = true"
-                @mouseleave="mostrarModalDocumentos = false"
-              />
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la conformidad de designación de asesor
+              </h2>
+              <ModalToolTip :infoModal="[{
+                info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.' },]" />
             </div>
-            <span
-              :class="estadoClase(estadoDocumentos)"
-              class="estado-estilo ml-4"
-            >
-              {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() : 'Desconocido' }}
+            <span :class="estadoClase(estadoDocumentos)" class="estado-estilo ml-4">
+              {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() :
+              'Desconocido' }}
             </span>
 
           </div>
-          <!-- Modal punto 2 -->
-          <div
-            v-show="mostrarModalDocumentos"
-            class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
-          >
-            <p class="text-sm text-gray-600">
-              Por favor espere que se carguen los documentos que verifican su
-              trámite de Designación de Asesor para continuar con el siguiente
-              paso.
-            </p>
-          </div>
+          
           <!-- Listado de documentos -->
           <div class="mt-4 space-y-4">
             <!-- Listado de documentos OFICIO-->
@@ -682,42 +557,29 @@ const handleNextButtonClick = () => {
                 </span>
 
                 <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
-                  <div
-                    v-if="['tramitado'].includes(oficio.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
+                  <div v-if="['tramitado'].includes(oficio.estado)"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_OFFICE}/${oficio.id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                    <a :href="`${VIEW_OFFICE}/${oficio.id}`" target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
                     <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_OFFICE}/${oficio.id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                    <a :href="`${DOWNLOAD_OFFICE}/${oficio.id}`" download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
 
                   <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
                   <!-- Estado del documento -->
-                  <span
-                    :class="estadoClase(oficio.estado)"
-                    class="estado-estilo ml-4"
-                  >
-                    {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() : 'Desconocido' }}
+                  <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">
+                    {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() :
+                    'Desconocido' }}
                   </span>
 
                 </div>
@@ -734,111 +596,78 @@ const handleNextButtonClick = () => {
                     "{{ resolucion.observacion }}"
                   </p>
                 </span>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
-                  <div
-                    v-if="['tramitado'].includes(resolucion.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
+                  <div v-if="['tramitado'].includes(resolucion.estado)"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                    <a :href="`${VIEW_RESOLUTION}/${resolucion.id}`" target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
                     <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_RESOLUTION}/${resolucion.id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
+                    <a :href="`${DOWNLOAD_RESOLUTION}/${resolucion.id}`" download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
                   <!-- Mensaje de que aún no está cargado -->
                   <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
                   <!-- Estado del documento -->
-                  <span
-                    :class="estadoClase(resolucion.estado)"
-                    class="estado-estilo ml-4"
-                    >{{ resolucion.estado }}</span>
+                  <span :class="estadoClase(resolucion.estado)" class="estado-estilo ml-4">{{ resolucion.estado
+                    }}</span>
                 </div>
               </div>
             </div>
           </div>
         </div>
-       <!-- Botón "Siguiente" -->
-       <div class="flex justify-end mt-6">
-        <button
-          @click="handleNextButtonClick"
-          :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600']"
-        >
-          Siguiente
-        </button>
-       </div>
+        <!-- Botón "Siguiente" -->
+        <div class="flex justify-end mt-6">
+          <button @click="handleNextButtonClick"
+            :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600']">
+            Siguiente
+          </button>
+        </div>
         <!-- Card 3: Solicitar Cambio de Asesor -->
-        <div
-          :disabled="
-            ['pendiente', 'en progreso', 'rechazado'].includes(
-              solicitude.estado
-            )
-          "
-          :class="[
+        <div :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
+          solicitude.estado
+        )
+          " :class="[
             'rounded-lg shadow-lg p-6 relative mt-6',
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado
             )
               ? 'cursor-not-allowed bg-gray-50'
               : 'bg-white',
-          ]"
-        >
+          ]">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de asesor</h2>
-            <img
-              src="/icon/info2.svg"
-              alt="Info"
-              class="ml-2 w-4 h-4 cursor-pointer"
-              @mouseover="mostrarModalCambioAsesor = true"
-              @mouseleave="mostrarModalCambioAsesor = false"
-            />
+            <ModalToolTip
+              :infoModal="[{ info: 'Si consideras que necesitas un cambio de asesor, puedes solicitarlo en cualquier momento.' },]" />
           </div>
+
           <br />
+          
           <p class="text-gray-400">
-            Este botón se activará cuando recibas la resolución de designación de asesor por parte de la Facultad de Ingeniería de Sistemas.
+            Este botón se activará cuando recibas la resolución de designación de asesor por parte de la Facultad de
+            Ingeniería de Sistemas.
           </p>
-
-
-          <div
-            v-show="mostrarModalCambioAsesor"
-            class="absolute left-0 mt-1 top-16 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10"
-          >
-            <p class="text-sm text-gray-500">
-              Si consideras que necesitas un cambio de asesor, puedes
-              solicitarlo en cualquier momento.
-            </p>
-          </div>
 
           <div class="mt-4 space-y-4">
             <!-- Botón de Solicitar Cambio de Asesor -->
             <div class="flex justify-center">
-              <button
-                :disabled="
-                  ['pendiente', 'en progreso', 'rechazado'].includes(
-                    solicitude.estado
-                  )
-                "
-                @click="solicitarCambioAsesor"
-                :class="[
+              <button :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
+                solicitude.estado
+              )
+                " @click="solicitarCambioAsesor" :class="[
                   'px-4 py-2 text-white rounded-md focus:outline-none',
                   ['en progreso', 'pendiente', 'rechazado'].includes(
                     solicitude.estado
                   )
                     ? 'cursor-not-allowed bg-gray-400'
                     : 'bg-base hover:bg-green-500 ',
-                ]"
-              >
+                ]">
                 Solicitar cambio de asesor
               </button>
             </div>
@@ -859,11 +688,7 @@ const handleNextButtonClick = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-if="historial.length > 0"
-                  v-for="(h, index) in historial"
-                  :key="index"
-                >
+                <tr v-if="historial.length > 0" v-for="(h, index) in historial" :key="index">
                   <td class="px-4 py-2">{{ h.accion }}</td>
                   <td class="px-4 py-2">{{ h.asesor }}</td>
                   <td class="px-4 py-2">{{ h.fecha }}</td>
@@ -880,10 +705,8 @@ const handleNextButtonClick = () => {
           </div>
         </div>
         <!-- Modal de Confirmación -->
-        <div
-          v-if="mostrarModalConfirmacion"
-          class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
-        >
+        <div v-if="mostrarModalConfirmacion"
+          class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
           <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4">
             <!-- Responsivo -->
             <h3 class="text-3xl text-center font-medium mb-4">Confirmación</h3>
@@ -894,16 +717,11 @@ const handleNextButtonClick = () => {
               proceso tendrá que repetirse.
             </p>
             <div class="flex justify-end">
-              <button
-                @click="mostrarModalConfirmacion = false"
-                class="px-4 py-2 bg-gray-500 text-white rounded-md mr-2 hover:bg-gray-600"
-              >
+              <button @click="mostrarModalConfirmacion = false"
+                class="px-4 py-2 bg-gray-500 text-white rounded-md mr-2 hover:bg-gray-600">
                 Cancelar
               </button>
-              <button
-                @click="confirmarCambioAsesor"
-                class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-500"
-              >
+              <button @click="confirmarCambioAsesor" class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-500">
                 Aceptar
               </button>
             </div>
@@ -911,19 +729,19 @@ const handleNextButtonClick = () => {
         </div>
 
       </div>
-      
+
     </template>
   </template>
 </template>
 
 <style scoped>
-
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   font-weight: 400;
   border-radius: 0.375rem;
 }
+
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;

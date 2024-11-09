@@ -7,25 +7,15 @@ import { alertToast } from "@/functions";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
-// Cambiar página a la anterior
-function goToPreviousPage() {
-  if (currentPage.value > 1) currentPage.value--;
-}
-
-// Cambiar página a la siguiente
-function goToNextPage() {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-}
-
-// Configuración de la tabla
-const rowsPerPage = ref(5); // cantidad para mostrar en la tabla
-const selectedFilter = ref(""); // para seleccionar el estado
-const currentPage = ref(1); // página actual
-const showModal = ref(false);  // modal para elegir jurado
-const showRejectModal = ref(false); // modal para editar jurado
+// Configuración de la tabla y paginación
+const rowsPerPage = ref(5);
+const selectedFilter = ref("");
+const currentPage = ref(1);
+const showModal = ref(false);
+const showRejectModal = ref(false);
 
 // Texto que se escribe automáticamente
-const text = "Designación de Jurados Infome Final";
+const text = "Designación de Jurados Informe Final";
 const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -40,23 +30,18 @@ onMounted(() => {
 });
 
 // Filtrado de datos y paginación
+const tableData = ref<Solicitude[]>([]);
 const filteredTableData = computed(() => {
-  // Asegurarse de que `tableData` esté inicializado
   let filteredData = tableData.value ?? [];
-
   if (selectedFilter.value) {
     filteredData = filteredData.filter(
       (data) => data.estado === selectedFilter.value
     );
   }
-
-  // Paginación de los datos filtrados
   const startIndex = (currentPage.value - 1) * rowsPerPage.value;
-  const endIndex = startIndex + rowsPerPage.value;
-  return filteredData.slice(startIndex, endIndex);
+  return filteredData.slice(startIndex, startIndex + rowsPerPage.value);
 });
 
-// Total de páginas
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter((data) => data.estado === selectedFilter.value)
@@ -64,37 +49,19 @@ const totalPages = computed(() => {
   return Math.ceil(filteredData.length / rowsPerPage.value);
 });
 
-// Funciones para cambiar de página
-// function goToPreviousPage() {
-//   if (currentPage.value > 1) currentPage.value--;
-// }
-
-// function goToNextPage() {
-//   if (currentPage.value < totalPages.value) currentPage.value++;
-// }
-
-//*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
-// Estado de carga
+// Estado de carga y solicitudes
 const load = ref(false);
-const tableData = ref<Solicitude[]>([]); // Inicializar como un array vacío
-
 interface Solicitude {
   nombre: string | null;
   titulo: string | null;
   estado: string;
   oficio_id: string;
 }
-
-// Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
   load.value = true;
   try {
     const response = await axios.get('/api/oficio/solicitud-jurados/informe');
-    console.log('api', response);
-
-    // Verifica si response.data[0] está definido y es un array
     if (response.data && Array.isArray(response.data[0])) {
-      // Mapea los datos directamente desde response.data[0]
       tableData.value = response.data[0].map((item: any) => ({
         nombre: item.nombre || 'N/A',
         titulo: item.titulo || 'N/A',
@@ -111,40 +78,26 @@ const fetchSolicitudes = async () => {
   }
 };
 
-
-///////////////////////////////////////////////// MODAL JURADOS /////////////////////////////////////////////////////////////////////////
 // Estado de carga y datos para jurados
-const jurados = ref<{ asesor: string, asesor_id: string, revisiones: { rol: string, estudiante: string, tiempo_dias: number }[] }[]>([]);
+const jurados = ref<{ asesor: string, asesor_id: string, revisiones: { rol: string, estudiante: string, tiempo_dias: number }[], oficio_id: string | null }[]>([]);
 const selectedPresidente = ref('');
 const selectedSecretario = ref('');
 const selectedVocal = ref('');
-const selectedRevisiones = ref<Revision[]>([]); // Aquí decimos que es un array de objetos de tipo Revision
+const selectedRevisiones = ref<Revision[]>([]);
 const loadJurados = ref(false);
-const nroOficio1 = ref<string>('');
-const nroExped1 = ref<string>('');
-const selectedOficioId = ref<string | null>(null); // Variable para almacenar el oficio_id seleccionado
+const selectedOficioId = ref<string | null>(null);
 const VIEW_OFINFORME = import.meta.env.VITE_URL_VIEW_OFINFORME;
 
-
-// Validación para N° de oficio: exactamente 3 dígitos
+// Validación de números
+const nroOficio1 = ref<string>('');
+const nroExped1 = ref<string>('');
 const validateNroOficio = () => {
-  nroOficio1.value = nroOficio1.value.replace(/[^0-9]/g, ''); // Solo permite números
-  if (nroOficio1.value.length > 3) {
-    nroOficio1.value = nroOficio1.value.slice(0, 3); // Limitar a 3 caracteres
-  }
+  nroOficio1.value = nroOficio1.value.replace(/[^0-9]/g, '').slice(0, 3);
 };
-// Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
 const validateNroExped = () => {
-  nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, ''); // Permitir solo números y un guion
-  if (nroExped1.value.length > 17) {
-    nroExped1.value = nroExped1.value.slice(0, 17); // Limitar a 17 caracteres
-  }
+  nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, '').slice(0, 17);
 };
-
-// Computar si el formulario es válido
-const formIsValid = computed(() => {
-  return nroOficio1.value.length === 3 && nroExped1.value.length === 17;
-});
+const formIsValid = computed(() => nroOficio1.value.length === 3 && nroExped1.value.length === 17);
 
 interface Revision {
   rol: string;
@@ -159,22 +112,24 @@ interface Jurado {
   oficio_id: string;
 }
 
-// Función para obtener los jurados desde el backend
-const fetchJurados = async () => {
+// Función para obtener los jurados desde el backend usando el `oficio_id`
+const fetchJurados = async (oficio_id: string) => {
+  if (!oficio_id) {
+    console.error('Oficio ID es requerido para obtener los jurados');
+    return;
+  }
   loadJurados.value = true;
   try {
-    const response = await axios.get('/api/juries/get-select');
-    console.log('Respuesta cruda de la API:', response); // Verifica la estructura de la respuesta completa
-    let data = response.data.data; // Acceder a los datos internos correctamente
+    const response = await axios.get(`/api/juries/get-select/${oficio_id}`);
+    console.log('jurados api informe', response);
+    let data = response.data.data;
     if (Array.isArray(data) && data.length > 0) {
-      // Asignar los datos de los jurados al estado
       jurados.value = data.map((item) => ({
         asesor: item.asesor,
         asesor_id: item.asesor_id,
         revisiones: item.revisiones || [],
         oficio_id: item.oficio_id || null
       }));
-      //console.log('Jurados procesados desde la API:', jurados.value); // Confirmar los datos cargados
     } else {
       console.error('La respuesta de la API no contiene jurados válidos');
     }
@@ -185,103 +140,71 @@ const fetchJurados = async () => {
   }
 };
 
-// Función para asignar jurado
+// Asignación de jurados y apertura de modales
 const asignarJurado = () => {
-  // Validar que los tres roles tengan un asesor seleccionado
   if (!selectedPresidente.value || !selectedSecretario.value || !selectedVocal.value) {
     alertToast('Por favor, selecciona un docente para cada rol.', 'error');
     return;
   }
-
-  // Validación para asegurar que no se seleccione el mismo asesor en más de un rol
-  if (
-    selectedPresidente.value === selectedSecretario.value ||
-    selectedPresidente.value === selectedVocal.value ||
-    selectedSecretario.value === selectedVocal.value
-  ) {
+  if (new Set([selectedPresidente.value, selectedSecretario.value, selectedVocal.value]).size < 3) {
     alertToast('No puedes seleccionar al mismo docente en roles diferentes', 'error');
     return;
   }
-
-  // Mostrar un mensaje genérico de éxito
   alertToast('Jurados asignados correctamente.', "Éxito", "success");
-
-  // Abre el modal de "Enviar"
   openSendModal();
 };
-
-// Función para manejar la selección de un jurado y mostrar sus revisiones
 const handleJuradoSelect = (rol: string, value: string) => {
   const juradoSeleccionado = jurados.value.find(jurado => jurado.asesor_id === value);
-
-  if (juradoSeleccionado) {
-    // Asignamos las revisiones
-    selectedRevisiones.value = juradoSeleccionado.revisiones;
-    console.log(`Revisiones para el ${rol}:`, selectedRevisiones.value);
-  } else {
-    // Si no hay revisiones
-    selectedRevisiones.value = [];
-  }
+  selectedRevisiones.value = juradoSeleccionado ? juradoSeleccionado.revisiones : [];
 };
 
 const sendToBackend = async () => {
-  if (!formIsValid.value) {
-    alertToast('Formulario inválido. Verifica los campos.', 'error');
+  if (!formIsValid.value || !selectedOficioId.value) {
+    alertToast('Formulario inválido o falta de oficio.', 'error');
     return;
   }
-
-  const payload = {
-    estado: 'tramitado',
-    numero_oficio: nroOficio1.value,
-    expediente: nroExped1.value,
-    presidente: selectedPresidente.value,
-    secretario: selectedSecretario.value,
-    vocal: selectedVocal.value
-  };
-
   try {
-    if (selectedOficioId.value) {
-      const response = await axios.put(`/api/office/djt/${selectedOficioId.value}/status`, payload);
-      alertToast('Datos enviados correctamente', "Éxito", "success");
-
-      // Recargar las solicitudes desde el backend
-      await fetchSolicitudes();
-
-      closeModal(); // Cerrar modal después de enviar
-    } else {
-      alertToast('No se ha seleccionado un oficio.', 'error');
-    }
+    await axios.put(`/api/office/djt/${selectedOficioId.value}/status`, {
+      estado: 'tramitado',
+      numero_oficio: nroOficio1.value,
+      expediente: nroExped1.value,
+      presidente: selectedPresidente.value,
+      secretario: selectedSecretario.value,
+      vocal: selectedVocal.value
+    });
+    alertToast('Datos enviados correctamente', "Éxito", "success");
+    await fetchSolicitudes();
+    closeModal();
   } catch (error) {
     alertToast('Error al enviar los datos al backend', 'error');
     console.error('Error al enviar datos:', error);
   }
 };
 
-
+// Manejo de navegación y apertura de modales
+function goToPreviousPage() {
+  if (currentPage.value > 1) currentPage.value--;
+}
+function goToNextPage() {
+  if (currentPage.value < totalPages.value) currentPage.value++;
+}
 function openSendModal() {
   showRejectModal.value = true;
 }
-
 const openModal = (oficio_id: string) => {
-  selectedOficioId.value = oficio_id;  // Guardar el oficio_id seleccionado
-  if (!jurados.value.length) {
-    fetchJurados();  // Solo cargamos los jurados si no están ya cargados
-  }
+  selectedOficioId.value = oficio_id;
+  fetchJurados(oficio_id);
   showModal.value = true;
 };
-
 function closeModal() {
   showModal.value = false;
   showRejectModal.value = false;
 }
 
-// Llamar a la función fetchJurados al montar el componente
+// Inicializar al montar el componente
 onMounted(() => {
-  fetchSolicitudes(); // Cargar solicitudes
-  fetchJurados();     // Cargar jurados
+  fetchSolicitudes();
 });
-
-
 </script>
 
 <template>
