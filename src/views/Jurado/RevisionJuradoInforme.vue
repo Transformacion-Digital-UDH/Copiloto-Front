@@ -87,6 +87,7 @@ function goToNextPage() {
 
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 interface Review {
+  link: string;
   revision_id: string;
   nombre: string;
   titulo: string;
@@ -106,8 +107,6 @@ interface Review {
   secretario_aprobado: string,
   vocal_aprobado: string,
   review_id: string,
-  link:string,
-
 }
 
 const validateObservaciones = () => {
@@ -253,37 +252,37 @@ onMounted(() => {
 
       <div class="mt-8">
         <!-- Filtros de tabla -->
-        <div class="flex flex-col sm:flex-row font-Roboto justify-end space-y-3 sm:space-y-0 sm:space-x-4 mt-3">
-          <!-- Búsqueda -->
-          <div class="relative ml-auto"> <!-- Añadimos ml-auto para empujar los filtros a la derecha -->
-            <span class="absolute inset-y-0 left-0 flex items-center pl-2">
-              <IconBuscar />
-            </span>
-            <input placeholder="Buscar"
-              class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300" />
-          </div>
+        <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
+            <div class="w-full flex justify-end items-center space-x-2">
+              <!-- Búsqueda -->
+              <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-2">
+                  <IconBuscar />
+                </span>
+                <input
+                  placeholder="Buscar"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
+                 />
+              </div>
+              <div class="relative">
+                <select v-model="rowsPerPage" class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                </select>
+              </div>
 
-          <!-- Paginación por cantidad de entradas -->
-          <div class="relative">
-            <select v-model="rowsPerPage"
-              class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="20">20</option>
-            </select>
+              <!-- Filtro de estado -->
+              <div class="relative">
+                <select v-model="selectedFilter" class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
+                  <option value="">Todos</option>
+                  <option value="Pendiente">Pendiente</option>
+                  <option value="Aceptado">Aceptado</option>
+                  <option value="Rechazado">Rechazado</option>
+                </select>
+              </div>
+            </div>
           </div>
-
-          <!-- Filtro de estado -->
-          <div class="relative">
-            <select v-model="selectedFilter"
-              class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
-              <option value="">Todos</option>
-              <option value="pendiente">Pendiente</option>
-              <option value="corregido">Corregido</option>
-              <option value="aprobado">Aprobado</option>
-            </select>
-          </div>
-        </div>
 
 
         <!-- Tabla compactada -->
