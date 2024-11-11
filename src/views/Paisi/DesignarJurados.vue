@@ -76,10 +76,10 @@ const fetchJurados = async (oficio_id: string) => {
   loadJurados.value = true;
   try {
     const response = await axios.get(`/api/juries/get-select/${oficio_id}`);
-    console.log('Respuesta de la API para jurados:', response.data.data); // Verificar la respuesta de la API
+    console.log('Respuesta de la API para jurados:', response.data); // Verificar la respuesta de la API
 
     // Asigna `data` directamente a `jurados.value` sin modificarlo
-    jurados.value = response.data.data;
+    jurados.value = response.data;
 
     console.log("Datos asignados a jurados:", jurados.value); // Verificar que jurados se haya asignado correctamente
   } catch (error) {
