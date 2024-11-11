@@ -134,7 +134,7 @@ const fetchJurados = async (oficio_id: string) => {
   try {
     const response = await axios.get(`/api/juries/get-select/${oficio_id}`);
     console.log('jurado api accesitario', response);
-    let data = response.data.data;
+    let data = response.data;
     if (Array.isArray(data) && data.length > 0) {
       jurados.value = data.map((item) => ({
         asesor: item.asesor,
