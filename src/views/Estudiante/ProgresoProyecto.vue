@@ -104,9 +104,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 p-8">
+  <div class="absolute p-20 min-h-screen bg-gray-50">
     <!-- Título principal -->
-    <h2 class="text-4xl md:text-6xl lg:text-6xl font-bold text-center text-azul mb-12">
+    <h2 class="text-5xl font-bold text-center text-azul mb-12">
       Ejecución de tu Proyecto de Tesis
     </h2>
 
@@ -119,7 +119,7 @@ onMounted(() => {
       <!-- Contenido central -->
       <div class="flex-grow flex flex-col space-y-8 items-center text-center mt-2 w-full lg:w-2/3">
         <!-- Etapas del proceso -->
-        <div class="grid grid-cols-4 gap-4 mb-8">
+        <div class="relative grid grid-cols-4 gap-4 sm:gap-16 lg:gap-24 xl:gap-16 mb-8">
           <div class="flex flex-col items-center">
             <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xl font-bold">
               1
@@ -234,11 +234,6 @@ onMounted(() => {
 
 <style scoped>
 /* Responsivo y mejoras de UI */
-@media (max-width: 768px) {
-  h2 {
-    font-size: 2.5rem;
-  }
-}
 
 .fade-in {
   animation: fadeIn 2s ease-in;
