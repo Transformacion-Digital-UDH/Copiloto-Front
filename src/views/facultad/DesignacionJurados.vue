@@ -379,7 +379,7 @@ function closeModal() {
               </div>
               <div class="p-6">
                 <p class="text-gray-500 text-lg text-left mb-2">
-                  Dígite el N° de expediente
+                  Dígite el N° de resolución.
                 </p>
                 <input 
                   type="text" 
