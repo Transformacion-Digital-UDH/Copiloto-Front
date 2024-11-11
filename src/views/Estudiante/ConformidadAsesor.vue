@@ -311,7 +311,7 @@ onMounted(() => {
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
+    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen absolute">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-4 sm:mt-6 space-y-6 sm:space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
@@ -328,7 +328,7 @@ onMounted(() => {
             </div>
           </div>
           <!-- Título de Tesis -->
-          <div class="bg-gray-100 rounded-lg p-6 shadow-lg">
+          <div class="flex-col bg-gray-100 rounded-lg p-6 shadow-lg">
             <p class="max-full text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
           </div>
           <!-- Enlace al Proyecto de Tesis -->
