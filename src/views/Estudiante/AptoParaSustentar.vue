@@ -49,7 +49,7 @@ const isNextButtonDisabled = computed(() => {
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
-const solicitudEstado = ref<string>("");
+const solicitudEstado = ref(false);
 const isLoading = ref(false);
 const load = ref(false);
 const obtener = ref<Estudiante | null>(null);
@@ -61,7 +61,7 @@ const documentos = ref([
 
 // para que el botón quede deshabilitado
 const isSolicitarDisabled = computed(() => {
-  return isLoading.value || documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+  return isLoading.value || solicitudEstado.value || documentos.value.some(doc => doc.estado === 'tramitado');
 });
 
 const VIEW_OSINFORME  = import.meta.env.VITE_URL_VIEW_OSINFORME ;
@@ -134,8 +134,9 @@ const solicitarDeclaracionAptoSustentar= async () => {
   try {
     const response = await axios.get(`/api/oficio/declarar-apto/${student_id}`);
   
-    if (response.data.estado) {
-      solicitudEstado.value = "pendiente";
+    if (response.data.estado === 'pendiente') {
+      solicitudEstado.value = true;
+      documentos.value[0].estado = 'pendiente';
       alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
       await obtenerDatosEstudianteSustentacion();
     }
@@ -213,7 +214,7 @@ const solicitarDeclaracionAptoSustentar= async () => {
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
             <ModalToolTip 
-              :infoModal="[{ info: 'Falta definir la información' },]" /> 
+              :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
           </div>
           <!-- Para Oficio de PAISI -->
           <div class="mt-4 space-y-4">
