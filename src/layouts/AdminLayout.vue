@@ -23,7 +23,7 @@ const route = useRoute();
           </div>
         </div>
         <div v-else-if="route.path === '/paisi'" class="flex items-center justify-center h-full">
-          <div class="text-center animate-bounce">
+          <div class="text-center animate-bounce absolute p-10">
             <h1 class="text-4xl font-bold mb-6 text-azul uppercase">Bienvenido(a) Programa Académico de Ingeniería de Sistemas e Informática</h1>
           </div>
         </div>

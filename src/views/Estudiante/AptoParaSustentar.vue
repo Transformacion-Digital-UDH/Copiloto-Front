@@ -190,7 +190,7 @@ const solicitarDeclaracionAptoSustentar= async () => {
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para sustentar</h2>
             <ModalToolTip 
-              :infoModal="[{ info: 'Falta definir la información' },]" />                
+              :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio de aprobación necesario para sustentar.</p>
