@@ -20,14 +20,14 @@ const nroExped1 = ref<string>('');
 // Validación para N° de expediente: hasta 17 caracteres con números y un guion permitido
 const validateNroExped = () => {
   nroExped1.value = nroExped1.value.replace(/[^0-9-]/g, ''); // Permitir solo números y un guion
-  if (nroExped1.value.length > 17) {
-    nroExped1.value = nroExped1.value.slice(0, 17); // Limitar a 17 caracteres
+  if (nroExped1.value.length > 4) {
+    nroExped1.value = nroExped1.value.slice(0,4); // Limitar a 17 caracteres
   }
 };
 
 // Computar si el formulario es válido
 const formIsValid = computed(() => {
-  return nroExped1.value.length === 17;
+  return nroExped1.value.length === 4;
 });
 
 function openModal(resolucionId: number) {
@@ -353,17 +353,17 @@ onMounted(() => {
           </div>
           <div class="p-6">
             <p class="text-gray-500 text-lg text-left mb-2">
-              Por favor dígite el N° de expediente.
+              Por favor dígite el N° de resolución.
             </p>
             <input 
               type="text" 
               id="nroExped1" 
               v-model="nroExped1" 
               class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-              maxlength="17" 
+              maxlength="4" 
               @input="validateNroExped"
               required>
-              <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
+              <p v-if="nroExped1.length !== 4 && nroExped1 !== ''" class="text-red-800">Debe ingresar 4 dígitos</p>
             </div>
           <div
             class="flex items-center justify-end p-3 border-t border-gray-200"

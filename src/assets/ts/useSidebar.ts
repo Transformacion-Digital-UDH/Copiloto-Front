@@ -4,7 +4,7 @@ const isOpen = ref(true);
 
 export function useSidebar() {
   const checkScreenSize = () => {
-    if (window.innerWidth >= 1024) {
+    if (window.innerWidth >= 1200) {
       isOpen.value = true;  
     } else {
       isOpen.value = false; 
