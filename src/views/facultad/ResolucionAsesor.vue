@@ -183,8 +183,7 @@ const rejectResolution = async () => {
       <div class="flex-1 p-10 border-s-2 bg-gray-100">
         <!-- Indicadores de carga de esqueleto -->
         <div class="flex justify-center items-center content-center px-14 flex-col">
-          <h3 
-            class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
+          <h3 class="bg-gray-200 h-9 w-1/2 rounded-lg duration-200 skeleton-loader">
           </h3>
         </div>
         <div class="mt-8">
@@ -210,7 +209,7 @@ const rejectResolution = async () => {
         <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
 
         <!-- Tabla de datos -->
-        <div>
+        <div class="mt-8">
           <!-- Filtros de tabla -->
           <div class="mt-6">
             <div class="flex flex-col mt-3 sm:flex-row font-Roboto">
@@ -221,16 +220,12 @@ const rejectResolution = async () => {
                   <span class="absolute inset-y-0 left-0 flex items-center pl-2">
                     <IconBuscar />
                   </span>
-                  <input
-                    placeholder="Buscar"
-                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
-                   />
+                  <input placeholder="Buscar"
+                    class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:gray-700 focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300" />
                 </div>
                 <div class="relative">
-                  <select
-                  v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                  <select v-model="rowsPerPage"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -239,10 +234,8 @@ const rejectResolution = async () => {
 
                 <!-- Filtro de estado -->
                 <div class="relative">
-                  <select
-                  v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                  <select v-model="selectedFilter"
+                    class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="">Todos</option>
                     <option value="pendiente">Pendiente</option>
                     <option value="observado">Observado</option>
@@ -268,9 +261,7 @@ const rejectResolution = async () => {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      v-for="(u, index) in filteredTableData"
-                      :key="u.id"
+                    <tr v-for="(u, index) in filteredTableData" :key="u.id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
                         <p class="text-gray-900 text-wrap w-64">{{ u.estudiante_nombre || 'Nombre desconocido' }}</p>
@@ -281,7 +272,40 @@ const rejectResolution = async () => {
                       <td class="text-center px-4">
                         <a :href="`${VIEW_OFFICE}/${u.id}`" target="_blank">
                           <button>
-                            <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
+                            <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_"
+                              xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                              viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E"
+                              stroke-width="0.00024000000000000003">
+                              <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                              <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"
+                                stroke="#CCCCCC" stroke-width="0.288"></g>
+                              <g id="SVGRepo_iconCarrier">
+                                <g id="document-pdf">
+                                  <g>
+                                    <path
+                                      d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z">
+                                    </path>
+                                  </g>
+                                  <g>
+                                    <rect x="15" y="12" width="6" height="2"></rect>
+                                  </g>
+                                  <g>
+                                    <rect x="15" y="12" width="2" height="8"></rect>
+                                  </g>
+                                  <g>
+                                    <rect x="15" y="16" width="5" height="2"></rect>
+                                  </g>
+                                  <g>
+                                    <polygon
+                                      points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 ">
+                                    </polygon>
+                                  </g>
+                                  <g>
+                                    <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon>
+                                  </g>
+                                </g>
+                              </g>
+                            </svg>
                           </button>
                         </a>
                       </td>
@@ -289,33 +313,21 @@ const rejectResolution = async () => {
                         <p class="text-gray-900 text-wrap w-32">{{ u.fecha_creado || 'Fecha no disponible' }}</p>
                       </td>
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
-                        <button
-                          v-if="['pendiente', 'observado'].includes(u.resolucion_estado)"
-                          :class="['w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none', 
-                            ['tramitado'].includes(u.resolucion_estado) 
-                              ? 'cursor-not-allowed' 
-                              : 'hover:bg-green-600'
-                          ]"
-                          :disabled="['tramitado'].includes(u.resolucion_estado)"       
-                          @click="openModal(u.id)"
-                        >
+                        <button v-if="['pendiente', 'observado'].includes(u.resolucion_estado)" :class="['w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none',
+                          ['tramitado'].includes(u.resolucion_estado)
+                            ? 'cursor-not-allowed'
+                            : 'hover:bg-green-600'
+                        ]" :disabled="['tramitado'].includes(u.resolucion_estado)" @click="openModal(u.id)">
                           Generar
                         </button>
-                        <button
-                          v-if="['pendiente', 'observado'].includes(u.resolucion_estado)"
-                          :class="['w-24 px-3 py-1 mb-2 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
-                            ['tramitado'].includes(u.resolucion_estado) 
-                              ? 'cursor-not-allowed' 
-                              : 'hover:bg-[#f1aa47e8]'
-                          ]"
-                          :disabled="['tramitado'].includes(u.resolucion_estado)"
-                          @click="openRejectModal(u.id)"
-                        >
+                        <button v-if="['pendiente', 'observado'].includes(u.resolucion_estado)" :class="['w-24 px-3 py-1 mb-2 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none',
+                          ['tramitado'].includes(u.resolucion_estado)
+                            ? 'cursor-not-allowed'
+                            : 'hover:bg-[#f1aa47e8]'
+                        ]" :disabled="['tramitado'].includes(u.resolucion_estado)" @click="openRejectModal(u.id)">
                           Observar
                         </button>
-                        <a
-                          :href="`${VIEW_RESOLUTION}/${u.resolucion_id}`"
-                          target="_blank"
+                        <a :href="`${VIEW_RESOLUTION}/${u.resolucion_id}`" target="_blank"
                           class="flex items-center m-2 relative group"
                           v-if="['tramitado'].includes(u.resolucion_estado)">
                           <IconEyeCerrar class="mr-1 group-hover:hidden" />
@@ -324,91 +336,103 @@ const rejectResolution = async () => {
                         </a>
                       </td>
                       <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.resolucion_estado?.toLowerCase().replace(' ', '-')}`">
-                        {{ u.resolucion_estado ? u.resolucion_estado.charAt(0).toUpperCase() + u.resolucion_estado.slice(1).toLowerCase() : 'Estado desconocido' }}
-                      </span>
-                    </td>
+                        <span :class="`estado-estilo estado-${u.resolucion_estado?.toLowerCase().replace(' ', '-')}`">
+                          {{ u.resolucion_estado ? u.resolucion_estado.charAt(0).toUpperCase() +
+                            u.resolucion_estado.slice(1).toLowerCase() : 'Estado desconocido' }}
+                        </span>
+                      </td>
 
                     </tr>
                   </tbody>
                 </table>
 
-               <!-- Paginación -->
-               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
-                <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
+                <!-- Paginación -->
+                <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
+                  <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage
+                    + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length
+                    }}</span>
+                  <div class="inline-flex mt-2 xs:mt-0 space-x-4">
+                    <button :disabled="currentPage === 1" @click="goToPreviousPage"
+                      class="px-4 py-2 text-white  bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                    <button :disabled="currentPage === totalPages" @click="goToNextPage"
+                      class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
+                  </div>
                 </div>
-              </div>
 
 
-                 <!-- Modal para generar un oficio al estudiante -->
-          <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
-            <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-              <div class="flex justify-end items-start">
-                <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                  <IconCerrar />
-                </button>
-              </div>
-              <div class="flex items-start justify-between p-3 border-b border-gray-200">
-                <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-                  Se autogenerará la resolucion de asesor para este estudiante
-                </h5>
-              </div>
-              <div class="p-6">
-                <p class="text-gray-500 text-lg text-left mb-2">
-                  Dígite el N° de resolución.
-                </p>
-                <input 
-                  type="text" 
-                  id="nroResolution" 
-                  v-model="nroResolution" 
-                  class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                  maxlength="4" 
-                  inputmode="numeric" 
-                  @input="validateResolution"
-                  required>
-                  <p v-if="nroResolution.length !== 4 && nroResolution !== ''" class="text-red-800">Debe ingresar 4 dígitos</p>
-              </div>
-              <div class="flex items-center justify-center p-3  border-gray-200">
-                <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
-                  Cancelar
-                </button>
-                <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="nroResolution.length !== 4" @click="updateResolution">
-                  Generar
-                </button>
-              </div>
-            </div>
-          </div>
+                <!-- Modal para generar un oficio al estudiante -->
+                <div v-if="showModal"
+                  class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+                  <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+                    <div class="flex justify-end items-start">
+                      <button
+                        class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                        @click="closeModal">
+                        <IconCerrar />
+                      </button>
+                    </div>
+                    <div class="flex items-start justify-between p-3 border-b border-gray-200">
+                      <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+                        Se autogenerará la resolucion de asesor para este estudiante
+                      </h5>
+                    </div>
+                    <div class="p-6">
+                      <p class="text-gray-500 text-lg text-left mb-2">
+                        Dígite el N° de resolución.
+                      </p>
+                      <input type="text" id="nroResolution" v-model="nroResolution"
+                        class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="4"
+                        inputmode="numeric" @input="validateResolution" required>
+                      <p v-if="nroResolution.length !== 4 && nroResolution !== ''" class="text-red-800">Debe ingresar 4
+                        dígitos</p>
+                    </div>
+                    <div class="flex items-center justify-center p-3  border-gray-200">
+                      <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                        @click="closeModal">
+                        Cancelar
+                      </button>
+                      <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
+                        :disabled="nroResolution.length !== 4" @click="updateResolution">
+                        Generar
+                      </button>
+                    </div>
+                  </div>
+                </div>
 
-            <!-- Modal de observacion -->
-            <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
-              <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-                <div class="flex justify-end items-start">
-                  <button  class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                    <IconCerrar />
-                  </button>
+                <!-- Modal de observacion -->
+                <div v-if="showRejectModal"
+                  class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+                  <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+                    <div class="flex justify-end items-start">
+                      <button
+                        class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                        @click="closeModal">
+                        <IconCerrar />
+                      </button>
+                    </div>
+                    <div class="flex items-start justify-between p-3 border-b border-gray-200">
+                      <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación</h5>
+                    </div>
+                    <div class="p-6 bg-white rounded-lg">
+                      <p class="text-gray-600 text-lg text-center mb-4">
+                        Por favor escriba el motivo de su observación
+                      </p>
+                      <textarea v-model="motivoObservacion"
+                        class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0"
+                        name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
+                    </div>
+                    <div class="flex items-center justify-center p-3  border-gray-200">
+                      <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                        @click="closeModal">
+                        Cancelar
+                      </button>
+                      <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+                        @click="rejectResolution">
+                        Confirmar
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                <div class="flex items-start justify-between p-3 border-b border-gray-200">
-                  <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación</h5>
-                </div>
-                <div class="p-6 bg-white rounded-lg">
-                  <p class="text-gray-600 text-lg text-center mb-4">
-                    Por favor escriba el motivo de su observación
-                  </p>
-                  <textarea v-model="motivoObservacion" class="text-gray-950 rounded-md w-full mt-3 border text-lg focus:border-gray-900 focus:ring-0" name="observarTesis" id="observarTesis" placeholder="Escriba aquí..."></textarea>
-                </div>
-                <div class="flex items-center justify-center p-3  border-gray-200">
-                  <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
-                    Cancelar
-                  </button>
-                  <button class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectResolution">
-                    Confirmar
-                  </button>
-                </div>
-              </div>
-            </div>
               </div>
             </div>
           </div>
