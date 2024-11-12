@@ -207,11 +207,11 @@ const solicitarSustentacionFechayHora= async () => {
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 mb-8">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
             <JuradoCard :rol="letraMayus(obtener?.data[0]?.asesor_rol) || 'Presidente'" :nombre="obtener?.data[0]?.asesor_nombre || 'Presidente no asignado'"/>
             <JuradoCard :rol="letraMayus(obtener?.data[1]?.asesor_rol) || 'Secretario'" :nombre="obtener?.data[1]?.asesor_nombre || 'Secretario no asignado'" />
             <JuradoCard :rol="letraMayus(obtener?.data[2]?.asesor_rol) || 'Vocal'" :nombre="obtener?.data[2]?.asesor_nombre || 'Vocal no asignado'" />
-            <JuradoCard :rol="letraMayus(obtener?.data[3]?.asesor_rol) || 'Accesitario'" :nombre="obtener?.data[3]?.asesor_nombre || 'Accesitario no asignado'" class="sm:col-start-2" />
+            <JuradoCard :rol="letraMayus(obtener?.data[3]?.asesor_rol) || 'Accesitario'" :nombre="obtener?.data[3]?.asesor_nombre || 'Accesitario no asignado'" />
           </div>
           <!-- mostrar fehcha y hora -->
           <div class="flex flex-col md:flex-row gap-4 mt-8">
