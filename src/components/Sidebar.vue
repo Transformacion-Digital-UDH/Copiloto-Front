@@ -138,9 +138,9 @@ export default defineComponent({
           { name: 'SolicitudesAsesoria', label: 'Pendientes de Aceptar', path: '/asesor/solicitud-asesoria' },
           { name: 'SolicitudesRevision', label: 'Revisión de proyectos', path: '/asesor/solicitud-revision' },
         );
-        allSections[1].submenus.push(
-          { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
-        );
+        // allSections[1].submenus.push(
+        //   { name: 'EjecucionAsesor', label: 'Ejecución Submenu Asesor', path: '/ejecucion/asesor' }
+        // );
 
         allSections[2].submenus.push(
           { name: 'Revisión informe', label: 'Revisión de Informes', path: '/asesor/revision-informe' },
@@ -158,7 +158,7 @@ export default defineComponent({
         // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
         sections.value = allSections.filter(section =>
           section.name === 'ProyectoDeTesis' ||
-          section.name === 'Ejecucion' ||
+         // section.name === 'Ejecucion' ||
           section.name === 'InformeFinal'
         );
       } else if (role.value === 'paisi') {
@@ -262,9 +262,6 @@ export default defineComponent({
 });
 </script>
 
-
-
-
 <template>
   <div :class="[isOpen ? 'w-0 lg:w-64' : '', 'flex bg-white dark:bg-gray-800']">
     <!-- Backdrop -->
@@ -272,19 +269,10 @@ export default defineComponent({
       class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
     <!-- End Backdrop -->
 
-    <div :class="[
-      isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
+    <div :class="[isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
       'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform',
       isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900',
-      'sidebar'
-    ]">
-      <!-- LOGO COPILOTO -->
-      <div class="flex items-center justify-center mt-8">
-        <a aria-label="Inicio">
-          <img v-if="isDark" class="w-auto h-10" src="/img/logo_dark.svg" alt="Logo" />
-          <img v-else class="w-auto h-10" src="/img/logo_light.svg" alt="Logo" />
-        </a>
-      </div>
+      'sidebar']">
 
       <!-- INFO DEL ESTUDIANTE COMO EL NOMBRE -->
       <div class="flex flex-col items-center justify-center mt-6">
@@ -293,105 +281,105 @@ export default defineComponent({
         </div>
         <div class="w-full text-center max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>
-          <p class="text-base break-words">{{ role }}</p>
+          <p class="text-base text-green-600 font-semibold break-words">{{ role }}</p>
         </div>
       </div>
 
       <!-- INFO DEL ESTUDIANTE COMO PROGRESO -->
       <div class="px-6 mt-6 mb-8">
         <div class="flex justify-between mb-4">
-          <span class="font-medium">Progreso General</span>
+          <span class="font-medium text-gray-600 dark:text-gray-300">Progreso General</span>
         </div>
         <div class="w-full bg-gray-200 rounded-full h-2.5">
           <div :style="{ width: progreso + '%' }" class="bg-blue-600 h-2.5 rounded-full"></div>
           <span class="text-sm font-medium text-blue-700 dark:text-blue-200">{{ progreso }}%</span>
         </div>
       </div>
-      <hr />
+      <hr class="border-gray-300 dark:border-gray-600" />
 
       <nav class="mt-5 mb-10">
         <!-- Secciones Dinámicas -->
         <div v-for="section in sections" :key="section.name" class="mb-4">
-        <button
-          @click="toggleSubmenu(section.name)"
-          class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 group" >
-          <component :is="section.icon" class="w-8 h-8 transition-transform transform group-hover:translate-x-2 duration-300" />
-          <span class="mx-4 text-left text-sl font-medium transition-transform transform group-hover:translate-x-2 duration-300">
+          <button
+            @click="toggleSubmenu(section.name)"
+            class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 group">
+            <component :is="section.icon" class="w-8 h-8 transition-transform transform group-hover:translate-x-2 duration-300" />
+            <span class="mx-4 text-left text-base font-medium transition-transform transform group-hover:translate-x-2 duration-300">
               {{ section.label }}
             </span>
-          <svg
-            v-if="!section.isOpen"
-            viewBox="0 0 24 24"
-            class="w-4 h-4 ml-auto"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+            <svg
+              v-if="!section.isOpen"
+              viewBox="0 0 24 24"
+              class="w-4 h-4 ml-auto text-gray-500 dark:text-gray-400"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
                 d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-              fill="currentColor"
-            />
+                fill="currentColor"
+              />
             </svg>
-          <svg
-            v-else
-            viewBox="0 0 24 24"
-            class="w-4 h-4 ml-auto"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            transform="rotate(270)"
-          >
-            <path
-              fill-rule="evenodd"
-              clip-rule="evenodd"
+            <svg
+              v-else
+              viewBox="0 0 24 24"
+              class="w-4 h-4 ml-auto text-gray-500 dark:text-gray-400 rotate-180"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg">
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
                 d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-              fill="currentColor"
-            />
+                fill="currentColor"
+              />
             </svg>
           </button>
           <div v-if="section.isOpen">
-            <ul class="pl-8">
-              <li v-for="submenu in section.submenus" :key="submenu.name">
-                <router-link :to="submenu.path" class="block px-4 py-2 text-sm "
+            <ul class="pl-8 mt-2">
+              <li v-for="submenu in section.submenus" :key="submenu.name" class="flex items-center mb-1">
+                <div v-if="role === 'asesor' && submenu.name.includes('jurado')" class="w-1 bg-green-600 mr-2 h-full rounded"></div>
+                <router-link
+                  :to="submenu.path"
+                  class="flex items-center justify-between px-4 py-2 text-sm rounded-lg transition duration-200 mr-4"
                   :class="[
-                    isActive(submenu) ? 'bg-base text-white hover:bg-base dark:hover:bg-base' : 'hover:bg-gray-200 dark:hover:bg-gray-700'
+                    isActive(submenu) ? 'bg-base text-white hover:bg-base dark:hover:bg-base' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                   ]">
-                  {{ submenu.label }}
+                  <span>{{ submenu.label }}</span>
+                  <span v-if="role === 'asesor' && submenu.name.includes('jurado')" class="ml-2 text-xs text-white bg-green-600 px-2 py-1 rounded-lg">Jurado</span>
                 </router-link>
+
               </li>
+
             </ul>
           </div>
         </div>
-
       </nav>
     </div>
   </div>
 </template>
 
-
-
 <style scoped>
-/* Estilos específicos para el modo oscuro */
+/* Estilos mejorados para el sidebar */
 .dark .sidebar {
-  background-color: #1a202c; /* Fondo oscuro */
-  color: #edf2f7; /* Texto claro */
-}
-
-.dark .hover:bg-gray-200 {
-  background-color: #482d2d; /* Color de fondo para hover en modo oscuro */
-}
-/* Estilos específicos para el modo oscuro */
-.dark .sidebar {
-  background-color: #1a202c; /* Fondo oscuro */
-  color: #edf2f7; /* Texto claro */
-}
-
-.dark .hover:bg-gray-200 {
-  background-color: #482d2d; /* Color de fondo para hover en modo oscuro */
+  background-color: #1a202c;
+  color: #edf2f7;
 }
 
 .sidebar ul li .text-sm {
-  font-size: 0.875rem; /* Ajusta el tamaño de fuente para los submenús */
+  font-size: 0.875rem;
 }
 
+.router-link-active {
+  font-weight: bold;
+}
+
+/* Badge personalizado para el rol de jurado */
+.badge-jurado {
+  background-color: #34d399; /* Verde claro */
+  color: #fff;
+  padding: 2px 6px;
+  font-size: 0.75rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
 </style>

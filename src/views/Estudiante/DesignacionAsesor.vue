@@ -630,7 +630,7 @@ const handleNextButtonClick = () => {
           </button>
         </div>
         <!-- Card 3: Solicitar Cambio de Asesor -->
-        <div :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
+        <!-- <div :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
           solicitude.estado
         )
           " :class="[
@@ -655,7 +655,7 @@ const handleNextButtonClick = () => {
           </p>
 
           <div class="mt-4 space-y-4">
-            <!-- Botón de Solicitar Cambio de Asesor -->
+            //Botón de Solicitar Cambio de Asesor 
             <div class="flex justify-center">
               <button :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
                 solicitude.estado
@@ -672,9 +672,9 @@ const handleNextButtonClick = () => {
               </button>
             </div>
           </div>
-        </div>
+        </div> -->
         <!-- Historial de Acciones -->
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" id="historial">
+        <!-- <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" id="historial">
           <h2 class="text-2xl font-medium text-azul">Historial de acciones</h2>
           <div class="overflow-x-auto mt-4">
             <table class="min-w-full table-auto bg-gray-50 rounded-lg">
@@ -703,7 +703,7 @@ const handleNextButtonClick = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </div> -->
         <!-- Modal de Confirmación -->
         <div v-if="mostrarModalConfirmacion"
           class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">

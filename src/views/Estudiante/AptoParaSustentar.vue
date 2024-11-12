@@ -181,7 +181,7 @@ onMounted(() => {
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para sustentar</h2>
             <ModalToolTip 
-              :infoModal="[{ info: 'Falta definir la información' },]" />                
+              :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
           
           <div v-show="mostrarModalSustentacion" class="absolute left-4 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
@@ -210,7 +210,7 @@ onMounted(() => {
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
               <ModalToolTip 
-                :infoModal="[{ info: 'Falta definir la información' },]" /> 
+                :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">

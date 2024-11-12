@@ -109,7 +109,7 @@ const solicitarSustentacionFechayHora= async () => {
 const obtenerDatosSustentacion = async () => {
   const student_id = authStore.id;
   try {
-    const response = await axios.get(`/api/oficio/datos-sustentacion/${student_id}`);
+    const response = await axios.get(`/api/estudiante/get-info/desigancion-fecha-hora-sustentacion/${student_id}`);
     if (response.data) {
       accesitario.value = response.data.accesitario || "No asignado";
       fechaSustentacion.value = response.data.fecha || "Fecha no asignada";
@@ -165,7 +165,7 @@ onMounted(() => {
           <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para fecha y hora</h2>
             <ModalToolTip 
-              :infoModal="[{ info: 'Falta definir la información' },]" />               
+              :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
           </div>
 
           <div class="flex items-center justify-between mt-2">
@@ -217,7 +217,7 @@ onMounted(() => {
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">2. Documentos de fecha y hora</h2>
               <ModalToolTip 
-                :infoModal="[{ info: 'Falta definir la información' },]" /> 
+                :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la designación de fecha y hora para la sustentación.' },]" /> 
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">
