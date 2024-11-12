@@ -195,6 +195,7 @@ const sendToBackend = async () => {
 
   try {
     if (selectedOficioId.value) {
+      
       // Asegúrate de que sea una solicitud PUT
       const response = await axios.put(`/api/office/djt/${selectedOficioId.value}/status`, payload);
       alertToast('Datos enviados correctamente', "Éxito", "success");
@@ -207,6 +208,7 @@ const sendToBackend = async () => {
     alertToast('Error al enviar los datos al backend', 'error');
     console.error('Error al enviar datos:', error);
   }
+
 };
 
 
@@ -401,7 +403,6 @@ onMounted(() => {
       <!-- Sección de selección de jurados -->
       <div class="p-6">
         <div class="flex-1">
-
           <!-- Selección del presidente -->
           <select v-model="selectedPresidente" id="presidente" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Presidente', selectedPresidente)">
             <option disabled value="">Selecciona un presidente</option>
@@ -425,7 +426,6 @@ onMounted(() => {
               {{ jurado.asesor }}
             </option>
           </select>
-
         </div>
       </div>
 
@@ -439,28 +439,27 @@ onMounted(() => {
 
       <!-- Tabla para mostrar las revisiones si existen -->
       <div v-if="selectedRevisiones.length" class="mt-6">
-        <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
-        
-        <!-- Contenedor con scroll para la tabla de revisiones -->
-        <div class="overflow-y-auto max-h-48">
-          <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
-            <thead>
-              <tr class="bg-gray-200 text-left">
-                <th class="px-4 py-2">Rol</th>
-                <th class="px-4 py-2">Estudiante</th>
-                <th class="px-4 py-2">Días</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(revision, index) in selectedRevisiones" :key="index">
-                <td class="border px-4 py-2">{{ revision.rol }}</td>
-                <td class="border px-4 py-2">{{ revision.estudiante }}</td>
-                <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div> <!-- Fin del contenedor con scroll -->
-      </div>
+                <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
+                <!-- Aplicamos un contenedor con scroll si la tabla crece mucho -->
+                <div class="overflow-y-auto max-h-48"> <!-- Aquí se agrega el scroll -->
+                  <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
+                    <thead>
+                      <tr class="bg-gray-200 text-left">
+                        <th class="px-4 py-2">Rol</th>
+                        <th class="px-4 py-2">Estudiante</th>
+                        <th class="px-4 py-2">Días</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(revision, index) in selectedRevisiones" :key="index">
+                        <td class="border px-4 py-2">{{ revision.rol }}</td>
+                        <td class="border px-4 py-2">{{ revision.estudiante }}</td>
+                        <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> <!-- Fin del contenedor con scroll -->
+              </div>
 
       <!-- Mensaje cuando no hay revisiones -->
       <div v-else class="mt-6 text-gray-500 text-center">
