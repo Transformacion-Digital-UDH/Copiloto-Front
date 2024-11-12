@@ -6,6 +6,7 @@ import { ref, computed, onMounted } from 'vue';
 import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
+import JuradoCard from '@/components/JuradoCard.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Fecha y Hora para Sustentación";
@@ -44,31 +45,15 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  const documentoResolucion = documentos.value.find(
-    (doc) => doc.nombre === "Resolución de Declaración de Apto para Sustentación"
-  );
-  return documentoResolucion?.estado.toLowerCase() !== "tramitado";
+  return documentos.value.some(doc => doc.estado !== "tramitado");
 });
-
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
 const solicitudEstado = ref<string>("");
 const isLoading = ref(false);
 const load = ref(false);
-// Estados para accesitario, fecha y hora
-const accesitario = ref<string>("");  // Nombre del accesitario
-const fechaSustentacion = ref<string>("");  // Fecha de la sustentación
-const horaSustentacion = ref<string>(""); 
-
-const VIEW_OSINFORME  = import.meta.env.VITE_URL_VIEW_OSINFORME ;
-const DOWNLOAD_OSINFORME  = import.meta.env.VITE_URL_DOWNLOAD_OSINFORME ;
-
-const VIEW_RSNFORME = import.meta.env.VITE_URL_VIEW_RSNFORME;
-const DOWNLOAD_RSNFORME = import.meta.env.VITE_URL_DOWNLOAD_RSNFORME;
-
-const oficio_id = ref<string>("");
-const resolucion_id = ref<string>("");
+const obtener = ref<Estudiante | null>(null);
 
 const documentos = ref([
   { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' },
@@ -77,7 +62,77 @@ const documentos = ref([
 
 // para que el botón quede deshabilitado
 const isSolicitarDisabled = computed(() => {
-  return isLoading.value || documentos.value.some(doc => doc.estado.toLowerCase() === 'tramitado');
+  return isLoading.value || documentos.value.some(doc => doc.estado === 'pendiente' || doc.estado === 'tramitado');
+});
+
+const VIEW_OFHINFORME  = import.meta.env.VITE_URL_VIEW_OFHINFORME;
+const DOWNLOAD_OFHINFORME  = import.meta.env.VITE_URL_DOWNLOAD_OFHINFORME;
+const VIEW_RFHNFORME = import.meta.env.VITE_URL_VIEW_RFHNFORME;
+const DOWNLOAD_RFHNFORME = import.meta.env.VITE_URL_DOWNLOAD_RFHNFORME;
+
+const oficio_id = ref<string>("");
+const resolucion_id = ref<string>("");
+
+function letraMayus(text: string | undefined): string {
+  if (!text) return '';
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
+interface Asesor {
+  asesor_nombre: string;
+  asesor_rol: string;
+}
+
+interface Estudiante {
+  data: Asesor[];
+  sus_fecha: string;
+  sus_hora: string;
+  oficio_id: string;
+  oficio_estado: string;
+  resolucion_id: string;
+  resolucion_estado: string;
+  resolucion_observacion: string;
+}
+
+const obtenerDatosEstudianteFechayHora = async () => {
+  load.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(`/api/estudiante/get-info/desigancion-fecha-hora-sustentacion/${student_id}`);
+    
+    obtener.value = response.data;
+
+    // actualizacr estado de oficio
+    if (response.data.oficio_estado === 'tramitado') {
+      oficio_id.value = response.data.oficio_id;
+      documentos.value[0].estado = 'tramitado';
+    } else if (response.data.oficio_estado === 'observado') {
+      documentos.value[0].estado = 'observado';
+      documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
+    } else {
+      documentos.value[0].estado = 'pendiente';
+    }
+
+    // actualizar estado de resoluicion
+    if (response.data.resolucion_estado === 'tramitado') {
+      resolucion_id.value = response.data.resolucion_id;
+      documentos.value[1].estado = 'tramitado';
+    } else if (response.data.resolucion_estado === 'observado') {
+      documentos.value[1].estado = 'observado';
+      documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
+    } else {
+      documentos.value[1].estado = 'pendiente';
+    }
+
+  } catch (error: any) {
+    console.error("Error al obtener datos", error.response?.data?.error || "Error en la solicitud");
+  } finally {
+    load.value = false;
+  }
+};
+
+onMounted(() => {
+  obtenerDatosEstudianteFechayHora();
 });
 
 // funcion para solicitar que me asignen jurados
@@ -88,9 +143,9 @@ const solicitarSustentacionFechayHora= async () => {
     const response = await axios.get(`/api/oficio/desigancion-fecha-hora-sustentacion/${student_id}`);
   
     if (response.data.estado) {
-      solicitudEstado.value = "pendiente";  // mostrar el estado de la solicitud
+      solicitudEstado.value = "pendiente";  
       alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
-      // await obtenerDocumentosSustentancion();
+      await obtenerDatosEstudianteFechayHora();
     }
     
   } catch (error: any) {
@@ -104,36 +159,26 @@ const solicitarSustentacionFechayHora= async () => {
     isLoading.value = false; 
   }
 };
-
-// Función para obtener datos de sustentación (accesitario, fecha y hora)
-const obtenerDatosSustentacion = async () => {
-  const student_id = authStore.id;
-  try {
-    const response = await axios.get(`/api/oficio/datos-sustentacion/${student_id}`);
-    if (response.data) {
-      accesitario.value = response.data.accesitario || "No asignado";
-      fechaSustentacion.value = response.data.fecha || "Fecha no asignada";
-      horaSustentacion.value = response.data.hora || "Hora no asignada";
-    }
-  } catch (error: any) {
-    console.error("Error al obtener datos de sustentación:", error.response?.data?.message || error.message);
-  }
-};
-
-// Llama a `obtenerDatosSustentacion` al montar el componente
-onMounted(() => {
-  obtenerDatosSustentacion();
-  // También puedes llamar a otras funciones de carga aquí, como obtenerDocumentosSustentancion
-});
-
 </script>
 <template>
    <template v-if="load">
     <div class="flex-1 p-10 border-s-2 bg-gray-100">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-2/3 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-12 w-5/6 rounded-lg duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 animate-pulse">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>
+            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>            
+            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>            
+            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>
+          </div>
+          <div class="flex flex-col md:flex-row gap-4 mt-8">
+            <div class="flex-1 rounded-lg h-36 shadow-md p-6 duration-200 skeleton-loader"></div>
+            <div class="flex-1 rounded-lg h-36 shadow-md p-6 duration-200 skeleton-loader"></div>
+          </div>
+        </div>
         <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
           <div class="block space-y-4">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
@@ -160,7 +205,29 @@ onMounted(() => {
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <!-- Card 2: Solicitar designación de Jurados -->
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mb-8">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <JuradoCard :rol="letraMayus(obtener?.data[0]?.asesor_rol) || 'Presidente'" :nombre="obtener?.data[0]?.asesor_nombre || 'Presidente no asignado'"/>
+            <JuradoCard :rol="letraMayus(obtener?.data[1]?.asesor_rol) || 'Secretario'" :nombre="obtener?.data[1]?.asesor_nombre || 'Secretario no asignado'" />
+            <JuradoCard :rol="letraMayus(obtener?.data[2]?.asesor_rol) || 'Vocal'" :nombre="obtener?.data[2]?.asesor_nombre || 'Vocal no asignado'" />
+            <JuradoCard :rol="letraMayus(obtener?.data[3]?.asesor_rol) || 'Accesitario'" :nombre="obtener?.data[3]?.asesor_nombre || 'Accesitario no asignado'" class="sm:col-start-2" />
+          </div>
+          <!-- mostrar fehcha y hora -->
+          <div class="flex flex-col md:flex-row gap-4 mt-8">
+            <div class="flex-1 bg-white rounded-lg shadow-md p-6 text-center border border-gray-100">
+              <i class="fas fa-calendar-alt text-blue-500 text-3xl mb-2"></i>
+              <span class="block text-lg font-semibold text-gray-700 mt-2">Fecha de Sustentación</span>
+              <span class="text-gray-600 text-center mt-2 text-2xl">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</span>
+            </div>
+            <div class="flex-1 bg-white rounded-lg shadow-md p-6 text-center border border-gray-100">
+              <i class="fas fa-clock text-blue-500 text-3xl mb-2"></i>
+              <span class="block text-lg font-semibold text-gray-700 mt-2">Hora de Sustentación</span>
+              <span class="text-gray-600 text-center mt-2 text-2xl">{{ obtener?.sus_hora || 'Hora no asignada' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 1: Solicitar designación de Jurados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para fecha y hora</h2>
@@ -175,141 +242,93 @@ onMounted(() => {
           <div class="mt-4">
             <div class="flex justify-center mt-2">
               <button
-                :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
-                class="px-4 py-2 w-52 text-white rounded-md text-lg"
+                :disabled="isSolicitarDisabled || isLoading" 
+                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul', isLoading ? 'cursor-not-allowed' : '' ]"
+                class="px-4 py-2 w-64 text-white rounded-md text-lg"
                 @click="solicitarSustentacionFechayHora">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar' }}
+                {{ isLoading ? 'Solicitando...' : 'Solicitar Fecha y Hora' }}
               </button>
             </div>
           </div>
         </div>
 
-       <!-- Nueva Sección: Detalles de Accesitario, Fecha y Hora -->
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 relative mb-8">
-          <!-- Tarjeta de Accesitario -->
-          <div class="bg-gray-50 rounded-md shadow-lg p-4 mb-4 flex flex-col items-center justify-center text-center">
-            <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-            <span class="text-2xl font-semibold text-azul">Jurado Accesitario</span>
-            <span class="text-gray-600 text-center">{{ accesitario || 'No asignado' }}</span>
+        <!-- Card 2: Documentos -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">2. Documentos de fecha y hora</h2>
+            <ModalToolTip 
+              :infoModal="[{ info: 'Falta definir la información' },]" /> 
           </div>
-
-          <!-- Tarjetas de Fecha y Hora en Paralelo -->
-          <div class="flex flex-col md:flex-row gap-4 mt-4">
-            <!-- Tarjeta de Fecha de Sustentación -->
-            <div class="flex-1 bg-gray-50 rounded-md shadow-lg p-4 text-center">
-              <span class="block text-lg font-semibold text-[#1d3557]">Fecha de Sustentación</span>
-              <span class="text-gray-600 text-center">{{ fechaSustentacion || 'Fecha no asignada' }}</span>
+          <!-- Para Oficio de PAISI -->
+          <div class="mt-4 space-y-4">
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm bg-gray-50">{{documentos[0].nombre}}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <a
+                      :href="`${VIEW_OFHINFORME }/${oficio_id}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <a
+                      :href="`${DOWNLOAD_OFHINFORME }/${oficio_id}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">{{ documentos[0].observacion || 'Observación no disponible' }}</p>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
+                    {{ letraMayus(documentos[0].estado) || "Estado desconocido" }}</span>
+                </div>
+              </div>
             </div>
-
-            <!-- Tarjeta de Hora de Sustentación -->
-            <div class="flex-1 bg-gray-50 rounded-md shadow-lg p-4 text-center">
-              <span class="block text-lg font-semibold text-[#1d3557]">Hora de Sustentación</span>
-              <span class="text-gray-600 text-center">{{ horaSustentacion || 'Hora no asignada' }}</span>
+          </div>
+          <!-- Para Resolución de Facultad -->
+          <div class="mt-4 space-y-4">
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm bg-gray-50">{{ documentos[1].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <a
+                      :href="`${VIEW_RFHNFORME}/${resolucion_id}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <a
+                      :href="`${DOWNLOAD_RFHNFORME}/${resolucion_id}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <p v-else-if="documentos[1].estado === 'observado'" class="text-gray-500 italic">{{ documentos[1].observacion || 'Observación no disponible' }}</p>
+                  <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">
+                    {{ letraMayus(documentos[1].estado) || "Estado desconocido" }}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-
-
-
-        <!-- Card 2: Documentos -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
-            <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos de fecha y hora</h2>
-              <ModalToolTip 
-                :infoModal="[{ info: 'Falta definir la información' },]" /> 
-            </div>
-            <!-- Para Oficio de PAISI -->
-            <div class="mt-4 space-y-4">
-              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-                <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
-                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <!-- Condición para cuando el estado es "tramitado" -->
-                    <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                      <a
-                        :href="`${VIEW_OSINFORME }/${oficio_id}`"
-                        target="_blank"
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-eye mr-2"></i> Ver
-                      </a>
-                      <a
-                        :href="`${DOWNLOAD_OSINFORME }/${oficio_id}`"
-                        download
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-download mr-2"></i> Descargar
-                      </a>
-                    </div>
-
-                    <!-- Condición para mostrar la observación cuando el estado es "observado" -->
-                    <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">
-                      "{{ documentos[0].observacion || 'Observación no disponible' }}"
-                    </p>
-
-                    <!-- Mensaje de que aún no está cargado para estado "pendiente" -->
-                    <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
-
-                    <!-- Estado del documento -->
-                    <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
-                      {{ documentos[0].estado.charAt(0).toUpperCase() + documentos[0].estado.slice(1).toLowerCase() || "Estado desconocido" }}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Para Resolución de Facultad -->
-            <div class="mt-4 space-y-4">
-              <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-                <div class="flex flex-col md:flex-row justify-between md:items-center">
-                  <span class="flex-1 text-xm bg-gray-50">{{ documentos[1].nombre }}</span>
-                  <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                    <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                      <!-- BOTON VER -->
-                      <a
-                        :href="`${VIEW_RSNFORME}/${resolucion_id}`"
-                        target="_blank"
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-eye mr-2"></i> Ver
-                      </a>
-                      <!-- BOTON DESCARGAR -->
-                      <a
-                        :href="`${DOWNLOAD_RSNFORME}/${resolucion_id}`"
-                        download
-                        class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-download mr-2"></i> Descargar
-                      </a>
-                    </div>
-
-                      <!-- Condición para mostrar la observación cuando el estado es "observado" -->
-                      <p v-else-if="documentos[1].estado === 'observado'" class="text-gray-500 italic">
-                        "{{ documentos[1].observacion || 'Observación no disponible' }}"
-                      </p>
-
-                    <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
-                    <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado.charAt(0).toUpperCase() + documentos[1].estado.slice(1).toLowerCase() || "Estado desconocido" }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
         <!--Botones siguiente y anteerior-->
         <div class="flex justify-between">
           <button
-            @click="$router.push('/estudiante/conformidad-informe-asesor')" 
+            @click="$router.push('/estudiante/declaracion-apto-sustentar')" 
             class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
           </button>
           <button
             @click="handleNextButtonClick"
-            :class="[ 
-              'px-4 py-2 text-white rounded-md',
-              isNextButtonDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',]">Siguiente
+            :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled
+            ? 'bg-gray-300 cursor-not-allowed'
+            : 'bg-green-500 hover:bg-green-600',]">Siguiente
           </button>
         </div>
-
       </div>
     </div>
   </template>

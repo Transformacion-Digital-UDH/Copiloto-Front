@@ -42,7 +42,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/conformidad-vri");
+  router.push("/estudiante/declaracion-apto-sustentar");
 };
 
 const isNextButtonDisabled = computed(() => {
@@ -284,7 +284,7 @@ onMounted(() =>{
           <!-- BOTONES ANTERIOR Y SIGUIENTE -->
           <div class="flex justify-between">
             <button 
-              @click="$router.push('/estudiante/conformidad-jurado')" 
+              @click="$router.push('/estudiante/conformidad-informe-jurado')" 
               class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
               Anterior
             </button>
