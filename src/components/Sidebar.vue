@@ -339,14 +339,24 @@ export default defineComponent({
               <li v-for="submenu in section.submenus" :key="submenu.name" class="flex items-center mb-1">
                 <div v-if="role === 'asesor' && submenu.name.includes('jurado')" class="w-1 bg-green-600 mr-2 h-full rounded"></div>
                 <router-link
-                  :to="submenu.path"
-                  class="flex items-center justify-between px-4 py-2 text-sm rounded-lg transition duration-200 mr-4"
-                  :class="[
-                    isActive(submenu) ? 'bg-base text-white hover:bg-base dark:hover:bg-base' : 'hover:bg-gray-100 dark:hover:bg-gray-700'
-                  ]">
-                  <span>{{ submenu.label }}</span>
-                  <span v-if="role === 'asesor' && submenu.name.includes('jurado')" class="ml-2 text-xs text-white bg-green-600 px-2 py-1 rounded-lg">Jurado</span>
-                </router-link>
+                    :to="submenu.path"
+                    class="flex items-center justify-between p-3 text-sm  transition duration-200"
+                    :class="[
+                      isActive(submenu)
+                        ? 'bg-base text-white hover:bg-base dark:hover:bg-base'
+                        : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ]"
+                    style="margin: 0; width: 100%; box-sizing: border-box;"
+                  >
+                    <span>{{ submenu.label }}</span>
+                    <span
+                      v-if="role === 'asesor' && submenu.name.includes('jurado')"
+                      class="ml-2 text-xs text-white bg-green-600 px-2 py-1 rounded-lg"
+                    >
+                      Jurado
+                    </span>
+                  </router-link>
+
 
               </li>
 
