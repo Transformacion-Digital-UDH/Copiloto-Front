@@ -11,7 +11,7 @@
     <tbody>
       <tr v-if="!revisiones.length">
         <td colspan="4" class="px-4 py-6 text-gray-500">
-          <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>Aún no hay revisiones realizadas por el jurado
+          <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>Aún no hay revisiones realizadas por el jurado.
         </td>
       </tr>
       <tr v-else v-for="revision in revisiones" :key="revision.revision_id" class="border-b border-gray-200 text-center">
