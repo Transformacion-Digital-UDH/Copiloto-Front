@@ -242,7 +242,7 @@ onMounted(() => {
           <!-- Para Resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-                titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+                titulo="Resolución de Declaración de Apto para Sustentación."
                 :estado="obtener?.resolucion_estado || ''"
                 :id="obtener?.resolucion_id ?? ''"
                 :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría PAISI'"
