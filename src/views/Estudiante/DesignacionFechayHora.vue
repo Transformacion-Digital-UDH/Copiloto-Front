@@ -108,7 +108,7 @@ const solicitarFechayHora = async () => {
     console.log("Mostrando lo recibido", response)
     if (response.data.estado === 'pendiente') {
       solicitudEstado.value = 'pendiente';
-      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
+      alertToast("Solicitud enviada. Espere indicaciones sobre la fecha y hora de sustentación.", "Éxito", "success");
       await obtenerDatosEstudianteFechayHora();
     }
     
@@ -188,7 +188,6 @@ onMounted(() => {
               <span class="block text-lg font-semibold text-gray-700 mt-2">Fecha de Sustentación</span>
               <span class="text-gray-600 text-center mt-2 text-2xl">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</span>
             </div>
-
             <div class="flex-1 bg-white rounded-lg shadow-md p-6 text-center border border-gray-100">
               <i class="fas fa-clock text-blue-500 text-3xl mb-2"></i>
               <span class="block text-lg font-semibold text-gray-700 mt-2">Hora de Sustentación</span>
@@ -204,19 +203,18 @@ onMounted(() => {
             <ModalToolTip 
               :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
           </div>
-
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio con la fecha y hora asignadas para la sustentación.</p>
-          </div>
-          
+          </div>          
           <div class="mt-4">
             <div class="flex justify-center mt-2">
               <button
                 :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul', isLoading ? 'cursor-not-allowed' : '' ]"
+                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul', 
+                isLoading ? 'cursor-not-allowed' : '' ]"
                 class="px-4 py-2 w-64 text-white rounded-md text-lg"
                 @click="solicitarFechayHora">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar Fecha y Hora' }}
+                {{ isLoading ? 'Enviando...' : 'Solicitar Fecha y Hora' }}
               </button>
             </div>
           </div>

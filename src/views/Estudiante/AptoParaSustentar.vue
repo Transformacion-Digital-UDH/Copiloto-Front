@@ -101,7 +101,7 @@ const solicitarAptoSustentar = async () => {
   
     if (response.data.estado === 'pendiente') {
       solicitudEstado.value = 'pendiente';
-      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
+      alertToast("Solicitud enviada. Espere indicaciones para la sustentación de tesis.", "Éxito", "success");
       await obtenerDatosEstudianteAptoSustentacion();
     }
     
@@ -162,19 +162,18 @@ onMounted(() => {
             <ModalToolTip 
               :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
-
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio de aprobación necesario para sustentar.</p>
           </div>
-
           <div class="mt-4">
             <div class="flex justify-center mt-2">
               <button
                 :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
+                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', 
+                isLoading ? 'hover:bg-azul' : '']"
                 class="px-4 py-2 w-64 text-white rounded-md text-lg"
                 @click="solicitarAptoSustentar">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar Oficio de Apto' }}
+                {{ isLoading ? 'Enviando...' : 'Solicitar Oficio de Apto' }}
               </button>
             </div>
           </div>
