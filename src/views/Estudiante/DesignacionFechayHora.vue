@@ -7,6 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import JuradoCard from '@/components/JuradoCard.vue';
+import DocumentCard from '@/components/DocumentCard.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Fecha y Hora para Sustentación";
@@ -45,38 +46,27 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  return documentos.value.some(doc => doc.estado !== "tramitado");
+  return obtener.value?.oficio_estado !== 'tramitado' || obtener.value.resolucion_estado !== 'tramitado';
 });
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
-const solicitudEstado = ref(false);
+const solicitudEstado = ref<string>(""); 
 const isLoading = ref(false);
 const load = ref(false);
 const obtener = ref<Estudiante | null>(null);
-
-const documentos = ref([
-  { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' },
-  { nombre: 'Resolución de Declaración de Apto para Sustentación', estado: 'Pendiente', observacion: '' }
-]);
-
-// para que el botón quede deshabilitado
-const isSolicitarDisabled = computed(() => {
-  return isLoading.value || solicitudEstado.value || documentos.value.some(doc => doc.estado === 'tramitado');
-});
+const jurados = computed(() => obtener.value?.data ?? []);
 
 const VIEW_OFHINFORME  = import.meta.env.VITE_URL_VIEW_OFHINFORME;
 const DOWNLOAD_OFHINFORME  = import.meta.env.VITE_URL_DOWNLOAD_OFHINFORME;
 const VIEW_RFHNFORME = import.meta.env.VITE_URL_VIEW_RFHNFORME;
 const DOWNLOAD_RFHNFORME = import.meta.env.VITE_URL_DOWNLOAD_RFHNFORME;
 
-const oficio_id = ref<string>("");
-const resolucion_id = ref<string>("");
-
-function letraMayus(text: string | undefined): string {
-  if (!text) return '';
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
+// para que el botón quede deshabilitado
+const bloquearBoton = ['pendiente', 'observado', 'tramitado']
+const isSolicitarDisabled = computed(() => {
+  return (isLoading.value || (bloquearBoton.includes(obtener.value?.oficio_estado ?? '') || bloquearBoton.includes(obtener.value?.resolucion_estado ?? '')));
+});
 
 interface Asesor {
   asesor_nombre: string;
@@ -99,30 +89,8 @@ const obtenerDatosEstudianteFechayHora = async () => {
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/estudiante/get-info/desigancion-fecha-hora-sustentacion/${student_id}`);
-    
+    console.log("Mostrando lo recibido", response)
     obtener.value = response.data;
-
-    // actualizacr estado de oficio
-    if (response.data.oficio_estado === 'tramitado') {
-      oficio_id.value = response.data.oficio_id;
-      documentos.value[0].estado = 'tramitado';
-    } else if (response.data.oficio_estado === 'observado') {
-      documentos.value[0].estado = 'observado';
-      documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
-    } else {
-      documentos.value[0].estado = 'pendiente';
-    }
-
-    // actualizar estado de resoluicion
-    if (response.data.resolucion_estado === 'tramitado') {
-      resolucion_id.value = response.data.resolucion_id;
-      documentos.value[1].estado = 'tramitado';
-    } else if (response.data.resolucion_estado === 'observado') {
-      documentos.value[1].estado = 'observado';
-      documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
-    } else {
-      documentos.value[1].estado = 'pendiente';
-    }
 
   } catch (error: any) {
     console.error("Error al obtener datos", error.response?.data?.error || "Error en la solicitud");
@@ -131,28 +99,23 @@ const obtenerDatosEstudianteFechayHora = async () => {
   }
 };
 
-onMounted(() => {
-  obtenerDatosEstudianteFechayHora();
-});
-
 // funcion para solicitar que me asignen jurados
-const solicitarSustentacionFechayHora= async () => {
+const solicitarFechayHora = async () => {
   isLoading.value = true;
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/oficio/desigancion-fecha-hora-sustentacion/${student_id}`);
-  
+    console.log("Mostrando lo recibido", response)
     if (response.data.estado === 'pendiente') {
-      solicitudEstado.value = true;
-      documentos.value[0].estado = 'pendiente';
-      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
+      solicitudEstado.value = 'pendiente';
+      alertToast("Solicitud enviada. Espere indicaciones sobre la fecha y hora de sustentación.", "Éxito", "success");
       await obtenerDatosEstudianteFechayHora();
     }
     
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.message) {
       const mensaje = error.response.data.message;
-      alertToast(mensaje, "Error", "error");
+      alertToast(mensaje, "Advertencia", "warning");
     } else {
       alertToast("Error en la solicitud.", "Error", "error");
     }
@@ -160,6 +123,11 @@ const solicitarSustentacionFechayHora= async () => {
     isLoading.value = false; 
   }
 };
+
+onMounted(() => {
+  obtenerDatosEstudianteFechayHora();
+});
+
 </script>
 <template>
    <template v-if="load">
@@ -206,12 +174,12 @@ const solicitarSustentacionFechayHora= async () => {
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mb-8">
+        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 mb-8">
           <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
-            <JuradoCard :rol="letraMayus(obtener?.data[0]?.asesor_rol) || 'Presidente'" :nombre="obtener?.data[0]?.asesor_nombre || 'Presidente no asignado'"/>
-            <JuradoCard :rol="letraMayus(obtener?.data[1]?.asesor_rol) || 'Secretario'" :nombre="obtener?.data[1]?.asesor_nombre || 'Secretario no asignado'" />
-            <JuradoCard :rol="letraMayus(obtener?.data[2]?.asesor_rol) || 'Vocal'" :nombre="obtener?.data[2]?.asesor_nombre || 'Vocal no asignado'" />
-            <JuradoCard :rol="letraMayus(obtener?.data[3]?.asesor_rol) || 'Accesitario'" :nombre="obtener?.data[3]?.asesor_nombre || 'Accesitario no asignado'" />
+            <JuradoCard
+              v-for="jurado in jurados"
+              :rol="jurado.asesor_rol"
+              :nombre="jurado.asesor_nombre"/>
           </div>
           <!-- mostrar fehcha y hora -->
           <div class="flex flex-col md:flex-row gap-4 mt-8">
@@ -235,19 +203,18 @@ const solicitarSustentacionFechayHora= async () => {
             <ModalToolTip 
               :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
           </div>
-
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio con la fecha y hora asignadas para la sustentación.</p>
-          </div>
-          
+          </div>          
           <div class="mt-4">
             <div class="flex justify-center mt-2">
               <button
-                :disabled="isSolicitarDisabled || isLoading" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul', isLoading ? 'cursor-not-allowed' : '' ]"
+                :disabled="isSolicitarDisabled" 
+                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul', 
+                isLoading ? 'cursor-not-allowed' : '' ]"
                 class="px-4 py-2 w-64 text-white rounded-md text-lg"
-                @click="solicitarSustentacionFechayHora">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar Fecha y Hora' }}
+                @click="solicitarFechayHora">
+                {{ isLoading ? 'Enviando...' : 'Solicitar Fecha y Hora' }}
               </button>
             </div>
           </div>
@@ -262,61 +229,26 @@ const solicitarSustentacionFechayHora= async () => {
           </div>
           <!-- Para Oficio de PAISI -->
           <div class="mt-4 space-y-4">
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-xm bg-gray-50">{{documentos[0].nombre}}</span>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                  <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                    <a
-                      :href="`${VIEW_OFHINFORME }/${oficio_id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <a
-                      :href="`${DOWNLOAD_OFHINFORME }/${oficio_id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">{{ documentos[0].observacion || 'Observación no disponible' }}</p>
-                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
-                  <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
-                    {{ letraMayus(documentos[0].estado) || "Estado desconocido" }}</span>
-                </div>
-              </div>
-            </div>
+            <DocumentCard 
+                titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+                :estado="obtener?.oficio_estado || ''"
+                :id="obtener?.oficio_id ?? ''"
+                :view="VIEW_OFHINFORME"
+                :download="DOWNLOAD_OFHINFORME"/>
           </div>
+
           <!-- Para Resolución de Facultad -->
           <div class="mt-4 space-y-4">
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-xm bg-gray-50">{{ documentos[1].nombre }}</span>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                  <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                    <a
-                      :href="`${VIEW_RFHNFORME}/${resolucion_id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <a
-                      :href="`${DOWNLOAD_RFHNFORME}/${resolucion_id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <p v-else-if="documentos[1].estado === 'observado'" class="text-gray-500 italic">{{ documentos[1].observacion || 'Observación no disponible' }}</p>
-                  <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
-                  <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">
-                    {{ letraMayus(documentos[1].estado) || "Estado desconocido" }}</span>
-                </div>
-              </div>
-            </div>
+            <DocumentCard 
+                titulo="Resolución de Declaración de Apto para Sustentación."
+                :estado="obtener?.resolucion_estado || ''"
+                :id="obtener?.resolucion_id ?? ''"
+                :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría PAISI'"
+                :view="VIEW_RFHNFORME"
+                :download="DOWNLOAD_RFHNFORME"/>
           </div>
         </div>
+
         <!--Botones siguiente y anteerior-->
         <div class="flex justify-between">
           <button
@@ -345,17 +277,5 @@ const solicitarSustentacionFechayHora= async () => {
 .text-center {
   text-align: center;
   padding: 1rem;
-}
-.estado-tramitado {
-  background-color: #38a169;
-  color: #ffffff;
-}
-.estado-pendiente {
-  background-color: #8898aa;
-  color: #ffffff;
-}
-.estado-observado {
-  background-color: #e79e38;
-  color: #ffffff;
 }
 </style>
