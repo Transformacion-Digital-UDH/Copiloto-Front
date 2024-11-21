@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row justify-between md:items-center">
       <span class="flex-1 text-xm bg-gray-50">{{ titulo }}</span>
         <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-          <div v-if="estado === 'tramitado' || estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+          <div v-if="estado === 'tramitado' || estado === 'aprobado' || estado === 'emitido'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
             <a
               :href="`${view}/${id}`"
               target="_blank"
@@ -86,7 +86,8 @@
     color: #ffffff;
   }
   .estado-aprobado,
-  .estado-tramitado {
+  .estado-tramitado,
+  .estado-emitido {
     background-color: #38a169;
     color: #ffffff;
   }

@@ -44,7 +44,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/correccion-sustentacion");
+  router.push("/estudiante/sustentacion");
 };
 
 const isNextButtonDisabled = computed(() => {
@@ -59,10 +59,11 @@ const load = ref(false);
 const obtener = ref<Estudiante | null>(null);
 const jurados = computed(() => obtener.value?.data ?? []);
 
-const VIEW_OFHINFORME  = import.meta.env.VITE_URL_VIEW_OFHINFORME;
-const DOWNLOAD_OFHINFORME  = import.meta.env.VITE_URL_DOWNLOAD_OFHINFORME;
-const VIEW_RFHNFORME = import.meta.env.VITE_URL_VIEW_RFHNFORME;
-const DOWNLOAD_RFHNFORME = import.meta.env.VITE_URL_DOWNLOAD_RFHNFORME;
+const VIEW_FYH  = import.meta.env.VITE_URL_VIEW_FYH;
+const DOWNLOAD_FYH  = import.meta.env.VITE_URL_DOWNLOAD_FYH;
+
+const VIEW_RFYH = import.meta.env.VITE_URL_VIEW_RFYH;
+const DOWNLOAD_RFYH = import.meta.env.VITE_URL_DOWNLOAD_RFYH;
 
 // para que el botón quede deshabilitado
 const bloquear = ['pendiente', 'observado', 'tramitado']
@@ -222,8 +223,8 @@ onMounted(() => {
                 titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
                 :estado="obtener?.oficio_estado || ''"
                 :id="obtener?.oficio_id ?? ''"
-                :view="VIEW_OFHINFORME"
-                :download="DOWNLOAD_OFHINFORME"/>
+                :view="VIEW_FYH"
+                :download="DOWNLOAD_FYH"/>
           </div>
 
           <!-- resolución de Facultad -->
@@ -233,8 +234,8 @@ onMounted(() => {
                 :estado="obtener?.resolucion_estado || ''"
                 :id="obtener?.resolucion_id ?? ''"
                 :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría PAISI'"
-                :view="VIEW_RFHNFORME"
-                :download="DOWNLOAD_RFHNFORME"/>
+                :view="VIEW_RFYH"
+                :download="DOWNLOAD_RFYH"/>
           </div>
         </div>
 
