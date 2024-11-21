@@ -8,6 +8,8 @@ import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import JuradoCard from '@/components/JuradoCard.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
+import FechayHoraCard from '@/components/FechayHoraCard.vue';
+import ButtonS from '@/components/ButtonS.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Fecha y Hora para Sustentación";
@@ -42,7 +44,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/designacion-jurado-sustentacion");
+  router.push("/estudiante/correccion-sustentacion");
 };
 
 const isNextButtonDisabled = computed(() => {
@@ -63,9 +65,9 @@ const VIEW_RFHNFORME = import.meta.env.VITE_URL_VIEW_RFHNFORME;
 const DOWNLOAD_RFHNFORME = import.meta.env.VITE_URL_DOWNLOAD_RFHNFORME;
 
 // para que el botón quede deshabilitado
-const bloquearBoton = ['pendiente', 'observado', 'tramitado']
+const bloquear = ['pendiente', 'observado', 'tramitado']
 const isSolicitarDisabled = computed(() => {
-  return (isLoading.value || (bloquearBoton.includes(obtener.value?.oficio_estado ?? '') || bloquearBoton.includes(obtener.value?.resolucion_estado ?? '')));
+  return (isLoading.value || (bloquear.includes(obtener.value?.oficio_estado ?? '') || bloquear.includes(obtener.value?.resolucion_estado ?? '')));
 });
 
 interface Asesor {
@@ -89,7 +91,7 @@ const obtenerDatosEstudianteFechayHora = async () => {
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/estudiante/get-info/desigancion-fecha-hora-sustentacion/${student_id}`);
-    console.log("Mostrando lo recibido", response)
+    // console.log("Mostrando lo recibido", response)
     obtener.value = response.data;
 
   } catch (error: any) {
@@ -105,7 +107,7 @@ const solicitarFechayHora = async () => {
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/oficio/desigancion-fecha-hora-sustentacion/${student_id}`);
-    console.log("Mostrando lo recibido", response)
+    // console.log("Mostrando lo recibido", response)
     if (response.data.estado === 'pendiente') {
       solicitudEstado.value = 'pendiente';
       alertToast("Solicitud enviada. Espere indicaciones sobre la fecha y hora de sustentación.", "Éxito", "success");
@@ -131,36 +133,36 @@ onMounted(() => {
 </script>
 <template>
    <template v-if="load">
-    <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-5/6 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8 animate-pulse">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>
-            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>            
-            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>            
-            <div class="bg-gray-200 rounded-lg h-40 p-6 flex flex-col items-center shadow-md duration-200 skeleton-loader"></div>
+        <div class="bg-white rounded-md shadow-lg p-6 relative">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+            <div class="bg-gray-200 rounded-md h-32 p-6 flex flex-col items-center shadow-md skeleton-loader"></div>
+            <div class="bg-gray-200 rounded-md h-32 p-6 flex flex-col items-center shadow-md skeleton-loader"></div>            
+            <div class="bg-gray-200 rounded-md h-32 p-6 flex flex-col items-center shadow-md skeleton-loader"></div>            
+            <div class="bg-gray-200 rounded-md h-32 p-6 flex flex-col items-center shadow-md skeleton-loader"></div>
           </div>
-          <div class="flex flex-col md:flex-row gap-4 mt-8">
-            <div class="flex-1 rounded-lg h-36 shadow-md p-6 duration-200 skeleton-loader"></div>
-            <div class="flex-1 rounded-lg h-36 shadow-md p-6 duration-200 skeleton-loader"></div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <div class="flex-1 rounded-md h-36 shadow-md p-6 duration-200 skeleton-loader"></div>
+            <div class="flex-1 rounded-md h-36 shadow-md p-6 duration-200 skeleton-loader"></div>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
           <div class="block space-y-4">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5 mb-3">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
           <div class="block space-y-5 mb-3">
-            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
         <div class="flex justify-between">
@@ -171,63 +173,50 @@ onMounted(() => {
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 mb-8">
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
+          <!-- mostrar jurados -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <JuradoCard
               v-for="jurado in jurados"
               :rol="jurado.asesor_rol"
               :nombre="jurado.asesor_nombre"/>
           </div>
           <!-- mostrar fehcha y hora -->
-          <div class="flex flex-col md:flex-row gap-4 mt-8">
-            <div class="flex-1 bg-white rounded-lg shadow-md p-6 text-center border border-gray-100">
-              <i class="fas fa-calendar-alt text-blue-500 text-3xl mb-2"></i>
-              <span class="block text-lg font-semibold text-gray-700 mt-2">Fecha de Sustentación</span>
-              <span class="text-gray-600 text-center mt-2 text-2xl">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</span>
-            </div>
-            <div class="flex-1 bg-white rounded-lg shadow-md p-6 text-center border border-gray-100">
-              <i class="fas fa-clock text-blue-500 text-3xl mb-2"></i>
-              <span class="block text-lg font-semibold text-gray-700 mt-2">Hora de Sustentación</span>
-              <span class="text-gray-600 text-center mt-2 text-2xl">{{ obtener?.sus_hora || 'Hora no asignada' }}</span>
-            </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+            <FechayHoraCard :fecha="obtener?.sus_fecha" :hora="obtener?.sus_hora"/>
           </div>
         </div>
 
-        <!-- Card 1: Solicitar designación de Jurados -->
+        <!-- solicitar fecha y hora de sustentacion -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para fecha y hora</h2>
-            <ModalToolTip 
-              :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
+            <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
           </div>
           <div class="flex items-center justify-between mt-2">
             <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio con la fecha y hora asignadas para la sustentación.</p>
-          </div>          
-          <div class="mt-4">
-            <div class="flex justify-center mt-2">
-              <button
-                :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul', 
-                isLoading ? 'cursor-not-allowed' : '' ]"
-                class="px-4 py-2 w-64 text-white rounded-md text-lg"
-                @click="solicitarFechayHora">
-                {{ isLoading ? 'Enviando...' : 'Solicitar Fecha y Hora' }}
-              </button>
-            </div>
+          </div>
+          <!-- boton de solicitud fecha y hora --> 
+          <div class="flex justify-center mt-2">
+            <ButtonS 
+              label="Solicitar Fecha y Hora" 
+              :loading="isLoading" 
+              :disabled="isSolicitarDisabled" 
+              @click="solicitarFechayHora" />
           </div>
         </div>
 
-        <!-- Card 2: Documentos -->
+        <!-- documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Documentos de fecha y hora</h2>
             <ModalToolTip 
               :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la designación de fecha y hora para la sustentación' },]" /> 
           </div>
-          <!-- Para Oficio de PAISI -->
+          <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
                 titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
@@ -237,7 +226,7 @@ onMounted(() => {
                 :download="DOWNLOAD_OFHINFORME"/>
           </div>
 
-          <!-- Para Resolución de Facultad -->
+          <!-- resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
                 titulo="Resolución de Declaración de Apto para Sustentación."
