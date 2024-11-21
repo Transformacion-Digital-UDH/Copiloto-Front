@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row justify-between md:items-center">
       <span class="flex-1 text-xm bg-gray-50">{{ titulo }}</span>
         <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-          <div v-if="estado === 'tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+          <div v-if="estado === 'tramitado' || estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
             <a
               :href="`${view}/${id}`"
               target="_blank"
@@ -32,7 +32,7 @@
         </div>
     </div>
   </div>
-  </template>
+</template>
   
 <script lang="ts">
   import { defineComponent } from 'vue';
@@ -50,7 +50,7 @@
       },
       observacion: {
         type: String,
-        default: "Por favor, comunícate con secretaría"
+        default: ""
       },
       id: {
         type: String,
@@ -80,16 +80,14 @@
     border-radius: 0.375rem;
     display: inline-block;
   }
+  .estado-no-iniciado,
   .estado-pendiente {
     background-color: #8898aa;
     color: #ffffff;
   }
+  .estado-aprobado,
   .estado-tramitado {
     background-color: #38a169;
-    color: #ffffff;
-  }
-  .estado-no-iniciado {
-    background-color: #718096;
     color: #ffffff;
   }
   .estado-observado {

@@ -6,6 +6,8 @@ import { ref, computed, onMounted } from 'vue';
 import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
+import DocumentCard from '@/components/DocumentCard.vue';
+import ButtonS from '@/components/ButtonS.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Declaración de Apto para Sustentar";
@@ -44,77 +46,45 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  return documentos.value.some(doc => doc.estado !== "tramitado");
+  return obtener.value?.oficio_estado !== 'tramitado' || obtener.value.resolucion_estado !== 'tramitado';
 });
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
-const solicitudEstado = ref(false);
+const solicitudEstado = ref<string>(""); 
 const isLoading = ref(false);
 const load = ref(false);
 const obtener = ref<Estudiante | null>(null);
-
-const documentos = ref([
-  { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' },
-  { nombre: 'Resolución de Declaración de Apto para Sustentación', estado: 'Pendiente', observacion: '' }
-]);
-
-// para que el botón quede deshabilitado
-const isSolicitarDisabled = computed(() => {
-  return isLoading.value || solicitudEstado.value || documentos.value.some(doc => doc.estado === 'tramitado');
-});
 
 const VIEW_OSINFORME  = import.meta.env.VITE_URL_VIEW_OSINFORME ;
 const DOWNLOAD_OSINFORME  = import.meta.env.VITE_URL_DOWNLOAD_OSINFORME ;
 const VIEW_RSNFORME = import.meta.env.VITE_URL_VIEW_RSNFORME;
 const DOWNLOAD_RSNFORME = import.meta.env.VITE_URL_DOWNLOAD_RSNFORME;
 
-const oficio_id = ref<string>("");
-const resolucion_id = ref<string>("");
-
-function letraMayus(text: string | undefined): string {
-  if (!text) return '';
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
+// para que el botón quede deshabilitado
+const bloquear = ['pendiente', 'observado', 'tramitado']
+const isSolicitarDisabled = computed(() => {
+  return (isLoading.value || (bloquear.includes(obtener.value?.oficio_estado ?? '') || bloquear.includes(obtener.value?.resolucion_estado ?? '')));
+});
 
 interface Estudiante {
   estudiante_id: string;
   oficio_id: string;
   oficio_estado: string;
+  oficio_observacion?: string;
   resolucion_id: string;
   resolucion_estado: string;
+  resolucion_observacion?: string;
 }
 
-// Función para obtener jurados asignados desde el backend
-const obtenerDatosEstudianteSustentacion = async () => {
+const obtenerDatosEstudianteAptoSustentacion = async () => {
   load.value = true;
   const student_id = authStore.id
   try {
     const response = await axios.get(`api/estudiante/get-info/declarar-apto/${student_id}`);
-    
+    // console.log("Datos recibidos: ", response.data);
+
     obtener.value = response.data;
-
-    // actualizacr estado de oficio
-    if (response.data.oficio_estado === 'tramitado') {
-      oficio_id.value = response.data.oficio_id;
-      documentos.value[0].estado = 'tramitado';
-    } else if (response.data.oficio_estado === 'observado') {
-      documentos.value[0].estado = 'observado';
-      documentos.value[0].observacion = response.data.oficio_observacion || 'Por favor, comunícate con secretaría de PAISI';
-    } else {
-      documentos.value[0].estado = 'pendiente';
-    }
-
-    // actualizar estado de resoluicion
-    if (response.data.resolucion_estado === 'tramitado') {
-      resolucion_id.value = response.data.resolucion_id;
-      documentos.value[1].estado = 'tramitado';
-    } else if (response.data.resolucion_estado === 'observado') {
-      documentos.value[1].estado = 'observado';
-      documentos.value[1].observacion = response.data.resolucion_observacion || 'Por favor, comunícate con secretaría de Facultad';
-    } else {
-      documentos.value[1].estado = 'pendiente';
-    }
 
   } catch (error: any) {
     console.error("Error al obtener datos", error.response?.data?.message || error.message);
@@ -123,28 +93,23 @@ const obtenerDatosEstudianteSustentacion = async () => {
   }
 };
 
-onMounted(() => {
-  obtenerDatosEstudianteSustentacion();
-})
-
 // funcion para solicitar apto para sustentar
-const solicitarDeclaracionAptoSustentar= async () => {
+const solicitarAptoSustentar = async () => {
   isLoading.value = true;
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/oficio/declarar-apto/${student_id}`);
   
     if (response.data.estado === 'pendiente') {
-      solicitudEstado.value = true;
-      documentos.value[0].estado = 'pendiente';
-      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
-      await obtenerDatosEstudianteSustentacion();
+      solicitudEstado.value = 'pendiente';
+      alertToast("Solicitud enviada. Espere indicaciones para la sustentación de tesis.", "Éxito", "success");
+      await obtenerDatosEstudianteAptoSustentacion();
     }
     
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.message) {
       const mensaje = error.response.data.message;
-      alertToast(mensaje, "Error", "error");
+      alertToast(mensaje, "Advertencia", "warning");
     } else {
       alertToast("Error en la solicitud.", "Error", "error");
     }
@@ -152,21 +117,26 @@ const solicitarDeclaracionAptoSustentar= async () => {
     isLoading.value = false; 
   }
 };
+
+onMounted(() => {
+  obtenerDatosEstudianteAptoSustentacion();
+});
+
 </script>
 <template>
    <template v-if="load">
-    <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-5/6 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
           <div class="block space-y-4">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
             <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5 mb-3">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
             <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
@@ -183,97 +153,58 @@ const solicitarDeclaracionAptoSustentar= async () => {
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <!-- Card 2: Solicitar designación de Jurados -->
+        <!-- solicitar declracion apto para suistentar -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para sustentar</h2>
-            <ModalToolTip 
-              :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
+            <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
-          <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio de aprobación necesario para sustentar.</p>
-          </div>
-          <div class="mt-4">
-            <div class="flex justify-center mt-2">
-              <button
-                :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
-                class="px-4 py-2 w-64 text-white rounded-md text-lg"
-                @click="solicitarDeclaracionAptoSustentar">
-                {{ isLoading ? 'Solicitando...' : 'Solicitar Oficio de Apto' }}
-              </button>
-            </div>
+          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar Oficio de Apto"</strong> para solicitar la aprobación necesaria para sustentar.
+          </p>
+          <!-- boton para solicitar apto para sustentar -->
+          <div class="flex justify-center mt-2">
+            <ButtonS 
+              label="Solicitar Oficio de Apto" 
+              :loading="isLoading" 
+              :disabled="isSolicitarDisabled" 
+              @click="solicitarAptoSustentar" />
           </div>
         </div>
 
-        <!-- Card 2: Documentos -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
-            <ModalToolTip 
-              :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
-          </div>
-          <!-- Para Oficio de PAISI -->
-          <div class="mt-4 space-y-4">
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                  <div v-if="documentos[0].estado === 'tramitado' && oficio_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                    <a
-                      :href="`${VIEW_OSINFORME }/${oficio_id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <a
-                      :href="`${DOWNLOAD_OSINFORME }/${oficio_id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <p v-else-if="documentos[0].estado === 'observado'" class="text-gray-500 italic">"{{ documentos[0].observacion || 'Observación no disponible' }}"</p>
-                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
-                  <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">
-                    {{ letraMayus(documentos[0].estado) || "Estado desconocido" }}
-                  </span>
-                </div>
-              </div>
+        <!-- documentos -->
+          <div class="bg-white rounded-lg shadow-lg p-6 relative">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
+              <ModalToolTip 
+                :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
+            </div>
+            <!-- oficio de PAISI -->
+            <div class="mt-4 space-y-4">
+              <DocumentCard 
+                  titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+                  :estado="obtener?.oficio_estado || ''"
+                  :id="obtener?.oficio_id ?? ''"
+                  :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría PAISI'"
+                  :view="VIEW_OSINFORME"
+                  :download="DOWNLOAD_OSINFORME"/>
+            </div>
+
+            <!-- resolución de Facultad -->
+            <div class="mt-4 space-y-4">
+              <DocumentCard 
+                  titulo="Resolución de Declaración de Apto para Sustentación."
+                  :estado="obtener?.resolucion_estado || ''"
+                  :id="obtener?.resolucion_id ?? ''"
+                  :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
+                  :view="VIEW_RSNFORME"
+                  :download="DOWNLOAD_RSNFORME"/>
             </div>
           </div>
-          <!-- Para Resolución de Facultad -->
-          <div class="mt-4 space-y-4">
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-xm bg-gray-50">{{ documentos[1].nombre }}</span>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                  <div v-if="documentos[1].estado === 'tramitado' && resolucion_id" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                    <a
-                      :href="`${VIEW_RSNFORME}/${resolucion_id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <a
-                      :href="`${DOWNLOAD_RSNFORME}/${resolucion_id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <p v-else-if="documentos[1].estado === 'observado'" class="text-gray-500 italic">"{{ documentos[1].observacion || 'Observación no disponible' }}"</p>
-                  <span v-else class="text-gray-500 italic text-base">El documento aún no se ha cargado</span>
-                  <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">
-                    {{ letraMayus(documentos[1].estado) || "Estado desconocido" }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
         <!--Botones siguiente y anteerior-->
         <div class="flex justify-between">
           <button
@@ -302,17 +233,5 @@ const solicitarDeclaracionAptoSustentar= async () => {
 .text-center {
   text-align: center;
   padding: 1rem;
-}
-.estado-tramitado {
-  background-color: #38a169;
-  color: #ffffff;
-}
-.estado-pendiente {
-  background-color: #8898aa;
-  color: #ffffff;
-}
-.estado-observado {
-  background-color: #e79e38;
-  color: #ffffff;
 }
 </style>
