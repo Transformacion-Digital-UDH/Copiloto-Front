@@ -310,42 +310,48 @@ onMounted(() => {
       </div>
     </div>
   </template>
+
   <template v-else>
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen absolute">
+    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
-      <div class="mt-4 sm:mt-6 space-y-6 sm:space-y-10">
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
-          <!-- Información del Asesor -->
+      <br>
+      <div class="mt-6 space-y-10">
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6 relative">
           <div class="grid grid-cols-1 gap-6">
-            <div class="bg-gray-100 rounded-lg p-4 flex flex-col items-center shadow-lg">
-              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-              <p class="font-bold text-2xl text-azul">Asesor</p>
-              <p class="text-gray-600 text-center">
-                {{ asesor?.nombre && asesor?.apellido_paterno && asesor?.apellido_materno
-                  ? `${asesor.nombre} ${asesor.apellido_paterno} ${asesor.apellido_materno}`
-                  : 'Asesor no asignado' }}
-              </p>
+
+            <!-- Información del Asesor -->
+            <div class="grid grid-cols-1 gap-6">
+              <div class="bg-gray-100 rounded-lg p-4 flex flex-col items-center shadow-lg">
+                <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+                <p class="font-bold text-2xl text-azul">Asesor</p>
+                <p class="text-gray-600 text-center">
+                  {{ asesor?.nombre && asesor?.apellido_paterno && asesor?.apellido_materno
+                    ? `${asesor.nombre} ${asesor.apellido_paterno} ${asesor.apellido_materno}`
+                    : 'Asesor no asignado' }}
+                </p>
+              </div>
             </div>
+
+            <!-- Título de Tesis -->
+            <div class="flex-col bg-gray-100 rounded-lg p-6 shadow-lg">
+              <p class="max-full text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
+            </div>
+
+            <!-- Enlace al Proyecto de Tesis -->
+            <div v-if="link" class="text-center mt-6">
+              <a :href="link" target="_blank"
+                class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <i class="fas fa-external-link-alt"></i> Abrir proyecto
+              </a>
+            </div>
+            <!-- Explicación breve -->
+            <p class="text-sm text-gray-600 text-center">Sube la información de tu proyecto de tesis en el documento de
+              Google Docs proporcionado y, cuando estés listo, haz clic en 'Solicitar Revisión' para iniciar el proceso.
+            </p>
           </div>
-          <!-- Título de Tesis -->
-          <div class="flex-col bg-gray-100 rounded-lg p-6 shadow-lg">
-            <p class="max-full text-xm text-gray-600 uppercase text-center">{{ titulo || 'Título no asignado' }}</p>
-          </div>
-          <!-- Enlace al Proyecto de Tesis -->
-          <div v-if="link" class="text-center mt-6">
-            <a :href="link" target="_blank"
-              class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <i class="fas fa-external-link-alt"></i> Abrir proyecto
-            </a>
-          </div>
-          <!-- Explicación breve -->
-          <p class="text-sm text-gray-600 text-center">Sube la información de tu proyecto de tesis en el documento de
-            Google Docs proporcionado y, cuando estés listo, haz clic en 'Solicitar Revisión' para iniciar el proceso.
-          </p>
         </div>
 
-        <!-- Observaciones -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
             <ModalToolTip
@@ -369,8 +375,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Revisión de levantamiento de observaciones -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative">
           <div class="flex items-center">
             <h4 class="text-2xl font-medium text-black">
               2. Revisión de observaciones
@@ -379,16 +384,18 @@ onMounted(() => {
               :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor, hasta que esté todo conforme.' },]" />
           </div>
 
-          <p class="text-gray-500 mt-2 mb-1 text-base">Si tu asesor ha dejado observaciones, el estado de la revisión
+          <div>
+            <p class="text-gray-500 mt-2 mb-1 lg:text-sm 2xl:text-gray-500 2xl:text-base">Si tu asesor ha dejado observaciones, el estado de la revisión
             cambiará a
-            <strong class="text-[#8898aa] text-md font-medium">"Pendiente"</strong>. Realiza las correcciones
+            <strong class="text-[#8898aa] text-md font-medium lg:text-sm 2xl:text-base">"Pendiente"</strong>. Realiza las correcciones
             directamente en el documento de Google Docs.
           </p>
-          <p class="text-gray-500 text-base">Una vez que hayas corregido, haz clic en
-            <strong class="text-green-500 text-base font-medium">“Observaciones corregidas”</strong> para que el asesor
+          <p class="text-gray-500 lg:text-sm 2xl:text-gray-500 2xl:text-base">Una vez que hayas corregido, haz clic en
+            <strong class="text-green-500 text-base font-medium lg:text-sm 2xl:text-base">“Observaciones corregidas”</strong> para que el asesor
             revise nuevamente. Si todo está en orden, el estado cambiará a <strong
-              class="text-green-500 text-base font-medium">"Aprobado"</strong>.
+              class="text-green-500 text-base font-medium lg:text-sm 2xl:text-base">"Aprobado"</strong>.
           </p>
+          </div>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
             <table class="min-w-full bg-white border border-gray-200 rounded-md shadow">
@@ -447,12 +454,16 @@ onMounted(() => {
               </tbody>
             </table>
           </div>
+
+
+
         </div>
 
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de tesis
+            <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de
+              tesis
               por el asesor</h2>
 
             <!--toolTip-->

@@ -263,8 +263,9 @@ onMounted(() => {
       </div>
     </div>
   </template>
+  
   <template v-else>
-    <div class="absolute flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
@@ -272,21 +273,21 @@ onMounted(() => {
           <!-- Información de los jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
-              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+              <i class="fas fa-user-tie text-azul text-4xl mb-3 xl:"></i>
               <p class="font-bold text-xl text-azul">Presidente</p>
-              <p class="text-gray-600 text-center">{{ presidente || 'Presidente no asignado' }}</p>
+              <p class="text-gray-600 text-center lg:text-sm 2xl:text-lg">{{ presidente || 'Presidente no asignado' }}</p>
             </div>
             
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Secretario</p>
-              <p class="text-gray-600 text-center">{{ secretario || 'Secretario no asignado' }}</p>
+              <p class="text-gray-600 text-center lg:text-sm 2xl:text-lg">{{ secretario || 'Secretario no asignado' }}</p>
             </div>
 
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Vocal</p>
-              <p class="text-gray-600 text-center">{{ vocal || 'Vocal no asignado' }}</p>
+              <p class="text-gray-600 text-center lg:text-sm 2xl:text-lg">{{ vocal || 'Vocal no asignado' }}</p>
             </div>
           </div>
           <!-- Título de Tesis -->
@@ -345,15 +346,7 @@ onMounted(() => {
             <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
-          <p class="text-gray-500 mt-1 text-base">Si tu jurado ha dejado observaciones, el estado cambiará a 
-            <strong class="text-[#8898aa] text-lg font-medium">Pendiente</strong>. Por favor, corrige todas las observaciones directamente en el documento de Google Docs.
-          </p>
-          <p class="text-gray-500 mt-1  text-base">Una vez que hayas realizado las correcciones, haz clic en 
-            <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong>. para que el jurado revise nuevamente.
-          </p>
-          <p class="text-gray-500 mt-1 text-base">Cuando los 3 jurados aprueben tu proyecto de tesis, el estado cambiará automáticamente
-            <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
-          </p>
+          
 
           <!-- Tabla de observaciones Presidente -->
           <div class="overflow-x-auto mt-4">
