@@ -7,6 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
+import ButtonS from '@/components/ButtonS.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Declaración de Apto para Sustentar";
@@ -61,9 +62,9 @@ const VIEW_RSNFORME = import.meta.env.VITE_URL_VIEW_RSNFORME;
 const DOWNLOAD_RSNFORME = import.meta.env.VITE_URL_DOWNLOAD_RSNFORME;
 
 // para que el botón quede deshabilitado
-const bloquearBoton = ['pendiente', 'observado', 'tramitado']
+const bloquear = ['pendiente', 'observado', 'tramitado']
 const isSolicitarDisabled = computed(() => {
-  return (isLoading.value || (bloquearBoton.includes(obtener.value?.oficio_estado ?? '') || bloquearBoton.includes(obtener.value?.resolucion_estado ?? '')));
+  return (isLoading.value || (bloquear.includes(obtener.value?.oficio_estado ?? '') || bloquear.includes(obtener.value?.resolucion_estado ?? '')));
 });
 
 interface Estudiante {
@@ -81,7 +82,7 @@ const obtenerDatosEstudianteAptoSustentacion = async () => {
   const student_id = authStore.id
   try {
     const response = await axios.get(`api/estudiante/get-info/declarar-apto/${student_id}`);
-    console.log("Datos recibidos: ", response.data);
+    // console.log("Datos recibidos: ", response.data);
 
     obtener.value = response.data;
 
@@ -124,18 +125,18 @@ onMounted(() => {
 </script>
 <template>
    <template v-if="load">
-    <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-5/6 rounded-lg duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
           <div class="block space-y-4">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
             <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5 mb-3">
             <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
             <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
@@ -152,63 +153,58 @@ onMounted(() => {
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <!-- Card 2: Solicitar designación de Jurados -->
+        <!-- solicitar declracion apto para suistentar -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para sustentar</h2>
-            <ModalToolTip 
-              :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
+            <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
-          <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio de aprobación necesario para sustentar.</p>
+          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar Oficio de Apto"</strong> para solicitar la aprobación necesaria para sustentar.
+          </p>
+          <!-- boton para solicitar apto para sustentar -->
+          <div class="flex justify-center mt-2">
+            <ButtonS 
+              label="Solicitar Oficio de Apto" 
+              :loading="isLoading" 
+              :disabled="isSolicitarDisabled" 
+              @click="solicitarAptoSustentar" />
           </div>
-          <div class="mt-4">
-            <div class="flex justify-center mt-2">
-              <button
-                :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', 
-                isLoading ? 'hover:bg-azul' : '']"
-                class="px-4 py-2 w-64 text-white rounded-md text-lg"
-                @click="solicitarAptoSustentar">
-                {{ isLoading ? 'Enviando...' : 'Solicitar Oficio de Apto' }}
-              </button>
+        </div>
+
+        <!-- documentos -->
+          <div class="bg-white rounded-lg shadow-lg p-6 relative">
+            <div class="flex items-center">
+              <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
+              <ModalToolTip 
+                :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
+            </div>
+            <!-- oficio de PAISI -->
+            <div class="mt-4 space-y-4">
+              <DocumentCard 
+                  titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+                  :estado="obtener?.oficio_estado || ''"
+                  :id="obtener?.oficio_id ?? ''"
+                  :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría PAISI'"
+                  :view="VIEW_OSINFORME"
+                  :download="DOWNLOAD_OSINFORME"/>
+            </div>
+
+            <!-- resolución de Facultad -->
+            <div class="mt-4 space-y-4">
+              <DocumentCard 
+                  titulo="Resolución de Declaración de Apto para Sustentación."
+                  :estado="obtener?.resolucion_estado || ''"
+                  :id="obtener?.resolucion_id ?? ''"
+                  :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
+                  :view="VIEW_RSNFORME"
+                  :download="DOWNLOAD_RSNFORME"/>
             </div>
           </div>
-        </div>
-
-        <!-- Card 2: Documentos -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos para la sustentación</h2>
-            <ModalToolTip 
-              :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
-          </div>
-          <!-- Para Oficio de PAISI -->
-          <div class="mt-4 space-y-4">
-            <DocumentCard 
-                titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
-                :estado="obtener?.oficio_estado || ''"
-                :id="obtener?.oficio_id ?? ''"
-                :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría PAISI'"
-                :view="VIEW_OSINFORME"
-                :download="DOWNLOAD_OSINFORME"/>
-          </div>
-
-          <!-- Para Resolución de Facultad -->
-          <div class="mt-4 space-y-4">
-            <DocumentCard 
-                titulo="Resolución de Declaración de Apto para Sustentación."
-                :estado="obtener?.resolucion_estado || ''"
-                :id="obtener?.resolucion_id ?? ''"
-                :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
-                :view="VIEW_RSNFORME"
-                :download="DOWNLOAD_RSNFORME"/>
-          </div>
-        </div>
-
+        
         <!--Botones siguiente y anteerior-->
         <div class="flex justify-between">
           <button

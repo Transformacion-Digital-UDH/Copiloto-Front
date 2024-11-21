@@ -403,8 +403,7 @@ const handleNextButtonClick = () => {
             <div class="flex flex-col sm:flex-row items-center justify-between w-full">
               <div class="flex items-center">
                 <h2 class="text-2xl font-medium text-black">1. Solicita tu asesor</h2>
-                <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
-                  @mouseover="mostrarModalSolicitudAsesor = true" @mouseleave="mostrarModalSolicitudAsesor = false" />
+                <ModalToolTip :infoModal="[{ info: ' Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.' },]" />               
               </div>
               <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
                 {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() +
@@ -413,14 +412,7 @@ const handleNextButtonClick = () => {
 
             </div>
           </div>
-          <!-- Modal informativo para el Punto 1 -->
-          <div v-show="mostrarModalSolicitudAsesor"
-            class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
-            <p class="text-sm text-gray-600">
-              Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la
-              respuesta.
-            </p>
-          </div>
+          
           <div class="mt-4">
             <!-- Título de tesis -->
             <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título de tesis</label>
@@ -534,15 +526,16 @@ const handleNextButtonClick = () => {
               <h2 class="text-2xl font-medium text-black">2. Documentos para la conformidad de designación de asesor
               </h2>
               <ModalToolTip :infoModal="[{
-                info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.' },]" />
+                info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.'
+              },]" />
             </div>
             <span :class="estadoClase(estadoDocumentos)" class="estado-estilo ml-4">
               {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() :
-              'Desconocido' }}
+                'Desconocido' }}
             </span>
 
           </div>
-          
+
           <!-- Listado de documentos -->
           <div class="mt-4 space-y-4">
             <!-- Listado de documentos OFICIO-->
@@ -579,7 +572,7 @@ const handleNextButtonClick = () => {
                   <!-- Estado del documento -->
                   <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">
                     {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() :
-                    'Desconocido' }}
+                      'Desconocido' }}
                   </span>
 
                 </div>
