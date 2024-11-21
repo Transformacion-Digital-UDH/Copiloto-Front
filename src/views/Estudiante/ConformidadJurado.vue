@@ -263,6 +263,7 @@ onMounted(() => {
       </div>
     </div>
   </template>
+  
   <template v-else>
     <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
@@ -272,21 +273,21 @@ onMounted(() => {
           <!-- Información de los jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
-              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+              <i class="fas fa-user-tie text-azul text-4xl mb-3 xl:"></i>
               <p class="font-bold text-xl text-azul">Presidente</p>
-              <p class="text-gray-600 text-center">{{ presidente || 'Presidente no asignado' }}</p>
+              <p class="text-gray-600 text-center lg:text-sm 2xl:text-lg">{{ presidente || 'Presidente no asignado' }}</p>
             </div>
             
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Secretario</p>
-              <p class="text-gray-600 text-center">{{ secretario || 'Secretario no asignado' }}</p>
+              <p class="text-gray-600 text-center lg:text-sm 2xl:text-lg">{{ secretario || 'Secretario no asignado' }}</p>
             </div>
 
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
               <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
               <p class="font-bold text-xl text-azul">Vocal</p>
-              <p class="text-gray-600 text-center">{{ vocal || 'Vocal no asignado' }}</p>
+              <p class="text-gray-600 text-center lg:text-sm 2xl:text-lg">{{ vocal || 'Vocal no asignado' }}</p>
             </div>
           </div>
           <!-- Título de Tesis -->
