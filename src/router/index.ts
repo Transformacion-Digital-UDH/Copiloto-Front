@@ -36,7 +36,7 @@ import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import DesignacionJuradoSus from '@/views/Estudiante/DesignacionJuradoSus.vue'
 import AptoSustentacion from '@/views/Paisi/AptoSustentacion.vue'
 import DesignacionFechayHora from '@/views/Estudiante/DesignacionFechayHora.vue'
-import CorrecionSustentacion from '@/views/Estudiante/CorrecionSustentacion.vue'
+import Sustentacion from '@/views/Estudiante/Sustentacion.vue'
 import AptoParaSustentarR from '@/views/facultad/AptoParaSustentarR.vue'
 import DesignarFechaHora from '@/views/Paisi/DesignarFechaHora.vue'
 import ResolucionFechaHora from '@/views/facultad/ResolucionFechaHora.vue'
@@ -85,7 +85,7 @@ const router = createRouter({
         { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
         { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
         { path: 'designacion-fecha-hora', name: 'Designación de Fecha y Hora', component: DesignacionFechayHora, meta: {  roles: ['estudiante'], title: 'Designación de Fecha y Hora' } },
-        { path: 'correccion-sustentacion', name: 'Correccion Sustentacion', component: CorrecionSustentacion, meta: {  roles:['estudiante'], title: 'Correccion de Sustentación' } },
+        { path: 'sustentacion', name: 'Sustentación', component: Sustentacion, meta: {  roles:['estudiante'], title: 'Sustentación' } },
       ]
     },
     {
