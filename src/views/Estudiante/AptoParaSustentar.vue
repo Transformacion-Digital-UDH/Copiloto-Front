@@ -136,15 +136,13 @@ onMounted(() => {
             <h2 class="bg-gray-200 h-10 w-52 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div class="pb-20 pt-20">
-          <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
-            <div class="block space-y-5 mb-3">
-              <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
-              <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
-            </div>
-            <div class="block space-y-5 mb-3">
-              <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
-            </div>
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
         <div class="flex justify-between">
