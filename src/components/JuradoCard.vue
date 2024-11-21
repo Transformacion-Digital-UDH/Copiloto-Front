@@ -1,9 +1,10 @@
 <template>
-  <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
-    <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-    <p class="font-bold text-xl text-azul">{{ letraMayus(rol) }}</p>
-    <p class="text-gray-600 text-center uppercase">{{ letraMayus(nombre) }}</p>
-  </div>
+<div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
+  <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+  <p class="font-bold text-xl text-azul">{{ letraMayus(rol) }}</p>
+  <p class="text-gray-600 text-center uppercase">{{ letraMayus(nombre) }}</p>
+</div>
+
 </template>
 
 <script lang="ts">
@@ -29,3 +30,5 @@ export default defineComponent({
   }
 });
 </script>
+<style scoped>
+</style>
