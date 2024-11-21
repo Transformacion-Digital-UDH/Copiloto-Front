@@ -154,12 +154,16 @@ export default defineComponent({
           allSections[2].submenus.push(
             { name: 'revision jurado informe', label: 'Revision Jurado Informe', path: '/jurado/revisionJurado-informe' },
           );
+          allSections[3].submenus.push(
+            { name: 'revision jurado sustentacion', label: 'Revision Jurado Sustentacion', path: '/jurado/revisionJurado-sustentacion' },
+          );
         }
         // Solo mantenemos las secciones de Proyecto, Ejecución, e Informe Final
         sections.value = allSections.filter(section =>
           section.name === 'ProyectoDeTesis' ||
          // section.name === 'Ejecucion' ||
-          section.name === 'InformeFinal'
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion'
         );
       } else if (role.value === 'paisi') {
         // Paisi solo tiene Proyecto Tesis, Informe Final y Sustentación

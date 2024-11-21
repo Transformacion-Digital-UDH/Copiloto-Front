@@ -23,7 +23,7 @@ import DesignarAsesor from '@/views/Paisi/DesignarAsesor.vue'
 import ResolucionAsesor from '@/views/facultad/ResolucionAsesor.vue'
 import RevisionInforme from '@/views/Asesor/RevisionInforme.vue'
 import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
-import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
+import RevisionSustentacion from '@/views/Jurado/RevisionSustentacion.vue'
 import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
@@ -109,6 +109,7 @@ const router = createRouter({
       children: [
         { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { roles: ['jurado'], title: 'Revision jurado' } },
         { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { roles: ['jurado'], title: 'Revisión jurado' } },
+        { path: 'revisionJurado-sustentacion', name: 'RevisiónSustentacion', component: RevisionSustentacion, meta: { roles: ['jurado'], title: 'Revisión sustentacion' } },
 
       ]
     },
