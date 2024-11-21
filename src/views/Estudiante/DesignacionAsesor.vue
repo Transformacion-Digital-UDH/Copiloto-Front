@@ -534,15 +534,16 @@ const handleNextButtonClick = () => {
               <h2 class="text-2xl font-medium text-black">2. Documentos para la conformidad de designación de asesor
               </h2>
               <ModalToolTip :infoModal="[{
-                info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.' },]" />
+                info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.'
+              },]" />
             </div>
             <span :class="estadoClase(estadoDocumentos)" class="estado-estilo ml-4">
               {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() :
-              'Desconocido' }}
+                'Desconocido' }}
             </span>
 
           </div>
-          
+
           <!-- Listado de documentos -->
           <div class="mt-4 space-y-4">
             <!-- Listado de documentos OFICIO-->
@@ -579,7 +580,7 @@ const handleNextButtonClick = () => {
                   <!-- Estado del documento -->
                   <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">
                     {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() :
-                    'Desconocido' }}
+                      'Desconocido' }}
                   </span>
 
                 </div>

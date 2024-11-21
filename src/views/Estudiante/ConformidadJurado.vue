@@ -345,15 +345,7 @@ onMounted(() => {
             <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
-          <p class="text-gray-500 mt-1 text-base">Si tu jurado ha dejado observaciones, el estado cambiará a 
-            <strong class="text-[#8898aa] text-lg font-medium">Pendiente</strong>. Por favor, corrige todas las observaciones directamente en el documento de Google Docs.
-          </p>
-          <p class="text-gray-500 mt-1  text-base">Una vez que hayas realizado las correcciones, haz clic en 
-            <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong>. para que el jurado revise nuevamente.
-          </p>
-          <p class="text-gray-500 mt-1 text-base">Cuando los 3 jurados aprueben tu proyecto de tesis, el estado cambiará automáticamente
-            <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
-          </p>
+          
 
           <!-- Tabla de observaciones Presidente -->
           <div class="overflow-x-auto mt-4">
