@@ -172,6 +172,7 @@ onMounted(() => {
       </div>
     </div>
   </template>
+  
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
