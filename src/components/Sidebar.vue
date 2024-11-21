@@ -126,7 +126,7 @@ export default defineComponent({
           //{ name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' },
           { name: 'AptoParaSustentar', label: 'Declaración Apto para Sustentar', path: '/estudiante/declaracion-apto-sustentar' },
           { name: 'DesignacionFechayHora', label: 'Designación de Fecha y Hora', path: '/estudiante/designacion-fecha-hora' },
-          { name: 'CorrecionSustentacion', label: 'Correccion Sustentacion', path: '/estudiante/correccion-sustentacion' }
+          { name: 'Sustentación', label: 'Sustentación', path: '/estudiante/sustentacion' }
         );
         allSections[4].submenus.push(
           { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }

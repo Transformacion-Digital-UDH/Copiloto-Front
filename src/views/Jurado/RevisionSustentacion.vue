@@ -22,7 +22,7 @@ const textoTipiado = ref("");
 let index = 0;
 
 // Texto que se escribe automáticamente
-const text = "Correcciones Finales de Sustentación";
+const text = "Notas Finales de Sustentación";
 const typeWriter = () => {
   if (index < text.length) {
     textoTipiado.value += text.charAt(index);
