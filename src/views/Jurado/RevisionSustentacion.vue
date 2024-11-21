@@ -78,12 +78,13 @@ interface Review {
   review_id: string;
   calificacion?: number;
   sustentacion: string;
+  sustentacion_estado:string;
 }
 
 const authStore = useAuthStore();
 const tableData = ref<Review[]>([]);
 
-const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
+const VIEW_SUS = import.meta.env.VITE_URL_VIEW_SUS;
 
 const fetchReviews = () => {
   load.value = true;
@@ -93,17 +94,19 @@ const fetchReviews = () => {
       console.log("Respuesta recibida:", response.data);
       tableData.value = response.data.data.map((review: any) => ({
         ...review,
-        oficio_generado: review.rev_status === "aprobado",
+        oficio_generado: review.rev_status === "calificado",
         calificacion: review.calificacion || undefined,
+        sustentacion_estado: review.sustentacion_estado || "", // Agregar sustentacion_estado
       }));
     })
-    .catch((error) => { 
+    .catch((error) => {
       console.error("Error al obtener las revisiones:", error);
     })
     .finally(() => {
       load.value = false;
     });
 };
+
 
 // Inicializar datos
 onMounted(() => {
@@ -173,24 +176,8 @@ function confirmarCalificacion() {
 
 // Emitir calificación (POST a /sustentacion/{sustentacion_id}/status)
 function emitirCalificacion(solicitud: Review) {
-  // Verificar si todos los asesores han calificado
-  const faltanCalificaciones = tableData.value.some(
-    (revision) =>
-      revision.sustentacion === solicitud.sustentacion &&
-      (revision.revision_estado !== "calificado" || revision.calificacion === undefined)
-  );
-
-  if (faltanCalificaciones) {
-    alertToast(
-      "No se puede emitir el estado porque aún faltan calificaciones de otros asesores.",
-      "Advertencia",
-      "warning"
-    );
-    return; // Detener la ejecución si faltan calificaciones
-  }
-
-  // Si todos han calificado, proceder con la emisión
   const params = { sus_estado: "emitido" };
+
   axios
     .put(`/api/sustentacion/${solicitud.sustentacion}/status`, params)
     .then((response) => {
@@ -202,13 +189,22 @@ function emitirCalificacion(solicitud: Review) {
       }
     })
     .catch((error) => {
+      // Capturar el mensaje de error de la API
+      const apiMessage = error.response?.data?.message;
+
+      if (apiMessage === "No se pueden calcular suficientes puntajes válidos.") {
+        alertToast(
+          "No se puede emitir el estado porque aún faltan calificaciones de otros asesores.",
+          "Advertencia",
+          "warning"
+        );
+      } else {
+        alertToast("Error al emitir estado", "Error", "error");
+      }
+
       console.error("Error al emitir estado:", error);
-      alertToast("Error al emitir estado", "Error", "error");
     });
 }
-
-
-
 
 
 </script>
@@ -318,30 +314,84 @@ function emitirCalificacion(solicitud: Review) {
                   <td class="px-2 py-3 text-center align-middle">
                     <div
                       style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
-                      <!-- Mostrar botón "Emitir" si el estado es calificado y hay una calificación -->
+
+                      <!-- Mostrar botón "Emitir" si el estado es calificado -->
                       <button
-                        v-if="u.revision_estado === 'calificado'"
+                        v-if="u.revision_estado === 'calificado' && u.sustentacion_estado !== 'emitido'"
                         class="w-24 px-3 py-1 text-sm bg-azul text-white rounded-xl focus:outline-none"
                         @click="emitirCalificacion(u)">
                         Emitir
                       </button>
 
-                      <!-- Mostrar botón "Calificar" si el estado no es calificado -->
+                      <!-- Mostrar botón "Calificar" si el estado no es calificado ni emitido -->
                       <button
-                        v-else
+                        v-else-if="u.revision_estado !== 'calificado' && u.sustentacion_estado !== 'emitido'"
                         class="w-24 px-3 py-1 text-sm bg-green-400 text-white rounded-xl focus:outline-none"
                         @click="openCalificarModal(u.revision_id)">
                         Calificar
                       </button>
+
+                      <!-- Mostrar ícono de la carta de sustentación si el estado es emitido -->
+                      <a
+                        v-if="u.sustentacion_estado === 'emitido'"
+                        :href="`${VIEW_SUS}/${u.sustentacion}`"
+                        target="_blank"
+                        class="text-blue-800">
+                        <button>
+                          <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px"
+                            height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC"
+                              stroke-width="0.288"></g>
+                            <g id="SVGRepo_iconCarrier">
+                              <g id="document-pdf">
+                                <g>
+                                  <path
+                                    d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z">
+                                  </path>
+                                </g>
+                                <g>
+                                  <rect x="15" y="12" width="6" height="2"></rect>
+                                </g>
+                                <g>
+                                  <rect x="15" y="12" width="2" height="8"></rect>
+                                </g>
+                                <g>
+                                  <rect x="15" y="16" width="5" height="2"></rect>
+                                </g>
+                                <g>
+                                  <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 ">
+                                  </polygon>
+                                </g>
+                                <g>
+                                  <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon>
+                                </g>
+                              </g>
+                            </g>
+                          </svg>
+                        </button>
+                      </a>
+
                     </div>
                   </td>
 
 
+
                   <td class="px-2 py-3 text-center">
-                    <span :class="`estado-estilo estado-${u.revision_estado.toLowerCase().replace(' ', '-')}`">
-                      {{ u.revision_estado.charAt(0).toUpperCase() + u.revision_estado.slice(1).toLowerCase() }}
+                    <span :class="`estado-estilo estado-${
+                      u.sustentacion_estado === 'emitido'
+                        ? 'emitido'
+                        : u.revision_estado.toLowerCase().replace(' ', '-')
+                    }`">
+                      {{
+                        u.sustentacion_estado === 'emitido'
+                          ? 'Emitido'
+                          : u.revision_estado.charAt(0).toUpperCase() + u.revision_estado.slice(1).toLowerCase()
+                      }}
                     </span>
                   </td>
+
                 </tr>
               </tbody>
             </table>
@@ -426,8 +476,8 @@ function emitirCalificacion(solicitud: Review) {
   color: #ffffff;
 }
 
-.estado-corregido {
-  background-color: #5dade2;
+.estado-emitido {
+  background-color: #011B4B;
   color: #ffffff;
 }
 
