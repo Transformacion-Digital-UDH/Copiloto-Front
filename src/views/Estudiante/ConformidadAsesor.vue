@@ -385,21 +385,16 @@ onMounted(() => {
           </div>
 
           <div>
-            <p class="text-gray-500 mt-2 mb-1 text-base list-disc">
-              Si tu asesor ha dejado observaciones, el estado de la revisión cambiará a
-              <strong class="text-[#8898aa] text-md font-medium">"Pendiente"</strong>.
-            </p>
-            <P class="text-gray-500 mt-2 mb-1 text-base list-disc">
-              Realiza las correcciones directamente en el documento de Google Docs.
-            </p>
-            <p class="text-gray-500 text-base list-disc">
-              Una vez que hayas corregido, haz clic en
-              <strong class="text-green-500 text-base font-medium">“Observaciones corregidas”</strong>
-              para que el asesor revise nuevamente.
-            </p>
-            <p class="text-gray-500 text-base list-disc">Si todo está en orden, el estado cambiará a
-              <strong class="text-green-500 text-base font-medium">"Aprobado"</strong>.
-            </p>
+            <p class="text-gray-500 mt-2 mb-1 lg:text-sm 2xl:text-gray-500 2xl:text-base">Si tu asesor ha dejado observaciones, el estado de la revisión
+            cambiará a
+            <strong class="text-[#8898aa] text-md font-medium lg:text-sm 2xl:text-base">"Pendiente"</strong>. Realiza las correcciones
+            directamente en el documento de Google Docs.
+          </p>
+          <p class="text-gray-500 lg:text-sm 2xl:text-gray-500 2xl:text-base">Una vez que hayas corregido, haz clic en
+            <strong class="text-green-500 text-base font-medium lg:text-sm 2xl:text-base">“Observaciones corregidas”</strong> para que el asesor
+            revise nuevamente. Si todo está en orden, el estado cambiará a <strong
+              class="text-green-500 text-base font-medium lg:text-sm 2xl:text-base">"Aprobado"</strong>.
+          </p>
           </div>
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
