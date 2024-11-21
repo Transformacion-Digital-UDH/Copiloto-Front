@@ -196,9 +196,9 @@ onMounted(() => {
             <h2 class="text-2xl font-medium text-black">1. Solicitar oficio para fecha y hora</h2>
             <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
           </div>
-          <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar el oficio con la fecha y hora asignadas para la sustentación.</p>
-          </div>
+          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar Fecha y Hora"</strong> para solicitar la fecha y hora asignadas para la sustentación.
+          </p>
           <!-- boton de solicitud fecha y hora --> 
           <div class="flex justify-center mt-2">
             <ButtonS 
@@ -210,11 +210,10 @@ onMounted(() => {
         </div>
 
         <!-- documentos -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Documentos de fecha y hora</h2>
-            <ModalToolTip 
-              :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la designación de fecha y hora para la sustentación' },]" /> 
+            <ModalToolTip :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la designación de fecha y hora para la sustentación' },]" /> 
           </div>
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
