@@ -11,22 +11,17 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "FechayHoraCard",
-  props: {
-    fecha: {
-      type: String,
-      default: null,
-    },
-    hora: {
-      type: String,
-      default: null,
-    },
-  },
-};
-</script>
+<script lang="ts" setup>
 
-<style scoped>
-</style>
-  
+const props = defineProps({
+  fecha: {
+    type: String,
+    default: null,
+  },
+  hora: {
+    type: String,
+    default: null,
+  },
+});
+
+</script>
