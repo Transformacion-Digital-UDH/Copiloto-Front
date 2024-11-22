@@ -86,12 +86,11 @@ onMounted(() => {
     
   </template>
   <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
-      
       <div class="mt-6 space-y-10">
         <!-- mistrar fecha y hora de sustentacion final -->
-        <div class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
+        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <!-- fecha de susnteacion -->
             <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
@@ -104,7 +103,7 @@ onMounted(() => {
             <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
               <i class="fas fa-star text-yellow-500 text-3xl mb-4"></i>
               <p class="text-lg font-semibold text-azul mb-2">Nota de Sustentación</p>
-              <p class="text-gray-600 text-lg">{{ obtener?.sus_nota || 'Nota no asignada' }}/20</p>
+              <p class="text-gray-600 text-lg">{{ obtener?.sus_nota || 'Nota no asignada' }}</p>
               <!-- barra de la ntoa -->
               <div class="relative w-full bg-gray-200 h-4 rounded-full overflow-hidden mt-4 progress-bar">
                 <div

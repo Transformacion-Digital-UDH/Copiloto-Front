@@ -100,9 +100,9 @@ function goToNextPage() {
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 
 const validateResolution = () => {
-  nroResolution.value = nroResolution.value.replace(/[^0-9]/g, '');
-  if (nroResolution.value.length > 11) {
-    nroResolution.value = nroResolution.value.slice(0, 11);
+  nroResolution.value = nroResolution.value.replace(/[^0-4]/g, '');
+  if (nroResolution.value.length > 4) {
+    nroResolution.value = nroResolution.value.slice(0, 4);
   }
 };
 
@@ -386,12 +386,12 @@ function closeModal() {
                   id="nroResolution" 
                   v-model="nroResolution" 
                   class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                  maxlength="11" 
+                  maxlength="4" 
                   inputmode="numeric" 
                   @input="validateResolution"
                   required>
-                <p v-if="nroResolution.length !== 11 && nroResolution !== ''" class="text-red-800">
-                  Debe ingresar 11 dígitos
+                <p v-if="nroResolution.length !== 4 && nroResolution !== ''" class="text-red-800">
+                  Debe ingresar 4 dígitos
                 </p>
                 </div>
                 <div class="flex items-center justify-center p-3 border-gray-200">
@@ -400,7 +400,7 @@ function closeModal() {
                   </button>
                   <button 
                     class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" 
-                    :disabled="nroResolution.length !== 11" 
+                    :disabled="nroResolution.length !== 4" 
                     @click="updateResolution">
                     Generar
                   </button>

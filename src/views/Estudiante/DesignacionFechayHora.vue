@@ -61,7 +61,6 @@ const jurados = computed(() => obtener.value?.data ?? []);
 
 const VIEW_FYH  = import.meta.env.VITE_URL_VIEW_FYH;
 const DOWNLOAD_FYH  = import.meta.env.VITE_URL_DOWNLOAD_FYH;
-
 const VIEW_RFYH = import.meta.env.VITE_URL_VIEW_RFYH;
 const DOWNLOAD_RFYH = import.meta.env.VITE_URL_DOWNLOAD_RFYH;
 
@@ -134,7 +133,7 @@ onMounted(() => {
 </script>
 <template>
    <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
@@ -175,7 +174,7 @@ onMounted(() => {
   </template>
   
   <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
