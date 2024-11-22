@@ -4,7 +4,7 @@ import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 import { alertToast, alertConfirmation } from "@/functions";
-import confetti from "canvas-confetti";
+// import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
 
@@ -214,11 +214,11 @@ const sendSolicitude = async (student_id: string) => {
         solicitude.value.estado = response.data.sol_status;
 
         // Lanza confetti en la pantalla
-        confetti({
-          particleCount: 500,
-          spread: 1010,
-          origin: { y: 0.6 },
-        });
+        // confetti({
+        //   particleCount: 500,
+        //   spread: 1010,
+        //   origin: { y: 0.6 },
+        // });
       }
     );
   } catch (error: any) {

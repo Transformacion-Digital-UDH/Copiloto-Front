@@ -209,7 +209,7 @@ onMounted(() =>{
         <!-- Botones siguiente y anteerior -->
         <div class="flex justify-between">
           <button 
-            @click="$router.push('/estudiante/conformidad-informe-jurado')" 
+            @click="$router.push('/estudiante/conformidad-vri')" 
             class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
           </button>
           <button
