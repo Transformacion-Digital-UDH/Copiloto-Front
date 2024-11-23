@@ -1,7 +1,7 @@
 <template>
   <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
     <div class="flex flex-col md:flex-row justify-between md:items-center">
-      <span class="flex-1 text-sm bg-gray-50">{{ titulo }}</span>
+      <span class="flex-1 text-xm bg-gray-50">{{ titulo }}</span>
       <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
         <div
           v-if="estado === 'aprobado'"

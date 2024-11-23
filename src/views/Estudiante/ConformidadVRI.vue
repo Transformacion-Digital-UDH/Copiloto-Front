@@ -36,7 +36,7 @@ const documentos = ref([
 // Función para cambiar el estado de la solicitud de revisión
 function solicitarRevision() {
   observaciones.value[0].estado = 'Hecho';
-  
+  //tramites.value[0].estado = 'Hecho'; Trámite en el Sistema pasa a Hecho
 }
 
 // ***** Texto que se escribe automáticamente ********
@@ -85,21 +85,24 @@ const isLoading = ref(false);
 // verificar si esta completado el curso
 const cursoCompletado = computed(() => obtener?.value?.tu_coach.doc_estado === 'aprobado');
 
-// funcion para llevar el curso
-const llevarCurso = async () => {
-  if (cursoCompletado.value || isLoading.value) return;
-  isLoading.value = true;
-  try {
-    window.open('https://tucoach.udh.edu.pe/curso/buenas-practicas-para-la-presentacion-de-la-tesis', '_blank');
-  } finally {
-    isLoading.value = false;
-  }
-};
-
 const isAprobacionDisabled = computed(() => {
-  return solicitudEstado.value === "pendiente" || obtener.value?.tu_coach.doc_estado !== "aprobado";
+  const primerFiltro = obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'primer filtro');
+  return solicitudEstado.value === "pendiente" || 
+         obtener.value?.tu_coach.doc_estado !== "aprobado" || 
+         primerFiltro?.fil_estado !== "no iniciado";
 });
 
+const primerFiltro = computed(() => {
+  return obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'primer filtro') || { fil_estado: 'no iniciado', fil_file: '' };
+});
+
+const segundoFiltro = computed(() => {
+  return obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'segundo filtro') || { fil_estado: 'no iniciado', fil_file: '' };
+});
+
+const tercerFiltro = computed(() => {
+  return obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'tercer filtro') || { fil_estado: 'no iniciado', fil_file: '' };
+});
 
 interface TuCoach {
   doc_name: string;
@@ -173,25 +176,20 @@ onMounted(() => {
       <!-- constancia de tucoach -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
-          <h4 class="text-2xl font-medium text-black">1. {{ obtener?.tu_coach.doc_name }}</h4>
+          <h4 class="text-2xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
         </div>
 
-        <p class="text-gray-500 mt-1 text-base">Para completar la Conformidad por Integridad VRI, debes realizar el Curso de buenas prácticas. </p>
+        <p class="text-gray-500 mt-1 text-base">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
         <p class="text-gray-500 mt-1  text-base">Haz clic en
-          <strong class="text-base font-medium">“Ir al curso”</strong> para iniciarlo.
-        </p>
-        <p class="text-gray-500 mt-1 text-base">
-          Una vez completado, el estado cambiará a 
-          <strong class="text-[#38a169] text-base font-medium">Aprobado</strong> y podrás visualizar el documento correspondiente.
+          <strong class="text-base font-medium">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento correspondiente.
         </p>
         
         <!-- documento de buuenas practicas -->
         <div class="mt-4 space-y-4">
           <CursoCard 
-          :titulo="'Curso de buenas prácticas TUCOACH'"
+          :titulo="'Documento emitido por TUCOACH'"
           :estado="obtener?.tu_coach.doc_estado || ''"
-          :view="obtener?.tu_coach.doc_ver"
-          @irAlCurso="llevarCurso"/>
+          :view="obtener?.tu_coach.doc_ver"/>
         </div>
       </div>
 
@@ -279,12 +277,23 @@ onMounted(() => {
         </div>
         
         <div class="mt-4 space-y-4">
+          <!-- primer filtro -->
           <DocumentCurso
-            v-for="filtro in obtener?.filtros"
-            :key="filtro.fil_nombre"
-            :titulo="filtro.fil_nombre"
-            :estado="filtro.fil_estado"
-            :view="filtro.fil_file"/>
+            :titulo="'Primer Filtro - VRI.'"
+            :estado="primerFiltro.fil_estado"
+            :view="primerFiltro.fil_file"/>
+
+          <!-- segundo filtro -->
+          <DocumentCurso
+            :titulo="'Segundo Filtro - VRI.'"
+            :estado="segundoFiltro.fil_estado"
+            :view="segundoFiltro.fil_file"/>
+
+          <!-- tercer filtro -->
+          <DocumentCurso
+            :titulo="'Tercer Filtro - VRI.'"
+            :estado="tercerFiltro.fil_estado"
+            :view="tercerFiltro.fil_file"/>
         </div>
       </div>
 
