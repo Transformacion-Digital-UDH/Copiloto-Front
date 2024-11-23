@@ -36,7 +36,7 @@ const currentPage = ref(1); // Página actual
 const showDocumentModal = ref(false); // Modal de documentos
 
 // Animación de texto
-const text = "Buenas prácticas - Segundo filtro";
+const text = "Turnitin - Tercer filtro";
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
@@ -61,7 +61,7 @@ function closeDocumentModal() {
 // Función para obtener solicitudes desde la API
 const fetchSolicitudes = async () => {
   try {
-    const response = await axios.get("/api/vri/get-segundo-filtro");
+    const response = await axios.get("/api/vri/get-tercer-filtro");
     console.log("Datos recibidos:", response.data);
 
     // Mapear cada solicitud y sus documentos

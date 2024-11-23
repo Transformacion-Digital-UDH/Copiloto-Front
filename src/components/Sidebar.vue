@@ -229,6 +229,23 @@ export default defineComponent({
           section.name === 'Sustentacion' ||
           section.name === 'Cierre'
         );
+      } else if (role.value === 'turnitin') {
+        allSections[2].submenus.push(
+          { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/turnitin/tercer-filtro' },
+        );
+        allSections[3].submenus.push(
+          { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },
+          { name: 'ResolucionFechaHora', label: 'Resolución Fecha y Hora para Sustentar', path: '/facultad/resolucion-fecha-hora' },
+        );
+        allSections[4].submenus.push(
+          { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
+        );
+        // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
+        sections.value = allSections.filter(section =>
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion' ||
+          section.name === 'Cierre'
+        );
       } else if (role.value === 'admin') {
         allSections[5].submenus.push(
           { name: 'dashboard', label: 'Dashboard', path: '/admin/dashboard' }

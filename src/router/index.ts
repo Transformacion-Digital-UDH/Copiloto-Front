@@ -28,7 +28,7 @@ import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
-import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
+import TercerFiltro from '@/views/Turnitin/TercerFiltro.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
 import LinkInforme from '@/views/Paisi/LinkInforme.vue'
 import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
@@ -53,6 +53,7 @@ const roleRoutes: Record<string, string> = {
   facultad: "facultad",
   admin: "admin",
   vri:"vri",
+  turnitin:"turnitin",
 };
 
 const router = createRouter({
@@ -157,6 +158,15 @@ const router = createRouter({
       ]
     },
     {
+      path: '/turnitin',
+      name: 'turnitin',
+      component: AdminLayout,
+      meta: { roles: ['turnitin'], title: 'TURNITIN' },
+      children: [
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['turnitin'], title: 'Tercer Filtro' } },
+      ]
+    },
+    {
       path: '/admin',
       component: AdminLayout,
       meta: { roles: ['admin'], title: 'Administrador' },
@@ -179,7 +189,7 @@ const router = createRouter({
       name: 'profile',
       component: AppProfile,
       meta: {
-        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri'],
+        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri', 'turnitin'],
         title: 'Mi perfil'
       },
     },
