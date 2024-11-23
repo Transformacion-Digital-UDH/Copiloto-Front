@@ -356,7 +356,7 @@ export default defineComponent({
                 fill-rule="evenodd"
                 clip-rule="evenodd"
                 d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-                fill="currentColor"
+                fill="#ffffff"
               />
             </svg>
             <svg
@@ -419,7 +419,7 @@ export default defineComponent({
 }
 
 .router-link-active {
-  font-weight: bold;
+  font-weight: normal;
 }
 
 /* Badge personalizado para el rol de jurado */
