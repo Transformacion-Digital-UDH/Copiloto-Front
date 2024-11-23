@@ -52,6 +52,7 @@ const roleRoutes: Record<string, string> = {
   paisi: "paisi",
   facultad: "facultad",
   admin: "admin",
+  vri:"vri",
 };
 
 const router = createRouter({
@@ -146,6 +147,7 @@ const router = createRouter({
     },
     {
       path: '/vri',
+      name: 'vri',
       component: AdminLayout,
       meta: { roles: ['vri'], title: 'VRI' },
       children: [
