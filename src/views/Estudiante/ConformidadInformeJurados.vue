@@ -43,7 +43,7 @@ const handleNextButtonClick = () => {
 };
 
 const goToNextPage = () => {
-  router.push("/estudiante/aprobacion-informe");
+  router.push("/estudiante/conformidad-vri");
 };
 
 const isNextButtonDisabled = computed(() => {
