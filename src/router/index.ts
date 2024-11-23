@@ -45,6 +45,7 @@ import AptoParaSustentar from '@/views/Estudiante/AptoParaSustentar.vue'
 import AppProfile from '@/components/auth/AppProfile.vue'
 import Dashboard from '@/views/Admin/Dashboard.vue'
 import Lista from '@/views/Admin/Usuarios/Lista.vue'
+import Comentarios from '@/views/Turnitin/Comentarios.vue'
 
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
@@ -164,6 +165,7 @@ const router = createRouter({
       meta: { roles: ['turnitin'], title: 'TURNITIN' },
       children: [
         { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['turnitin'], title: 'Tercer Filtro' } },
+        { path: 'comentarios', name: 'Comentarios', component: Comentarios, meta: { roles: ['turnitin'], title: 'Comentarios' } },
       ]
     },
     {

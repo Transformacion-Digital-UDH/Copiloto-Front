@@ -232,6 +232,7 @@ export default defineComponent({
       } else if (role.value === 'turnitin') {
         allSections[2].submenus.push(
           { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/turnitin/tercer-filtro' },
+          { name: 'Comentarios', label: 'Comentarios', path: '/turnitin/comentarios' },
         );
         allSections[3].submenus.push(
           { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },

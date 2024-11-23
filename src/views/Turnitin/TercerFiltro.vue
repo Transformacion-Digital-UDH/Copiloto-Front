@@ -399,62 +399,69 @@ const uploadFile = () => {
 
 
        <!-- Modal de Documentos -->
-       <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-        <div class="relative w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
-            <!-- Título del Modal -->
-            <div class="flex justify-between items-center border-b pb-3">
-            <!-- <h3 class="text-2xl font-medium justify-center text-gray-600">Link</h3> -->
-            <button @click="closeDocumentModal" class="text-gray-600 hover:text-gray-900">
-                <IconCerrar />
+       <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-60">
+        <div class="relative w-full max-w-3xl p-6 bg-white rounded-lg shadow-2xl">
+          <!-- Encabezado del Modal -->
+          <div class="flex justify-between items-center border-b pb-4">
+            <h3 class="text-xl font-semibold text-gray-700">Documento de Google</h3>
+            <button
+              @click="closeDocumentModal"
+              class="text-gray-500 hover:text-gray-700 focus:outline-none"
+            >
+              <IconCerrar />
             </button>
-            </div>
+          </div>
 
+          <!-- Contenido del Modal -->
+          <div class="mt-6">
             <!-- Tabla de Documentos -->
-            <div class="overflow-x-auto mt-4">
-            <table class="w-full max-w-full bg-white border rounded-md shadow">
-                <thead>
-                <tr class="text-center text-azul bg-gray-300">
-                    <th class="px-4 py-2 text-left tracking-wider">LINK</th>
-                    <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
-                </tr>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-gray-500">
+                <thead class="bg-gray-100 text-gray-700 uppercase text-sm">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Link</th>
+                    <th scope="col" class="px-6 py-3 text-center">Acción</th>
+                  </tr>
                 </thead>
                 <tbody>
-                <tr
+                  <tr
                     v-for="(doc, index) in documents"
                     :key="index"
-                    class="border-b border-gray-200 text-center"
-                >
+                    class="bg-white border-b hover:bg-gray-50"
+                  >
                     <!-- Nombre del Documento -->
-                    <td class="px-4 py-2 text-md text-left text-gray-600">
-                    <p>{{ doc.doc_nombre || "Sin documento" }}</p>
+                    <td class="px-6 py-4 text-gray-800">
+                      {{ doc.doc_nombre || "Sin documento" }}
                     </td>
 
-                    <!-- Link de Visualización -->
-                    <td class="px-4 py-2 justify-center flex space-x-2">
-                    <a
+                    <!-- Botón de Acción -->
+                    <td class="px-6 py-4 text-center">
+                      <a
                         :href="doc.doc_link"
                         target="_blank"
-                        class="flex items-center px-2 py-1 text-sm border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                        <i class="fas fa-eye mr-2 text-xs"></i> Ir
-                    </a>
+                        class="inline-flex items-center px-4 py-2 text-sm text-white bg-base rounded-md shadow-sm hover:bg-baseClarito focus:outline-none"
+                      >
+                        <i class="fas fa-eye mr-2"></i> Ir
+                      </a>
                     </td>
-                </tr>
+                  </tr>
                 </tbody>
-            </table>
+              </table>
             </div>
+          </div>
 
-            <!-- Botón de Cerrar -->
-            <div class="flex justify-end mt-4">
+          <!-- Botón de Cerrar -->
+          <div class="flex justify-end mt-6">
             <button
-                @click="closeDocumentModal"
-                class="px-4 py-2 text-white bg-base rounded-lg hover:bg-baseClarito"
+              @click="closeDocumentModal"
+              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none"
             >
-                Cerrar
+              Cerrar
             </button>
-            </div>
-    </div>
-    </div>
+          </div>
+        </div>
+      </div>
+
 
 
 </div>
