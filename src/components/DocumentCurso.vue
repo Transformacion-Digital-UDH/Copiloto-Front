@@ -6,7 +6,8 @@
         <div
           v-if="estado === 'aprobado'"
           class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-          <a
+          <a 
+            
             :href="view"
             target="_blank"
             rel="noopener noreferrer"
