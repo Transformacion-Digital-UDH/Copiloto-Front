@@ -28,7 +28,7 @@ import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
-import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
+import TercerFiltro from '@/views/Turnitin/TercerFiltro.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
 import LinkInforme from '@/views/Paisi/LinkInforme.vue'
 import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
@@ -45,6 +45,7 @@ import AptoParaSustentar from '@/views/Estudiante/AptoParaSustentar.vue'
 import AppProfile from '@/components/auth/AppProfile.vue'
 import Dashboard from '@/views/Admin/Dashboard.vue'
 import Lista from '@/views/Admin/Usuarios/Lista.vue'
+import Comentarios from '@/views/Turnitin/Comentarios.vue'
 
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
@@ -52,6 +53,8 @@ const roleRoutes: Record<string, string> = {
   paisi: "paisi",
   facultad: "facultad",
   admin: "admin",
+  vri:"vri",
+  turnitin:"turnitin",
 };
 
 const router = createRouter({
@@ -146,12 +149,23 @@ const router = createRouter({
     },
     {
       path: '/vri',
+      name: 'vri',
       component: AdminLayout,
       meta: { roles: ['vri'], title: 'VRI' },
       children: [
         { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { roles: ['vri'], title: 'Primer Filtro' } },
         { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { roles: ['vri'], title: 'Segundo Filtro' } },
         { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['vri'], title: 'Tercer Filtro' } },
+      ]
+    },
+    {
+      path: '/turnitin',
+      name: 'turnitin',
+      component: AdminLayout,
+      meta: { roles: ['turnitin'], title: 'TURNITIN' },
+      children: [
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['turnitin'], title: 'Tercer Filtro' } },
+        { path: 'comentarios', name: 'Comentarios', component: Comentarios, meta: { roles: ['turnitin'], title: 'Comentarios' } },
       ]
     },
     {
@@ -177,7 +191,7 @@ const router = createRouter({
       name: 'profile',
       component: AppProfile,
       meta: {
-        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri'],
+        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri', 'turnitin'],
         title: 'Mi perfil'
       },
     },

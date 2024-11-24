@@ -172,8 +172,10 @@ const extractAndSaveComments = async (solicitudeId: string) => {
     console.error("Error al extraer y guardar comentarios:", error);
   }
 }
+const confirming = ref(false);
 
 const acceptCorrecion = async () => {
+  confirming.value = true;
   try {
     const studentId = solicitudSeleccionada.value?.stu_id;
     const solicitudeId = solicitudSeleccionada.value?.solicitude_id;
@@ -216,6 +218,8 @@ const acceptCorrecion = async () => {
   } catch (error) {
     alertToast("Error al aceptar la solicitud", "Error", "error");
     console.error("Error al aceptar la corrección:", error);
+  } finally {
+    confirming.value = false;
   }
 };
 onMounted(() => {
@@ -370,7 +374,7 @@ onMounted(() => {
         </div>
 
       <!-- Modal para aprobar proyecto -->
-      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
+      <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
         <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
           <div class="flex justify-end items-start">
             <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
@@ -394,8 +398,24 @@ onMounted(() => {
                 <p v-if="nroCarta.length !== 3 && nroCarta !== ''" class="text-red-800">Debe ingresar 3 dígitos</p>
             </div>
           <div class="flex items-center justify-center p-1 border-gray-200">
-            <button class="px-4 py-2 text-xm text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-            <button class="ml-4 px-4 py-2 text-xm text-white bg-base rounded-2xl" :disabled="nroCarta.length !== 3" @click="acceptCorrecion">Confirmar</button>
+            <button 
+            :disabled="confirming"
+            class="px-4 py-2 text-xm text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar
+            </button>
+
+            <button 
+              class="ml-4 px-4 py-2 text-xm text-white bg-base rounded-2xl" 
+              :disabled="nroCarta.length !== 3 || confirming" 
+              @click="acceptCorrecion">
+              <div v-if="confirming" class="flex items-center gap-2">
+                <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Confirmando...
+              </div>
+              <p v-else>Confirmar</p>
+            </button>
           </div>
         </div>
       </div>
