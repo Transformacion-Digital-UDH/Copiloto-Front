@@ -212,29 +212,29 @@ export default defineComponent({
           section.name === 'Cierre'
         );
       } else if (role.value === 'vri' || role.value === 'turnitin') {
-  // Rutas específicas para los filtros bajo "Informe Final"
-  allSections[2].submenus.push(
-    { name: 'Primer filtro', label: 'Primer Filtro', path: '/vri-turnitin/primer-filtro' },
-    { name: 'Segundo filtro', label: 'Segundo Filtro', path: '/vri-turnitin/segundo-filtro' },
-    { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/vri-turnitin/tercer-filtro' }
-  );
+        // Rutas específicas para los filtros bajo "Informe Final"
+        allSections[2].submenus.push(
+          { name: 'Primer filtro', label: 'Primer Filtro', path: '/vri-turnitin/primer-filtro' },
+          { name: 'Segundo filtro', label: 'Segundo Filtro', path: '/vri-turnitin/segundo-filtro' },
+          { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/vri-turnitin/tercer-filtro' }
+        );
 
-  // // Crear una nueva sección separada para "BD Observaciones"
-  // allSections.push({
-  //   name: 'BDObservaciones',
-  //   label: 'BD Observaciones',
-  //   isOpen: false,
-  //   icon: markRaw(informe), // Puedes cambiar este ícono si lo deseas
-  //   submenus: [
-  //     { name: 'BD Observaciones', label: 'BD Observaciones', path: '/vri-turnitin/comentarios' },
-  //   ],
-  // });
+        // // Crear una nueva sección separada para "BD Observaciones"
+        // allSections.push({
+        //   name: 'BDObservaciones',
+        //   label: 'BD Observaciones',
+        //   isOpen: false,
+        //   icon: markRaw(informe), // Puedes cambiar este ícono si lo deseas
+        //   submenus: [
+        //     { name: 'BD Observaciones', label: 'BD Observaciones', path: '/vri-turnitin/comentarios' },
+        //   ],
+        // });
 
-  // Mostrar ambas secciones: Informe Final y BD Observaciones
-  sections.value = allSections.filter(
-    (section) =>
-      section.name === 'InformeFinal' || section.name === 'BDObservaciones'
-  );
+        // Mostrar ambas secciones: Informe Final y BD Observaciones
+        sections.value = allSections.filter(
+          (section) =>
+            section.name === 'InformeFinal' || section.name === 'BDObservaciones'
+        );
 
       } else if (role.value === 'admin') {
         allSections[5].submenus.push(
