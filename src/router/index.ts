@@ -120,7 +120,7 @@ const router = createRouter({
       path: '/paisi',
       name: 'paisi',
       component: AdminLayout,
-      meta: { roles: ['paisi'], title: 'Paisi' },
+      meta: { roles: ['paisi'], title: 'P.A.I.S.I' },
       children: [
         { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
         { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['paisi'], title: 'Aprobar proyecto' } },
@@ -153,11 +153,20 @@ const router = createRouter({
       component: AdminLayout,
       meta: { roles: ['vri', 'turnitin'], title: 'VRI y Turnitin' },
       children: [
-        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { roles: ['vri', 'turnitin'], title: 'Primer Filtro' } },
-        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { roles: ['vri', 'turnitin'], title: 'Segundo Filtro' } },
-        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['vri', 'turnitin'], title: 'Tercer Filtro' } },
-        { path: 'comentarios', name: 'Comentarios', component: Comentarios, meta: { roles: ['vri', 'turnitin'], title: 'BD Observaciones' } },
-      ],
+        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { roles: ['vri'], title: 'Primer Filtro' } },
+        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { roles: ['vri'], title: 'Segundo Filtro' } },
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['vri'], title: 'Tercer Filtro' } },
+      ]
+    },
+    {
+      path: '/turnitin',
+      name: 'turnitin',
+      component: AdminLayout,
+      meta: { roles: ['turnitin'], title: 'TURNITIN' },
+      children: [
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['turnitin'], title: 'Tercer Filtro' } },
+        { path: 'comentarios', name: 'Comentarios', component: Comentarios, meta: { roles: ['turnitin'], title: 'Comentarios' } },
+      ]
     },
     
     {
