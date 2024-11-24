@@ -211,6 +211,42 @@ export default defineComponent({
           section.name === 'Sustentacion' ||
           section.name === 'Cierre'
         );
+      } else if (role.value === 'vri') {
+        allSections[2].submenus.push(
+          { name: 'Primer filtro', label: 'Primer Filtro', path: '/vri/primer-filtro' },
+          { name: 'Segundo filtro', label: 'Segundo Filtro', path: '/vri/segundo-filtro' }
+        );
+        allSections[3].submenus.push(
+          { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },
+          { name: 'ResolucionFechaHora', label: 'Resolución Fecha y Hora para Sustentar', path: '/facultad/resolucion-fecha-hora' },
+        );
+        allSections[4].submenus.push(
+          { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
+        );
+        // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
+        sections.value = allSections.filter(section =>
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion' ||
+          section.name === 'Cierre'
+        );
+      } else if (role.value === 'turnitin') {
+        allSections[2].submenus.push(
+          { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/turnitin/tercer-filtro' },
+          { name: 'Comentarios', label: 'Comentarios', path: '/turnitin/comentarios' },
+        );
+        allSections[3].submenus.push(
+          { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },
+          { name: 'ResolucionFechaHora', label: 'Resolución Fecha y Hora para Sustentar', path: '/facultad/resolucion-fecha-hora' },
+        );
+        allSections[4].submenus.push(
+          { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
+        );
+        // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
+        sections.value = allSections.filter(section =>
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion' ||
+          section.name === 'Cierre'
+        );
       } else if (role.value === 'admin') {
         allSections[5].submenus.push(
           { name: 'dashboard', label: 'Dashboard', path: '/admin/dashboard' }
@@ -222,7 +258,7 @@ export default defineComponent({
           section.name === 'Panel' ||
           section.name === 'Usuarios'
         );
-      }
+      } 
     };
 
     const toggleSubmenu = (name: string) => {
@@ -321,7 +357,7 @@ export default defineComponent({
                 fill-rule="evenodd"
                 clip-rule="evenodd"
                 d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-                fill="currentColor"
+                fill="#ffffff"
               />
             </svg>
             <svg
@@ -384,7 +420,7 @@ export default defineComponent({
 }
 
 .router-link-active {
-  font-weight: bold;
+  font-weight: normal;
 }
 
 /* Badge personalizado para el rol de jurado */
