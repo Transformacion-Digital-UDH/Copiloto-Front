@@ -225,9 +225,9 @@ export default defineComponent({
         );
         // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
         sections.value = allSections.filter(section =>
-          section.name === 'InformeFinal' ||
-          section.name === 'Sustentacion' ||
-          section.name === 'Cierre'
+          section.name === 'InformeFinal'
+          // section.name === 'Sustentacion' ||
+          // section.name === 'Cierre'
         );
       } else if (role.value === 'turnitin') {
         allSections[2].submenus.push(
@@ -243,9 +243,9 @@ export default defineComponent({
         );
         // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
         sections.value = allSections.filter(section =>
-          section.name === 'InformeFinal' ||
-          section.name === 'Sustentacion' ||
-          section.name === 'Cierre'
+          section.name === 'InformeFinal'
+          // section.name === 'Sustentacion' ||
+          // section.name === 'Cierre'
         );
       } else if (role.value === 'admin') {
         allSections[5].submenus.push(
