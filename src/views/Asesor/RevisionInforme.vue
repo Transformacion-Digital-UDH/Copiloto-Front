@@ -16,6 +16,7 @@ interface Review {
   rev_file: string;
   contador: number;
   [key: string]: any;
+  link_informe:string;
 }
 
 // ***** Texto que escribe automáticamente ********
@@ -289,7 +290,7 @@ onMounted(() => {
                         <p class="text-gray-900 text-wrap w-80 uppercase">{{ u.titulo || "Título no disponible" }}</p>
                       </td>
                       <td class="px-3 py-5 text-center">
-                        <a :href="u['link-tesis']" target="_blank" class="text-blue-800 hover:text-base flex items-center justify-center group">
+                        <a :href="u.link_informe" target="_blank" class="text-blue-800 hover:text-base flex items-center justify-center group">
                           <!-- Ícono que se muestra normalmente -->
                           <IconEyeCerrar class="mr-1 group-hover:hidden" />
                           <IconEyeAbrir class="mr-1 hidden group-hover:block" />
@@ -358,10 +359,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que este informe final ya no requiere mas observaciones?</h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que este informe final ya no requiere más observaciones?</h5>
           </div>
           <div class="p-6">
-              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el documento de conformidad</p>
               <input
                 type="text"
                 id="nroCarta"

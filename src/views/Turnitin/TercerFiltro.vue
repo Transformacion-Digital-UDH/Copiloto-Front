@@ -62,7 +62,7 @@ function closeDocumentModal() {
 const fetchSolicitudes = async () => {
   try {
     const response = await axios.get("/api/vri/get-tercer-filtro");
-    console.log("Datos recibidos:", response.data);
+    console.log("Datos recibidos tres:", response.data);
 
     // Mapear cada solicitud y sus documentos
     tableData.value = response.data.map((item: any) => ({
