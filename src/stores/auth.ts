@@ -20,6 +20,8 @@ export const useAuthStore = defineStore("auth", () => {
     asesor: "/asesor",
     paisi: "/paisi",
     facultad: "/facultad",
+    vri: "vri",
+    turnitin: "turnitin",
     admin: "/admin",
   };
 

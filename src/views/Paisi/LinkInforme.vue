@@ -363,13 +363,13 @@ onMounted(() => {
                 ¿Está seguro de que desea generar el documento?
               </p>
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
-              <button :disabled="createdoc" class="px-4 py-2 text-lg font-Thin text-white bg-[#5d6d7e] rounded-2xl"
+            <div class="flex items-center justify-center p-3  border-gray-200">
+              <button :disabled="createdoc" class="px-4 text-center py-2 text-sm font-Thin text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
               <button v-if="selectedSolicitude && !selectedSolicitude.link" @click="createGoogleDoc"
-                class="ml-4 px-4 py-2 text-lg font-Thin text-white bg-base rounded-2xl">
+                class="ml-4 px-4 py-2 text-sm font-Thin text-white bg-base rounded-2xl">
 
                 <div v-if="createdoc" class="flex items-center gap-2">
                   <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"

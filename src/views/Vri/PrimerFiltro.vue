@@ -288,7 +288,7 @@ onMounted(() => {
                       </div>
                     </td>
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
-                      <!-- <button
+                      <button
                         :class="[ 
                           'w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none', 
                           solicitude.filtroEstado === 'aprobado' 
@@ -299,14 +299,14 @@ onMounted(() => {
                         @click="approveSolicitud(solicitude.filtroId)"
                       >
                         Aprobar
-                      </button> -->
+                      </button>
                       <!-- Botón de Aprobar (sin deshabilitar para pruebas) -->
-                      <button
+                      <!-- <button
                         class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none hover:bg-green-600"
                         @click="approveSolicitud(solicitude.filtroId)"
                       >
                         Aprobar
-                      </button>
+                      </button> -->
                     </td>
                     
 
@@ -345,58 +345,84 @@ onMounted(() => {
 
     
        <!-- Modal de Documentos -->
-        <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div class="relative w-full max-w-4xl p-6 bg-white rounded-lg shadow-lg">
-            <div class="flex justify-between items-center border-b pb-3">
-              <h3 class="text-2xl font-medium justify-center text-gray-600">Validación de documentos</h3>
-              <button @click="closeDocumentModal" class="text-gray-600 hover:text-gray-900">
-                <IconCerrar />
-              </button>
-                </div>
-            <div class="overflow-x-auto mt-4">
-              <table class="w-full max-w-full bg-white border rounded-md shadow">
-                <thead>
-                  <tr class="text-center text-azul bg-gray-300">
-                    <th class="px-4 py-2 text-left tracking-wider">DOCUMENTOS</th>
-                    <th class="px-4 py-2 text-left tracking-wider">EMISOR</th>
-                    <th class="px-4 py-2 tracking-wider">FECHA EMISIÓN</th>
-                    <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(doc, index) in documents" :key="index" class="border-b border-gray-200 text-center">
-                    <td class="px-4 py-2 text-md text-left text-gray-600">
-                      <p>{{ doc.nombre || "Sin documento" }}</p>
-                    </td>
-                    <td class="px-4 py-2 text-md text-left text-gray-600">
-                      <p>{{ doc.emisor || "Sin emisor" }}</p>
-                    </td>
-                    <td class="px-4 py-2 text-md text-gray-600">
-                      <p>{{ doc.fechaEmision || "Sin fecha" }}</p>
-                    </td>
-                    <td class="px-4 py-4 justify-center flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 w-full">
-                      <a 
-                        :href="doc.urlView" target="_blank"
-                        class="flex items-center px-2 py-1 text-sm border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-eye mr-2 text-xs"></i> Ver
-                      </a>
-                      <a 
-                        :href="doc.urlDownload" download
-                        class="flex items-center px-2 py-1 text-sm border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                        <i class="fas fa-download mr-2 text-xs"></i> Descargar
-                      </a>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="flex justify-end mt-4">
-              <button @click="closeDocumentModal" class="px-4 py-2 text-white bg-base rounded-lg hover:bg-baseClarito">
-                Cerrar
-              </button>
-            </div>
+      <div 
+        v-if="showDocumentModal" 
+        class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-50 p-4 sm:p-6"
+      >
+        <div 
+          class="relative w-full max-w-sm sm:max-w-md lg:max-w-4xl p-6 bg-white rounded-lg shadow-lg"
+        >
+          <!-- Encabezado -->
+          <div class="flex justify-between items-center border-b pb-3">
+            <h3 class="text-lg sm:text-xl lg:text-2xl font-medium text-gray-600">
+              Validación de documentos
+            </h3>
+            <button @click="closeDocumentModal" class="text-gray-600 hover:text-gray-900">
+              <IconCerrar />
+            </button>
+          </div>
+
+          <!-- Tabla Responsiva -->
+          <div class="overflow-x-auto mt-4">
+            <table class="w-full table-auto border-collapse border rounded-md shadow">
+              <thead>
+                <tr class="text-center text-sm  text-azul bg-gray-300">
+                  <th class="px-2 sm:px-4 py-2 text-left">DOCUMENTOS</th>
+                  <th class="px-2 sm:px-4 py-2 text-left">EMISOR</th>
+                  <th class="px-2 sm:px-4 py-2">FECHA EMISIÓN</th>
+                  <th class="px-2 sm:px-4 py-2">ACCIÓN</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr 
+                  v-for="(doc, index) in documents" 
+                  :key="index" 
+                  class="border-b border-gray-200 text-center text-xs sm:text-sm lg:text-md"
+                >
+                  <td class="px-2 sm:px-4 py-2 text-left text-gray-600">
+                    <p>{{ doc.nombre || "Sin documento" }}</p>
+                  </td>
+                  <td class="px-2 sm:px-4 py-2 text-left text-gray-600">
+                    <p>{{ doc.emisor || "Sin emisor" }}</p>
+                  </td>
+                  <td class="px-2 sm:px-4 py-2 text-gray-600">
+                    <p>{{ doc.fechaEmision || "Sin fecha" }}</p>
+                  </td>
+                  <td 
+                    class="px-2 sm:px-4 py-4 flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-2 justify-center"
+                  >
+                    <a 
+                      :href="doc.urlView" 
+                      target="_blank" 
+                      class="flex items-center px-2 py-1 text-sm border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-eye mr-2 text-xs"></i> Ver
+                    </a>
+                    <a 
+                      :href="doc.urlDownload" 
+                      download 
+                      class="flex items-center px-2 py-1 text-sm border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    >
+                      <i class="fas fa-download mr-2 text-xs"></i> Descargar
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Botón de Cerrar -->
+          <div class="flex justify-end mt-4">
+            <button 
+              @click="closeDocumentModal" 
+              class="px-4 py-2 text-white bg-base rounded-lg hover:bg-baseClarito"
+            >
+              Cerrar
+            </button>
           </div>
         </div>
+      </div>
+
 
 
       </div>

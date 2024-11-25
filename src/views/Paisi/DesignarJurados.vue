@@ -89,10 +89,6 @@ const fetchJurados = async (oficio_id: string) => {
   }
 };
 
-
-
-
-
 // Función para abrir el modal y cargar los jurados del oficio seleccionado
 const openModal = async (oficio_id: string) => {
   console.log("Abriendo modal para oficio:", oficio_id);
@@ -101,10 +97,6 @@ const openModal = async (oficio_id: string) => {
   nextTick(() => { showModal.value = true; }); // Forzar apertura del modal
   console.log("Modal abierto con jurados:", jurados.value);
 };
-
-
-
-
 
 // Función para cerrar el modal
 const closeModal = () => {
@@ -363,9 +355,12 @@ onMounted(() => {
 
                     <!-- Estado del Proyecto -->
                     <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-')}`">{{
-                        u.of_status }}</span>
-                    </td>
+                        <span
+                          :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-') }`">
+                          {{  u.of_status  ?  u.of_status .charAt(0).toUpperCase() +
+                             u.of_status .slice(1).toLowerCase() : 'Estado desconocido' }}
+                        </span>
+                      </td>
                   </tr>
                 </tbody>
               </table>

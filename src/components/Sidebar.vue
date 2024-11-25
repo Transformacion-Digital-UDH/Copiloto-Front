@@ -131,7 +131,13 @@ export default defineComponent({
         allSections[4].submenus.push(
           { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }
         );
-        sections.value = allSections; // Mostrar todas las secciones.
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' ||
+          section.name === 'Ejecucion' ||
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion' ||
+          section.name === 'Cierre'
+        ); // Mostrar todas las secciones.
       } else if (role.value === 'asesor') {
         // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
         allSections[0].submenus.push(
@@ -211,42 +217,31 @@ export default defineComponent({
           section.name === 'Sustentacion' ||
           section.name === 'Cierre'
         );
-      } else if (role.value === 'vri') {
+      } else if (role.value === 'vri' || role.value === 'turnitin') {
+        // Rutas específicas para los filtros bajo "Informe Final"
         allSections[2].submenus.push(
-          { name: 'Primer filtro', label: 'Primer Filtro', path: '/vri/primer-filtro' },
-          { name: 'Segundo filtro', label: 'Segundo Filtro', path: '/vri/segundo-filtro' }
+          { name: 'Primer filtro', label: 'Primer Filtro', path: '/vri-turnitin/primer-filtro' },
+          { name: 'Segundo filtro', label: 'Segundo Filtro', path: '/vri-turnitin/segundo-filtro' },
+          { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/vri-turnitin/tercer-filtro' }
         );
-        allSections[3].submenus.push(
-          { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },
-          { name: 'ResolucionFechaHora', label: 'Resolución Fecha y Hora para Sustentar', path: '/facultad/resolucion-fecha-hora' },
+
+        // // Crear una nueva sección separada para "BD Observaciones"
+        // allSections.push({
+        //   name: 'BDObservaciones',
+        //   label: 'BD Observaciones',
+        //   isOpen: false,
+        //   icon: markRaw(informe), // Puedes cambiar este ícono si lo deseas
+        //   submenus: [
+        //     { name: 'BD Observaciones', label: 'BD Observaciones', path: '/vri-turnitin/comentarios' },
+        //   ],
+        // });
+
+        // Mostrar ambas secciones: Informe Final y BD Observaciones
+        sections.value = allSections.filter(
+          (section) =>
+            section.name === 'InformeFinal' || section.name === 'BDObservaciones'
         );
-        allSections[4].submenus.push(
-          { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
-        );
-        // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
-        sections.value = allSections.filter(section =>
-          section.name === 'InformeFinal' ||
-          section.name === 'Sustentacion' ||
-          section.name === 'Cierre'
-        );
-      } else if (role.value === 'turnitin') {
-        allSections[2].submenus.push(
-          { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/turnitin/tercer-filtro' },
-          { name: 'Comentarios', label: 'Comentarios', path: '/turnitin/comentarios' },
-        );
-        allSections[3].submenus.push(
-          { name: 'ResolucionApto', label: 'Resolución Apto Sustentar', path: '/facultad/resolucion-apto' },
-          { name: 'ResolucionFechaHora', label: 'Resolución Fecha y Hora para Sustentar', path: '/facultad/resolucion-fecha-hora' },
-        );
-        allSections[4].submenus.push(
-          { name: 'CierreFacultad', label: 'Cierre de Trámites', path: '/cierre/facultad' }
-        );
-        // Filtramos las secciones de Proyecto, Informe, Sustentación, y Cierre
-        sections.value = allSections.filter(section =>
-          section.name === 'InformeFinal' ||
-          section.name === 'Sustentacion' ||
-          section.name === 'Cierre'
-        );
+
       } else if (role.value === 'admin') {
         allSections[5].submenus.push(
           { name: 'dashboard', label: 'Dashboard', path: '/admin/dashboard' }

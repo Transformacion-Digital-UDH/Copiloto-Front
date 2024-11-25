@@ -6,8 +6,8 @@
         <div
           v-if="estado === 'aprobado'"
           class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-          <a
-            :href="view"
+          <a 
+            :href="dynamicHref"
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
@@ -28,6 +28,9 @@
 </template>
 
 <script lang="ts" setup>
+import { computed } from 'vue';
+const BASE_URL = "https://titulacion-back.abimaelfv.site";
+
 const props = defineProps({
   titulo: {
     type: String,
@@ -41,6 +44,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+});
+
+const dynamicHref = computed(() => {
+  return props.view.startsWith("http") ? props.view : `${BASE_URL}${props.view}`;
 });
 
 const formatearTexto = (text: string): string =>
