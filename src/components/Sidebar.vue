@@ -131,7 +131,13 @@ export default defineComponent({
         allSections[4].submenus.push(
           { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }
         );
-        sections.value = allSections; // Mostrar todas las secciones.
+        sections.value = allSections.filter(section => 
+          section.name === 'ProyectoDeTesis' ||
+          section.name === 'Ejecucion' ||
+          section.name === 'InformeFinal' ||
+          section.name === 'Sustentacion' ||
+          section.name === 'Cierre'
+        ); // Mostrar todas las secciones.
       } else if (role.value === 'asesor') {
         // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
         allSections[0].submenus.push(
