@@ -56,19 +56,40 @@ function closeCommentModal() {
 
 // Función para obtener datos del estudiante
 const obtenerDatosEstudiante = async () => {
-  if (!authStore.id) {
-    console.error("El ID del estudiante no está definido en el authStore");
-    return;
-  }
-
   load.value = true;
-  const estudiante_id = authStore.id; // ID del estudiante
+
   try {
+    // Paso 1: Obtener el ID del estudiante desde `/api/vri/get-tercer-filtro`
+    if (!authStore.id) {
+      console.log("Intentando obtener el ID del estudiante desde `/api/vri/get-tercer-filtro`...");
+      
+      const idResponse = await axios.get("/api/vri/get-tercer-filtro");
+
+      // Verifica si la respuesta es un arreglo y contiene datos
+      if (Array.isArray(idResponse.data) && idResponse.data.length > 0) {
+        // Toma el primer estudiante del arreglo
+        const primerEstudiante = idResponse.data[0];
+        authStore.id = primerEstudiante.estudiante_id;
+        console.log("ID del estudiante obtenido:", authStore.id);
+      } else {
+        console.error(
+          "La respuesta no contiene un arreglo válido con datos de estudiantes.",
+          idResponse.data
+        );
+        load.value = false;
+        return;
+      }
+    }
+
+    // Paso 2: Obtener los datos del estudiante usando el ID
+    const estudiante_id = authStore.id;
+    console.log(`Usando el ID del estudiante: ${estudiante_id} para obtener datos...`);
+
     const response = await axios.get(`/api/vri/coments/${estudiante_id}`);
     console.log("Datos recibidos del estudiante:", response.data);
 
-    // Mapear los datos al formato de `tableData`
     if (response.data) {
+      // Mapear los datos al formato esperado
       tableData.value = [
         {
           id: response.data.est_id, // ID del estudiante
@@ -82,11 +103,16 @@ const obtenerDatosEstudiante = async () => {
       console.warn("No se recibieron datos del estudiante");
     }
   } catch (error: any) {
-    console.error("Error al obtener datos del estudiante", error.response?.data?.mensaje || error.message);
+    if (error.response) {
+      console.error("Error en la solicitud:", error.response.data);
+    } else {
+      console.error("Error al obtener datos del estudiante:", error.message);
+    }
   } finally {
     load.value = false;
   }
 };
+
 
 // Filtrado por búsqueda y paginación
 const filteredTableData = computed(() => {
@@ -123,6 +149,7 @@ onMounted(() => {
   obtenerDatosEstudiante(); // Cargar los datos del estudiante
 });
 </script>
+
 
 <template>
     <div v-if="load" class="flex h-screen justify-center items-center">
