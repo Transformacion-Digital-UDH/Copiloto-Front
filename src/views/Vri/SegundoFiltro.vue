@@ -6,6 +6,9 @@ import IconCerrar from "@/components/icons/IconCerrar.vue";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 import { alertToast } from "@/functions";
+import excel from "@/components/icons/excel.vue";
+
+
 
 // Interfaces
 interface Solicitude {
@@ -108,45 +111,41 @@ const handleFileChange = (event: Event) => {
 
 const approveSolicitud = async (filterId: string) => {
   try {
-    console.log("Aprobando filtro con ID:", filterId);
-
-    // Crear FormData
+    loading.value = true;
+        
     const formData = new FormData();
 
-    // Agregar el archivo (si está seleccionado)
+    // Agregar el estado directamente como un campo
+    formData.append("fil_estado", "aprobado");
+
+    // Agregar el archivo si existe
     if (selectedFile.value) {
       formData.append("fil_path", selectedFile.value);
     }
 
-    // Serializar el estado como JSON y agregarlo al FormData
-    const estadoJson = JSON.stringify({
-      fil_estado: "aprobado",
-    });
-    formData.append("json_data", estadoJson);
-
-    // Verificar lo que se está enviando
-    console.log("Datos enviados al backend (FormData con JSON):");
+    // Log para debugging
     for (const pair of formData.entries()) {
       console.log(`${pair[0]}:`, pair[1]);
     }
 
-    // Enviar la solicitud al backend usando PUT
-    const response = await axios.put(
+    // Realizar la petición
+    const response = await axios.post(
       `/api/vri/update-filter/${filterId}/status`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
+          'Accept': 'application/json',
         },
       }
     );
 
-    // Procesar la respuesta del backend
-    console.log("Respuesta del backend:", response.data);
+    console.log("Respuesta:", response.data);
 
     if (response.data.estado === "aprobado") {
       alertToast("Solicitud aprobada correctamente.", "Éxito", "success");
     }
+
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error("Error en Axios:", error.response?.data || error.message);
@@ -159,9 +158,10 @@ const approveSolicitud = async (filterId: string) => {
       console.error("Error inesperado:", error);
       alertToast("Ocurrió un error inesperado.", "Error", "error");
     }
+  } finally {
+    loading.value = false;
   }
 };
-
 
 // Filtrado y paginación
 const filteredTableData = computed(() => {
@@ -280,59 +280,78 @@ onMounted(() => {
                 class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
               >
               <table class="min-w-full leading-normal">
-              <thead class="custom-thead font-Quicksand">
-                <tr class="text-center text-azul border-b-2 bg-gray-300">
-                  <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                  <th class="py-2 px-3 text-center tracking-wider">FECHA</th>
-                  <th class="py-2 px-4 text-center tracking-wider">DOCUMENTOS</th>
-                  <th class="py-2 px-3 text-center tracking-wider">ACCIÓN</th>
-                  <th class="py-2 px-3 text-center tracking-wider">ESTADO</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="solicitude in tableData"
-                  :key="solicitude.filtroId"
-                  class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
-                >
-                  <td class="px-3 py-5 text-base text-black">{{ solicitude.nombre }}</td>
-                  <td class="px-3 py-5 text-base text-center text-black">{{ solicitude.filtroFecha }}</td>
-                  <td class="px-3 py-5 text-center">
-                    <a
-                      :href="solicitude.documentos[0]?.doc_link"
-                      target="_blank"
-                      class="flex items-center justify-center text-azul hover:underline group"
-                    >
-                      <!-- Ícono dinámico (cerrado y abierto) -->
-                      <IconEyeCerrar class="mr-1 w-5 h-5 group-hover:hidden" />
-                      <IconEyeAbrir class="mr-1 w-5 h-5 hidden group-hover:block" />
-                      <span class="text-[#34495e]">Ir al informe final</span>
-                    </a>
-                  </td>
-
-
-                  <td class="px-3 py-5 flex flex-col items-center justify-center">
-                    <button
-                      class="w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none hover:bg-green-600"
-                      @click="openApprovalModal(solicitude.filtroId)"
-                    >
-                      Aprobar
-                    </button>
-                  </td>
-                  <td class="px-3 py-5 text-center">
-                    <span
-                      :class="`estado-estilo estado-${solicitude.filtroEstado?.toLowerCase().replace(' ', '-')}`"
-                    >
-                      {{ solicitude.filtroEstado
-                        ? solicitude.filtroEstado.charAt(0).toUpperCase() +
-                          solicitude.filtroEstado.slice(1).toLowerCase()
-                        : "Estado desconocido" }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-
+                <thead class="custom-thead font-Quicksand">
+                  <tr class="text-center text-azul border-b-2 bg-gray-300">
+                    <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                    <th class="py-2 px-3 text-center tracking-wider">FECHA</th>
+                    <th class="py-2 px-4 text-center tracking-wider">DOCUMENTOS</th>
+                    <th class="py-2 px-3 text-center tracking-wider">OBSERVACIONES</th> <!-- Nueva columna -->
+                    <th class="py-2 px-3 text-center tracking-wider">ACCIÓN</th>
+                    <th class="py-2 px-3 text-center tracking-wider">ESTADO</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="solicitude in tableData"
+                    :key="solicitude.filtroId"
+                    class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
+                  >
+                    <td class="px-3 py-5 text-base text-black">{{ solicitude.nombre }}</td>
+                    <td class="px-3 py-5 text-base text-center text-black">{{ solicitude.filtroFecha }}</td>
+                    <td class="px-3 py-5 text-center">
+                      <a
+                        :href="solicitude.documentos[0]?.doc_link"
+                        target="_blank"
+                        class="flex items-center justify-center text-azul hover:underline group"
+                      >
+                        <IconEyeCerrar class="mr-1 w-5 h-5 group-hover:hidden" />
+                        <IconEyeAbrir class="mr-1 w-5 h-5 hidden group-hover:block" />
+                        <span class="text-[#34495e]">Ir al informe final</span>
+                      </a>
+                    </td>
+                  <!-- Falta agregar el link para descargar las observaciones-->  
+                    <td class="px-3 py-5 text-center">
+                        <a
+                          :href="solicitude.documentos[0]?.doc_link"
+                          download
+                          class="flex items-center justify-center text-green-600 hover:underline"
+                        >
+                         
+                          <img
+                            src="/icon/excel.svg"
+                            alt="Excel Icon"
+                            class="mr-1 w-8 h-8"
+                          />
+                          <span>Descargar</span>
+                        </a>
+                      </td>
+                    <td class="px-3 py-5 flex flex-col items-center justify-center">
+                      <button
+                        :class="[ 
+                          'w-24 px-4 py-1 text-sm text-white bg-base rounded-xl focus:outline-none', 
+                          solicitude.filtroEstado === 'aprobado' 
+                            ? 'cursor-not-allowed bg-gray-300' 
+                            : 'hover:bg-green-600' 
+                        ]"
+                        :disabled="solicitude.filtroEstado === 'aprobado'"
+                        @click="openApprovalModal(solicitude.filtroId)"
+                      >
+                        Aprobar
+                      </button>
+                    </td>
+                    <td class="px-3 py-5 text-center">
+                      <span
+                        :class="`estado-estilo estado-${solicitude.filtroEstado?.toLowerCase().replace(' ', '-')}`"
+                      >
+                        {{ solicitude.filtroEstado
+                          ? solicitude.filtroEstado.charAt(0).toUpperCase() +
+                            solicitude.filtroEstado.slice(1).toLowerCase()
+                          : "Estado desconocido" }}
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
                 <!-- Paginación -->
               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
