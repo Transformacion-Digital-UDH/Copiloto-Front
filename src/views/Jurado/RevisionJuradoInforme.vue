@@ -463,10 +463,10 @@ onMounted(() => {
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
             <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el informe final ya no
-              requiere mas observaciones?</h5>
+              requiere más observaciones?</h5>
           </div>
           <div class="p-6">
-            <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>
+            <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de oficio para el documento de conformidad</p>
             <input type="text" id="nroCarta" v-model="nroCarta"
               class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric"
               @input="validateObservaciones" required />

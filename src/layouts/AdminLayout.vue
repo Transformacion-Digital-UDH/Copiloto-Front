@@ -1,8 +1,19 @@
-<script setup>
+<script lang="ts" setup>
 import { useRoute } from 'vue-router';
 import AdminHeader from '@/components/AdminHeader.vue';
 import Sidebar from '@/components/Sidebar.vue';
 const route = useRoute();
+
+// Configuración de títulos según la ruta
+const titles: Record<string, string> = {
+  "/estudiante": "Bienvenido(a) al sistema de titulación",
+  "/paisi": "Plataforma Programa Académico de Ingeniería de Sistemas e Informática",
+  "/facultad": "Plataforma Facultad de Ingeniería",
+  "/asesor": "Bienvenido(a), Docente Mentor",
+  "/vri": "Plataforma Vicerrectorado de Investigación",
+  "/turnitin": "Plataforma Turnitin",
+};
+
 </script>
 
 <template>
@@ -17,14 +28,11 @@ const route = useRoute();
 
       <!-- Content area with scroll -->
       <main class="flex-grow overflow-y-auto bg-white">
-        <div v-if="route.path === '/estudiante'" class="flex items-center justify-center h-full">
-          <div class="text-center animate-bounce">
-            <h1 class="text-4xl font-bold mb-6 text-azul uppercase">Bienvenido(a) al sistema de titulación</h1>
-          </div>
-        </div>
-        <div v-else-if="route.path === '/paisi'" class="flex items-center justify-center h-full">
+        <div v-if="titles[route.path]" class="flex items-center justify-center h-full">
           <div class="text-center animate-bounce absolute p-10">
-            <h1 class="text-4xl font-bold mb-6 text-azul uppercase">Bienvenido(a) Programa Académico de Ingeniería de Sistemas e Informática</h1>
+            <h1 class="text-4xl font-bold mb-6 text-azul uppercase">
+              {{ titles[route.path] }}
+            </h1>
           </div>
         </div>
         <router-view v-else />
