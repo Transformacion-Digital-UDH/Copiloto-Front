@@ -120,7 +120,7 @@ const router = createRouter({
       path: '/pa',
       name: 'pa',
       component: AdminLayout,
-      meta: { roles: ['pa'], title: 'P.A.I.S.I' },
+      meta: { roles: ['pa'], title: 'Programa Académico' },
       children: [
         { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['pa'], title: 'Designar Jurados' } },
         { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['pa'], title: 'Aprobar proyecto' } },
