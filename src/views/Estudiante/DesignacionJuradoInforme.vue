@@ -7,7 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 import JuradoTabla from '@/components/JuradoTabla.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
@@ -184,7 +184,7 @@ onMounted(() => {
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-1-00 min-h-full">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite
@@ -222,8 +222,8 @@ onMounted(() => {
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-2">
-            <ButtonS 
-              label="Solicitar Jurados" 
+            <ButtonRequest 
+              label="Solicitar jurados" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 
               @click="solicitarJuradoInforme" />

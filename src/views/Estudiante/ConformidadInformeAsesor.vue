@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Conformidad de Informe Final por Asesor";
@@ -240,7 +240,7 @@ onMounted(() => {
         </p>
         <div class="flex justify-center mt-2">
           <!-- boton para solicitar revision de asesor -->
-          <ButtonS 
+          <ButtonRequest 
               label="Solicitar revisión" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 

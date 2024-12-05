@@ -2,10 +2,10 @@
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
-import CursoCard from '@/components/CursoCard.vue';
+import CursoCoachCard from '@/components/CursoCoachCard.vue';
 import DocumentCurso from '@/components/DocumentCurso.vue';
 import ModalToolTip from '@/components/modalToolTip.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 import Swal from 'sweetalert2';
 import router from '@/router';
 import { alertToast } from '@/functions';
@@ -226,7 +226,7 @@ onMounted(() => {
           
           <!-- documento de buuenas practicas -->
           <div class="mt-4 space-y-4">
-            <CursoCard 
+            <CursoCoachCard 
             :titulo="'Documento emitido por TUCOACH'"
             :estado="obtener?.tu_coach.doc_estado || ''"
             :view="obtener?.tu_coach.doc_ver"/>
@@ -243,7 +243,7 @@ onMounted(() => {
           </p>
           <!-- boton para solicitar aprobacion informe final -->
           <div class="flex justify-center mt-2">
-              <ButtonS 
+              <ButtonRequest 
                 label="Solicitar conformidad" 
                 :loading="isLoading" 
                 :disabled="isAprobacionDisabled" 
@@ -321,7 +321,7 @@ onMounted(() => {
                 <span class="flex-1 text-xm bg-gray-50">Primer Filtro - VRI.</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
-                  <span v-else class="text-gray-500 italic">La solicitud se encuentra en proceso</span>
+                  <span v-else class="text-gray-500 italic">La solicitud se encuentra en espera</span>
                   <span :class="`estado-estilo estado-${primerFiltro.fil_estado.toLowerCase().replace(' ', '-')}`">
                     {{ formatearTexto(primerFiltro.fil_estado) }}
                   </span>

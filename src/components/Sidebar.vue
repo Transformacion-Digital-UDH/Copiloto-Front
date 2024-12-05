@@ -293,6 +293,11 @@ export default defineComponent({
       isActive,
       image_profile
     };
+  },
+  methods:{
+    // mayuscula la primera letra
+    formatearTexto(text: string): string {
+      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()}
   }
 });
 </script>
@@ -316,7 +321,7 @@ export default defineComponent({
         </div>
         <div class="w-full text-center max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>
-          <p class="text-base text-green-600 font-semibold break-words">{{ role }}</p>
+          <p class="text-lg text-[#2EBAA1] tracking-wide">{{ formatearTexto(role) }}</p>
         </div>
       </div>
 
