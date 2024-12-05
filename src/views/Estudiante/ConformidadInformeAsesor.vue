@@ -147,7 +147,7 @@ onMounted(() => {
 </script>
 <template>
   <template v-if="load">
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
@@ -189,7 +189,7 @@ onMounted(() => {
     </div>
   </template>
   <template v-else>
-  <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
+  <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
     <div class="mt-6 space-y-10">
       <!-- Sección 1: Solicitar link para cargar el Informe Final -->
