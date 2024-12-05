@@ -274,7 +274,7 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
                   <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">{{ documentos[0].estado }}</span>
                 </div>
               </div>

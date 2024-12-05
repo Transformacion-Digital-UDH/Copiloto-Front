@@ -415,11 +415,11 @@ const handleNextButtonClick = () => {
           
           <div class="mt-4">
             <!-- Título de tesis -->
-            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título de tesis</label>
+            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título del proyecto de investigación (provisional)</label>
             <input id="tituloTesis" type="text" v-model="solicitude.titulo"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-              placeholder="Escribe tu título de tesis aquí..." />
+              placeholder="Escribe tu título de proyecto de investigación aquí..." />
             <label for="nombreAsesor" class="block text-lg font-medium text-gray-700 mb-2">Elige a tu asesor</label>
             <select id="nombreAsesor" v-model="solicitude.asesor_id"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
@@ -431,8 +431,7 @@ const handleNextButtonClick = () => {
             </select>
 
             <!-- Select para elegir tipo de investigacion -->
-            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Elige tu tipo de
-              investigación</label>
+            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Selecciona tu tipo de investigación</label>
             <select id="tipoInvestigacion" v-model="solicitude.tipo_investigacion"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
@@ -570,10 +569,8 @@ const handleNextButtonClick = () => {
                   <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
                   <!-- Estado del documento -->
-                  <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">
-                    {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() :
-                      'Desconocido' }}
-                  </span>
+                  <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">{{ oficio.estado
+                    }}</span>
 
                 </div>
               </div>
@@ -584,7 +581,7 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Resolución de Facultad de Ingeniería de Sistemas.
+                  Resolución de Facultad de Ingeniería.
                   <p v-if="resolucion.estado === 'observado'" class="italic">
                     "{{ resolucion.observacion }}"
                   </p>
