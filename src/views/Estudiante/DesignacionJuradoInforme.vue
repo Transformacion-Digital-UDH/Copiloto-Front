@@ -71,20 +71,16 @@ const isSolicitarDisabled = computed(() => {
   return ( isLoading.value || (bloquear.includes(obtener.value?.oficio.of_estado ?? '') || bloquear.includes(obtener.value?.resolucion.of_estado ?? '')));
 });
 
+interface Jurado {
+  rol: string;
+  nombre: string;
+}
+
 interface Informacion {
   estudiante_id: string;
-  presidente: {
-    rol: string;
-    nombre: string;
-  };
-  secretario: {
-    rol: string;
-    nombre: string;
-  };
-  vocal: {
-    rol: string;
-    nombre: string;
-  };
+  presidente: Jurado;
+  secretario: Jurado;
+  vocal: Jurado;
   oficio: {
     of_id: string;
     of_estado: string;
@@ -106,10 +102,10 @@ const obtenerDatosEstudiante = async () => {
     obtener.value = response.data;
 
     jurados.value = [
-      { rol: obtener.value?.presidente.rol || '', nombre: obtener.value?.presidente.nombre || '' },
-      { rol: obtener.value?.secretario.rol || '', nombre: obtener.value?.secretario.nombre || '' },
-      { rol: obtener.value?.vocal.rol || '', nombre: obtener.value?.vocal.nombre || '' },
-    ];
+      { rol: "Presidente", nombre: obtener.value?.presidente.nombre || "" },
+      { rol: "Secretario", nombre: obtener.value?.secretario.nombre || "" },
+      { rol: "Vocal", nombre: obtener.value?.vocal.nombre || "" },
+    ].filter(jurado => jurado.nombre);
 
   } catch (error) {
     console.error('Error al obtener jurados designados', error);
@@ -163,7 +159,7 @@ onMounted(() => {
         </div>
         <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
             <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
@@ -217,8 +213,8 @@ onMounted(() => {
             <h2 class="text-2xl font-medium text-black">1. Solicitar designación de jurados</h2>
             <ModalToolTip :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />               
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para solicitar la designación de jurados.
+          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar jurados"</strong> para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-2">
@@ -236,7 +232,7 @@ onMounted(() => {
             <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
           </div>
           <div class="overflow-x-auto mt-4 flex justify-center">
-            <JuradoTabla :obtener="obtener" :jurados="jurados"/>
+            <JuradoTabla :jurados="jurados"/>
           </div>
         </div>
 
