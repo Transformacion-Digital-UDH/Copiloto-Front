@@ -342,7 +342,7 @@ onMounted(() => {
             <DocumentCard 
               titulo='Informe de conformidad - Secretario'
               :estado="obtenerEstadoDocumento(secretarioRevisiones[0]?.estado || '')"
-              :id="presidente_id"
+              :id="secretario_id"
               :view="VIEW_CPA"
               :download="DOWNLOAD_CPA"/>
           </div>
@@ -352,7 +352,7 @@ onMounted(() => {
             <DocumentCard 
               titulo='Informe de conformidad - Secretario'
               :estado="obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '')"
-              :id="presidente_id"
+              :id="vocal_id"
               :view="VIEW_CPA"
               :download="DOWNLOAD_CPA"/>
           </div>
