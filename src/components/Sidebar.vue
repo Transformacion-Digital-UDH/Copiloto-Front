@@ -171,21 +171,21 @@ export default defineComponent({
           section.name === 'InformeFinal' ||
           section.name === 'Sustentacion'
         );
-      } else if (role.value === 'program') {
+      } else if (role.value === 'programa') {
         // pa solo tiene Proyecto Tesis, Informe Final y Sustentación
         allSections[0].submenus.push(
-          { name: 'Designar asesor', label: 'Designar Asesor', path: '/program/designar-asesor' },
-          { name: 'Designar jurados', label: 'Designar Jurados', path: '/program/designar-jurado' },
-          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/program/aprobar-proyecto' }
+          { name: 'Designar asesor', label: 'Designar Asesor', path: '/programa/designar-asesor' },
+          { name: 'Designar jurados', label: 'Designar Jurados', path: '/programa/designar-jurado' },
+          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/programa/aprobar-proyecto' }
         );
         allSections[2].submenus.push(
-          { name: 'Link de informe', label: 'Link de Informe', path: '/program/link-informe' },
-          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/program/designar-jurado-informe' },
-          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/program/aprobar-informe' },
+          { name: 'Link de informe', label: 'Link de Informe', path: '/programa/link-informe' },
+          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/programa/designar-jurado-informe' },
+          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/programa/aprobar-informe' },
         );
         allSections[3].submenus.push(
-          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/program/apto-sustentacion' },
-          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/program/designar-fecha-hora' },
+          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/programa/apto-sustentacion' },
+          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/programa/designar-fecha-hora' },
         );
         // Filtramos las secciones de Proyecto, Informe, y Sustentación
         sections.value = allSections.filter(section =>
