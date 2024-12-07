@@ -84,12 +84,12 @@ const googleLogin = async (response) => {
               for="password"
               >Contraseña</label
             >
-            <router-link
+            <!-- <router-link
               to="/forgot-password"
               class="text-sm text-base hover:underline"
             >
               ¿Olvidó su contraseña?
-            </router-link>
+            </router-link> -->
           </div>
           <input
             type="password"
