@@ -7,6 +7,11 @@ import router from '@/router'
 import axios from 'axios';
 import vue3GoogleLogin from 'vue3-google-login'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+// Importar los estilos de TourGuide.js
+import "@sjmc11/tourguidejs/dist/css/tour.min.css";
+
+// Importar TourGuide.js
+import { TourGuideClient } from "@sjmc11/tourguidejs/dist/tour.js";
 
 axios.defaults.baseURL = 'https://titulacion-back.abimaelfv.site';
 // axios.defaults.baseURL = 'http://127.0.0.1:8000';
