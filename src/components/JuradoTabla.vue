@@ -7,7 +7,7 @@
       </tr>
     </thead>
     <tbody>
-    <tr v-if="!obtener || (!obtener.presidente?.nombre && !obtener.secretario?.nombre && !obtener.vocal?.nombre)">
+    <tr v-if="jurados.length === 0">
       <td colspan="2" class="px-4 py-6 text-gray-500 text-center align-middle">
         <i class="fas fa-exclamation-circle mr-2 text-red-700"></i> Aún no se han asignado jurados.
       </td>
@@ -32,17 +32,7 @@ interface Jurado {
   nombre: string;
 }
 
-interface Obtener {
-  presidente: Jurado;
-  secretario: Jurado;
-  vocal: Jurado;
-}
-
 const props = defineProps({
-  obtener: {
-    type: Object as PropType<Obtener | null>,
-    default: null,
-  },
   jurados: {
     type: Array as PropType<Jurado[]>,
     required: true,
