@@ -11,6 +11,7 @@ import ButtonRequest from '@/components/ButtonRequest.vue';
 import CorrecionAsesor from '@/components/CorrecionAsesor.vue';
 import NavigationButton from '@/components/NavigationButton.vue';
 import SkeletonConformidadesAsesor from '@/components/SkeletonConformidadesAsesor.vue';
+import InfoCardConformidad from '@/components/InfoCardConformidad.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
 
 // extrayendo funcionn del composable
@@ -129,36 +130,13 @@ onMounted(() => {
           <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarLink">Solicitar link</button>
         </div>
       </div> -->
-      <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
-        <div class="space-y-4 relative max-w-[820px] w-full mx-auto">
-          <div class="grid grid-cols-1 gap-6">
-            <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
-              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-              <p class="font-bold text-xl text-azul">Asesor</p>
-              <p class="text-gray-600 text-center uppercase">
-                {{ obtener?.asesor || 'Asesor no asignado' }}
-              </p>
-            </div>
-          </div>
-          <div class="bg-white rounded-lg p-6 shadow-lg max-w-[820px] w-full mx-auto">
-            <p class="max-full text-xm text-gray-600 uppercase text-center">
-              {{ obtener?.titulo || 'Título no asignado' }}
-            </p>
-          </div>
-          <!-- enlace del informe final -->
-          <div  v-if="obtener?.['link-informe']" class="text-center mt-6">
-            <a
-              :href="obtener?.['link-informe']"
-              target="_blank"
-              class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <i class="fas fa-external-link-alt"></i> Abrir proyecto
-            </a>
-          </div>
-          <p class="text-sm text-gray-600 text-center">
-            Asegúrate de corregir y actualizar tu información en Google Docs antes de hacer clic en "Solicitar revisión".
-          </p>
-        </div>
-      </div>
+
+      <!-- Informacion de asesor y titulo con la tesis -->
+      <InfoCardConformidad 
+        :data="{
+          asesor: obtener?.asesor,
+          titulo: obtener?.titulo,
+          link: obtener?.['link-informe']}"/>
 
       <!-- solicitar correcion al asesor IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -228,7 +206,7 @@ onMounted(() => {
 
     </div>
   </div>
-</template>
+  </template>
 </template>
 
 <style scoped>
