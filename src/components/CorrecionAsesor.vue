@@ -39,7 +39,7 @@
     </tbody>
     <tbody v-else>
       <tr>
-        <td colspan="4" class="px-4 py-4 text-center text-gray-600">
+        <td colspan="4" class="px-4 py-6 text-gray-500  text-center align-middle">
           <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>No hay observaciones disponibles por el momento.
         </td>
       </tr>

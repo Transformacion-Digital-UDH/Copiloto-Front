@@ -9,6 +9,7 @@ import ButtonRequest from '@/components/ButtonRequest.vue';
 import Swal from 'sweetalert2';
 import router from '@/router';
 import { alertToast } from '@/functions';
+import { useTypewriter } from '@/composables/useTypewriter';
 
 // Estado de la constancia de curso
 // const constanciaCurso = ref({
@@ -40,20 +41,9 @@ import { alertToast } from '@/functions';
 //   //tramites.value[0].estado = 'Hecho'; Trámite en el Sistema pasa a Hecho
 // }
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Conformidad por Integridad VRI";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Conformidad por Integridad VRI");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -211,7 +201,7 @@ onMounted(() => {
 
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- constancia de tucoach -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">

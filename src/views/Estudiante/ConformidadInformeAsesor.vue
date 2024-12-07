@@ -9,26 +9,11 @@ import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import CorrecionAsesor from '@/components/CorrecionAsesor.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de Informe Final por Asesor";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-// ******************************************************
-
-const mostrarModalRevision = ref(false);
-const mostrarModalObservaciones = ref(false);
-const mostrarModalDocumentos = ref(false)
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Conformidad de Informe Final por Asesor");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -155,9 +140,9 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-md p-6 space-y-4">
           <div class="grid grid-cols-1 gap-6">
-            <div class="bg-gray-200 rounded-md h-36 p-4 flex flex-col items-center skeleton-loader duration-200"></div>
+            <div class="bg-gray-200 rounded-md max-w-[820px] w-full mx-auto h-36 p-4 skeleton-loader duration-200"></div>
           </div>
-          <div class="bg-gray-200 h-44 rounded-md p-6 -m-0 skeleton-loader duration-200"></div>
+          <div class="bg-gray-200 h-36 rounded-md max-w-[820px] w-full mx-auto skeleton-loader duration-200"></div>
           <div class="text-center mt-6">
             <div class="h-10 bg-gray-200 rounded w-44 mx-auto skeleton-loader duration-200"></div>
           </div><p class="h-4 mt-6"></p>
@@ -191,7 +176,7 @@ onMounted(() => {
   </template>
   <template v-else>
   <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-    <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+    <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
     <div class="mt-6 space-y-10">
       <!-- Sección 1: Solicitar link para cargar el Informe Final -->
       <!-- <div class="bg-white rounded-lg shadow-lg p-6">
@@ -205,29 +190,35 @@ onMounted(() => {
           <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarLink">Solicitar link</button>
         </div>
       </div> -->
-      <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
-        <div class="grid grid-cols-1 gap-6">
-          <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
-            <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-            <p class="font-bold text-xl text-azul">Asesor</p>
-            <p class="text-gray-600 text-center uppercase">
-              {{ obtener?.asesor || 'Asesor no asignado' }}
+      <div class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
+        <div class="space-y-4 relative max-w-[820px] w-full mx-auto">
+          <div class="grid grid-cols-1 gap-6">
+            <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
+              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
+              <p class="font-bold text-xl text-azul">Asesor</p>
+              <p class="text-gray-600 text-center uppercase">
+                {{ obtener?.asesor || 'Asesor no asignado' }}
+              </p>
+            </div>
+          </div>
+          <div class="bg-white rounded-lg p-6 shadow-lg max-w-[820px] w-full mx-auto">
+            <p class="max-full text-xm text-gray-600 uppercase text-center">
+              {{ obtener?.titulo || 'Título no asignado' }}
             </p>
           </div>
+          <!-- enlace del informe final -->
+          <div  v-if="obtener?.['link-informe']" class="text-center mt-6">
+            <a
+              :href="obtener?.['link-informe']"
+              target="_blank"
+              class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <i class="fas fa-external-link-alt"></i> Abrir proyecto
+            </a>
+          </div>
+          <p class="text-sm text-gray-600 text-center">
+            Asegúrate de corregir y actualizar tu información en Google Docs antes de hacer clic en "Solicitar revisión".
+          </p>
         </div>
-        <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-          <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ obtener?.titulo || 'Título no asignado' }}</p>
-        </div>
-        <!-- enlace del informe final -->
-        <div v-if="obtener?.['link-informe']" class="text-center mt-6">
-          <a
-            :href="obtener?.['link-informe']"
-            target="_blank"
-            class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-            <i class="fas fa-external-link-alt"></i> Abrir proyecto
-          </a>
-        </div>
-        <p class="text-sm text-gray-600 text-center">Asegúrate de corregir y actualizar tu información en Google Docs antes de hacer clic en "Solicitar revisión".</p>
       </div>
 
       <!-- solicitar correcion al asesor IF -->
