@@ -129,10 +129,10 @@ const load = ref<boolean>(false);
 const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser null
 
 // Función para obtener solicitudes desde el backend
-const fetchSolicitudes = async () => {
+const fetchSolicitudes = async (programa_id: string) => {
   load.value = true;
   try {
-    const response = await axios.get('/api/paisi/getSolicitude');
+    const response = await axios.get(`/api/paisi/getSolicitude/${programa_id}`);
     tableData.value = response.data.data as Solicitude[];  // Forzamos el tipo a `Solicitude[]`
     console.log(response.data);
   } catch (error) {
@@ -142,7 +142,7 @@ const fetchSolicitudes = async () => {
   }
 };
 onMounted(() => {
-  fetchSolicitudes();
+  fetchSolicitudes;
   typeWriter();
 });
 
