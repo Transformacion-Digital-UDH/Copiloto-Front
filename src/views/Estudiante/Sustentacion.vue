@@ -7,22 +7,11 @@ import Swal from 'sweetalert2';
 import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Sustentación";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-// ******************************************************
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Sustentación");
+onMounted(typeWriter);
 
 // const handleNextButtonClick = () => {
 //   if (isNextButtonDisabled.value) {
@@ -83,11 +72,42 @@ onMounted(() => {
 </script>
 <template>
   <template v-if="load">
-    
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+    <div class="flex justify-center items-center content-center px-14 flex-col">
+      <h3 class="bg-gray-200 h-10 w-full mx-auto rounded-md animate-pulse"></h3><br>
+    </div>
+    <div class="mt-6 space-y-10">
+      <div class="bg-slate-200 rounded-lg shadow-lg p-6 relative">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+          <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
+            <div class="bg-gray-300 h-10 w-10 rounded-full mb-4 animate-pulse"></div>
+            <div class="h-6 w-1/2 bg-gray-300 rounded mb-2 animate-pulse"></div>
+            <div class="h-6 w-1/3 bg-gray-300 rounded animate-pulse"></div>
+          </div>
+          <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
+            <div class="bg-gray-300 h-10 w-10 rounded-full mb-4 animate-pulse"></div>
+            <div class="h-6 w-1/2 bg-gray-300 rounded mb-2 animate-pulse"></div>
+            <div class="h-6 w-1/3 bg-gray-300 rounded animate-pulse"></div>
+            <div class="relative w-full bg-gray-200 h-4 rounded-full overflow-hidden mt-4">
+              <div class="absolute top-0 left-0 h-full bg-gray-300 animate-pulse"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white rounded-lg shadow-lg p-6 relative">
+        <div class="h-6 bg-gray-300 w-1/2 rounded animate-pulse"></div>
+        <div class="h-20 bg-gray-300 w-full rounded mt-4 animate-pulse"></div>
+      </div>
+      <div class="flex justify-between">
+        <div class="h-10 w-28 bg-gray-300 rounded animate-pulse"></div>
+        <!-- <div class="h-10 w-28 bg-gray-300 rounded animate-pulse"></div> -->
+      </div>
+    </div>
+  </div>
   </template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- mistrar fecha y hora de sustentacion final -->
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
@@ -98,7 +118,6 @@ onMounted(() => {
               <p class="text-lg font-semibold text-azul mb-2">Fecha de Sustentación</p>
               <p class="text-gray-600 text-lg">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</p>
             </div>
-
             <!-- nota de sustneacion -->
             <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
               <i class="fas fa-star text-yellow-500 text-3xl mb-4"></i>
@@ -121,7 +140,7 @@ onMounted(() => {
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">1. Acta de sustentación de tesis</h2>
-              <ModalToolTip :infoModal="[{ info: 'Falta información' },]" />
+              <ModalToolTip :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la sustentación' },]" />
             </div>            
           </div>
           <div class="mt-4 space-y-4">
