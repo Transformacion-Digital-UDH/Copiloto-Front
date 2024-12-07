@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import axios from "axios";
-import router from "@/router";
-import IconLoading from "@/components/icons/IconLoading.vue";
+import { ref } from "vue";
 import { useAuthStore } from "@/stores/auth";
+import axios from "axios";
+import IconLoading from "@/components/icons/IconLoading.vue";
 
 // Refs para opciones de formulario
 const rememberMe = ref(false);
@@ -31,30 +30,23 @@ const googleLogin = async (response) => {
       <div class="text-center mb-6">
         <img src="/img/logo_light.svg" alt="Logo" class="mx-auto mb-6 w-48" />
         <h6 class="text-2xl text-azul font-semibold">Iniciar sesión</h6>
-        <p class="text-sm text-gray-600">
+        <!-- <p class="text-sm text-gray-600">
           ¿Aún no tienes una cuenta?
           <router-link to="/register" class="text-base hover:underline"
             >Regístrate aquí</router-link
           >
-        </p>
+        </p> -->
       </div>
 
       <!-- Botón de Google -->
-
       <div class="mb-4">
-        <GoogleLogin
-          :callback="googleLogin"
-          prompt
-          class="w-full"
-        >
-          <button
-            type="button"
-            class="w-full bg-white border border-gray-300 text-gray-700 py-2 rounded-lg flex items-center justify-center hover:bg-gray-100 transition duration-150"
-          >
-            <img src="/img/google.png" alt="Google" class="w-5 h-5 mr-2" />
-            Continuar con Google
-          </button>
-        </GoogleLogin>
+        <div class="flex justify-center">
+          <GoogleLogin
+            :callback="googleLogin"
+            prompt
+            :popupMode="false"
+          />
+        </div>
       </div>
 
       <div class="relative mb-4 text-center">
