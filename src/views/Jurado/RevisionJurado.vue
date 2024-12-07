@@ -320,7 +320,7 @@ onMounted(() => {
                   </td>
 
                   <td class="px-2 py-3 text-center">
-                    <span class="px-3 py-1 text-white bg-base rounded-full">
+                    <span class="px-3 py-1 text-sm text-white bg-base rounded-full">
                       {{ u.rol }}
                     </span>
                   </td>
@@ -430,7 +430,7 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el Proyecto de Tesis ya no requiere mas observaciones?</h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el Proyecto de Tesis ya no requiere más observaciones?</h5>
           </div>
           <div class="p-6">
               <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>

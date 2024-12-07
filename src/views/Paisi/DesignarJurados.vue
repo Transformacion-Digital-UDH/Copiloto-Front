@@ -89,10 +89,6 @@ const fetchJurados = async (oficio_id: string) => {
   }
 };
 
-
-
-
-
 // Función para abrir el modal y cargar los jurados del oficio seleccionado
 const openModal = async (oficio_id: string) => {
   console.log("Abriendo modal para oficio:", oficio_id);
@@ -101,10 +97,6 @@ const openModal = async (oficio_id: string) => {
   nextTick(() => { showModal.value = true; }); // Forzar apertura del modal
   console.log("Modal abierto con jurados:", jurados.value);
 };
-
-
-
-
 
 // Función para cerrar el modal
 const closeModal = () => {
@@ -167,9 +159,11 @@ const asignarJurado = () => {
     alertToast('No puedes seleccionar al mismo docente en roles diferentes', 'error');
     return;
   }
-  alertToast('Jurados asignados correctamente.', "Éxito", "success");
+  //alertToast('Jurados asignados correctamente.', "Éxito", "success");
   openSendModal();
 };
+
+const confirming = ref(false);
 
 // Función para manejar la selección de un jurado y mostrar sus revisiones
 const handleJuradoSelect = (rol: string, value: string) => {
@@ -193,6 +187,7 @@ const sendToBackend = async () => {
     vocal: selectedVocal.value
   };
 
+  confirming.value = true;
   try {
     if (selectedOficioId.value) {
       
@@ -207,8 +202,9 @@ const sendToBackend = async () => {
   } catch (error) {
     alertToast('Error al enviar los datos al backend', 'error');
     console.error('Error al enviar datos:', error);
+  } finally {
+    confirming.value = false;
   }
-
 };
 
 
@@ -359,9 +355,12 @@ onMounted(() => {
 
                     <!-- Estado del Proyecto -->
                     <td class="px-3 py-5 text-center">
-                      <span :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-')}`">{{
-                        u.of_status }}</span>
-                    </td>
+                        <span
+                          :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-') }`">
+                          {{  u.of_status  ?  u.of_status .charAt(0).toUpperCase() +
+                             u.of_status .slice(1).toLowerCase() : 'Estado desconocido' }}
+                        </span>
+                      </td>
                   </tr>
                 </tbody>
               </table>
@@ -501,12 +500,24 @@ onMounted(() => {
               <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
             </div>
             <div class="flex items-center justify-center p-3 border-gray-200">
-              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+              <button 
+                :disabled="confirming" 
+                class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" 
+                @click="closeModal">
                 Cancelar
               </button>
-              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
-                :disabled="!formIsValid" @click="sendToBackend">
-                Enviar
+              <button 
+                class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" 
+                :disabled="!formIsValid || confirming" 
+                @click="sendToBackend">
+                <div v-if="confirming" class="flex items-center gap-2">
+                  <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                  </svg>
+                  Enviando...
+                </div>
+                <p v-else>Enviar</p>
               </button>
             </div>
           </div>

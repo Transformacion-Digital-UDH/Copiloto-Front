@@ -23,12 +23,12 @@ import DesignarAsesor from '@/views/Paisi/DesignarAsesor.vue'
 import ResolucionAsesor from '@/views/facultad/ResolucionAsesor.vue'
 import RevisionInforme from '@/views/Asesor/RevisionInforme.vue'
 import RevisionJuradoInforme from '@/views/Jurado/RevisionJuradoInforme.vue'
-import RevisionJuradoPresidenteInforme from '@/views/Jurado/RevisionJuradoPresidenteInforme.vue'
+import RevisionSustentacion from '@/views/Jurado/RevisionSustentacion.vue'
 import AprobarInforme from '@/views/Paisi/AprobarInforme.vue'
 import ResolucionInforme from '@/views/facultad/ResolucionInforme.vue'
 import PrimerFiltro from '@/views/Vri/PrimerFiltro.vue'
 import SegundoFiltro from '@/views/Vri/SegundoFiltro.vue'
-import TercerFiltro from '@/views/Vri/TercerFiltro.vue'
+import TercerFiltro from '@/views/Turnitin/TercerFiltro.vue'
 import DesignacionJurados from '@/views/facultad/DesignacionJurados.vue'
 import LinkInforme from '@/views/Paisi/LinkInforme.vue'
 import DesignarJuradoInforme from '@/views/Paisi/DesignarJuradoInforme.vue'
@@ -36,7 +36,7 @@ import ProgresoProyecto from '@/views/Estudiante/ProgresoProyecto.vue'
 import DesignacionJuradoSus from '@/views/Estudiante/DesignacionJuradoSus.vue'
 import AptoSustentacion from '@/views/Paisi/AptoSustentacion.vue'
 import DesignacionFechayHora from '@/views/Estudiante/DesignacionFechayHora.vue'
-import CorrecionSustentacion from '@/views/Estudiante/CorrecionSustentacion.vue'
+import Sustentacion from '@/views/Estudiante/Sustentacion.vue'
 import AptoParaSustentarR from '@/views/facultad/AptoParaSustentarR.vue'
 import DesignarFechaHora from '@/views/Paisi/DesignarFechaHora.vue'
 import ResolucionFechaHora from '@/views/facultad/ResolucionFechaHora.vue'
@@ -45,13 +45,16 @@ import AptoParaSustentar from '@/views/Estudiante/AptoParaSustentar.vue'
 import AppProfile from '@/components/auth/AppProfile.vue'
 import Dashboard from '@/views/Admin/Dashboard.vue'
 import Lista from '@/views/Admin/Usuarios/Lista.vue'
+import Comentarios from '@/views/Turnitin/Comentarios.vue'
 
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
   asesor: "asesor",
-  paisi: "paisi",
+  pa: "pa",
   facultad: "facultad",
   admin: "admin",
+  vri: "vri-turnitin", 
+  turnitin: "vri-turnitin",
 };
 
 const router = createRouter({
@@ -85,7 +88,7 @@ const router = createRouter({
         { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
         { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
         { path: 'designacion-fecha-hora', name: 'Designación de Fecha y Hora', component: DesignacionFechayHora, meta: {  roles: ['estudiante'], title: 'Designación de Fecha y Hora' } },
-        { path: 'correccion-sustentacion', name: 'Correccion Sustentacion', component: CorrecionSustentacion, meta: {  roles:['estudiante'], title: 'Correccion de Sustentación' } },
+        { path: 'sustentacion', name: 'Sustentación', component: Sustentacion, meta: {  roles:['estudiante'], title: 'Sustentación' } },
       ]
     },
     {
@@ -109,23 +112,24 @@ const router = createRouter({
       children: [
         { path: 'revision-jurado', name: 'RevisionJurado', component: RevisionJurado, meta: { roles: ['jurado'], title: 'Revision jurado' } },
         { path: 'revisionJurado-informe', name: 'RevisiónJurado', component: RevisionJuradoInforme, meta: { roles: ['jurado'], title: 'Revisión jurado' } },
+        { path: 'revisionJurado-sustentacion', name: 'RevisiónSustentacion', component: RevisionSustentacion, meta: { roles: ['jurado'], title: 'Revisión sustentacion' } },
 
       ]
     },
     {
-      path: '/paisi',
-      name: 'paisi',
+      path: '/pa',
+      name: 'pa',
       component: AdminLayout,
-      meta: { roles: ['paisi'], title: 'Paisi' },
+      meta: { roles: ['pa'], title: 'Programa Académico' },
       children: [
-        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
-        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['paisi'], title: 'Aprobar proyecto' } },
-        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['paisi'], title: 'Designar asesor' } },
-        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['paisi'], title: 'Aprobar informe' } },
-        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['paisi'], title: 'Link informe' } },
-        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['paisi'], title: 'Designar Jurados Informe' } },
-        { path: 'apto-sustentacion', name: 'AptoParaSustentar', component: AptoSustentacion, meta: { roles: ['paisi'], title: 'Apto para Sustentar' } },
-        { path: 'designar-fecha-hora', name: 'DesignarFechaHora', component: DesignarFechaHora, meta: { roles: ['paisi'], title: 'Designar Fecha y Hora' } },
+        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['pa'], title: 'Designar Jurados' } },
+        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['pa'], title: 'Aprobar proyecto' } },
+        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['pa'], title: 'Designar asesor' } },
+        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['pa'], title: 'Aprobar informe' } },
+        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['pa'], title: 'Link informe' } },
+        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['pa'], title: 'Designar Jurados Informe' } },
+        { path: 'apto-sustentacion', name: 'AptoParaSustentar', component: AptoSustentacion, meta: { roles: ['pa'], title: 'Apto para Sustentar' } },
+        { path: 'designar-fecha-hora', name: 'DesignarFechaHora', component: DesignarFechaHora, meta: { roles: ['pa'], title: 'Designar Fecha y Hora' } },
       ]
     },
     {
@@ -144,15 +148,19 @@ const router = createRouter({
       ]
     },
     {
-      path: '/vri',
+      path: '/vri-turnitin',
+      name: 'vri-turnitin',
       component: AdminLayout,
-      meta: { roles: ['vri'], title: 'VRI' },
+      meta: { roles: ['vri', 'turnitin'], title: 'VRI y Turnitin' },
       children: [
-        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { roles: ['vri'], title: 'Primer Filtro' } },
-        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { roles: ['vri'], title: 'Segundo Filtro' } },
-        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['vri'], title: 'Tercer Filtro' } },
-      ]
+        { path: 'primer-filtro', name: 'PrimerFiltro', component: PrimerFiltro, meta: { roles: ['vri', 'turnitin'], title: 'Primer Filtro' } },
+        { path: 'segundo-filtro', name: 'SegundoFiltro', component: SegundoFiltro, meta: { roles: ['vri', 'turnitin'], title: 'Segundo Filtro' } },
+        { path: 'tercer-filtro', name: 'TercerFiltro', component: TercerFiltro, meta: { roles: ['vri', 'turnitin'], title: 'Tercer Filtro' } },
+        { path: 'comentarios', name: 'Comentarios', component: Comentarios, meta: { roles: ['vri', 'turnitin'], title: 'BD Observaciones' } },
+      ],
     },
+    
+    
     {
       path: '/admin',
       component: AdminLayout,
@@ -176,7 +184,7 @@ const router = createRouter({
       name: 'profile',
       component: AppProfile,
       meta: {
-        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri'],
+        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'pa', 'vri', 'turnitin'],
         title: 'Mi perfil'
       },
     },

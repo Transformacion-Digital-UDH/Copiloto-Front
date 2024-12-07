@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row justify-between md:items-center">
       <span class="flex-1 text-xm bg-gray-50">{{ titulo }}</span>
         <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-          <div v-if="estado === 'tramitado' || estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+          <div v-if="estado === 'tramitado' || estado === 'aprobado' || estado === 'emitido'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
             <a
               :href="`${view}/${id}`"
               target="_blank"
@@ -17,84 +17,78 @@
               <i class="fas fa-download mr-2"></i> Descargar
             </a>
           </div>
-          <p v-else-if="estado === 'observado'" class="text-gray-500 italic">
-            {{ observacion }}
-          </p>
 
-          <span v-else class="text-gray-500 italic">
-            El documento aún no se ha cargado 
+          <p v-else-if="estado === 'observado'" class="text-gray-500 italic">{{ observacion }}</p>
+
+          <span v-else class="text-gray-500 italic">El documento aún no se ha cargado 
             <span v-if="estado === 'pendiente'"></span>
           </span>
 
           <span :class="`estado-estilo estado-${estado.toLowerCase().replace(' ', '-')}`">
-            {{ letraMayus(estado) }}
+            {{ formatearTexto(estado) }}
           </span>
         </div>
     </div>
   </div>
 </template>
   
-<script lang="ts">
-  import { defineComponent } from 'vue';
-  
-  export default defineComponent({
-    name: "DocumentoCard",
-    props: {
-      titulo: {
-        type: String,
-        required: true
-      },
-      estado: {
-        type: String,
-        required: true
-      },
-      observacion: {
-        type: String,
-        default: ""
-      },
-      id: {
-        type: String,
-        required: true
-      },
-      view: {
-        type: String,
-        required: true
-      },
-      download: {
-        type: String,
-        required: true
-      }
-    },
-    methods: {
-      letraMayus(text: string): string {
-        return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-      }
-    }
-  });
+<script lang="ts" setup>
+
+const props = defineProps({
+  titulo: {
+    type: String,
+    required: true,
+  },
+  estado: {
+    type: String,
+    required: true,
+  },
+  observacion: {
+    type: String,
+    default: '',
+  },
+  id: {
+    type: String,
+    required: true,
+  },
+  view: {
+    type: String,
+    required: true,
+  },
+  download: {
+    type: String,
+    required: true,
+  },
+});
+
+const formatearTexto = (text: string): string =>
+  text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+
 </script>
   
 <style scoped>
-  .estado-estilo {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-    border-radius: 0.375rem;
-    display: inline-block;
-  }
-  .estado-no-iniciado,
-  .estado-pendiente {
-    background-color: #8898aa;
-    color: #ffffff;
-  }
-  .estado-aprobado,
-  .estado-tramitado {
-    background-color: #38a169;
-    color: #ffffff;
-  }
-  .estado-observado {
-    background-color: #e79e38;
-    color: #ffffff;
-  }
-  .break-all {
-    word-break: break-all;
-  }
+.estado-estilo {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  display: inline-block;
+}
+.estado-no-iniciado,
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-aprobado,
+.estado-tramitado,
+.estado-emitido {
+  background-color: #38a169;
+  color: #ffffff;
+}
+.estado-observado {
+  background-color: #e79e38;
+  color: #ffffff;
+}
+.break-all {
+  word-break: break-all;
+}
 </style>

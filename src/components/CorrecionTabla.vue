@@ -1,33 +1,32 @@
 <template>
-  <table class="min-w-full bg-white border rounded-md shadow">
-    <thead class="min-w-full leading-normal">
-      <tr class="text-center text-azul bg-gray-300">
-        <th class="px-4 py-2 text-left tracking-wider">N° REVISIÓN</th>
-        <th class="px-4 py-2 text-left tracking-wider">FECHA</th>
-        <th class="px-4 py-2 tracking-wider">ACCIÓN</th>
-        <th class="px-4 py-2 tracking-wider">ESTADO</th>
+  <table class="w-full max-w-full bg-white border rounded-md shadow">
+    <thead>
+      <tr class="text-center text-azul bg-gray-300 truncate">
+        <th class="px-2 py-2 tracking-wider">N° REVISIÓN</th>
+        <th class="px-2 py-2 tracking-wider">FECHA</th>
+        <th class="px-2 py-2 tracking-wider">ACCIÓN</th>
+        <th class="px-2 py-2 tracking-wider">ESTADO</th>
       </tr>
     </thead>
     <tbody>
       <tr v-if="!revisiones.length">
-        <td colspan="4" class="px-4 py-6 text-gray-500">
+        <td colspan="4" class="px-4 py-6 text-gray-500  text-center align-middle">
           <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>Aún no hay revisiones realizadas por el jurado.
         </td>
       </tr>
       <tr v-else v-for="revision in revisiones" :key="revision.revision_id" class="text-center">
         <td class="px-4 py-2 text-base text-gray-600">
-          <p class="text-wrap w-28">{{ revision.numero_revision || 'Sin revisión' }}</p>
+          <p class="truncate">{{ revision.numero_revision || 'Sin revisión' }}</p>
         </td>
         <td class="px-4 py-2 text-base text-gray-600">
-          <p class="text-wrap w-40">{{ revision.fecha || 'Sin fecha' }}</p>
-        </td>
-        <td class="px-4 py-2 text-base">
+          <p class="truncate">{{ revision.fecha || 'Sin fecha' }}</p>
+        </td> 
+        <td class="px-4 py-4">
           <button
             :disabled="isRevisionDisabled(revision.estado) || loading[revision.revision_id]"
-            :class="[isRevisionDisabled(revision.estado) ? 'w-40 px-3 py-1 bg-gray-400 cursor-not-allowed' : 'bg-base', loading[revision.revision_id] ? 'bg-azul' : '']"
-            class="px-4 py-2 w-44 text-white rounded-md text-lg"
-            @click="solicitarRevision(revision.revision_id, 'pendiente')"
-          >
+            :class="[isRevisionDisabled(revision.estado) ? 'truncate px-4 py-2 bg-gray-400 cursor-not-allowed' : 'bg-base', loading[revision.revision_id] ? 'bg-azul' : '']"
+             class="px-4 py-1 w-44 text-white rounded-md text-lg"
+            @click="solicitarRevision(revision.revision_id, 'pendiente')">
             {{ loading[revision.revision_id] ? 'Enviando...' : 'Solicitar revisión' }}
           </button>
         </td>

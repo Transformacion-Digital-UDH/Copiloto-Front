@@ -7,7 +7,7 @@ import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Declaración de Apto para Sustentar";
@@ -167,7 +167,7 @@ onMounted(() => {
           </p>
           <!-- boton para solicitar apto para sustentar -->
           <div class="flex justify-center mt-2">
-            <ButtonS 
+            <ButtonRequest 
               label="Solicitar Oficio de Apto" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 

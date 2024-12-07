@@ -2,101 +2,43 @@
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
-
-// Estado de los trámites
-const tramites = ref([
-  { titulo: 'Trámite en el Sistema', estado: 'Pendiente' },
-  { titulo: 'Pago de Trámite', estado: 'Pendiente' },
-]);
+import CursoCoachCard from '@/components/CursoCoachCard.vue';
+import DocumentCurso from '@/components/DocumentCurso.vue';
+import ModalToolTip from '@/components/modalToolTip.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
+import Swal from 'sweetalert2';
+import router from '@/router';
+import { alertToast } from '@/functions';
 
 // Estado de la constancia de curso
-const constanciaCurso = ref({
-  titulo: '2. Constancia de Tu Coach UDH',
-  descripcion: 'Te falta llevar el curso de TCOACH, por favor haz click en llevar curso',
-  estado: 'Pendiente',
-  completado: false, // Indica si el curso ha sido completado
-  documentoUrl: '',  // URL para el certificado o documento del curso
-});
+// const constanciaCurso = ref({
+//   titulo: '2. Constancia de Tu Coach UDH',
+//   descripcion: 'Te falta llevar el curso de TCOACH, por favor haz click en llevar curso',
+//   estado: 'Pendiente',
+//   completado: false, // Indica si el curso ha sido completado
+//   documentoUrl: '',  // URL para el certificado o documento del curso
+// });
 
-// Estado de las observaciones de buenas prácticas
-const observaciones = ref([
-  { descripcion: 'Tienes observaciones', observacion: 'Malas_Practicas.xlsx', veces: 1, fecha: '20/09/2023', accion: 'Solicitar Revisión', estado: 'Pendiente' }
-]);
+// // Estado de las observaciones de buenas prácticas
+// const observaciones = ref([
+//   { descripcion: 'Tienes observaciones', observacion: 'Malas_Practicas.xlsx', veces: 1, fecha: '20/09/2023', accion: 'Solicitar Revisión', estado: 'Pendiente' }
+// ]);
 
-// Estado de la revisión de Turnitin
-const turnitinObservacion = ref([
-  { descripcion: 'Rechazado con porcentaje mínimo', observacion: 'turnitin.xlsx', veces: 1, fecha: '20/09/2023', accion: 'Revisar', estado: 'Rechazado' }
-]);
+// // Estado de la revisión de Turnitin
+// const turnitinObservacion = ref([
+//   { descripcion: 'Rechazado con porcentaje mínimo', observacion: 'turnitin.xlsx', veces: 1, fecha: '20/09/2023', accion: 'Revisar', estado: 'Rechazado' }
+// ]);
 
-// Estado de los documentos
-const documentos = ref([
-  { nombre: 'Constancia de originalidad', estado: 'Hecho', documentoUrl: 'resolucion_xxxxxx' }
-]);
+// // Estado de los documentos
+// const documentos = ref([
+//   { nombre: 'Constancia de originalidad', estado: 'Hecho', documentoUrl: 'resolucion_xxxxxx' }
+// ]);
 
-// Función para cambiar el estado de la solicitud de revisión
-function solicitarRevision() {
-  observaciones.value[0].estado = 'Hecho';
-  tramites.value[0].estado = 'Hecho'; // Trámite en el Sistema pasa a Hecho
-}
-
-// Función para iniciar el curso
-function llevarCurso() {
-  window.open('https://link.al.curso', '_blank');
-  setTimeout(() => {
-    constanciaCurso.value.completado = true;
-    constanciaCurso.value.estado = 'Hecho';
-    constanciaCurso.value.descripcion = 'Has completado el curso de TCOACH.';
-    constanciaCurso.value.documentoUrl = 'ruta/al/certificado.pdf'; // Actualizar con la URL real
-  }, 3000);
-}
-
-// Computed para habilitar el botón "Siguiente" solo si todos los trámites y documentos están en "Hecho"
-const puedeContinuar = computed(() => {
-  const tramitesHechos = tramites.value.every(tramite => tramite.estado === 'Hecho');
-  const documentosHechos = documentos.value.every(documento => documento.estado === 'Hecho');
-  return tramitesHechos && documentosHechos;
-});
-
-// Método para determinar la clase del estado basado en el estado del documento o solicitud
-function estadoClase(estado: string) {
-  switch (estado) {
-    case 'Hecho': return 'bg-green-500 text-white';
-    case 'Pendiente': return 'bg-gray-400 text-white';
-    case 'Rechazado': return 'bg-red-500 text-white';
-    default: return '';
-  }
-}
-
-/*************************************** INTEGRACION CON EL BACKEND ************************************************ */
-const authStore = useAuthStore();
-const load = ref(false);
-const certificado = ref<Certificado | null>(null);
-
-interface Certificado {
-  doc_name: string;
-  doc_estado: string;
-  doc_ver?: string;
-}
-
-const obtenerCertificadoEstudiante = async () => {
-  load.value = true;
-  const student_id = authStore.id;
-  try {
-    const response = await axios.get(`api/estudiante/get-certificado-buenas-practicas/${student_id}`);
-    console.log("Mostrando lo recibido: ", response);
-    
-    certificado.value = response.data;
-
-  } catch (error) {
-    console.log("Error al obtener certificado", error);
-  } finally {
-    load.value = false;
-  }
-}
-
-onMounted(() => {
-  obtenerCertificadoEstudiante();
-});
+// // Función para cambiar el estado de la solicitud de revisión
+// function solicitarRevision() {
+//   observaciones.value[0].estado = 'Hecho';
+//   //tramites.value[0].estado = 'Hecho'; Trámite en el Sistema pasa a Hecho
+// }
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Conformidad por Integridad VRI";
@@ -113,181 +55,332 @@ onMounted(() => {
   typeWriter();
 });
 
+const handleNextButtonClick = () => {
+  if (isNextButtonDisabled.value) {
+    Swal.fire({
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
+    });
+  } else {
+    goToNextPage();
+  }
+};
+
+const goToNextPage = () => {
+  router.push("/estudiante/aprobacion-informe");
+};
+
+const isNextButtonDisabled = computed(() => {
+  return !obtener.value?.filtros.every(filtro => filtro.fil_estado === 'aprobado');
+});
+
+/*************************************** INTEGRACION CON EL BACKEND ************************************************ */
+const authStore = useAuthStore();
+const load = ref(false);
+const solicitudEstado = ref<string>("");
+const obtener = ref<Estudiante | null>(null);
+const isLoading = ref(false);
+
+const formatearTexto = (text: string): string =>
+  text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+
+const isAprobacionDisabled = computed(() => {
+  const primerFiltro = obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'primer filtro');
+  return solicitudEstado.value === "pendiente" || 
+         obtener.value?.tu_coach.doc_estado !== "aprobado" || 
+         primerFiltro?.fil_estado !== "no iniciado";
+});
+
+const primerFiltro = computed(() => {
+  return obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'primer filtro') || { fil_estado: 'no iniciado', fil_ruta: '' };
+});
+
+const segundoFiltro = computed(() => {
+  return obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'segundo filtro') || { fil_estado: 'no iniciado', fil_ruta: '' };
+});
+
+const tercerFiltro = computed(() => {
+  return obtener.value?.filtros.find(filtro => filtro.fil_nombre === 'tercer filtro') || { fil_estado: 'no iniciado', fil_ruta: '' };
+});
+
+interface TuCoach {
+  doc_name: string;
+  doc_estado: string;
+  doc_ver: string;
+}
+
+interface Filtro {
+  fil_nombre: string;
+  fil_estado: string;
+  fil_ruta: string;
+}
+
+interface Estudiante {
+  tu_coach: TuCoach;
+  filtros: Filtro[];
+}
+
+const obtenerEstudianteConformidadVRI = async () => {
+  load.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(`/api/estudiante/info-filtro/${student_id}`);
+    console.log("Mostrando lo recibido: ", response);
+    
+    obtener.value = response.data;
+
+  } catch (error) {
+    console.log("Error al obtener datos", error);
+  } finally {
+    load.value = false;
+  }
+};
+
+// funcion de disparador para solicitar aprob informe
+const solicitarConformidadporVRI = async () => {
+  if (isAprobacionDisabled.value || isLoading.value) return;
+  isLoading.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(`/api/vri/crear-primer-filtro/${student_id}`);
+
+    if (response.data.estado) {
+      solicitudEstado.value = "pendiente";
+      alertToast("Solicitud enviada. Espere las indicaciones correspondientes.", "Éxito", "success");
+      await solicitarConformidadporVRI();
+    }
+
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.mensaje) {
+      const mensaje1 = error.response.data.mensaje;
+      alertToast(mensaje1, "Advertencia", "warning");
+    } else {
+      alertToast("Error en la solicitud.", "Error", "error");
+    }
+  } finally {
+    isLoading.value = false; 
+  }
+};
+
+onMounted(() => {
+  obtenerEstudianteConformidadVRI();
+});
+
 </script>
 
 <template>
-  <div class="flex-1 p-4 sm:p-10 bg-gray-100 font-roboto">
-    <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado2 }}</h3>
-
-    <!-- Información del Título de Tesis -->
-    <div class="bg-baseClarito text-white rounded-lg shadow-lg p-4 sm:p-6  mb-4">
-      <p class="text-base sm:text-lg mb-2 text-white"><strong>Título de Tesis:</strong> Implementación de un algoritmo xxxxxxxxxxxxxxxxxxxxxxx</p>
-      <p class="text-base sm:text-lg break-words text-white">
-        <strong>Link de informe final:</strong> 
-        <a href="https://docs.google.com/document/" class="text-blue-500 underline">https://docs.google.com/document/</a>
-      </p>
-    </div>
-
-    <div class="space-y-8 sm:space-y-10">
-      <!-- Punto 1: Observaciones -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <h4 class="text-2xl font-medium text-black mb-4">1. Observaciones</h4>
-        <div class="flex items-center justify-between">
-          <p class="text-gray-500">Haz click en el botón de Solicitar Revision para iniciar</p>
-          <span :class="estadoClase(observaciones[0].estado)" class="estado-estilo mt-2 sm:mt-0 ml-4">{{ observaciones[0].estado }}</span>
-        </div>
-        <div class="flex justify-center mt-4">
-          <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarRevision">Solicitar revisión</button>
-        </div>
+  <template v-if="load">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
-
-      <!-- Punto 2: Constancia de Curso -->
-      <div class="bg-white rounded-lg shadow-lg p-6">
-        <div class="flex items-center justify-between">
-          <h2 class="text-xl sm:text-2xl font-medium text-black">{{ constanciaCurso.titulo }}</h2>
-          <span :class="estadoClase(constanciaCurso.estado)" class="estado-estilo mt-2 sm:mt-0 ml-4">{{ constanciaCurso.estado }}</span>
-        </div>
-        <div class="bg-gray-100 p-4 border border-gray-300 rounded-md flex flex-col sm:flex-row sm:items-center sm:justify-between mt-4">
-          <p class="text-gray-900">{{ constanciaCurso.descripcion }}</p>
-          <div class="flex items-center space-x-4 mt-4 sm:mt-0">
-            <!-- Mostrar botón "Llevar Curso" si no ha completado el curso -->
-            <button v-if="!constanciaCurso.completado" @click="llevarCurso" class="px-4 py-2 bg-base text-white rounded-md">
-              Llevar Curso
-            </button>
-            <!-- Mostrar íconos si ha completado el curso -->
-            <div v-else class="flex items-center space-x-4">
-              <!-- Ícono de verificado -->
-              <div class="flex items-center space-x-2">
-                <svg fill="#000000" viewBox="0 0 24 24" id="check-mark-circle" xmlns="http://www.w3.org/2000/svg" class="w-6 h-6">
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                  <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                  <g id="SVGRepo_iconCarrier">
-                    <polyline points="8 11.5 11 14.5 16 9.5" style="fill: none; stroke: #2ca9bc; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></polyline>
-                    <rect x="3" y="3" width="18" height="18" rx="9" style="fill: none; stroke: #000000; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></rect>
-                  </g>
-                </svg>
-                <p>Verificado</p>
-              </div>
-
-              <!-- Botón "Ver" -->
-              <a :href="constanciaCurso.documentoUrl" target="_blank" class="px-3 py-1 bg-base text-white rounded-md flex items-center space-x-2">
-                <i class="fas fa-eye"></i>
-                <span>Ver</span>
-              </a>
-            </div>
+      <div class="mt-6 space-y-10">
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5">
+            <h2 class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200 mb-20"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-      </div>
-
-      <!-- Punto 3: Revisión de Buenas Prácticas -->
-      <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <h2 class="text-xl sm:text-2xl font-medium text-black mb-4">3. Revisión de Buenas Prácticas</h2>
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white border border-gray-200 rounded-md">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">OBSERVACIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISION</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA OBSERVACIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(obs, index) in observaciones" :key="index" class="border-b">
-                <td class="px-4 py-2">{{ obs.descripcion }}</td>
-                <td class="px-4 py-2 text-blue-500 underline">{{ obs.observacion }}</td>
-                <td class="px-4 py-2">{{ obs.veces }}</td>
-                <td class="px-4 py-2">{{ obs.fecha }}</td>
-                <td class="px-4 py-2">
-                  <button class="px-3 py-1 bg-base text-white rounded-md">{{ obs.accion }}</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Punto 4: Revisión de Turnitin -->
-      <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <h2 class="text-xl sm:text-2xl font-medium text-black mb-4">4. Revisión de Turnitin</h2>
-        <div class="overflow-x-auto">
-          <table class="min-w-full bg-white border border-gray-200 rounded-md">
-            <thead>
-              <tr>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">OBSERVACIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISION</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA OBSERVACIÓN</th>
-                <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(obs, index) in turnitinObservacion" :key="index" class="border-b">
-                <td class="px-4 py-2">{{ obs.descripcion }}</td>
-                <td class="px-4 py-2 text-blue-500 underline">{{ obs.observacion }}</td>
-                <td class="px-4 py-2">{{ obs.veces }}</td>
-                <td class="px-4 py-2">{{ obs.fecha }}</td>
-                <td class="px-4 py-2">
-                  <button class="px-3 py-1 bg-base text-white rounded-md">{{ obs.accion }}</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Punto 5: Documentos -->
-      <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
-        <div class="flex items-center">
-          <h2 class="text-xl sm:text-2xl font-medium text-black">5. Documentos</h2>
-          <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4" />
-        </div>
-        <br>
-        <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-          <div class="flex flex-col md:flex-row justify-between md:items-center">
-            <span class="flex-1">{{ documentos[0].nombre }}</span>
-            <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-              <div v-if="documentos[0].estado === 'Hecho'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                <!-- Botón de Ver -->
-                <a :href="documentos[0].documentoUrl" target="_blank"
-                  class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                  <i class="fas fa-eye mr-2"></i> Ver
-                </a>
-                <!-- Botón de Descargar -->
-                <a :href="documentos[0].documentoUrl" download
-                  class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                  <i class="fas fa-download mr-2"></i> Descargar
-                </a>
-              </div>
-              <span v-else-if="documentos[0].estado === 'Pendiente'" class="text-gray-500 italic">El documento aún no se ha cargado</span>
-              <span :class="estadoClase(documentos[0].estado)" class="estado-estilo ml-4">{{ documentos[0].estado }}</span>
-            </div>
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
+          <div class="block space-y-4">
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
+            <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5 mb-3">
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+          </div>
+        </div>
+        <div class="flex justify-between">
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+        </div>
       </div>
-
-      <!-- Botón de siguiente -->
-      <div class="flex justify-end mt-8">
-        <button :disabled="!puedeContinuar" :class="puedeContinuar ? 'bg-base hover:bg-green-700' : 'bg-gray-300 cursor-not-allowed'" class="px-4 py-2 text-white rounded-md">
-          Siguiente
-        </button>
-      </div>
-      
     </div>
-  </div>
+  </template>
+
+  <template v-else>
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+      <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado2 }}</h3>
+      <div class="mt-6 space-y-10">
+        <!-- constancia de tucoach -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="relative flex items-center">
+            <h4 class="text-2xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
+          </div>
+
+          <p class="text-gray-500 mt-1 text-lg">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
+          <p class="text-gray-500 mt-1 text-lg">Haz clic en
+            <strong class="text-lg font-medium text-green-500">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento.
+          </p>
+          
+          <!-- documento de buuenas practicas -->
+          <div class="mt-4 space-y-4">
+            <CursoCoachCard 
+            :titulo="'Documento emitido por TUCOACH'"
+            :estado="obtener?.tu_coach.doc_estado || ''"
+            :view="obtener?.tu_coach.doc_ver"/>
+          </div>
+        </div>
+
+        <!-- solicitar conformidad por VRI -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="relative flex items-center">
+            <h2 class="text-2xl font-medium text-black">2. Solicitar conformidad de VRI</h2>      
+          </div>
+          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar conformidad"</strong> para enviar tu solicitud.
+          </p>
+          <!-- boton para solicitar aprobacion informe final -->
+          <div class="flex justify-center mt-2">
+              <ButtonRequest 
+                label="Solicitar conformidad" 
+                :loading="isLoading" 
+                :disabled="isAprobacionDisabled" 
+                @click="solicitarConformidadporVRI" />
+            </div>
+        </div>
+
+        <!-- Punto 3: Revisión de Buenas Prácticas -->
+        <!-- <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+          <h2 class="text-xl sm:text-2xl font-medium text-black mb-4">3. Revisión de Buenas Prácticas</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded-md">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">OBSERVACIÓN</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISION</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA OBSERVACIÓN</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(obs, index) in observaciones" :key="index" class="border-b">
+                  <td class="px-4 py-2">{{ obs.descripcion }}</td>
+                  <td class="px-4 py-2 text-blue-500 underline">{{ obs.observacion }}</td>
+                  <td class="px-4 py-2">{{ obs.veces }}</td>
+                  <td class="px-4 py-2">{{ obs.fecha }}</td>
+                  <td class="px-4 py-2">
+                    <button class="px-3 py-1 bg-base text-white rounded-md">{{ obs.accion }}</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> -->
+
+        <!-- Punto 4: Revisión de Turnitin -->
+        <!-- <div class="bg-white rounded-lg shadow-lg p-4 sm:p-6">
+          <h2 class="text-xl sm:text-2xl font-medium text-black mb-4">4. Revisión de Turnitin</h2>
+          <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-200 rounded-md">
+              <thead>
+                <tr>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">DESCRIPCIÓN</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">OBSERVACIÓN</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">N° REVISION</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">FECHA OBSERVACIÓN</th>
+                  <th class="px-4 py-2 text-left text-gray-600 border-b">ACCIÓN</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(obs, index) in turnitinObservacion" :key="index" class="border-b">
+                  <td class="px-4 py-2">{{ obs.descripcion }}</td>
+                  <td class="px-4 py-2 text-blue-500 underline">{{ obs.observacion }}</td>
+                  <td class="px-4 py-2">{{ obs.veces }}</td>
+                  <td class="px-4 py-2">{{ obs.fecha }}</td>
+                  <td class="px-4 py-2">
+                    <button class="px-3 py-1 bg-base text-white rounded-md">{{ obs.accion }}</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> -->
+        
+        <!-- documentos de cada filtro del VRI -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">3. Documentos de cada filtro del VRI</h2>
+          </div>
+
+          <div class="mt-4 space-y-4">
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm bg-gray-50">Primer Filtro - VRI.</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
+                  <span v-else class="text-gray-500 italic">Solicitud en espera</span>
+                  <span :class="`estado-estilo estado-${primerFiltro.fil_estado.toLowerCase().replace(' ', '-')}`">
+                    {{ formatearTexto(primerFiltro.fil_estado) }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-4 space-y-4">
+            <!-- segundo filtro -->
+            <DocumentCurso
+              :titulo="'Segundo Filtro - VRI.'"
+              :estado="segundoFiltro.fil_estado"
+              :view="segundoFiltro.fil_ruta"/>
+
+            <!-- tercer filtro -->
+            <DocumentCurso
+              :titulo="'Tercer Filtro - VRI.'"
+              :estado="tercerFiltro.fil_estado"
+              :view="tercerFiltro.fil_ruta"/>
+          </div>
+        </div>
+
+        <!-- Botones siguiente y anteerior -->
+        <div class="flex justify-between">
+          <button 
+            @click="$router.push('/estudiante/conformidad-informe-jurado')" 
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
+          </button>
+          <button
+            @click="handleNextButtonClick"
+            :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled 
+            ? 'bg-gray-300 cursor-not-allowed' 
+            : 'bg-green-500 hover:bg-green-600',]">Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
 </template>
 
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
-  font-weight: 400;
   border-radius: 0.375rem;
   display: inline-block;
 }
-.break-all {
-  word-break: break-all;
+.estado-no-iniciado,
+.estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-aprobado {
+  background-color: #38a169;
+  color: #ffffff;
+}
+.text-center {
+  text-align: center;
+  padding: 1rem;
 }
 </style>
-

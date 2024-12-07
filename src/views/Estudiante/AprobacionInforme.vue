@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
 import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Aprobación del Informe Final";
@@ -24,11 +24,6 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
-
-const mostrarModalAprobar = ref(false); 
-
-// Estado del trámite de aprobación
-const tramiteAprobacion = ref({ titulo: 'Solicitar Aprobación' });
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -85,7 +80,6 @@ const obtenerDatosEstudiante = async () => {
   try {
     const response = await axios.get(`/api/estudiante/get-info-aprobar/informe/${student_id}`);
     // console.log("Mostrando lo recibido", response.data);
-
     obtener.value = response.data;
 
   } catch (error: any) {
@@ -127,9 +121,9 @@ onMounted(() =>{
 </script>
 <template>
   <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
+        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br><br>
       </div>
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-md shadow-lg p-6 h-auto -mt-6 animate-pulse duration-200">
@@ -170,8 +164,8 @@ onMounted(() =>{
           </p>
           <!-- boton para solicitar aprobacion informe final -->
           <div class="flex justify-center mt-2">
-            <ButtonS 
-              label="Solicitar Aprobación" 
+            <ButtonRequest 
+              label="Solicitar aprobación" 
               :loading="isLoading" 
               :disabled="isAprobacionDisabled" 
               @click="solicitarAprobacionInforme" />
@@ -183,13 +177,13 @@ onMounted(() =>{
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del informe final </h2>
           </div>
-          <!-- oficio de PAISI -->
+          <!-- oficio de programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+              titulo="Oficio emitido por el Programa Académico."
               :estado="obtener?.oficio_estado || ''"
               :id="obtener?.oficio_id ?? ''"
-              :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría PAISI'"
+              :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
               :view="VIEW_AINFORME"
               :download="DOWNLOAD_AINFROME || ''"/>
           </div>
@@ -197,7 +191,7 @@ onMounted(() =>{
           <!-- resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Resolución de Facultad de Ingeniería de Sistemas."
+              titulo="Resolución emitido por la Facultad."
               :estado="obtener?.resolucion_estado || ''"
               :id="obtener?.resolucion_id ?? ''"
               :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
@@ -209,7 +203,7 @@ onMounted(() =>{
         <!-- Botones siguiente y anteerior -->
         <div class="flex justify-between">
           <button 
-            @click="$router.push('/estudiante/conformidad-informe-jurado')" 
+            @click="$router.push('/estudiante/conformidad-vri')" 
             class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
           </button>
           <button
