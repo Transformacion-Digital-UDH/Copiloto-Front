@@ -18,10 +18,10 @@ export const useAuthStore = defineStore("auth", () => {
   const roleRoutes: Record<string, string> = {
     estudiante: "/estudiante",
     asesor: "/asesor",
-    paisi: "/paisi",
+    pa: "/pa",
     facultad: "/facultad",
-    vri: "vri",
-    turnitin: "turnitin",
+    vri: "vri-turnitin",
+    turnitin: "vri-turnitin",
     admin: "/admin",
   };
 

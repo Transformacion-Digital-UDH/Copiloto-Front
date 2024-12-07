@@ -9,7 +9,7 @@ import ModalToolTip from '@/components/modalToolTip.vue';
 import JuradoCard from '@/components/JuradoCard.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import FechayHoraCard from '@/components/FechayHoraCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Fecha y Hora para Sustentación";
@@ -202,7 +202,7 @@ onMounted(() => {
           </p>
           <!-- boton de solicitud fecha y hora --> 
           <div class="flex justify-center mt-2">
-            <ButtonS 
+            <ButtonRequest 
               label="Solicitar Fecha y Hora" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 

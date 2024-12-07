@@ -117,7 +117,7 @@ export default defineComponent({
         );
         allSections[2].submenus.push(
           { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
-          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurado', path: '/estudiante/designacion-informe-jurado' },
+          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurados', path: '/estudiante/designacion-informe-jurado' },
           { name: 'Conformidad del informe final por los jurados', label: 'Conformidad del Informe Final', path: '/estudiante/conformidad-informe-jurado' },
           { name: 'Conformidad por integridad VRI', label: 'Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' },
           { name: 'Aprobacion del informe final', label: 'Aprobación del Informe Final', path: '/estudiante/aprobacion-informe' }
@@ -171,21 +171,21 @@ export default defineComponent({
           section.name === 'InformeFinal' ||
           section.name === 'Sustentacion'
         );
-      } else if (role.value === 'paisi') {
-        // Paisi solo tiene Proyecto Tesis, Informe Final y Sustentación
+      } else if (role.value === 'pa') {
+        // pa solo tiene Proyecto Tesis, Informe Final y Sustentación
         allSections[0].submenus.push(
-          { name: 'Designar asesor', label: 'Designar Asesor', path: '/paisi/designar-asesor' },
-          { name: 'Designar jurados', label: 'Designar Jurados', path: '/paisi/designar-jurado' },
-          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/paisi/aprobar-proyecto' }
+          { name: 'Designar asesor', label: 'Designar Asesor', path: '/pa/designar-asesor' },
+          { name: 'Designar jurados', label: 'Designar Jurados', path: '/pa/designar-jurado' },
+          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/pa/aprobar-proyecto' }
         );
         allSections[2].submenus.push(
-          { name: 'Link de informe', label: 'Link de Informe', path: '/paisi/link-informe' },
-          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/paisi/designar-jurado-informe' },
-          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/paisi/aprobar-informe' },
+          { name: 'Link de informe', label: 'Link de Informe', path: '/pa/link-informe' },
+          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/pa/designar-jurado-informe' },
+          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/pa/aprobar-informe' },
         );
         allSections[3].submenus.push(
-          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/paisi/apto-sustentacion' },
-          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/paisi/designar-fecha-hora' },
+          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/pa/apto-sustentacion' },
+          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/pa/designar-fecha-hora' },
         );
         // Filtramos las secciones de Proyecto, Informe, y Sustentación
         sections.value = allSections.filter(section =>
@@ -293,6 +293,11 @@ export default defineComponent({
       isActive,
       image_profile
     };
+  },
+  methods:{
+    // mayuscula la primera letra
+    formatearTexto(text: string): string {
+      return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase()}
   }
 });
 </script>
@@ -316,7 +321,7 @@ export default defineComponent({
         </div>
         <div class="w-full text-center max-w-44">
           <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>
-          <p class="text-base text-green-600 font-semibold break-words">{{ role }}</p>
+          <p class="text-lg text-[#2EBAA1] tracking-wide">{{ formatearTexto(role) }}</p>
         </div>
       </div>
 
