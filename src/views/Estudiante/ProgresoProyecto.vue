@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
@@ -30,6 +30,11 @@ const load = ref(false);
 // Array de documentos con URLs de "Ver" y "Descargar"
 const documents = ref<Document[]>([]);
 const router = useRouter();
+
+// computed para bloquear boton mientras no tiene documetnos
+const isButtonDisabled = computed (() => {
+  return documents.value.length === 0;
+})
 
 const goToConformidadInformeAsesor = () => {
   router.push({ name: 'ConformidadInformeAsesor' });
@@ -102,7 +107,7 @@ const fetchThesisInfo = async () => {
       },
     ];
   } catch (error) {
-    console.error("Error al obtener la información de la tesis:", error);
+    console.error("Error al obtener la información de los documentos:", error);
   } finally {
     load.value = false;
   }
@@ -162,7 +167,7 @@ onMounted(() => {
             <div class="relative grid grid-cols-4 gap-4 sm:gap-16 lg:gap-24 xl:gap-16 mb-8">
               <div class="flex flex-col items-center">
                 <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xl font-bold">1</div>
-                <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Tesis</span>
+                <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Investigación</span>
               </div>
               <div class="flex flex-col items-center">
                 <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xl font-bold">2</div>
@@ -192,7 +197,10 @@ onMounted(() => {
             </div>
             <!-- boton para ir al siguiente paso -->
             <div class="flex justify-center gap-6">
-              <button class="px-4 py-2 md:px-8 md:py-4 bg-base text-white rounded-lg hover:bg-baseClarito transition text-lg md:text-xl"
+              <button 
+                class="px-6 py-3 w-64 bg-base text-white rounded-lg transition text-lg"
+                :disabled="documents.length === 0"
+                :class="documents.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul'"
                 @click="goToConformidadInformeAsesor">Ir a Informe Final
               </button>
             </div>
@@ -201,7 +209,7 @@ onMounted(() => {
         
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">Documentos de Proyecto de Tesis</h2>
+            <h2 class="text-2xl font-medium text-black">Documentos de Proyecto de Investigación</h2>
           </div>
           <div class="overflow-x-auto mt-4">
             <DocumentTabla 
