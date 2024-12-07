@@ -9,22 +9,11 @@ import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import JuradoTabla from '@/components/JuradoTabla.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Jurados para el Informe Final";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-/******************************************************** */
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Designación de Jurados para el Informe Final");
+onMounted(typeWriter);
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -181,7 +170,7 @@ onMounted(() => {
   </template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -245,7 +234,7 @@ onMounted(() => {
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+              titulo="Oficio emitido por el Programa Académico."
               :estado="obtener?.oficio.of_estado || ''"
               :id="obtener?.oficio.of_id ?? ''"
               :view="VIEW_OFINFORME"

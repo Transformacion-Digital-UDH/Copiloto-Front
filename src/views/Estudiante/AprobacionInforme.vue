@@ -9,21 +9,11 @@ import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del Informe Final";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Aprobación del Informe Final");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -151,7 +141,7 @@ onMounted(() =>{
   
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- solicitar aprobacion de informe final -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
