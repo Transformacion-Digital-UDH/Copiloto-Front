@@ -22,7 +22,7 @@ const logout = async () => {
   await axios.post("/api/logout").then(() => {
     authStore.handleLogout();
     googleLogout();
-  })
+  });
 }
 
 onMounted(() => {
