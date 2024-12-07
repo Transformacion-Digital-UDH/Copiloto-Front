@@ -53,7 +53,7 @@ export default defineComponent({
       const allSections: Section[] = [
         {
           name: 'ProyectoDeTesis',
-          label: 'Proyecto Tesis',
+          label: 'Proyecto de Investigación',
           isOpen: false,
           icon: markRaw(proyecto),
           submenus: [] // Se llenará según el rol
@@ -113,11 +113,11 @@ export default defineComponent({
           { name: 'Aprobacion del proyecto', label: 'Aprobación del Proyecto', path: '/estudiante/aprobacion-proyecto' }
         );
         allSections[1].submenus.push(
-          { name: 'Progreso', label: 'Progreso', path: '/estudiante/progreso' }
+          { name: 'Progreso', label: 'Progreso de la Investigación', path: '/estudiante/progreso' }
         );
         allSections[2].submenus.push(
           { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
-          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurados', path: '/estudiante/designacion-informe-jurado' },
+          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurado', path: '/estudiante/designacion-informe-jurado' },
           { name: 'Conformidad del informe final por los jurados', label: 'Conformidad del Informe Final', path: '/estudiante/conformidad-informe-jurado' },
           { name: 'Conformidad por integridad VRI', label: 'Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' },
           { name: 'Aprobacion del informe final', label: 'Aprobación del Informe Final', path: '/estudiante/aprobacion-informe' }
@@ -171,21 +171,21 @@ export default defineComponent({
           section.name === 'InformeFinal' ||
           section.name === 'Sustentacion'
         );
-      } else if (role.value === 'programa') {
+      } else if (role.value === 'pa') {
         // pa solo tiene Proyecto Tesis, Informe Final y Sustentación
         allSections[0].submenus.push(
-          { name: 'Designar asesor', label: 'Designar Asesor', path: '/programa/designar-asesor' },
-          { name: 'Designar jurados', label: 'Designar Jurados', path: '/programa/designar-jurado' },
-          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/programa/aprobar-proyecto' }
+          { name: 'Designar asesor', label: 'Designar Asesor', path: '/pa/designar-asesor' },
+          { name: 'Designar jurados', label: 'Designar Jurados', path: '/pa/designar-jurado' },
+          { name: 'Aprobar proyecto', label: 'Aprobar Proyecto', path: '/pa/aprobar-proyecto' }
         );
         allSections[2].submenus.push(
-          { name: 'Link de informe', label: 'Link de Informe', path: '/programa/link-informe' },
-          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/programa/designar-jurado-informe' },
-          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/programa/aprobar-informe' },
+          { name: 'Link de informe', label: 'Link de Informe', path: '/pa/link-informe' },
+          { name: 'Designar jurados informe', label: 'Designar Jurados Informe', path: '/pa/designar-jurado-informe' },
+          { name: 'Aprobar informe', label: 'Aprobar Informe', path: '/pa/aprobar-informe' },
         );
         allSections[3].submenus.push(
-          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/programa/apto-sustentacion' },
-          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/programa/designar-fecha-hora' },
+          { name: 'AptoParaSustentar', label: 'Apto para Sustentar', path: '/pa/apto-sustentacion' },
+          { name: 'DesignarFechaHora', label: 'Designar Fecha y Hora', path: '/pa/designar-fecha-hora' },
         );
         // Filtramos las secciones de Proyecto, Informe, y Sustentación
         sections.value = allSections.filter(section =>

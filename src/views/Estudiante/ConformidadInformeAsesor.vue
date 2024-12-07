@@ -72,7 +72,6 @@ const obtenerDatosEstudiante = async () => {
   try {
     const response = await axios.get(`/api/estudiante/info-conf-asesor/informe/${student_id}`);
     // console.log("Mostrando lo recibido", response);
-
     obtener.value = response.data;
 
   } catch (error) {
@@ -190,7 +189,7 @@ onMounted(() => {
           <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarLink">Solicitar link</button>
         </div>
       </div> -->
-      <div class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
+      <div  class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
         <div class="space-y-4 relative max-w-[820px] w-full mx-auto">
           <div class="grid grid-cols-1 gap-6">
             <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
@@ -263,17 +262,17 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Sección 4: Informe de conformidad de observaciones -->
+      <!-- informe de conformidad de observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documento de conformidad del informe final por el asesor</h2>
+            <h2 class="text-2xl font-medium text-black">3. Documento de conformidad del informe final</h2>
             <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
         </div>
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad de observaciones por el asesor."
+            titulo="Acta de conformidad del informe final - por el asesor"
             :estado="['aprobado'].includes(obtener?.revision?.rev_estado ?? '') ? obtener?.revision?.rev_estado ?? '' : ''"
             :id="obtener?.revision?.rev_id ?? ''"
             :view="VIEW_CPA"
@@ -284,9 +283,9 @@ onMounted(() => {
       <!--Botones siguiente y anteerior-->
       <div class="flex justify-between">
         <button 
-            @click="$router.push('/estudiante/progreso')"
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
-          </button>
+          @click="$router.push('/estudiante/progreso')"
+          class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
+        </button>
         <button
           @click="handleNextButtonClick"
           :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled
@@ -310,19 +309,5 @@ onMounted(() => {
 .text-center {
   text-align: center;
   padding: 1rem;
-}
-.estado-no-iniciado,
-.estado-pendiente {
-  background-color: #8898aa;
-  color: #ffffff;
-}
-.estado-tramitado,
-.estado-aprobado {
-  background-color: #48bb78;
-  color: #ffffff;
-}
-.estado-observado {
-  background-color: #e79e38;
-  color: #ffffff;
 }
 </style>
