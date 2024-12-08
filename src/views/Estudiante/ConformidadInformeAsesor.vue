@@ -9,32 +9,14 @@ import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import CorrecionAsesor from '@/components/CorrecionAsesor.vue';
+import NavigationButton from '@/components/NavigationButton.vue';
+import SkeletonConformidadesAsesor from '@/components/SkeletonConformidadesAsesor.vue';
+import InfoCardConformidad from '@/components/InfoCardConformidad.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Conformidad de Informe Final por Asesor");
 onMounted(typeWriter);
-
-const handleNextButtonClick = () => {
-  if (isNextButtonDisabled.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Pasos incompletos",
-      text: "Por favor, completa todos los pasos antes de continuar.",
-      confirmButtonText: "OK",
-    });
-  } else {
-    goToNextPage();
-  }
-};
-
-const goToNextPage = () => {
-  router.push("/estudiante/designacion-informe-jurado");
-};
-
-const isNextButtonDisabled = computed(() => {
-  return obtener.value?.revision?.rev_estado !== 'aprobado';
-});
 
 /****************************** INTEGRACION CON EL BACKEND *********************************** */
 const authStore = useAuthStore();
@@ -72,7 +54,6 @@ const obtenerDatosEstudiante = async () => {
   try {
     const response = await axios.get(`/api/estudiante/info-conf-asesor/informe/${student_id}`);
     // console.log("Mostrando lo recibido", response);
-
     obtener.value = response.data;
 
   } catch (error) {
@@ -132,48 +113,7 @@ onMounted(() => {
 
 </script>
 <template>
-  <template v-if="load">
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
-      </div>
-      <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-md p-6 space-y-4">
-          <div class="grid grid-cols-1 gap-6">
-            <div class="bg-gray-200 rounded-md max-w-[820px] w-full mx-auto h-36 p-4 skeleton-loader duration-200"></div>
-          </div>
-          <div class="bg-gray-200 h-36 rounded-md max-w-[820px] w-full mx-auto skeleton-loader duration-200"></div>
-          <div class="text-center mt-6">
-            <div class="h-10 bg-gray-200 rounded w-44 mx-auto skeleton-loader duration-200"></div>
-          </div><p class="h-4 mt-6"></p>
-        </div>
-        <div class="bg-white rounded-md p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-9"></h2>
-            <div class="h-7">
-              <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white rounded-md p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-8 w-2/4 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-24 w-full rounded-md skeleton-loader duration-200"></h2>
-          </div>
-        </div>
-        <div class="bg-white rounded-md p-6 h-auto mt-4 animate-pulse duration-200">
-          <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-8 w-44 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
-          </div>
-        </div>
-        <div class="flex justify-between">
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
-        </div>
-      </div>
-    </div>
-  </template>
+  <template v-if="load"><SkeletonConformidadesAsesor /></template>
   <template v-else>
   <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
@@ -190,36 +130,13 @@ onMounted(() => {
           <button class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-600" @click="solicitarLink">Solicitar link</button>
         </div>
       </div> -->
-      <div class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
-        <div class="space-y-4 relative max-w-[820px] w-full mx-auto">
-          <div class="grid grid-cols-1 gap-6">
-            <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
-              <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-              <p class="font-bold text-xl text-azul">Asesor</p>
-              <p class="text-gray-600 text-center uppercase">
-                {{ obtener?.asesor || 'Asesor no asignado' }}
-              </p>
-            </div>
-          </div>
-          <div class="bg-white rounded-lg p-6 shadow-lg max-w-[820px] w-full mx-auto">
-            <p class="max-full text-xm text-gray-600 uppercase text-center">
-              {{ obtener?.titulo || 'Título no asignado' }}
-            </p>
-          </div>
-          <!-- enlace del informe final -->
-          <div  v-if="obtener?.['link-informe']" class="text-center mt-6">
-            <a
-              :href="obtener?.['link-informe']"
-              target="_blank"
-              class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <i class="fas fa-external-link-alt"></i> Abrir proyecto
-            </a>
-          </div>
-          <p class="text-sm text-gray-600 text-center">
-            Asegúrate de corregir y actualizar tu información en Google Docs antes de hacer clic en "Solicitar revisión".
-          </p>
-        </div>
-      </div>
+
+      <!-- Informacion de asesor y titulo con la tesis -->
+      <InfoCardConformidad 
+        :data="{
+          asesor: obtener?.asesor,
+          titulo: obtener?.titulo,
+          link: obtener?.['link-informe']}"/>
 
       <!-- solicitar correcion al asesor IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -263,17 +180,17 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- Sección 4: Informe de conformidad de observaciones -->
+      <!-- informe de conformidad de observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documento de conformidad del informe final por el asesor</h2>
+            <h2 class="text-2xl font-medium text-black">3. Documento de conformidad del informe final</h2>
             <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
         </div>
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad de observaciones por el asesor."
+            titulo="Acta de conformidad del informe final - por el asesor"
             :estado="['aprobado'].includes(obtener?.revision?.rev_estado ?? '') ? obtener?.revision?.rev_estado ?? '' : ''"
             :id="obtener?.revision?.rev_id ?? ''"
             :view="VIEW_CPA"
@@ -282,21 +199,14 @@ onMounted(() => {
       </div>
 
       <!--Botones siguiente y anteerior-->
-      <div class="flex justify-between">
-        <button 
-            @click="$router.push('/estudiante/progreso')"
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
-          </button>
-        <button
-          @click="handleNextButtonClick"
-          :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled
-          ? 'bg-gray-300 cursor-not-allowed'
-          : 'bg-green-500 hover:bg-green-600',]">Siguiente
-        </button>
-      </div>
+      <NavigationButton 
+        prevRoute="/estudiante/progreso"
+        nextRoute="/estudiante/designacion-informe-jurado"
+        :nextCondition="() => obtener?.revision?.rev_estado === 'aprobado'"/>
+
     </div>
   </div>
-</template>
+  </template>
 </template>
 
 <style scoped>
@@ -310,19 +220,5 @@ onMounted(() => {
 .text-center {
   text-align: center;
   padding: 1rem;
-}
-.estado-no-iniciado,
-.estado-pendiente {
-  background-color: #8898aa;
-  color: #ffffff;
-}
-.estado-tramitado,
-.estado-aprobado {
-  background-color: #48bb78;
-  color: #ffffff;
-}
-.estado-observado {
-  background-color: #e79e38;
-  color: #ffffff;
 }
 </style>
