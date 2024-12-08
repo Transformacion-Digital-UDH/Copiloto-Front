@@ -85,7 +85,7 @@ const router = createRouter({
         { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: {  roles: ['estudiante'], title: 'Conformidad de Informe Final por los Jurados' } },
         { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: {  roles: ['estudiante'], title: 'Aprobacion de Informe por los Jurados' } },
         { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: {  roles: ['estudiante'], title: 'Conformidad por Integridad VRI' } },
-        { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
+        { path: 'Progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'Progreso de la Investigación' } },
         { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
         { path: 'designacion-fecha-hora', name: 'Designación de Fecha y Hora', component: DesignacionFechayHora, meta: {  roles: ['estudiante'], title: 'Designación de Fecha y Hora' } },
         { path: 'sustentacion', name: 'Sustentación', component: Sustentacion, meta: {  roles:['estudiante'], title: 'Sustentación' } },

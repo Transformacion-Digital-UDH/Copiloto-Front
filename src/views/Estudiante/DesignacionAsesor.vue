@@ -5,7 +5,7 @@ import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 import { alertToast, alertConfirmation } from "@/functions";
 import Estados from "@/components/Estados.vue";
-// import confetti from "canvas-confetti";
+import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
 
@@ -40,26 +40,25 @@ const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION;
 const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
 
 // Método para determinar la clase CSS dependiendo del estado
-const estadoClase = (estado: string) => {
-  switch (estado) {
-    case "en progreso":
-      return "bg-orange-500 text-white";
-    case "pendiente":
-      return "bg-gray-400 text-white";
-    case "rechazado":
-      return "bg-red-500 text-white";
-    case "aceptado":
-      return "bg-green-500 text-white";
-    case "tramitado":
-      return "bg-green-500 text-white";
-    case "observado":
-      return "bg-orange-500 text-white";
-    case "hecho":
-      return "bg-green-500 text-white";
-    default:
-      return "";
-  }
+const estadoClase = (estado: string): string => {
+  const estados = {
+    pendiente: "bg-gray-400 text-white",
+    rechazado: "bg-red-500 text-white",
+    aceptado: "bg-green-500 text-white",
+    tramitado: "bg-green-500 text-white",
+    observado: "bg-orange-500 text-white",
+    "en progreso": "bg-orange-500 text-white",
+    hecho: "bg-green-500 text-white",
+  };
+
+  return estados[estado.toLowerCase() as keyof typeof estados] || "bg-gray-200 text-gray-700";
 };
+
+const capitalizarEstado = (estado: string): string => {
+  if (!estado) return "Desconocido";
+  return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
+};
+
 const procesos = ref([
   {
     título: "TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA TESIS",
@@ -227,12 +226,12 @@ const sendSolicitude = async (student_id: string) => {
         solicitude.value.asesor_id = response.data.adviser_id || "";
         solicitude.value.estado = response.data.sol_status;
 
-        // Lanza confetti en la pantalla
-        // confetti({
-        //   particleCount: 500,
-        //   spread: 1010,
-        //   origin: { y: 0.6 },
-        // });
+        //Lanza confetti en la pantalla
+        confetti({
+          particleCount: 500,
+          spread: 1010,
+          origin: { y: 0.6 },
+        });
       }
     );
   } catch (error: any) {
@@ -470,7 +469,7 @@ const handleNextButtonClick = () => {
                   ]"
                 />
               </div>
-              <Estados :estado="solicitude.estado" />
+              <Estados :estado="capitalizarEstado(solicitude.estado)" />
             </div>
           </div>
 
@@ -591,7 +590,7 @@ const handleNextButtonClick = () => {
                     <i class="fas fa-download mr-2"></i> Descargar
                   </a>
                 </div>
-                <Estados :estado="solicitude.estado" />
+                <Estados :estado="capitalizarEstado(solicitude.estado)" />
 
                 <a
                   href="#historial"
@@ -657,17 +656,7 @@ const handleNextButtonClick = () => {
                 ]"
               />
             </div>
-            <span
-              :class="estadoClase(estadoDocumentos)"
-              class="estado-estilo ml-4"
-            >
-              {{
-                estadoDocumentos
-                  ? estadoDocumentos.charAt(0).toUpperCase() +
-                    estadoDocumentos.slice(1).toLowerCase()
-                  : "Desconocido"
-              }}
-            </span>
+            <Estados :estado="estadoDocumentos" />
           </div>
 
           <!-- Listado de documentos -->
@@ -717,7 +706,7 @@ const handleNextButtonClick = () => {
                   >
 
                   <!-- Estado del documento -->
-                  <Estados :estado="oficio.estado" />
+                  <Estados :estado="capitalizarEstado(oficio.estado)" />
                 </div>
               </div>
             </div>
@@ -764,11 +753,7 @@ const handleNextButtonClick = () => {
                     >El documento aún no se ha cargado</span
                   >
                   <!-- Estado del documento -->
-                  <span
-                    :class="estadoClase(resolucion.estado)"
-                    class="estado-estilo ml-4"
-                    >{{ resolucion.estado }}</span
-                  >
+                  <Estados :estado="capitalizarEstado(resolucion.estado)" />
                 </div>
               </div>
             </div>
