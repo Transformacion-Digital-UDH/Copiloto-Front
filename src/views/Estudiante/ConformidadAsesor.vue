@@ -10,18 +10,20 @@ import ModalToolTip from "@/components/modalToolTip.vue";
 import CorrecionAsesorPY from "@/components/CorrecionAsesorPY.vue";
 import DocumentCard from "@/components/DocumentCard.vue";
 import ButtonRequest from "@/components/ButtonRequest.vue";
-import NavigationButton from "@/components/NavigationButton.vue"
+import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonConformidadesAsesor from "@/components/SkeletonConformidadesAsesor.vue";
 import InfoCardConformidad from "@/components/InfoCardConformidad.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 
 // extrayendo funcionn del composable
-const { textoTipiado, typeWriter } = useTypewriter("Conformidad de Proyecto de Investigación");
+const { textoTipiado, typeWriter } = useTypewriter(
+  "Conformidad de Proyecto de Investigación"
+);
 onMounted(typeWriter);
 
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 const authStore = useAuthStore();
-const solicitudEstado = ref('');
+const solicitudEstado = ref("");
 const load = ref(false);
 const isLoading = ref(false);
 const isLoading1 = ref(false);
@@ -31,9 +33,11 @@ const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
 
 // para que el botón quede deshabilitado
-const bloquear = ['pendiente', 'observado', 'aprobado']
+const bloquear = ["pendiente", "observado", "aprobado"];
 const isRevisionDisabled = computed(() => {
-  return (isLoading.value || (bloquear.includes(obtener.value?.revision?.estado ?? '')))
+  return (
+    isLoading.value || bloquear.includes(obtener.value?.revision?.estado ?? "")
+  );
 });
 
 interface Revision {
@@ -70,8 +74,7 @@ const obtenerDatosEstudiante = async () => {
   try {
     const response = await axios.get(`/api/student/get-review/${student_id}`);
     //console.log("Mostrando lo recibido", response.data);
-    obtener.value = response.data;  
-
+    obtener.value = response.data;
   } catch (error) {
     console.error("Error al obtener datos", error);
   } finally {
@@ -82,13 +85,19 @@ const obtenerDatosEstudiante = async () => {
 // funcion de disparador para solicitar revision asesor
 const solicitarRevisionAsesorProyecto = async () => {
   isLoading.value = true;
-  const student_id = authStore.id
+  const student_id = authStore.id;
   try {
-    const response = await axios.post(`/api/student/first-review/${student_id}`);
-    
+    const response = await axios.post(
+      `/api/student/first-review/${student_id}`
+    );
+
     if (response.data.status) {
-      solicitudEstado.value = 'pendiente';
-      alertToast('Su solicitud de revisión fue enviada con éxito a su asesor.', "Éxito", "success");
+      solicitudEstado.value = "pendiente";
+      alertToast(
+        "Su solicitud de revisión fue enviada con éxito a su asesor.",
+        "Éxito",
+        "success"
+      );
       await obtenerDatosEstudiante();
     }
   } catch (error: any) {
@@ -99,7 +108,7 @@ const solicitarRevisionAsesorProyecto = async () => {
       alertToast("Error en la solicitud.", "Error", "error");
     }
   } finally {
-    isLoading.value = false; 
+    isLoading.value = false;
   }
 };
 
@@ -107,11 +116,18 @@ const actualizarEstadoRevision = async () => {
   isLoading1.value = true;
   const student_id = authStore.id;
   try {
-    const payload = { rev_status: 'pendiente' };
-    const response = await axios.put(`/api/student/review/${student_id}/status`, payload);
+    const payload = { rev_status: "pendiente" };
+    const response = await axios.put(
+      `/api/student/review/${student_id}/status`,
+      payload
+    );
 
     if (response.data.message) {
-      alertToast("Las observaciones han sido corregidas y enviadas correctamente.", "Éxito", "success");
+      alertToast(
+        "Las observaciones han sido corregidas y enviadas correctamente.",
+        "Éxito",
+        "success"
+      );
       await obtenerDatosEstudiante();
     }
   } catch (error: any) {
@@ -119,25 +135,29 @@ const actualizarEstadoRevision = async () => {
       const mensaje = error.response.data.message;
       alertToast(mensaje, "Advertencia", "warning");
     } else {
-      alertToast("Error al actualizar el estado de la revisión.", "Error", "error");
+      alertToast(
+        "Error al actualizar el estado de la revisión.",
+        "Error",
+        "error"
+      );
     }
   } finally {
     isLoading1.value = false;
   }
 };
 
-
 onMounted(() => {
   obtenerDatosEstudiante();
 });
-
 </script>
 
 <template>
-  <template v-if="load"><SkeletonConformidadesAsesor/></template>
+  <template v-if="load"><SkeletonConformidadesAsesor /></template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">
+        {{ textoTipiado }}
+      </h3>
       <div class="mt-6 space-y-10">
         <!-- Sección 1: Solicitar link para cargar el Informe Final -->
         <!-- <div class="bg-white rounded-lg shadow-lg p-6">
@@ -153,51 +173,83 @@ onMounted(() => {
         </div> -->
 
         <!-- Informacion de asesor y titulo con la tesis -->
-        <InfoCardConformidad 
+        <InfoCardConformidad
           :data="{
-            asesor: obtener?.data.asesor,
-            titulo: obtener?.data.titulo,
-            link: obtener?.data?.['link-tesis']}"/>
+            asesor: obtener?.data?.asesor || 'No asignado',
+            titulo: obtener?.data?.titulo || 'Sin título',
+            link: obtener?.data?.['link-tesis'] || '#',
+          }"
+        />
 
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
-            <ModalToolTip :infoModal="[{ info: 'Asegúrate de haber subido tu proyecto de investigación en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
+            <h2 class="text-2xl font-medium text-black">
+              1. Correcciones con tu asesor
+            </h2>
+            <ModalToolTip
+              :infoModal="[
+                {
+                  info: 'Asegúrate de haber subido tu proyecto de investigación en el documento de google para que el asesor pueda revisar y realizar las correcciones.',
+                },
+              ]"
+            />
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar revisión"</strong> para iniciar las observaciones del proyecto de investigación. 
+          <p class="text-gray-500 mt-2 mb-1 text-lg">
+            Haz clic en
+            <strong class="text-green-500 text-lg font-medium"
+              >"Solicitar revisión"</strong
+            >
+            para iniciar las observaciones del proyecto de investigación.
           </p>
           <div class="flex justify-center mt-2">
             <!-- boton para solicitar revision de asesor -->
-            <ButtonRequest 
-                label="Solicitar revisión" 
-                :loading="isLoading" 
-                :disabled="isRevisionDisabled"
-                @click="solicitarRevisionAsesorProyecto" />
+            <ButtonRequest
+              label="Solicitar revisión"
+              :loading="isLoading"
+              :disabled="isRevisionDisabled"
+              @click="solicitarRevisionAsesorProyecto"
+            />
           </div>
         </div>
 
         <!-- revision del asesor para PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h4 class="text-2xl font-medium text-black">2. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tu asesor, hasta que esté todo conforme.' },]" />
+            <h4 class="text-2xl font-medium text-black">
+              2. Revisión de observaciones
+            </h4>
+            <ModalToolTip
+              :infoModal="[
+                {
+                  info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tu asesor, hasta que esté todo conforme.',
+                },
+              ]"
+            />
           </div>
 
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Si tu asesor deja observaciones, el estado será 
-            <strong class="text-[#8898aa] text-lg font-medium">"Pendiente"</strong>. Corrige en Google Docs.
+          <p class="text-gray-500 mt-2 mb-1 text-lg">
+            Si tu asesor deja observaciones, el estado será
+            <strong class="text-[#8898aa] text-lg font-medium"
+              >"Pendiente"</strong
+            >. Corrige en Google Docs.
           </p>
-          <p class="text-gray-500 text-lg">Luego, haz clic en 
-            <strong class="text-green-500 text-lg font-medium">“Observaciones corregidas”</strong>. Si todo está bien, el estado cambiará a 
-            <strong class="text-green-500 text-lg font-medium">"Aprobado"</strong>.
+          <p class="text-gray-500 text-lg">
+            Luego, haz clic en
+            <strong class="text-green-500 text-lg font-medium"
+              >“Observaciones corregidas”</strong
+            >. Si todo está bien, el estado cambiará a
+            <strong class="text-green-500 text-lg font-medium"
+              >"Aprobado"</strong
+            >.
           </p>
 
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
             <CorrecionAsesorPY
               :revisiones="obtener?.revision ? [obtener.revision] : []"
-              @actualizarEstado="actualizarEstadoRevision"/>
+              @actualizarEstado="actualizarEstadoRevision"
+            />
           </div>
         </div>
 
@@ -205,26 +257,39 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">3. Documento de conformidad del proyecto de investigación</h2>
-                <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
-            </div>            
+              <h2 class="text-2xl font-medium text-black">
+                3. Documento de conformidad del proyecto de investigación
+              </h2>
+              <ModalToolTip
+                :infoModal="[
+                  {
+                    info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.',
+                  },
+                ]"
+              />
+            </div>
           </div>
           <div class="mt-4 space-y-4">
-            <DocumentCard 
+            <DocumentCard
               titulo="Acta de conformidad del proyecto de investigación - por el asesor"
-              :estado="['aprobado'].includes(obtener?.revision?.estado ?? '') ? obtener?.revision?.estado ?? '' : ''"
+              :estado="
+                ['aprobado'].includes(obtener?.revision?.estado ?? '')
+                  ? obtener?.revision?.estado ?? ''
+                  : ''
+              "
               :id="obtener?.revision?.estudiante_id ?? ''"
               :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+              :download="DOWNLOAD_CPA"
+            />
           </div>
         </div>
 
         <!--Botones siguiente y anteerior-->
-        <NavigationButton 
+        <NavigationButton
           prevRoute="/estudiante/designacion-asesor"
           nextRoute="/estudiante/designacion-jurado"
-          :nextCondition="() => obtener?.revision?.estado === 'aprobado'"/>
-
+          :nextCondition="() => obtener?.revision?.estado === 'aprobado'"
+        />
       </div>
     </div>
   </template>
