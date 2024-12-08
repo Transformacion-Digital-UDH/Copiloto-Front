@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import { alertToast } from '@/functions';
-import { useAuthStore } from '@/stores/auth';
-import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
+import { alertToast } from "@/functions";
+import { useAuthStore } from "@/stores/auth";
+import axios from "axios";
+import { ref, computed, onMounted } from "vue";
 import router from "@/router";
 import Swal from "sweetalert2";
-import ModalToolTip from '@/components/modalToolTip.vue';
-import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonRequest from '@/components/ButtonRequest.vue';
-import JuradoTabla from '@/components/JuradoTabla.vue';
+import ModalToolTip from "@/components/modalToolTip.vue";
+import DocumentCard from "@/components/DocumentCard.vue";
+import ButtonRequest from "@/components/ButtonRequest.vue";
+import JuradoTabla from "@/components/JuradoTabla.vue";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Jurados para el Proyecto de Tesis";
@@ -25,6 +25,26 @@ onMounted(() => {
   typeWriter();
 });
 /******************************************************** */
+
+// PARA QUE PERSONALIZES TU ALERTA
+const alertToast = (
+  message: string,
+  title: string,
+  icon: "success" | "error" | "warning" | "info" | "question",
+  options: { timer?: number } = {}
+) => {
+  Swal.fire({
+    title,
+    text: message,
+    icon,
+    timer: options.timer || 5000,
+    timerProgressBar: true,
+    showConfirmButton: false,
+    toast: true,
+    position: "bottom-end",
+  });
+};
+
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -50,7 +70,7 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  return obtener.value?.estado !== 'tramitado';
+  return obtener.value?.estado !== "tramitado";
 });
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
@@ -65,9 +85,9 @@ const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
 const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
 
 // para que el boton quede deshabilitado
-const bloquear = ['pendiente', 'observado', 'tramitado']
+const bloquear = ["pendiente", "observado", "tramitado"];
 const isSolicitarDisabled = computed(() => {
-  return (isLoading.value || (bloquear.includes(obtener.value?.estado ?? '')));
+  return isLoading.value || bloquear.includes(obtener.value?.estado ?? "");
 });
 
 interface Jurado {
@@ -88,16 +108,40 @@ interface Informacion {
 const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
-    const response = await axios.get(`api/student/get-juries/${authStore.id}`)
-    //console.log('Mostrando lo recibido: ', response.data);
-    obtener.value = response.data;
-    jurados.value = response.data.jurados.map((jurado: { rol: string; asesor: string }) => ({
-      rol: jurado.rol,
-      nombre: jurado.asesor,
-    }));
+    const response = await axios.get(`api/student/get-juries/${authStore.id}`);
 
-  } catch (error) {
-    console.error('Error al obtener jurados designados: ', error);
+    if (
+      !response.data ||
+      !response.data.jurados ||
+      response.data.jurados.length === 0
+    ) {
+      throw new Error("No se encontraron jurados designados.");
+    }
+
+    obtener.value = response.data;
+    jurados.value = response.data.jurados.map(
+      (jurado: { rol: string; asesor: string }) => ({
+        rol: jurado.rol,
+        nombre: jurado.asesor,
+      })
+    );
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      alertToast(
+        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
+        "Advertencia",
+        "warning",
+        { timer: 2000 }
+      );
+    } else {
+      alertToast(
+        error.message ||
+          "Error inesperado al obtener los datos de los jurados.",
+        "Error",
+        "error",
+        { timer: 2000 }
+      );
+    }
   } finally {
     load.value = false;
   }
@@ -106,16 +150,21 @@ const obtenerDatosEstudiante = async () => {
 // funcion para solicitar que me asignen jurados
 const solicitarJuradoProyecto = async () => {
   isLoading.value = true;
-  const student_id = authStore.id
+  const student_id = authStore.id;
   try {
-    const response = await axios.get(`api/office/solicitude-juries/${student_id}`);
-  
+    const response = await axios.get(
+      `api/office/solicitude-juries/${student_id}`
+    );
+
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";
-      alertToast("Solicitud enviada. Espere las indicaciones para la designación de tus jurados", "Éxito", "success");
+      alertToast(
+        "Solicitud enviada. Espere las indicaciones para la designación de tus jurados",
+        "Éxito",
+        "success"
+      );
       await obtenerDatosEstudiante();
     }
-    
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.message) {
       const mensaje = error.response.data.message;
@@ -124,50 +173,82 @@ const solicitarJuradoProyecto = async () => {
       alertToast("Error en la solicitud.", "Error", "error");
     }
   } finally {
-    isLoading.value = false; 
+    isLoading.value = false;
   }
 };
 
 onMounted(() => {
   obtenerDatosEstudiante();
-})
-
+});
 </script>
 <template>
-   <template v-if="load">
+  <template v-if="load">
     <div class="flex-1 p-10 bg-gray-100 min-h-full">
-      <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
+      <div
+        class="flex justify-center items-center content-center px-14 flex-col"
+      >
+        <h3
+          class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"
+        ></h3>
+        <br />
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"
+            ></h2>
           </div>
         </div>
-        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"
+            ></h2>
           </div>
         </div>
-        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
           <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
+            ></h2>
           </div>
         </div>
         <div class="flex justify-between">
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
         </div>
       </div>
     </div>
   </template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">
+        {{ textoTipiado2 }}
+      </h3>
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -185,37 +266,52 @@ onMounted(() => {
           </div>
 
            Listado de trámites dinámico -->
-          <!-- <div class="mt-4 space-y-6">
+        <!-- <div class="mt-4 space-y-6">
             <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
               class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
               <h4 class="text-black flex-1">{{ proceso.título }}</h4>
               <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
             </div>
           </div>
-        </div> --> 
+        </div> -->
         <!-- solicitar designacion de jurados PY -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black ">1. Solicitar designación de jurados</h2>
-            <ModalToolTip :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />
+            <h2 class="text-2xl font-medium text-black">
+              1. Solicitar designación de jurados
+            </h2>
+            <ModalToolTip
+              :infoModal="[
+                {
+                  info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
+                },
+              ]"
+            />
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar jurados"</strong> para la designación de jurados.
+          <p class="text-gray-500 mt-2 mb-1 text-lg">
+            Haz clic en el botón
+            <strong class="text-green-500 text-lg font-medium"
+              >"Solicitar jurados"</strong
+            >
+            para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-2">
-            <ButtonRequest 
-              label="Solicitar jurados" 
-              :loading="isLoading" 
-              :disabled="isSolicitarDisabled" 
-              @click="solicitarJuradoProyecto" />
+            <ButtonRequest
+              label="Solicitar jurados"
+              :loading="isLoading"
+              :disabled="isSolicitarDisabled"
+              @click="solicitarJuradoProyecto"
+            />
           </div>
         </div>
 
         <!-- jurados designados por el decano -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
+            <h2 class="text-2xl font-medium text-black">
+              2. Tus jurados designados son:
+            </h2>
           </div>
           <div class="overflow-x-auto mt-4 flex justify-center">
             <JuradoTabla :jurados="jurados" />
@@ -226,33 +322,49 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">3. Documento para la conformidad de designación de jurados</h2>
-                <ModalToolTip :infoModal="[{ info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.' },]" />
-            </div>            
+              <h2 class="text-2xl font-medium text-black">
+                3. Documento para la conformidad de designación de jurados
+              </h2>
+              <ModalToolTip
+                :infoModal="[
+                  {
+                    info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
+                  },
+                ]"
+              />
+            </div>
           </div>
           <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-                titulo="Oficio Múltiple."
-                :estado="obtener?.estado|| ''"
-                :id="obtener?.docof_id ?? ''"
-                :view="VIEW_OFFICEJURADO"
-                :download="DOWNLOAD_OFFICEJURADO"/>
+            <DocumentCard
+              titulo="Oficio Múltiple."
+              :estado="obtener?.estado || ''"
+              :id="obtener?.docof_id ?? ''"
+              :view="VIEW_OFFICEJURADO"
+              :download="DOWNLOAD_OFFICEJURADO"
+            />
           </div>
         </div>
 
-       <!--Botones siguiente y anteerior-->
-       <div class="flex justify-between">
+        <!--Botones siguiente y anteerior-->
+        <div class="flex justify-between">
           <button
-            @click="$router.push('/estudiante/conformidad-asesor')" 
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
+            @click="$router.push('/estudiante/conformidad-asesor')"
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Anterior
           </button>
           <button
             @click="handleNextButtonClick"
             :disabled="isNextButtonDisabled"
-            :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled
-            ? 'bg-gray-300 cursor-not-allowed'
-            : 'bg-green-500 hover:bg-green-600',]">Siguiente
+            :class="[
+              'px-4 py-2 text-white rounded-md',
+              isNextButtonDisabled
+                ? 'bg-gray-300 cursor-not-allowed'
+                : 'bg-green-500 hover:bg-green-600',
+            ]"
+          >
+            Siguiente
           </button>
         </div>
 
