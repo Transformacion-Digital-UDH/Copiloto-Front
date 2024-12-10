@@ -28,6 +28,8 @@ const load = ref(false);
 const isLoading = ref(false);
 const isLoading1 = ref(false);
 const obtener = ref<RevisionResponse | null>(null);
+const documentos = ref<Array<{ nombre: string; estado: string; revision_id: string }>>([]);
+
 
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;

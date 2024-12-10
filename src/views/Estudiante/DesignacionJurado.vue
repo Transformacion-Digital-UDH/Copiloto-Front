@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { alertToast } from "@/functions";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 import { ref, computed, onMounted } from "vue";
@@ -80,6 +79,8 @@ const isLoading = ref(false);
 const load = ref(false);
 const obtener = ref<Informacion | null>(null);
 const jurados = ref<Jurado[]>([]);
+const documentos = ref<Array<{ nombre: string; estado: string }>>([]);
+  const docof_id = computed(() => obtener.value?.docof_id || "");
 
 const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
 const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
@@ -91,8 +92,10 @@ const isSolicitarDisabled = computed(() => {
 });
 
 interface Jurado {
+  id?: string; // Si necesitas un ID opcional
   rol: string;
   nombre: string;
+  asesor:string;
 }
 
 interface Informacion {

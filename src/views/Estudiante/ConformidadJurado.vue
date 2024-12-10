@@ -56,6 +56,7 @@ const loading = ref<{[key: string]: boolean}>({});
 const obtener = ref<Estudiante | null>(null);
 const jurados = computed(() => obtener.value?.data ?? []);
 const estadoRevision = ref<string | null>(null);
+const documentos = ref<Array<{ nombre: string; estado: string; revision_id: string }>>([]);
 
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
@@ -104,7 +105,12 @@ interface Revision {
   numero_revision: number;
   fecha: string | null;
   estado: string;
+ 
 }
+
+const review_id_presidente = presidente_id;
+const review_id_secretario = secretario_id;
+const review_id_vocal = vocal_id;
 
 const obtenerConformidadJuradosProyecto = async () => {
   load.value = true;
