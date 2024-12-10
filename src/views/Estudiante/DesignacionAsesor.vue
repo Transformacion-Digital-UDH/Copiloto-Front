@@ -30,6 +30,7 @@ const mostrarModalDocumentos = ref(false);
 const mostrarModalCambioAsesor = ref(false);
 const mostrarModalConfirmacion = ref(false);
 const mostrarModalSolicitudAsesor = ref(false);
+const full_name = ref<string>('');
 
 // VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
@@ -90,6 +91,8 @@ const oficio = ref<Oficio>({
   nombre_de_oficio: "",
   observacion: "",
 });
+
+
 
 // Tipos definidos para mayor seguridad y claridad
 interface Solicitude {
@@ -152,9 +155,12 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
 // Al montar el componente, cargamos los asesores y la información del estudiante
 onMounted(() => {
+  full_name.value = authStore.fullName!;
   getAdvisers();
   getInfoStudent();
 });
+
+
 
 // Función para redirigir a la siguiente página
 const goToNextPage = () => {
@@ -419,32 +425,44 @@ const handleNextButtonClick = () => {
 
   <template v-else>
     <template v-if="!solicitude.estado">
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center">
-          <h3 class="text-4xl font-semibold text-azul">
-            Usted no ha iniciado un trámite
-          </h3>
-          <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
+      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-50 h-screen">
+  <div class="p-12 bg-white rounded-xl shadow-lg space-y-10 text-center">
+    <!-- Título Principal -->
+    <h3 class="text-3xl font-bold text-azul leading-tight">
+      Hola <span class="text-[39B49E] text-3xl  capitalize">{{ full_name }}</span>, 
+      empieza designando un asesor para tu proyecto.
+    </h3>
 
-          <div class="flex justify-center">
-            <img
-              src="/img/notInitSolicitude.svg"
-              alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md"
-            />
-          </div>
+    <!-- Subtítulo -->
+    <p class="text-gray-600 text-lg">
+      Haz clic en <strong>'Iniciar trámite'</strong> para iniciar tu proceso de titulación.
+    </p>
 
-          <div class="flex justify-center">
-            <button
-              v-if="authStore.id"
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)"
-            >
-              Iniciar trámite
-            </button>
-          </div>
-        </div>
-      </div>
+
+    <!-- Imagen Central -->
+    <div class="flex justify-center">
+      <img
+        src="/img/notInitSolicitude.svg"
+        alt="Iniciar trámite o solicitar asesor"
+        class="w-1/3 h-auto object-contain"
+      />
+    </div>
+
+    <!-- Botón de Acción -->
+    <div class="flex justify-center">
+      <button
+        v-if="authStore.id"
+        class="bg-base text-white px-10 py-4  text-lg  shadow-lg hover:bg-green-600 transition-all transform hover:scale-105 duration-300 bounce"
+        @click="sendSolicitude(authStore.id)"
+      >
+        Iniciar trámite
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
@@ -877,4 +895,18 @@ const handleNextButtonClick = () => {
   background-color: #8898aa;
   color: #ffffff;
 }
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce {
+  animation: bounce 1.5s infinite;
+}
+
 </style>

@@ -102,7 +102,7 @@ const load = ref(false);
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 
 const validateObservaciones = () => {
-  nroCarta.value = nroCarta.value.replace(/[^0-9]/g, '');
+  nroCarta.value = nroCarta.value.replace(/[^0-9]/g, '');  
   if (nroCarta.value.length > 3) {
     nroCarta.value = nroCarta.value.slice(0, 3);
   }
