@@ -149,11 +149,28 @@ onMounted(() =>{
     </div>
   </template>
   
-  <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+  <template v-else>    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
         <div class="mt-6 space-y-10">
-          <!-- solicitar aprobacion de proyecto de tesis-->
+          <div  class="bg-white p-6 rounded-lg shadow-md mb-4">
+      <h3  class="text-2xl font-medium text-black">Confirma el Título</h3>
+      <p class="text-gray-600 mb-4">
+        Recuerda que una vez aprobado el proyecto, el título asignado ya no podrá modificarse. <br>
+        Verifica que esté escrito correctamente antes de proceder.
+      </p>
+      <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título del proyecto de investigación (definitivo)</label>
+            <input id="tituloTesis" type="text" 
+              
+              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
+              placeholder="Escribe tu título de proyecto de investigación aquí..." />
+      <!-- Botón para confirmar el título provisional -->
+      <button 
+        class="px-6 py-2 bg-base text-white rounded-md focus:outline-none focus:ring-2 focus:ring-baseClarito">
+        Confirmar Título Provisional
+      </button>
+    </div>
+  
+          <!-- Card 1: Solicitud-->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="relative flex items-center">
               <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>

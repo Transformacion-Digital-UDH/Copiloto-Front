@@ -329,32 +329,89 @@ onMounted(() => {
 
           <!-- INFORME DE CONFORMIDAD POR EL PRESIDENTE -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-              titulo='Informe de conformidad - Presidente'
-              :estado="obtenerEstadoDocumento(presidenteRevisiones[0]?.estado || '')"
-              :id="presidente_id"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm">{{ documentos[0].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[0].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- BOTON VER -->
+                    <a
+                      :href="`${VIEW_CPA}/${review_id_presidente}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- BOTON DESCARGAR -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${review_id_presidente}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado || "Estado desconocido" }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL SECRETARIO -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-              titulo='Informe de conformidad - Secretario'
-              :estado="obtenerEstadoDocumento(secretarioRevisiones[0]?.estado || '')"
-              :id="secretario_id"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm">{{ documentos[1].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[1].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- BOTON VER -->
+                    <a
+                      :href="`${VIEW_CPA}/${review_id_secretario}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- BOTON DESCARGAR -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${review_id_secretario}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado || "Estado desconocido" }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL VOCAL -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-              titulo='Informe de conformidad - Secretario'
-              :estado="obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '')"
-              :id="vocal_id"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm">{{ documentos[2].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[2].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- BOTON VER -->
+                    <a
+                      :href="`${VIEW_CPA}/${review_id_vocal}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- BOTON DESCARGAR -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${review_id_vocal}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic ">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[2].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[2].estado || "Estado desconocido" }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

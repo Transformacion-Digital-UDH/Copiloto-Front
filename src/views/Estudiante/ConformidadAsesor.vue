@@ -265,17 +265,34 @@ onMounted(() => {
               :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>
           <div class="mt-4 space-y-4">
-            <DocumentCard
-              titulo="Acta de conformidad del proyecto de investigación - por el asesor"
-              :estado="
-                ['aprobado'].includes(obtener?.revision?.estado ?? '')
-                  ? obtener?.revision?.estado ?? ''
-                  : ''
-              "
-              :id="obtener?.revision?.estudiante_id ?? ''"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"
-            />
+            <div v-for="(documento, index) in documentos" :key="documento.nombre"
+              class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="w-full md:w-auto mb-2 md:mb-0 text-xm bg-gray-50">Informe de conformidad de observaciones
+                  por el asesor</span>
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documento.estado === 'Hecho'"
+                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- Botón de Ver -->
+                    <a :href="`${VIEW_CPA}/${documento.revision_id}`" target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a :href="`${DOWNLOAD_CPA}/${documento.revision_id}`" download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span
+                    :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
+                    {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

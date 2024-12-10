@@ -348,16 +348,37 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">
-                3. Documento para la conformidad de designación de jurados
-              </h2>
-              <ModalToolTip
-                :infoModal="[
-                  {
-                    info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
-                  },
-                ]"
-              />
+              <h2 class="text-2xl font-medium text-black">4. Documentos para la conformidad de designacion de jurados</h2>
+                <ModalToolTip
+                :infoModal="[{ info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.' },]" />
+            </div>            
+          </div>
+
+          <div class="mt-4 space-y-4">
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm bg-gray-50">{{ documentos[0].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[0].estado === 'Tramitado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- Botón de Ver -->
+                    <a 
+                      :href="`${VIEW_OFFICEJURADO}/${docof_id}`" 
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- Botón de Descargar -->
+                    <a 
+                      :href="`${DOWNLOAD_OFFICEJURADO}/${docof_id}`" 
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">{{ documentos[0].estado }}</span>
+                </div>
+              </div>
             </div>
           </div>
           <!-- oficion multiple emitido por el programa academico -->
