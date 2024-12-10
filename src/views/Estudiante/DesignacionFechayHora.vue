@@ -9,26 +9,12 @@ import ModalToolTip from '@/components/modalToolTip.vue';
 import JuradoCard from '@/components/JuradoCard.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import FechayHoraCard from '@/components/FechayHoraCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Fecha y Hora para Sustentación";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-
-// Estados para los modales
-const mostrarModalSustentacion = ref(false); 
-const mostrarModalDocumentos = ref(false);
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Designación de Fecha y Hora para Sustentación");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -135,7 +121,7 @@ onMounted(() => {
    <template v-if="load">
     <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
+        <h3 class=" h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-md shadow-lg p-6 relative">
@@ -175,7 +161,7 @@ onMounted(() => {
   
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
           <!-- mostrar jurados -->
@@ -202,7 +188,7 @@ onMounted(() => {
           </p>
           <!-- boton de solicitud fecha y hora --> 
           <div class="flex justify-center mt-2">
-            <ButtonS 
+            <ButtonRequest 
               label="Solicitar Fecha y Hora" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 
@@ -219,7 +205,7 @@ onMounted(() => {
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-                titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+                titulo="Oficio emitido por el Programa Académico."
                 :estado="obtener?.oficio_estado || ''"
                 :id="obtener?.oficio_id ?? ''"
                 :view="VIEW_FYH"
@@ -229,7 +215,7 @@ onMounted(() => {
           <!-- resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-                titulo="Resolución de Declaración de Apto para Sustentación."
+                titulo="Resolución de Fecha y Hora para la Sustentación."
                 :estado="obtener?.resolucion_estado || ''"
                 :id="obtener?.resolucion_id ?? ''"
                 :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría PAISI'"

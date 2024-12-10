@@ -50,7 +50,7 @@ import Comentarios from '@/views/Turnitin/Comentarios.vue'
 const roleRoutes: Record<string, string> = {
   estudiante: "estudiante",
   asesor: "asesor",
-  paisi: "paisi",
+  programa: "programa",
   facultad: "facultad",
   admin: "admin",
   vri: "vri-turnitin", 
@@ -85,7 +85,7 @@ const router = createRouter({
         { path: 'conformidad-informe-jurado', name: 'ConformidadJuradoInforme', component: ConformidadInformeJurados, meta: {  roles: ['estudiante'], title: 'Conformidad de Informe Final por los Jurados' } },
         { path: 'aprobacion-informe', name: 'AprobacionInforme', component: AprobacionInforme, meta: {  roles: ['estudiante'], title: 'Aprobacion de Informe por los Jurados' } },
         { path: 'conformidad-vri', name: 'ConformidadVRI', component: ConformidadVRI, meta: {  roles: ['estudiante'], title: 'Conformidad por Integridad VRI' } },
-        { path: 'progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'progreso' } },
+        { path: 'Progreso', name: 'Progreso', component: ProgresoProyecto, meta: {  roles: ['estudiante'], title: 'Progreso de la Investigación' } },
         { path: 'declaracion-apto-sustentar', name: 'Apto para Sustentar', component: AptoParaSustentar, meta: {  roles: ['estudiante'], title: 'Apto para Sustentar' } },
         { path: 'designacion-fecha-hora', name: 'Designación de Fecha y Hora', component: DesignacionFechayHora, meta: {  roles: ['estudiante'], title: 'Designación de Fecha y Hora' } },
         { path: 'sustentacion', name: 'Sustentación', component: Sustentacion, meta: {  roles:['estudiante'], title: 'Sustentación' } },
@@ -117,19 +117,19 @@ const router = createRouter({
       ]
     },
     {
-      path: '/paisi',
-      name: 'paisi',
+      path: '/programa',
+      name: 'programa',
       component: AdminLayout,
-      meta: { roles: ['paisi'], title: 'P.A.I.S.I' },
+      meta: { roles: ['programa'], title: 'Programa Académico' },
       children: [
-        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['paisi'], title: 'Designar Jurados' } },
-        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['paisi'], title: 'Aprobar proyecto' } },
-        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['paisi'], title: 'Designar asesor' } },
-        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['paisi'], title: 'Aprobar informe' } },
-        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['paisi'], title: 'Link informe' } },
-        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['paisi'], title: 'Designar Jurados Informe' } },
-        { path: 'apto-sustentacion', name: 'AptoParaSustentar', component: AptoSustentacion, meta: { roles: ['paisi'], title: 'Apto para Sustentar' } },
-        { path: 'designar-fecha-hora', name: 'DesignarFechaHora', component: DesignarFechaHora, meta: { roles: ['paisi'], title: 'Designar Fecha y Hora' } },
+        { path: 'designar-jurado', name: 'DesignarJurados', component: DesignarJurados, meta: { roles: ['programa'], title: 'Designar Jurados' } },
+        { path: 'aprobar-proyecto', name: 'AprobarProyecto', component: AprobarProyecto, meta: { roles: ['programa'], title: 'Aprobar proyecto' } },
+        { path: 'designar-asesor', name: 'DesignarAsesor', component: DesignarAsesor, meta: { roles: ['programa'], title: 'Designar asesor' } },
+        { path: 'aprobar-informe', name: 'AprobarInforme', component: AprobarInforme, meta: { roles: ['programa'], title: 'Aprobar informe' } },
+        { path: 'link-informe', name: 'LinkInforme', component: LinkInforme, meta: { roles: ['programa'], title: 'Link informe' } },
+        { path: 'designar-jurado-informe', name: 'DesignarJuradoInforme', component: DesignarJuradoInforme, meta: { roles: ['programa'], title: 'Designar Jurados Informe' } },
+        { path: 'apto-sustentacion', name: 'AptoParaSustentar', component: AptoSustentacion, meta: { roles: ['programa'], title: 'Apto para Sustentar' } },
+        { path: 'designar-fecha-hora', name: 'DesignarFechaHora', component: DesignarFechaHora, meta: { roles: ['programa'], title: 'Designar Fecha y Hora' } },
       ]
     },
     {
@@ -184,7 +184,7 @@ const router = createRouter({
       name: 'profile',
       component: AppProfile,
       meta: {
-        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'paisi', 'vri', 'turnitin'],
+        roles: ['estudiante', 'admin', 'facultad', 'asesor', 'programa', 'vri', 'turnitin'],
         title: 'Mi perfil'
       },
     },

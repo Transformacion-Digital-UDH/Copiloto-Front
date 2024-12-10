@@ -11,35 +11,35 @@
     <tbody v-if="revisiones && revisiones.length > 0">
       <tr
         v-for="revision in revisiones"
-        :key="revision.rev_id"
+        :key="revision.estudiante_id"
         class="text-center">
         <td class="px-4 py-2 text-base text-gray-600">
-          <p class="truncate">{{ revision.rev_contador || 'Sin revisión' }}</p>
+          <p class="truncate">{{ revision.cantidad || 'Sin revisión' }}</p>
         </td>
         <td class="px-4 py-2 text-base text-gray-600">
-          <p class="truncate">{{ revision.rev_update || 'Sin fecha' }}</p>
+          <p class="truncate">{{ revision.fecha || 'Sin fecha' }}</p>
         </td>
         <td class="px-4 py-4">
           <button
-            :disabled="revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'"
-            :class="[
-              'truncate px-4 py-2 text-base text-white bg-base rounded-md focus:outline-none',
-              revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'
-              ? 'bg-gray-300 cursor-not-allowed'
+            :disabled="revision.estado === 'pendiente' || revision.estado === 'aprobado'"
+            :class="[ 
+              'truncate px-4 py-2 text-base text-white bg-base rounded-md focus:outline-none', 
+              revision.estado === 'pendiente' || revision.estado === 'aprobado' 
+              ? 'bg-gray-300 cursor-not-allowed' 
               : 'bg-base hover:bg-[#29a790]',]"
-            @click="actualizarEstado(revision.rev_id)">Observaciones corregidas
+              @click="actualizarEstado(revision.estudiante_id)">Observaciones corregidas
           </button>
         </td>
         <td class="px-4 py-2">
-          <span :class="`estado-estilo estado-${revision.rev_estado.toLowerCase().replace(' ', '-')}`">
-            {{ formatearTexto(revision.rev_estado) }}
+          <span :class="`estado-estilo estado-${revision.estado.toLowerCase().replace(' ', '-')}`">
+            {{ formatearTexto(revision.estado) }}
           </span>
         </td>
       </tr>
     </tbody>
     <tbody v-else>
       <tr>
-        <td colspan="4" class="px-4 py-6 text-gray-500  text-center align-middle">
+        <td colspan="4" class="px-4 py-6 text-gray-500 text-center align-middle">
           <i class="fas fa-exclamation-circle mr-2 text-red-700"></i>No hay observaciones disponibles por el momento.
         </td>
       </tr>
@@ -51,10 +51,10 @@
 import type { PropType } from "vue";
 
 interface Revision {
-  rev_id: string;
-  rev_contador: number;
-  rev_estado: string;
-  rev_update: string;
+  estudiante_id: string;
+  cantidad: number;
+  estado: string;
+  fecha: string;
 }
 
 const props = defineProps({
@@ -64,7 +64,6 @@ const props = defineProps({
   },
 });
 
-// funcion para manejar el estado de la revision
 const emit = defineEmits(["actualizarEstado"]);
 
 const actualizarEstado = (id: string) => {
@@ -73,7 +72,6 @@ const actualizarEstado = (id: string) => {
 
 const formatearTexto = (text: string): string =>
   text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-  
 </script>
 
 <style scoped>
