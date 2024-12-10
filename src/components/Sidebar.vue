@@ -225,16 +225,16 @@ export default defineComponent({
           { name: 'Tercer filtro', label: 'Tercer Filtro', path: '/vri-turnitin/tercer-filtro' }
         );
 
-        // // Crear una nueva sección separada para "BD Observaciones"
-        // allSections.push({
-        //   name: 'BDObservaciones',
-        //   label: 'BD Observaciones',
-        //   isOpen: false,
-        //   icon: markRaw(informe), // Puedes cambiar este ícono si lo deseas
-        //   submenus: [
-        //     { name: 'BD Observaciones', label: 'BD Observaciones', path: '/vri-turnitin/comentarios' },
-        //   ],
-        // });
+        // Crear una nueva sección separada para "BD Observaciones"
+        allSections.push({
+          name: 'BDObservaciones',
+          label: 'BD Observaciones',
+          isOpen: false,
+          icon: markRaw(informe), // Puedes cambiar este ícono si lo deseas
+          submenus: [
+            { name: 'BD Observaciones', label: 'BD Observaciones', path: '/vri-turnitin/comentarios' },
+          ],
+        });
 
         // Mostrar ambas secciones: Informe Final y BD Observaciones
         sections.value = allSections.filter(

@@ -253,7 +253,7 @@ onMounted(() => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
           <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tus jurados, hasta que esté todo conforme.' },]" />
         </div>
 
         <p class="text-gray-500 mt-1 text-base">Si el jurado deja observaciones, el estado será 

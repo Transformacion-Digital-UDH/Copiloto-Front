@@ -48,7 +48,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de Proyecto de Tesis por el Asesor";
+const text = "Conformidad de Proyecto de Investigación por el Asesor";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -345,7 +345,7 @@ onMounted(() => {
               </a>
             </div>
             <!-- Explicación breve -->
-            <p class="text-sm text-gray-600 text-center">Sube la información de tu proyecto de tesis en el documento de
+            <p class="text-sm text-gray-600 text-center">Sube la información de tu proyecto de investigación en el documento de
               Google Docs proporcionado y, cuando estés listo, haz clic en 'Solicitar Revisión' para iniciar el proceso.
             </p>
           </div>
@@ -355,12 +355,12 @@ onMounted(() => {
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
             <ModalToolTip
-              :infoModal="[{ info: 'Asegúrate de haber subido tu proyecto de tesis en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
+              :infoModal="[{ info: 'Asegúrate de haber subido tu proyecto de investigación en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
           </div>
 
           <div class="flex items-center justify-between">
             <p class="text-gray-500 text-base mt-2">
-              Para comenzar con el proceso de observaciones en el proyecto de tesis, haz clic en <strong
+              Para comenzar con el proceso de observaciones en el proyecto de investigación, haz clic en <strong
                 class="text-[#39B49E] font-medium">"Solicitar revisión"</strong>
             </p>
             <span :class="estadoClase(solicitudEstado2)" class="estado-estilo ml-4">{{ solicitudEstado2 }}</span>
@@ -381,7 +381,7 @@ onMounted(() => {
               2. Revisión de observaciones
             </h4>
             <ModalToolTip
-              :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tu asesor, hasta que esté todo conforme.' },]" />
+              :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tu asesor, hasta que esté todo conforme.' },]" />
           </div>
 
           <div>
@@ -463,7 +463,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de
-              tesis
+              investigación
               por el asesor</h2>
 
             <!--toolTip-->

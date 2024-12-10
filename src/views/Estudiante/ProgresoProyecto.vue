@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Ejecución de tu Proyecto de Tesis";
+const text = "Ejecución de tu Proyecto de Investigación";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -140,7 +140,7 @@ onMounted(() => {
                 class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xl font-bold">
                 1
               </div>
-              <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Tesis</span>
+              <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Investigación</span>
             </div>
             <div class="flex flex-col items-center">
               <div
@@ -196,7 +196,7 @@ onMounted(() => {
       
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
-          <h2 class="text-2xl font-medium text-black">Documentos de Proyecto de Tesis</h2>
+          <h2 class="text-2xl font-medium text-black">Documentos de Proyecto de Investigación</h2>
         </div>
         <div class="overflow-x-auto mt-4">
           <table class="w-full max-w-full bg-white border rounded-md shadow">

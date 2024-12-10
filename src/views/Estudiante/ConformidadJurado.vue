@@ -13,7 +13,7 @@ const mostrarModalObservaciones = ref(false);
 const mostrarModalDocumentos = ref(false);
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad de Proyecto de Tesis por los Jurados";
+const text = "Conformidad de Proyecto de Investigación por los Jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -269,7 +269,7 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
         <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
-          <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados designados a tu proyecto de tesis y el título. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
+          <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados designados a tu proyecto de investigación y el título. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
           <!-- Información de los jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-blue-50 rounded-lg p-4 flex flex-col items-center shadow-lg transition transform hover:scale-105">
@@ -343,7 +343,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
           
@@ -476,7 +476,7 @@ onMounted(() => {
         <!-- Documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del proyecto de tesis por los jurados</h2>
+            <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del proyecto de investigación por los jurados</h2>
             <ModalToolTip
             :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
           </div>

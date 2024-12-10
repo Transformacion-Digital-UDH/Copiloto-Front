@@ -84,7 +84,7 @@ const obtenerDatosEstudiante = async () => {
   const student_id = authStore.id
   try {
     const response = await axios.get(`/api/estudiante/get-info-aprobar/informe/${student_id}`);
-    // console.log("Mostrando lo recibido", response.data);
+    console.log("Mostrando lo recibido", response.data);
 
     obtener.value = response.data;
 

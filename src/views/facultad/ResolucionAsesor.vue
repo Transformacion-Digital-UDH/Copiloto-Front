@@ -252,11 +252,11 @@ const rejectResolution = async () => {
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
                     <tr class="text-center text-azul border-b-2 bg-gray-300">
-                      <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
+                      <th class="py-2 px-3 text-left tracking-wider col-estudiante">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                      <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
+                      <th class="py-2 px-2 tracking-wider whitespace-nowrap">OFICIO PAISI</th>
                       <th class="py-2 px-12 text-left tracking-wider">FECHA</th>
-                      <th class="py-2 px-3 tracking-wider">VALIDAR TRÁMITE</th>
+                      <th class="py-2 px-3 tracking-wider whitespace-nowrap">VALIDAR TRÁMITE</th>
                       <th class="py-2 px-3 tracking-wider">ESTADO</th>
                     </tr>
                   </thead>
@@ -264,10 +264,10 @@ const rejectResolution = async () => {
                     <tr v-for="(u, index) in filteredTableData" :key="u.id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-64">{{ u.estudiante_nombre || 'Nombre desconocido' }}</p>
+                        <p class="text-gray-900 whitespace-nowrap">{{ u.estudiante_nombre || 'Nombre desconocido' }}</p>
                       </td>
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-64">{{ u.asesor_nombre || 'Asesor desconocido' }}</p>
+                      <td class="px-2 py-4 text-base">
+                        <p class="text-gray-900 whitespace-nowrap">{{ u.asesor_nombre || 'Asesor desconocido' }}</p>
                       </td>
                       <td class="text-center px-4">
                         <a :href="`${VIEW_OFFICE}/${u.id}`" target="_blank">

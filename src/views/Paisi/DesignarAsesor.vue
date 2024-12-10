@@ -318,10 +318,10 @@ const formIsValid = computed(() => {
                     <tr
                       class="text-center text-azul border-b-2 bg-gray-300"
                     >
-                      <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
+                      <th class="py-2 px-3 text-left tracking-wider col-estudiante">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                      <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
-                      <th class="py-2 px-4 tracking-wider">LINK TESIS</th>
+                      <th class="py-2 px-2 tracking-wider">CARTA ACEPTACIÓN</th>
+                      <th class="py-2 px-4 tracking-wider">LINK</th>
                       <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                       <th class="py-2 px-3 tracking-wider">ESTADO</th>
                     </tr>
@@ -333,16 +333,16 @@ const formIsValid = computed(() => {
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                       >
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
+                        <p class="text-gray-900 whitespace-nowrap">
                           {{ solicitude.estudiante.nombre_completo}}
                         </p>
                       </td>
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
+                      <td class="px-2 py-4 text-base">
+                        <p class="text-gray-900 whitespace-nowrap">
                           {{ solicitude.asesor.nombre_completo}}
                         </p>
                       </td>
-                      <td class="text-center px-4">
+                      <td class="text-center px-2">
                         <a :href="`${VIEW_LETTER}/${ solicitude.id }`" target="_blank">
                           <button>
                             <svg fill="#39B49E" class="w-6 h-6" version="1.1" id="XMLID_38_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24.00 24.00" xml:space="preserve" width="64px" height="64px" stroke="#39B49E" stroke-width="0.00024000000000000003"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="0.288"></g><g id="SVGRepo_iconCarrier"> <g id="document-pdf"> <g> <path d="M11,20H7v-8h4c1.6,0,3,1.5,3,3.2v1.6C14,18.5,12.6,20,11,20z M9,18h2c0.5,0,1-0.6,1-1.2v-1.6c0-0.6-0.5-1.2-1-1.2H9V18z M2,20H0v-8h3c1.7,0,3,1.3,3,3s-1.3,3-3,3H2V20z M2,16h1c0.6,0,1-0.4,1-1s-0.4-1-1-1H2V16z"></path> </g> <g> <rect x="15" y="12" width="6" height="2"></rect> </g> <g> <rect x="15" y="12" width="2" height="8"></rect> </g> <g> <rect x="15" y="16" width="5" height="2"></rect> </g> <g> <polygon points="24,24 4,24 4,22 22,22 22,6.4 17.6,2 6,2 6,9 4,9 4,0 18.4,0 24,5.6 "></polygon> </g> <g> <polygon points="23,8 16,8 16,2 18,2 18,6 23,6 "></polygon> </g> </g> </g></svg>
@@ -350,7 +350,7 @@ const formIsValid = computed(() => {
                         </a>
                       </td>
                       <td class="text-center px-4">
-                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)"  class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">
+                        <button v-if="!solicitude.link" @click="openModalLink(solicitude)"  class="text-white bg-azul w-25 px-3 py-1 text-sm rounded-xl focus:outline-none">
                           Generar docs
                         </button>
                         <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
@@ -459,11 +459,11 @@ const formIsValid = computed(() => {
                 <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
             </div>
             <div class="flex items-center justify-center p-3  border-gray-200">
-              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+              <button class="px-3 py-2 text-md font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
-              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="!formIsValid" 
+              <button class="ml-4 px-3 py-2 text-md font-Thin 100 text-white bg-base rounded-2xl" :disabled="!formIsValid" 
                 @click="updateOffice">
                 Enviar
               </button>
@@ -513,25 +513,25 @@ const formIsValid = computed(() => {
               </button>
             </div>
             <div class="flex items-start justify-between p-3 border-b border-gray-200">
-              <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+              <h5 class="text-2xl  font-ligth text-gray-900 text-center flex-1">
                 Generar enlace de documento
               </h5>
             </div>
             <div class="p-6">
               <p class="text-gray-500 text-lg text-center mb-2">
-                ¿Está seguro de que desea generar el documento?
+                ¿Está seguro de que desea generar el documento para el proyecto de investigación?
               </p>
             </div>
-            <div class="flex items-center justify-end p-3 border-t border-gray-200">
+            <div class="flex items-center text-sm justify-center p-3  border-gray-200">
               <button 
               :disabled="createdoc"
-              class="px-4 py-2 text-lg font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+              class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
                 Cancelar
               </button>
               <button 
                 v-if="selectedSolicitude && !selectedSolicitude.link" 
                 @click="createGoogleDoc(selectedSolicitude.id!)" 
-                class="ml-4 px-4 py-2 text-lg font-Thin 100 text-white bg-base rounded-2xl"
+                class="ml-4 px-4 py-2 text-sm font-Thin 100 text-white bg-base rounded-2xl"
               >
 
                 <div v-if="createdoc" class="flex items-center gap-2">
@@ -541,7 +541,7 @@ const formIsValid = computed(() => {
                   </svg>
                   Creando...
                 </div>
-                <p v-else>Crear documento</p>
+                <p v-else >Crear documento</p>
               </button>
             </div>
           </div>
@@ -586,6 +586,23 @@ const formIsValid = computed(() => {
   font-size: 16px;  /* Tamaño de la fuente */
   text-transform: uppercase; /* Todo el texto en mayúsculas */
 }
+
+.col-estudiante {
+  width: 20%; /* Ajusta según tus necesidades */
+  max-width: 20%; /* Evita que se expanda más de lo necesario */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Evita que el texto se desborde */
+}
+
+.col-titulo {
+  width: 40%; /* Ajusta según tus necesidades */
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 
 
 </style>

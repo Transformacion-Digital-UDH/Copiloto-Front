@@ -240,7 +240,7 @@ onMounted(() => {
                     <tr class="text-center text-azul border-b-2 bg-gray-300">
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
-                      <th class="py-2 px-3 tracking-wider whitespace-nowrap">RESOLUCIÓN TESIS</th>
+                      <th class="py-2 px-3 tracking-wider whitespace-nowrap">RESOLUCIÓN</th>
                       <th class="py-2 px-3 tracking-wider whitespace-nowrap">GENERAR INFORME</th>
                       <th class="py-2 px-3 tracking-wider">ESTADO</th>
                     </tr>
@@ -248,21 +248,16 @@ onMounted(() => {
                   <tbody>
                     <tr v-for="(solicitude, index) in tableData" :key="solicitude.solicitude_id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                      <!-- Nombre del Estudiante -->
-                      <td class="px-3 py-2 text-base">
-                        <p class="text-black text-wrap w-52">
+                      <td class="px-3 py-5 text-base">
+                        <p class="text-gray-900 whitespace-nowrap">
                           {{ solicitude.nombre }}
                         </p>
                       </td>
-
-                      <!-- Nombre del Asesor -->
-                      <td class="px-3 py-2 text-base">
-                        <p class="text-black text-wrap w-52">
+                      <td class="px-2 py-4 text-base">
+                        <p class="text-gray-900 whitespace-nowrap">
                           {{ solicitude.asesor }}
                         </p>
                       </td>
-
-                      <!-- Resolución Tesis (Enlace con resolucion_id) -->
                       <td class="text-center py-7">
                         <a :href="`${VIEW_AFACULTAD}/${solicitude.resolucion_id}`" target="_blank">
                           <button>
@@ -360,7 +355,7 @@ onMounted(() => {
             </div>
             <div class="p-6">
               <p class="text-gray-500 text-lg text-center mb-2">
-                ¿Está seguro de que desea generar el documento?
+                ¿Está seguro de que desea generar el documento para el informe final?
               </p>
             </div>
             <div class="flex items-center justify-center p-3  border-gray-200">

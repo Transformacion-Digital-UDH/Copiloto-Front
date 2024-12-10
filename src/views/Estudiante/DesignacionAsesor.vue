@@ -60,7 +60,7 @@ const estadoClase = (estado: string) => {
   }
 };
 const procesos = ref([
-  { título: 'TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA TESIS', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
+  { título: 'TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA INVESTIGACIÓN', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
 ]);
 
 // Inicialización de estados y almacenes
@@ -415,11 +415,11 @@ const handleNextButtonClick = () => {
           
           <div class="mt-4">
             <!-- Título de tesis -->
-            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título de tesis</label>
+            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título de investigación</label>
             <input id="tituloTesis" type="text" v-model="solicitude.titulo"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-              placeholder="Escribe tu título de tesis aquí..." />
+              placeholder="Escribe tu título de investigación aquí..." />
             <label for="nombreAsesor" class="block text-lg font-medium text-gray-700 mb-2">Elige a tu asesor</label>
             <select id="nombreAsesor" v-model="solicitude.asesor_id"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
@@ -584,7 +584,7 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center">
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Resolución de Facultad de Ingeniería de Sistemas.
+                  Resolución de Facultad de Ingeniería.
                   <p v-if="resolucion.estado === 'observado'" class="italic">
                     "{{ resolucion.observacion }}"
                   </p>

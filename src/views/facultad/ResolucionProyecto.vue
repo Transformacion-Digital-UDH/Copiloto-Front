@@ -224,8 +224,8 @@ onMounted(() => {
             <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
               <table class="min-w-full leading-normal">
                 <thead class="custom-thead font-Quicksand">
-                  <tr class="text-center text-black border-b-2 bg-gray-300">
-                    <th class="py-2 px-3 tracking-wider text-left">ESTUDIANTE</th>
+                  <tr class="text-center text-azul border-b-2 bg-gray-300">
+                    <th class="py-2 px-3 tracking-wider text-left ">ESTUDIANTE</th>
                     <th class="py-2 px-3 tracking-wider text-left">TÍTULO</th>
                     <th class="py-2 px-4 tracking-wider">OFICIO PAISI</th>
                     <th class="py-2 px-4 tracking-wider">JURADO</th>
@@ -236,13 +236,13 @@ onMounted(() => {
                 <tbody>
                   <tr v-for="(solicitude, index) in filteredTableData" :key="solicitude.resolucion_id"
                     class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                    <td class="px-3 text-base">
-                      <p class="text-gray-900 text-wrap w-40 uppercase">
+                    <td class="px-3 py-5 text-base">
+                      <p class="text-gray-900 whitespace-nowrap uppercase">
                         {{ solicitude.nombre }}
                       </p>
                     </td>
-                    <td class="px-3 py-2 text-base">
-                      <p class="text-gray-900 text-wrap max-w-xl uppercase">
+                    <td class="px-2 py-4 text-base">
+                      <p class="text-gray-900 text-wrap uppercase">
                         {{ solicitude.titulo }}
                       </p>
                     </td>
@@ -359,8 +359,8 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará la resolución de aprobación del proyecto de tesis
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
+              Se autogenerará la resolución de aprobación del proyecto de investigación
             </h5>
           </div>
           <div class="p-6">
@@ -372,7 +372,7 @@ onMounted(() => {
               @input="validateNroExped" required>
             <p v-if="nroExped1.length !== 4 && nroExped1 !== ''" class="text-red-800">Debe ingresar 4 dígitos</p>
           </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+          <div class="flex items-center justify-center p-3  border-gray-200">
             <button class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
               Cancelar
             </button>
@@ -408,7 +408,7 @@ onMounted(() => {
               name="observarTesis" id="observarTesis" v-model="motivoObservacion"
               placeholder="Escriba aquí..."></textarea>
           </div>
-          <div class="flex items-center justify-end p-3 border-t border-gray-200">
+          <div class="flex items-center justify-center p-3  border-gray-200">
             <button class="px-4 py-2 text-sm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
               Cancelar
             </button>

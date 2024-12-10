@@ -340,7 +340,7 @@ onMounted(() => {
                           class="flex items-center m-2 relative group">
                           <IconEyeCerrar class="mr-1 group-hover:hidden" />
                           <IconEyeAbrir class="mr-1 hidden group-hover:block" />
-                          <span class="text-[#34495e]">Oficio <br> Múltiple</span>
+                          <span class="text-[#34495e]">Oficio Múltiple</span>
                         </a>
 
                         <!-- Si el estado no es "tramitado", mostrar el botón de Asignar -->

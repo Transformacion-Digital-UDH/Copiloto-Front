@@ -120,7 +120,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Acta de sustentación de tesis</h2>
+              <h2 class="text-2xl font-medium text-black">1. Acta de sustentación de investigación</h2>
               <ModalToolTip :infoModal="[{ info: 'Falta información' },]" />
             </div>            
           </div>

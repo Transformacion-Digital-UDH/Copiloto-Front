@@ -10,7 +10,7 @@ import { Modal } from 'flowbite';
 import ModalToolTip from '@/components/modalToolTip.vue';
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del Proyecto de Tesis";
+const text = "Aprobación del Proyecto de Investigación";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -66,7 +66,7 @@ const resolucion_id = ref<string>("");
 
 const documentos = ref([
   { nombre: 'Oficio del Programa Académico de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' }, 
-  { nombre: 'Resolución de Facultad de Ingeniería de Sistemas.', estado: 'Pendiente', observacion: '' }
+  { nombre: 'Resolución de Facultad de Ingeniería.', estado: 'Pendiente', observacion: '' }
 ]);
 
 
@@ -206,7 +206,7 @@ onMounted(() =>{
           <!-- Card 2: Documentos -->
           <div class="bg-white rounded-lg shadow-lg p-6 relative mb-20">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis </h2>
+              <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de investigación </h2>
             </div>
             <!-- Para Oficio de PAISI -->
             <div class="mt-4 space-y-4">

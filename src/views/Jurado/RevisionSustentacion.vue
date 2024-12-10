@@ -279,7 +279,7 @@ function emitirCalificacion(solicitud: Review) {
                 <tr class="text-center text-azul border-b-2 bg-gray-300">
                   <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                   <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
-                  <th class="py-2 px-3 text-left tracking-wider">ROL</th>
+                  <th class="py-2 px-3 tracking-wider text-center">ROL</th>
                   <th class="py-2 px-3 tracking-wider">FECHA</th>
                   <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                   <th class="py-2 px-3 tracking-wider">ESTADO</th>
@@ -304,11 +304,13 @@ function emitirCalificacion(solicitud: Review) {
                       </p>
                     </template>
                   </td>
-                  <td class="px-2 py-3 text-center align-middle">
+                  <td class="px-2 py-3 text-center text-sm align-middle rol-col">
                     <span class="px-3 py-1 text-white bg-base rounded-full">
                       {{ u.rol }}
                     </span>
                   </td>
+
+
                   <td class="px-2 py-3 text-center">{{ u.actualizado }}</td>
                   
                   <td class="px-2 py-3 text-center align-middle">
@@ -375,10 +377,7 @@ function emitirCalificacion(solicitud: Review) {
 
                     </div>
                   </td>
-
-
-
-                  <td class="px-2 py-3 text-center">
+                  <td class="px-2 py-3 text-center ">
                     <span :class="`estado-estilo estado-${
                       u.sustentacion_estado === 'emitido'
                         ? 'emitido'
@@ -486,5 +485,9 @@ function emitirCalificacion(solicitud: Review) {
   background-color: #48bb78;
   color: #ffffff;
 }
+
+
+
+
 
 </style>

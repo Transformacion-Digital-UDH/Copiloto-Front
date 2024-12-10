@@ -204,7 +204,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <!-- Jurados seleccionados -->
+        <!-- Jurados seleccionados --> 
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div class="flex items-center justify-between mt-2">
             <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
@@ -233,7 +233,7 @@ onMounted(() => {
                       <p class="text-wrap w-24">{{jurado.rol || "No asignado" }}</p>
                     </td>
                     <td class="px-4 py-2">
-                      <p class="text-wrap w-72">{{jurado.asesor || "No asignado" }}</p>
+                      <p class=" w-72 whitespace-nowrap ">{{jurado.asesor || "No asignado" }}</p>
                     </td>
                   </tr>
                 </tbody>
@@ -247,7 +247,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">4. Documentos para la conformidad de designacion de jurados</h2>
+              <h2 class="text-2xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
                 <ModalToolTip
                 :infoModal="[{ info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.' },]" />
             </div>            
