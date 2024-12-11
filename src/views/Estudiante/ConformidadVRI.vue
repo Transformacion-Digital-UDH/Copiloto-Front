@@ -2,13 +2,14 @@
 import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from "@/stores/auth";
 import axios from 'axios';
-import CursoCard from '@/components/CursoCard.vue';
+import CursoCoachCard from '@/components/CursoCoachCard.vue';
 import DocumentCurso from '@/components/DocumentCurso.vue';
 import ModalToolTip from '@/components/modalToolTip.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 import Swal from 'sweetalert2';
 import router from '@/router';
 import { alertToast } from '@/functions';
+import { useTypewriter } from '@/composables/useTypewriter';
 
 // Estado de la constancia de curso
 // const constanciaCurso = ref({
@@ -40,20 +41,9 @@ import { alertToast } from '@/functions';
 //   //tramites.value[0].estado = 'Hecho'; Trámite en el Sistema pasa a Hecho
 // }
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Conformidad por Integridad VRI";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Conformidad por Integridad VRI");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -172,7 +162,7 @@ onMounted(() => {
 
 <template>
   <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
@@ -210,8 +200,8 @@ onMounted(() => {
   </template>
 
   <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
-      <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado2 }}</h3>
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+      <h3 class="text-4xl sm:text-4xl font-bold text-center text-azul mb-4">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- constancia de tucoach -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -219,14 +209,14 @@ onMounted(() => {
             <h4 class="text-2xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
           </div>
 
-          <p class="text-gray-500 mt-1 text-base">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
-          <p class="text-gray-500 mt-1  text-base">Haz clic en
-            <strong class="text-base font-medium">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento correspondiente.
+          <p class="text-gray-500 mt-1 text-lg">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
+          <p class="text-gray-500 mt-1 text-lg">Haz clic en
+            <strong class="text-lg font-medium text-green-500">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento.
           </p>
           
           <!-- documento de buuenas practicas -->
           <div class="mt-4 space-y-4">
-            <CursoCard 
+            <CursoCoachCard 
             :titulo="'Documento emitido por TUCOACH'"
             :estado="obtener?.tu_coach.doc_estado || ''"
             :view="obtener?.tu_coach.doc_ver"/>
@@ -238,12 +228,12 @@ onMounted(() => {
           <div class="relative flex items-center">
             <h2 class="text-2xl font-medium text-black">2. Solicitar conformidad de VRI</h2>      
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
-            <strong class="text-green-500 text-base font-medium">"Solicitar conformidad"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
+          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar conformidad"</strong> para enviar tu solicitud.
           </p>
           <!-- boton para solicitar aprobacion informe final -->
           <div class="flex justify-center mt-2">
-              <ButtonS 
+              <ButtonRequest 
                 label="Solicitar conformidad" 
                 :loading="isLoading" 
                 :disabled="isAprobacionDisabled" 
@@ -321,7 +311,7 @@ onMounted(() => {
                 <span class="flex-1 text-xm bg-gray-50">Primer Filtro - VRI.</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
-                  <span v-else class="text-gray-500 italic">La solicitud se encuentra en proceso</span>
+                  <span v-else class="text-gray-500 italic">Solicitud en espera</span>
                   <span :class="`estado-estilo estado-${primerFiltro.fil_estado.toLowerCase().replace(' ', '-')}`">
                     {{ formatearTexto(primerFiltro.fil_estado) }}
                   </span>

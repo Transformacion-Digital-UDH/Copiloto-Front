@@ -1,14 +1,16 @@
 <script lang="ts" setup>
-import { alertToast } from '@/functions';
-import { useAuthStore } from '@/stores/auth';
-import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
+import { useAuthStore } from "@/stores/auth";
+import axios from "axios";
+import { ref, computed, onMounted } from "vue";
 import router from "@/router";
 import Swal from "sweetalert2";
-import ModalToolTip from '@/components/modalToolTip.vue';
+import ModalToolTip from "@/components/modalToolTip.vue";
+import DocumentCard from "@/components/DocumentCard.vue";
+import ButtonRequest from "@/components/ButtonRequest.vue";
+import JuradoTabla from "@/components/JuradoTabla.vue";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Jurados";
+const text = "Designación de Jurados para el Proyecto de Tesis";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -21,12 +23,27 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
+/******************************************************** */
 
-// Estados para los modales
-const mostrarModalTramite = ref(false);
-const mostrarModalJurados = ref(false); 
-const mostrarModalDocumentos = ref(false);
-const mostrarModalCambioJurado = ref(false);
+// PARA QUE PERSONALIZES TU ALERTA
+const alertToast = (
+  message: string,
+  title: string,
+  icon: "success" | "error" | "warning" | "info" | "question",
+  options: { timer?: number } = {}
+) => {
+  Swal.fire({
+    title,
+    text: message,
+    icon,
+    timer: options.timer || 5000,
+    timerProgressBar: true,
+    showConfirmButton: false,
+    toast: true,
+    position: "bottom-end",
+  });
+};
+
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -52,165 +69,253 @@ const goToNextPage = () => {
 };
 
 const isNextButtonDisabled = computed(() => {
-  const documentoPaso3 = documentos.value.find(
-  (doc) => doc.nombre === "Oficio Múltiple"
-);
-  return documentoPaso3?.estado !== "Tramitado";
+  return obtener.value?.estado !== "tramitado";
 });
-
-
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
 const solicitudEstado = ref<string>("");
-const solicitudEstado2 = ref<string>("");
 const isLoading = ref(false);
 const load = ref(false);
+const obtener = ref<Informacion | null>(null);
 const jurados = ref<Jurado[]>([]);
-const documentos = ref([{ nombre: 'Oficio Múltiple', estado: 'Pendiente' }]);
+const documentos = ref<Array<{ nombre: string; estado: string }>>([]);
+  const docof_id = computed(() => obtener.value?.docof_id || "");
+
 const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
 const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
-const docof_id = ref<string>("");
+
+// para que el boton quede deshabilitado
+const bloquear = ["pendiente", "observado", "tramitado"];
+const isSolicitarDisabled = computed(() => {
+  return isLoading.value || bloquear.includes(obtener.value?.estado ?? "");
+});
 
 interface Jurado {
-  id: string;
+  id?: string; // Si necesitas un ID opcional
   rol: string;
-  asesor: string;
+  nombre: string;
+  asesor:string;
 }
 
-// para que el botón quede deshabilitado
-const isSolicitarDisabled = computed(() => {
-  const estadoSolicitud = solicitudEstado.value?.toLowerCase();
-  const estadoSolicitud2 = solicitudEstado2.value?.toLowerCase();
-  return ["pendiente", "tramitado"].includes(estadoSolicitud) || ["pendiente", "tramitado"].includes(estadoSolicitud2);// se deshabilita el botón dependiendo del estado
-});
-// funcion para solicitar que me asignen jurados
-const solicitarJurado = async () => {
-  isLoading.value = true;
-  const student_id = authStore.id
-  try {
-    const response = await axios.get(`/api/office/solicitude-juries/${student_id}`);
-    console.log(response);
-  
-    if (response.data.estado) {
-      solicitudEstado.value = "pendiente";  // mostrar el estado de la solicitud
-      alertToast("Solicitud enviada, al Programa Académico de Ingeniería de Sistemas e Informática", "Éxito", "success");
-      await mostrarJurados();
-    }
-    
-  } catch (error: any) {
-    if (error.response && error.response.data && error.response.data.message) {
-      const mensaje = error.response.data.message;
-      alertToast(mensaje, "Error", "error");
-    } else {
-      alertToast("Error en la solicitud.", "Error", "error");
-    }
-  } finally {
-    isLoading.value = false; 
-  }
-};
+interface Informacion {
+  estudiante_id: string;
+  tramite?: string;
+  estado: string;
+  docof_id?: string;
+  jurados: Jurado[];
+  mensaje?: string;
+}
 
 // funcion para ver los jurados asignados
-const mostrarJurados = async () => {
+const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
-    const response = await axios.get(`api/student/get-juries/${authStore.id}`)
-    console.log('Mostrando lo recibido: ', response.data);
-    if(response.data.estado){
-      solicitudEstado2.value = response.data.estado.charAt(0).toUpperCase() + response.data.estado.slice(1).toLowerCase();// para formatear el estado con la primera letra en mayuscula
-      console.log("Estado de la solicitud: ", solicitudEstado2.value);
-    }
-    
-    jurados.value = response.data.jurados// la lista de jurados asignados
+    const response = await axios.get(`api/student/get-juries/${authStore.id}`);
 
-    if (response.data.estado === 'tramitado' && response.data.docof_id) {
-      docof_id.value = response.data.docof_id;
-      documentos.value[0].estado = 'Tramitado';
-    } else {
-      documentos.value[0].estado = 'Pendiente';
+    if (
+      !response.data ||
+      !response.data.jurados ||
+      response.data.jurados.length === 0
+    ) {
+      throw new Error("No se encontraron jurados designados.");
     }
-  } catch (error) {
-    console.error('Error al obtener jurados designados: ', error);
+
+    obtener.value = response.data;
+    jurados.value = response.data.jurados.map(
+      (jurado: { rol: string; asesor: string }) => ({
+        rol: jurado.rol,
+        nombre: jurado.asesor,
+      })
+    );
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      alertToast(
+        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
+        "Advertencia",
+        "warning",
+        { timer: 2000 }
+      );
+    } else {
+      alertToast(
+        error.message ||
+          "Error inesperado al obtener los datos de los jurados.",
+        "Error",
+        "error",
+        { timer: 2000 }
+      );
+    }
   } finally {
     load.value = false;
   }
 };
-// montar para ver los jurados asignados
+
+// funcion para solicitar que me asignen jurados
+const solicitarJuradoProyecto = async () => {
+  isLoading.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(
+      `api/office/solicitude-juries/${student_id}`
+    );
+
+    if (response.data.estado) {
+      solicitudEstado.value = "pendiente";
+      alertToast(
+        "Solicitud enviada. Espere las indicaciones para la designación de tus jurados",
+        "Éxito",
+        "success"
+      );
+      await obtenerDatosEstudiante();
+    }
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      const mensaje = error.response.data.message;
+      alertToast(mensaje, "Advertencia", "warning");
+    } else {
+      alertToast("Error en la solicitud.", "Error", "error");
+    }
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 onMounted(() => {
-  mostrarJurados();
-})
+  obtenerDatosEstudiante();
+});
 </script>
 <template>
-   <template v-if="load">
-    <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div class="flex justify-center items-center content-center px-14 flex-col">
-        <h3 class="bg-gray-200 h-12 w-2/3 rounded-lg duration-200 skeleton-loader"></h3><br>
+  <template v-if="load">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
+      <div
+        class="flex justify-center items-center content-center px-14 flex-col"
+      >
+        <h3
+          class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"
+        ></h3>
+        <br />
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-10 w-48 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"
+            ></h2>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
-            <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"
+            ></h2>
           </div>
         </div>
-        <div class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
           <div class="block space-y-5">
-            <h2 class="bg-gray-200 h-7 w-48 rounded-md skeleton-loader duration-200"></h2>
-            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
+            ></h2>
           </div>
         </div>
         <div class="flex justify-between">
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
         </div>
       </div>
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-      <h3 class="text-4xl mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+      <h3 class="text-4xl font-bold text-center text-azul">
+        {{ textoTipiado2 }}
+      </h3>
       <div class="mt-6 space-y-10">
-
-        <!-- Card 2: Solicitar designación de Jurados -->
+        <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-          <h2 class="text-2xl font-medium text-black ">1. Solicitar designación de jurados</h2>
-          <ModalToolTip
-              :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />
+            <h2 class="text-2xl font-medium text-black">1. Pago de Trámite</h2>
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                @mouseover="mostrarModalTramite = true"
+                @mouseleave="mostrarModalTramite = false" />
           </div>
 
-
-          <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
-            <!-- <span :class="['estado-estilo', `estado-${solicitudEstado.toLowerCase()}`]" class="ml-4">{{ solicitudEstado }}</span> -->
+          <div v-show="mostrarModalTramite" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">
+              Asegurate de haber realizado el pago del trámite.
+            </p>
           </div>
 
-          <div class="mt-4">
-            <div class="flex justify-center mt-2">
-              <button
-                :disabled="isSolicitarDisabled" 
-                :class="[ isSolicitarDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-base', isLoading ? 'hover:bg-azul' : '']"
-                class="px-4 py-2 w-52 text-white rounded-md text-lg"
-                @click="solicitarJurado">
-                {{ isLoading ?'Solicitando...' : 'Solicitar jurados' }}
-              </button>
+           Listado de trámites dinámico -->
+        <!-- <div class="mt-4 space-y-6">
+            <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
+              class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
+              <h4 class="text-black flex-1">{{ proceso.título }}</h4>
+              <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
             </div>
+          </div>
+        </div> -->
+        <!-- solicitar designacion de jurados PY -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="relative flex items-center">
+            <h2 class="text-2xl font-medium text-black">
+              1. Solicitar designación de jurados
+            </h2>
+            <ModalToolTip
+              :infoModal="[
+                {
+                  info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
+                },
+              ]"
+            />
+          </div>
+          <p class="text-gray-500 mt-2 mb-1 text-lg">
+            Haz clic en el botón
+            <strong class="text-green-500 text-lg font-medium"
+              >"Solicitar jurados"</strong
+            >
+            para la designación de jurados.
+          </p>
+          <!-- boton para solicitar designacion de jurados -->
+          <div class="flex justify-center mt-2">
+            <ButtonRequest
+              label="Solicitar jurados"
+              :loading="isLoading"
+              :disabled="isSolicitarDisabled"
+              @click="solicitarJuradoProyecto"
+            />
           </div>
         </div>
 
-        <!-- Jurados seleccionados --> 
-        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
-          <div class="flex items-center justify-between mt-2">
-            <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
-            <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span>
+        <!-- jurados designados por el decano -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">
+              2. Tus jurados designados son:
+            </h2>
           </div>
-
           <div class="overflow-x-auto mt-4 flex justify-center">
             <div class="w-full max-w-2xl">
               <table class="w-full text-left bg-white border border-gray-200 rounded-md shadow-lg">
@@ -233,21 +338,20 @@ onMounted(() => {
                       <p class="text-wrap w-24">{{jurado.rol || "No asignado" }}</p>
                     </td>
                     <td class="px-4 py-2">
-                      <p class=" w-72 whitespace-nowrap ">{{jurado.asesor || "No asignado" }}</p>
+                      <p class="text-wrap w-72">{{jurado.asesor || "No asignado" }}</p>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
-
         </div>
 
-        <!-- Card 3: Oficio múltiple con los jurados seleccionados -->
+        <!-- se muestra oficio mutiple -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
+              <h2 class="text-2xl font-medium text-black">4. Documentos para la conformidad de designacion de jurados</h2>
                 <ModalToolTip
                 :infoModal="[{ info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.' },]" />
             </div>            
@@ -274,29 +378,42 @@ onMounted(() => {
                       <i class="fas fa-download mr-2"></i> Descargar
                     </a>
                   </div>
-                  <span v-else class="text-gray-500 italic text-lg">El documento aún no se ha cargado</span>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
                   <span :class="`estado-${documentos[0].estado.toLowerCase()}`" class="estado-estilo">{{ documentos[0].estado }}</span>
                 </div>
               </div>
             </div>
           </div>
+          <!-- oficion multiple emitido por el programa academico -->
+          <div class="mt-4 space-y-4">
+            <DocumentCard
+              titulo="Oficio Múltiple."
+              :estado="obtener?.estado || ''"
+              :id="obtener?.docof_id ?? ''"
+              :view="VIEW_OFFICEJURADO"
+              :download="DOWNLOAD_OFFICEJURADO"
+            />
+          </div>
         </div>
 
-       <!--Botones siguiente y anteerior-->
-       <div class="flex justify-between">
+        <!--Botones siguiente y anteerior-->
+        <div class="flex justify-between">
           <button
-            @click="$router.push('/estudiante/conformidad-asesor')" 
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
+            @click="$router.push('/estudiante/conformidad-asesor')"
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Anterior
           </button>
           <button
             @click="handleNextButtonClick"
             :disabled="isNextButtonDisabled"
-            :class="[ 
+            :class="[
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
                 ? 'bg-gray-300 cursor-not-allowed'
                 : 'bg-green-500 hover:bg-green-600',
-            ]">
+            ]"
+          >
             Siguiente
           </button>
         </div>
@@ -366,31 +483,6 @@ onMounted(() => {
   font-size: 0.875rem;
   font-weight: 400;
   border-radius: 0.375rem;
-}
-
-.estado-hecho {
-  background-color: #38a169;
-  color: #ffffff;
-}
-
-.estado-tramitado {
-  background-color: #38a169;
-  color: #ffffff;
-}
-
-.estado-en-proceso {
-  background-color: #ed8936;
-  color: #ffffff;
-}
-
-.estado-pendiente {
-  background-color: #8898aa;
-  color: #ffffff;
-}
-
-.estado-no-solicitado {
-  background-color: #718096;
-  color: #ffffff;
 }
 .text-center {
   text-align: center;

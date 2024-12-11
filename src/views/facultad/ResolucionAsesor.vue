@@ -6,6 +6,7 @@ import IconCerrar from "@/components/icons/IconCerrar.vue";
 import { alertToast } from "@/functions";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
+import { useAuthStore } from "@/stores/auth";
 
 // ***** Texto que escribe automáticamente ********
 const text = "Resoluciones para Designación de Asesor";
@@ -40,6 +41,7 @@ const showRejectModal = ref<boolean>(false);  // Modal de rechazo/observación
 const showSendModal = ref<boolean>(false);  // Modal para enviar a facultad
 const nroResolution = ref<string>("");  // Número de resolución
 const load = ref<boolean>(false);       // Estado de carga de datos
+const authStore = useAuthStore();
 const motivoObservacion = ref<string>("");  // Motivo de observación
 
 // Variables de entorno
@@ -116,7 +118,7 @@ const fetchOffices = async () => {
 
   try {
     // Llamada a la API para obtener los datos
-    const response = await axios.get("/api/faculty/getOffices");
+    const response = await axios.get(`/api/faculty/getOffices/${authStore.id}`);
     console.log(response);
     tableData.value = response.data.data; // Tipado como `Resolucion[]`
   } catch (error) {

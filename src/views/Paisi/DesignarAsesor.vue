@@ -6,6 +6,9 @@ import axios from "axios";
 import { alertToast } from "@/functions";
 import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
 import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
 
 // Definir la interfaz para las solicitudes
 interface Estudiante {
@@ -131,10 +134,11 @@ const selectedSolicitude = ref<Solicitude | null>(null);  // Ahora puede ser nul
 // Función para obtener solicitudes desde el backend
 const fetchSolicitudes = async () => {
   load.value = true;
+  const programa_id = authStore.id;
   try {
-    const response = await axios.get('/api/paisi/getSolicitude');
-    tableData.value = response.data.data as Solicitude[];  // Forzamos el tipo a `Solicitude[]`
-    console.log(response.data);
+    const response = await axios.get(`/api/paisi/getSolicitude/${programa_id}`);
+    tableData.value = response.data.data;  // Forzamos el tipo a `Solicitude[]`
+    // console.log("Solicitudes obtenidas:", tableData.value);
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
   } finally {

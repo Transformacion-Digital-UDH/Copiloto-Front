@@ -7,24 +7,13 @@ import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
 import JuradoTabla from '@/components/JuradoTabla.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Jurados para el Informe Final";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-/******************************************************** */
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Designación de Jurados para el Informe Final");
+onMounted(typeWriter);
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -71,20 +60,16 @@ const isSolicitarDisabled = computed(() => {
   return ( isLoading.value || (bloquear.includes(obtener.value?.oficio.of_estado ?? '') || bloquear.includes(obtener.value?.resolucion.of_estado ?? '')));
 });
 
+interface Jurado {
+  rol: string;
+  nombre: string;
+}
+
 interface Informacion {
   estudiante_id: string;
-  presidente: {
-    rol: string;
-    nombre: string;
-  };
-  secretario: {
-    rol: string;
-    nombre: string;
-  };
-  vocal: {
-    rol: string;
-    nombre: string;
-  };
+  presidente: Jurado;
+  secretario: Jurado;
+  vocal: Jurado;
   oficio: {
     of_id: string;
     of_estado: string;
@@ -106,10 +91,10 @@ const obtenerDatosEstudiante = async () => {
     obtener.value = response.data;
 
     jurados.value = [
-      { rol: obtener.value?.presidente.rol || '', nombre: obtener.value?.presidente.nombre || '' },
-      { rol: obtener.value?.secretario.rol || '', nombre: obtener.value?.secretario.nombre || '' },
-      { rol: obtener.value?.vocal.rol || '', nombre: obtener.value?.vocal.nombre || '' },
-    ];
+      { rol: "Presidente", nombre: obtener.value?.presidente.nombre || "" },
+      { rol: "Secretario", nombre: obtener.value?.secretario.nombre || "" },
+      { rol: "Vocal", nombre: obtener.value?.vocal.nombre || "" },
+    ].filter(jurado => jurado.nombre);
 
   } catch (error) {
     console.error('Error al obtener jurados designados', error);
@@ -150,7 +135,7 @@ onMounted(() => {
 </script>
 <template>
    <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
@@ -163,7 +148,7 @@ onMounted(() => {
         </div>
         <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2 class="bg-gray-200 h-7 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
             <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
@@ -184,8 +169,8 @@ onMounted(() => {
     </div>
   </template>
   <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -217,13 +202,13 @@ onMounted(() => {
             <h2 class="text-2xl font-medium text-black">1. Solicitar designación de jurados</h2>
             <ModalToolTip :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />               
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para solicitar la designación de jurados.
+          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
+            <strong class="text-green-500 text-lg font-medium">"Solicitar jurados"</strong> para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-2">
-            <ButtonS 
-              label="Solicitar Jurados" 
+            <ButtonRequest 
+              label="Solicitar jurados" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 
               @click="solicitarJuradoInforme" />
@@ -236,7 +221,7 @@ onMounted(() => {
             <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
           </div>
           <div class="overflow-x-auto mt-4 flex justify-center">
-            <JuradoTabla :obtener="obtener" :jurados="jurados"/>
+            <JuradoTabla :jurados="jurados"/>
           </div>
         </div>
 
@@ -249,7 +234,7 @@ onMounted(() => {
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+              titulo="Oficio emitido por el Programa Académico."
               :estado="obtener?.oficio.of_estado || ''"
               :id="obtener?.oficio.of_id ?? ''"
               :view="VIEW_OFINFORME"

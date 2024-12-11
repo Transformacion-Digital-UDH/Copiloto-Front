@@ -26,7 +26,6 @@ export default {
           return "bg-green-500 text-white";
         default:
           return "bg-gray-400 text-white";
-      }
     },
   },
   methods: {

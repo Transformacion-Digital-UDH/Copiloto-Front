@@ -7,7 +7,7 @@ const route = useRoute();
 // Configuración de títulos según la ruta
 const titles: Record<string, string> = {
   "/estudiante": "Bienvenido(a) al sistema de titulación",
-  "/paisi": "Plataforma Programa Académico de Ingeniería de Sistemas e Informática",
+  "/programa": "Plataforma para el Programa Académico",
   "/facultad": "Plataforma Facultad de Ingeniería",
   "/asesor": "Bienvenido(a), Docente Mentor",
   "/vri": "Plataforma Vicerrectorado de Investigación",

@@ -26,8 +26,7 @@
             :disabled="isRevisionDisabled(revision.estado) || loading[revision.revision_id]"
             :class="[isRevisionDisabled(revision.estado) ? 'truncate px-4 py-2 bg-gray-400 cursor-not-allowed' : 'bg-base', loading[revision.revision_id] ? 'bg-azul' : '']"
              class="px-4 py-1 w-44 text-white rounded-md text-lg"
-            @click="solicitarRevision(revision.revision_id, 'pendiente')"
-          >
+            @click="solicitarRevision(revision.revision_id, 'pendiente')">
             {{ loading[revision.revision_id] ? 'Enviando...' : 'Solicitar revisión' }}
           </button>
         </td>
