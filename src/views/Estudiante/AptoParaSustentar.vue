@@ -7,26 +7,12 @@ import router from "@/router";
 import Swal from "sweetalert2";
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
-import ButtonS from '@/components/ButtonS.vue';
+import ButtonRequest from '@/components/ButtonRequest.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Declaración de Apto para Sustentar";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-
-// Estados para los modales
-const mostrarModalSustentacion = ref(false); 
-const mostrarModalDocumentos = ref(false);
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Declaración de Apto para Sustentar");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -154,7 +140,7 @@ onMounted(() => {
   </template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- solicitar declracion apto para suistentar -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -167,7 +153,7 @@ onMounted(() => {
           </p>
           <!-- boton para solicitar apto para sustentar -->
           <div class="flex justify-center mt-2">
-            <ButtonS 
+            <ButtonRequest 
               label="Solicitar Oficio de Apto" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 
@@ -185,7 +171,7 @@ onMounted(() => {
             <!-- oficio de PAISI -->
             <div class="mt-4 space-y-4">
               <DocumentCard 
-                  titulo="Oficio del Programa Académico de Ingeniería de Sistemas."
+                  titulo="Oficio emitido por el Programa Académico."
                   :estado="obtener?.oficio_estado || ''"
                   :id="obtener?.oficio_id ?? ''"
                   :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría PAISI'"

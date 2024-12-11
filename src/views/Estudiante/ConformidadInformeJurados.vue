@@ -9,25 +9,11 @@ import { ref, computed, onMounted } from 'vue';
 import JuradoCard from '@/components/JuradoCard.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import CorrecionTabla from '@/components/CorrecionTabla.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Conformidad del Informe Final por los Jurados";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-/****************************************************** */
-
-const mostrarModalObservaciones = ref(false); 
-const mostrarModalDocumentos = ref(false); 
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter("Conformidad del Informe Final por los Jurados");
+onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
@@ -50,7 +36,7 @@ const isNextButtonDisabled = computed(() => {
   return obtener.value?.estado_general !== 'aprobado';
 });
 
-//*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
+//*********************************** INTEGRACIÓN CON EL BACKEND PARA CONFORMIDAD DE IF *************************************************** */
 const load = ref(false);
 const authStore = useAuthStore();
 const loading = ref<{ [key: string]: boolean }>({});
@@ -159,17 +145,17 @@ onMounted(() => {
 
 <template>
   <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-screen">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div class="flex justify-center items-center content-center px-14 flex-col">
         <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3><br>
       </div>
       <div class="mt-6 space-y-10">
-        <div class="bg-white rounded-md p-6 space-y-4 animate-pulse duration-200 relative">
+        <div class="bg-white rounded-md p-6 space-y-4 animate-pulse duration-200">
           <div class="text-center"><p class="h-4 rounded w-2/3"></p></div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-gray-200 rounded-md h-36 p-6 skeleton-loader duration-200"></div>
             <div class="bg-gray-200 rounded-md h-36 p-6 skeleton-loader duration-200"></div>
-            <div class="bg-gray-200 rounded-md h-36 sm:col-span-2 p-6 skeleton-loader duration-200"></div>
+            <div class="bg-gray-200 rounded-md h-36 p-6 skeleton-loader duration-200"></div>
           </div>
           <div class="bg-gray-200 h-44 rounded-md p-6 -m-0 skeleton-loader duration-200"></div>
           <div class="text-center mt-6">
@@ -217,25 +203,24 @@ onMounted(() => {
       </div>
     </div>
   </template>
+  
   <template v-else>
-  <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-screen">
-    <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+  <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+    <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
     <div class="mt-6 space-y-10">
       <!-- card para mostrar jurados y titulo -->
       <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-azul space-y-4 relative">
         <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu informe. Verifica la información y revisa las actualizaciones.</p>
         <!-- para mostrar jurados -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <JuradoCard
-            v-for="(jurado, index) in jurados"
+            v-for="jurado in jurados"
             :key="jurado.revision_id"
             :rol="jurado.rol"
-            :nombre="jurado.nombre"
-            :class="{'sm:col-span-2': (jurados.length % 2 !== 0 && index === jurados.length - 1)}"
-          />
+            :nombre="jurado.nombre"/>
         </div>        
         <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-          <p class="max-w-7xl text-xm text-gray-600 uppercase text-center">{{ obtener.titulo || 'Título no asignado' }}</p>
+          <p class="max-full text-xm text-gray-600 uppercase text-center">{{ obtener?.titulo || 'Título no asignado' }}</p>
         </div>        
         <!-- enlace del proyecto de Tesis -->
         <div v-if="obtener?.link" class="text-center mt-6">
@@ -253,22 +238,22 @@ onMounted(() => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
           <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tus jurados, hasta que esté todo conforme.' },]" />
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tus jurados, hasta que esté todo conforme.' },]" />
         </div>
 
-        <p class="text-gray-500 mt-1 text-base">Si el jurado deja observaciones, el estado será 
-          <strong class="text-[#8898AA] text-base font-medium">Pendiente</strong>. Corrige las observaciones en Google Docs.
+        <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será 
+          <strong class="text-[#8898AA] text-lg font-medium">Pendiente</strong>. Corrige las observaciones en Google Docs.
         </p>
-        <p class="text-gray-500 mt-1  text-base">Al corregir, haz clic en  
-          <strong class="text-green-500 text-base font-medium">“Solicitar revisión”</strong> para una nueva revisión.
+        <p class="text-gray-500 mt-1 text-lg">Al corregir, haz clic en  
+          <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong> para una nueva revisión.
         </p>
-        <p class="text-gray-500 mt-1 text-base">Cuando los 3 jurados aprueben, el estado cambiará a 
-          <strong class="text-green-500 text-base font-medium">Aprobado</strong>
+        <p class="text-gray-500 mt-1 text-lg">Cuando los 3 jurados aprueben, el estado cambiará a 
+          <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
         </p>
 
         <!-- Tabla del Presidente -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-xl py-2 text-azul font-bold">Revisiones realizadas por el jurado presidente</p>
+          <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado presidente</p>
           <CorrecionTabla
             :revisiones="presidenteRevisiones"
             :loading="loading"
@@ -277,7 +262,7 @@ onMounted(() => {
         </div>
         <!-- Tabla del Secretario -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-xl py-2 text-azul font-bold">Revisiones realizadas por el jurado secretario</p>
+          <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado secretario</p>
           <CorrecionTabla
             :revisiones="secretarioRevisiones"
             :loading="loading"
@@ -286,7 +271,7 @@ onMounted(() => {
         </div>        
         <!-- Tabla del Vocal -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-xl py-2 text-azul font-bold">Revisiones realizadas por el jurado vocal</p>
+          <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado vocal</p>
           <CorrecionTabla
             :revisiones="vocalRevisiones"
             :loading="loading"
