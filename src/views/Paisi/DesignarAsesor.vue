@@ -379,7 +379,7 @@ const formIsValid = computed(() => {
                           :class="['w-20 px-2 py-1 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none', 
                             ['tramitado'].includes(solicitude.oficio_estado ?? '') 
                               ? 'cursor-not-allowed' 
-                              : 'hover:bg-gray-400'
+                              : 'hover:bg-[#f1aa47e8]'
                           ]"
                           :disabled="['tramitado'].includes(solicitude.oficio_estado ?? '')"
                           @click="openRejectModal(solicitude.oficio_id)"
