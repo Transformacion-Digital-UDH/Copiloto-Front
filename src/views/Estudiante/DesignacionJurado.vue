@@ -38,11 +38,7 @@ const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
 // para que el boton quede deshabilitado
 const bloquear = ["pendiente", "observado", "tramitado"];
 const isSolicitarDisabled = computed(() => {
-  const disabled = isLoading.value || bloquear.includes(obtener.value?.estado ?? "");
-  console.log("isSolicitarDisabled:", disabled);
-  console.log("Estado actual:", obtener.value?.estado);
-  console.log("isLoading:", isLoading.value);
-  return disabled;
+  return (isLoading.value || (bloquear.includes(obtener.value?.estado ?? "")));
 });
 
 
@@ -65,7 +61,7 @@ const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
     const response = await axios.get(`api/student/get-juries/${authStore.id}`);
-    console.log(response.data)
+    //console.log(response.data)
     // if (
     //   !response.data ||
     //   !response.data.jurados ||
