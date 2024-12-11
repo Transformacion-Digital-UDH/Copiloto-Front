@@ -10,22 +10,26 @@ export default {
     estadoClase() {
       const estadoLowerCase = this.estado.toLowerCase();
       switch (estadoLowerCase) {
+        case "rechazado":
+          return "bg-red-500 text-white";
         case "pendiente":
           return "bg-gray-400 text-white";
         case "aceptado":
           return "bg-green-500 text-white";
         case "tramitado":
           return "bg-green-500 text-white";
-        case "rechazado":
-          return "bg-red-500 text-white";
+        case "observado":
+          return "bg-gray-400 text-white";
+        case "en_progreso":
+          return "bg-gray-400 text-white";
         default:
-          return "bg-gray-200 text-gray-700";
+          return "bg-gray-400 text-white";
       }
     },
   },
   methods: {
     capitalizeFirstLetter(text) {
-      if (!text) return "Desconocido";
+      if (!text) return "Pendiente";
       return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
     },
   },

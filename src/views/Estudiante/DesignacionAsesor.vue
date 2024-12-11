@@ -42,20 +42,19 @@ const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
 // Método para determinar la clase CSS dependiendo del estado
 const estadoClase = (estado: string): string => {
   const estados = {
-    pendiente: "bg-gray-400 text-white",
     rechazado: "bg-red-500 text-white",
+    pendiente: "bg-gray-400 text-white",
     aceptado: "bg-green-500 text-white",
     tramitado: "bg-green-500 text-white",
-    observado: "bg-orange-500 text-white",
-    "en progreso": "bg-orange-500 text-white",
-    hecho: "bg-green-500 text-white",
+    observado: "bg-gray-400 text-white",
+    en_progreso: "bg-gray-400 text-white",
   };
 
-  return estados[estado.toLowerCase() as keyof typeof estados] || "bg-gray-200 text-gray-700";
+  return estados[estado as keyof typeof estados] || "bg-gray-400 text-white";
 };
 
 const capitalizarEstado = (estado: string): string => {
-  if (!estado) return "Desconocido";
+  if (!estado) return "Pendiente";
   return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
 };
 
@@ -656,7 +655,7 @@ const handleNextButtonClick = () => {
                 ]"
               />
             </div>
-            <Estados :estado="estadoDocumentos" />
+            <!-- <Estados :estado="estadoDocumentos" /> -->
           </div>
 
           <!-- Listado de documentos -->

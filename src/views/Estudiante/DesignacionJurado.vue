@@ -114,9 +114,7 @@ const obtenerDatosEstudiante = async () => {
       !response.data ||
       !response.data.jurados ||
       response.data.jurados.length === 0
-    ) {
-      throw new Error("No se encontraron jurados designados.");
-    }
+    )
 
     obtener.value = response.data;
     jurados.value = response.data.jurados.map(
