@@ -4,7 +4,8 @@ import Swal from "sweetalert2";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 import { alertToast, alertConfirmation } from "@/functions";
-// import confetti from "canvas-confetti";
+import Estados from "@/components/Estados.vue";
+import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
 
@@ -29,6 +30,7 @@ const mostrarModalDocumentos = ref(false);
 const mostrarModalCambioAsesor = ref(false);
 const mostrarModalConfirmacion = ref(false);
 const mostrarModalSolicitudAsesor = ref(false);
+const full_name = ref<string>('');
 
 // VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
@@ -39,34 +41,36 @@ const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION;
 const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
 
 // Método para determinar la clase CSS dependiendo del estado
-const estadoClase = (estado: string) => {
-  switch (estado) {
-    case "en progreso":
-      return "bg-orange-500 text-white";
-    case "pendiente":
-      return "bg-gray-400 text-white";
-    case "rechazado":
-      return "bg-red-500 text-white";
-    case "aceptado":
-      return "bg-green-500 text-white";
-    case "tramitado":
-      return "bg-green-500 text-white";
-    case "observado":
-      return "bg-orange-500 text-white";
-    case 'hecho':
-      return 'bg-green-500 text-white';
-    default:
-      return "";
-  }
+const estadoClase = (estado: string): string => {
+  const estados = {
+    pendiente: "bg-gray-400 text-white",
+    rechazado: "bg-red-500 text-white",
+    aceptado: "bg-green-500 text-white",
+    tramitado: "bg-green-500 text-white",
+    observado: "bg-orange-500 text-white",
+    hecho: "bg-green-500 text-white",
+    en_progreso: "bg-gray-200 text-gray-700",
+  };
+
+  return estados[estado as keyof typeof estados] || "bg-gray-200 text-gray-700";
 };
+
+const capitalizarEstado = (estado: string): string => {
+  if (!estado) return "Pendiente";
+  return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
+};
+
 const procesos = ref([
-  { título: 'TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA INVESTIGACIÓN', estado: 'Hecho' },  // Eliminamos "Pago de Trámite"
+  {
+    título: "TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA TESIS",
+    estado: "Hecho",
+  }, // Eliminamos "Pago de Trámite"
 ]);
 
 // Inicialización de estados y almacenes
 const authStore = useAuthStore();
 const initSolicitude = ref(false);
-const advisers = ref<{ id: string, nombre: string }[]>([]);
+const advisers = ref<{ id: string; nombre: string }[]>([]);
 const load = ref(false);
 const enviado = ref(false);
 
@@ -88,6 +92,8 @@ const oficio = ref<Oficio>({
   observacion: "",
 });
 
+
+
 // Tipos definidos para mayor seguridad y claridad
 interface Solicitude {
   estudiante_id: string;
@@ -97,8 +103,8 @@ interface Solicitude {
   solicitud_id: string;
   observacion: string;
   tipo_investigacion: string;
-  oficio?: Oficio;  // Se añadió oficio como opcional
-  resolucion?: Resolucion;  // Se añadió resolucion como opcional
+  oficio?: Oficio; // Se añadió oficio como opcional
+  resolucion?: Resolucion; // Se añadió resolucion como opcional
 }
 
 interface Resolucion {
@@ -134,16 +140,27 @@ const resolucion = ref<Resolucion>({
 });
 
 // Historial de acciones
-const historial = ref<{ accion: string, asesor: string, fecha: string, observacion: string, titulo: string }[]>([]);
+const historial = ref<
+  {
+    accion: string;
+    asesor: string;
+    fecha: string;
+    observacion: string;
+    titulo: string;
+  }[]
+>([]);
 
 // Configuración de los headers de axios para la autenticación
 axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
 // Al montar el componente, cargamos los asesores y la información del estudiante
 onMounted(() => {
+  full_name.value = authStore.fullName!;
   getAdvisers();
   getInfoStudent();
 });
+
+
 
 // Función para redirigir a la siguiente página
 const goToNextPage = () => {
@@ -157,14 +174,16 @@ const getInfoStudent = async () => {
     .get(`/api/student/getInfo/${authStore.id}`)
     .then((response) => {
       console.log(response.data);
-      if (response.data.status) {
+      if (response.data) {
+        // console.log(response.data);
         // Actualizamos los datos de solicitud
         solicitude.value.solicitud_id = response.data.solicitud.id;
         solicitude.value.titulo = response.data.solicitud.titulo;
         solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
         solicitude.value.estado = response.data.solicitud.estado;
         solicitude.value.observacion = response.data.solicitud.observacion;
-        solicitude.value.tipo_investigacion = response.data.solicitud.tipo_investigacion || "";
+        solicitude.value.tipo_investigacion =
+          response.data.solicitud.tipo_investigacion || "";
 
         // Actualizamos oficio y resolución
         if (response.data.resolucion) {
@@ -207,18 +226,19 @@ const sendSolicitude = async (student_id: string) => {
       params,
       "/api/solicitudes-store",
       "POST",
-      (response: SolicitudeResponse) => { // Tipamos aquí la respuesta
+      (response: SolicitudeResponse) => {
+        // Tipamos aquí la respuesta
         solicitude.value.solicitud_id = response.data._id;
         solicitude.value.titulo = response.data.sol_title_inve;
         solicitude.value.asesor_id = response.data.adviser_id || "";
         solicitude.value.estado = response.data.sol_status;
 
-        // Lanza confetti en la pantalla
-        // confetti({
-        //   particleCount: 500,
-        //   spread: 1010,
-        //   origin: { y: 0.6 },
-        // });
+        //Lanza confetti en la pantalla
+        confetti({
+          particleCount: 500,
+          spread: 1010,
+          origin: { y: 0.6 },
+        });
       }
     );
   } catch (error: any) {
@@ -229,7 +249,6 @@ const sendSolicitude = async (student_id: string) => {
     alertToast(description, "Error", "error");
   }
 };
-
 
 // Función para obtener la lista de asesores
 const getAdvisers = async () => {
@@ -262,7 +281,7 @@ const updateSolicitude = async (
       sol_title_inve: titulo,
       adviser_id: asesor_id,
       sol_status: "pendiente",
-      sol_type_inve: tipo_investigacion
+      sol_type_inve: tipo_investigacion,
     };
     alertConfirmation(
       "Verifica que los datos sean correctos antes de proceder",
@@ -300,13 +319,15 @@ const confirmarCambioAsesor = () => {
 
 // Computed para determinar el estado de los documentos
 const estadoDocumentos = computed(() => {
-  if (oficio.value.estado === "tramitado" && resolucion.value.estado === "tramitado") {
+  if (
+    oficio.value.estado === "tramitado" &&
+    resolucion.value.estado === "tramitado"
+  ) {
     return "hecho";
   } else {
     return "pendiente";
   }
 });
-
 
 //alerta Boton siguiente
 
@@ -319,10 +340,10 @@ const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
     // Mostrar un mensaje si el botón está deshabilitado
     Swal.fire({
-      icon: 'warning',
-      title: 'Pasos incompletos',
-      text: 'Por favor, completa todos los pasos antes de continuar.',
-      confirmButtonText: 'OK',
+      icon: "warning",
+      title: "Pasos incompletos",
+      text: "Por favor, completa todos los pasos antes de continuar.",
+      confirmButtonText: "OK",
     });
   } else {
     // Navegar a la siguiente página
@@ -369,57 +390,71 @@ const handleNextButtonClick = () => {
 
   <template v-else>
     <template v-if="!solicitude.estado">
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center">
-          <h3 class="text-4xl font-semibold text-azul">
-            Usted no ha iniciado un trámite
+      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-50 h-screen">
+        <div class="p-12 bg-white rounded-xl shadow-lg space-y-10 text-center">
+          <!-- Título Principal -->
+          <h3 class="text-3xl font-bold text-azul leading-tight">
+            Hola <span class="text-[39B49E] text-3xl  capitalize">{{ full_name }}</span>,
+            empieza designando un asesor para tu proyecto.
           </h3>
-          <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
 
+          <!-- Subtítulo -->
+          <p class="text-gray-600 text-lg">
+            Haz clic en <strong>'Iniciar trámite'</strong> para iniciar tu proceso de titulación.
+          </p>
+
+
+          <!-- Imagen Central -->
           <div class="flex justify-center">
             <img src="/img/notInitSolicitude.svg" alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md" />
+              class="w-1/3 h-auto object-contain" />
           </div>
 
+          <!-- Botón de Acción -->
           <div class="flex justify-center">
             <button v-if="authStore.id"
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id!)">
+              class="bg-base text-white px-10 py-4  text-lg  shadow-lg hover:bg-green-600 transition-all transform hover:scale-105 duration-300 bounce"
+              @click="sendSolicitude(authStore.id)">
               Iniciar trámite
             </button>
-
           </div>
         </div>
       </div>
+
+
+
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
         <h3 class="text-4xl font-semibold text-center text-azul">
           {{ textoTipiado }}
         </h3>
-        <br>
-        <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative ">
+        <br />
+        <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative">
           <div class="flex justify-between">
             <div class="flex flex-col sm:flex-row items-center justify-between w-full">
               <div class="flex items-center">
-                <h2 class="text-2xl font-medium text-black">1. Solicita tu asesor</h2>
-                <ModalToolTip :infoModal="[{ info: ' Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.' },]" />               
+                <h2 class="text-2xl font-medium text-black">
+                  1. Solicita tu asesor
+                </h2>
+                <ModalToolTip :infoModal="[
+                  {
+                    info: ' Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.',
+                  },
+                ]" />
               </div>
-              <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
-                {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() +
-                  solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
-              </span>
-
+              <Estados :estado="capitalizarEstado(solicitude.estado)" />
             </div>
           </div>
-          
+
           <div class="mt-4">
             <!-- Título de tesis -->
-            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título de investigación</label>
+            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título del proyecto de
+              investigación (provisional)</label>
             <input id="tituloTesis" type="text" v-model="solicitude.titulo"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-              placeholder="Escribe tu título de investigación aquí..." />
+              placeholder="Escribe tu título de proyecto de investigación aquí..." />
             <label for="nombreAsesor" class="block text-lg font-medium text-gray-700 mb-2">Elige a tu asesor</label>
             <select id="nombreAsesor" v-model="solicitude.asesor_id"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
@@ -431,18 +466,14 @@ const handleNextButtonClick = () => {
             </select>
 
             <!-- Select para elegir tipo de investigacion -->
-            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Elige tu tipo de
+            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Selecciona tu tipo de
               investigación</label>
             <select id="tipoInvestigacion" v-model="solicitude.tipo_investigacion"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6">
               <option disabled value="">Selecciona un tipo...</option>
-              <option value="cientifica">
-                CIENTÍFICA
-              </option>
-              <option value="tecnologica">
-                TECNOLÓGICA
-              </option>
+              <option value="cientifica">CIENTÍFICA</option>
+              <option value="tecnologica">TECNOLÓGICA</option>
             </select>
 
             <!-- Botón de enviar -->
@@ -487,10 +518,7 @@ const handleNextButtonClick = () => {
                     <i class="fas fa-download mr-2"></i> Descargar
                   </a>
                 </div>
-                <span :class="estadoClase(solicitude.estado)" class="estado-estilo">
-                  {{ solicitude.estado ? solicitude.estado.charAt(0).toUpperCase() +
-                    solicitude.estado.slice(1).toLowerCase() : 'Desconocido' }}
-                </span>
+                <Estados :estado="capitalizarEstado(solicitude.estado)" />
 
                 <a href="#historial" v-if="solicitude.estado === 'rechazado'" class="ml-4 p-1 text-blue-500">
                   ver motivo
@@ -501,14 +529,16 @@ const handleNextButtonClick = () => {
           <br />
           <!-- Mensaje de espera según el estado -->
           <span v-if="solicitude.estado === 'pendiente'" class="text-gray-500 italic">Estamos esperando la respuesta del
-            asesor. Se mostrará aquí cuando esté disponible.</span>
+            asesor. Se mostrará aquí cuando
+            esté disponible.</span>
           <span v-else-if="solicitude.estado === 'rechazado'" class="text-red-500 italic">El asesor ha rechazado la
             solicitud, revise el historial de
             acciones y porfavor vuelve a seleccionar tu asesor.</span>
           <span v-else-if="solicitude.estado === 'aceptado'" class="text-green-500 italic">El asesor ha aceptado tu
-            solicitud, puedes revisar tus documentos de conformidad de designación de asesor en el punto 2.</span>
+            solicitud, puedes revisar tus documentos
+            de conformidad de designación de asesor en el punto 2.</span>
         </div>
-        <br>
+        <br />
         <!-- Card 2: Documentos -->
         <div class="mt-4" :disabled="['en progreso', 'pendiente', 'rechazado'].includes(
           solicitude.estado
@@ -523,17 +553,16 @@ const handleNextButtonClick = () => {
           ]">
           <div class="flex flex-col sm:flex-row items-center justify-between w-full">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos para la conformidad de designación de asesor
+              <h2 class="text-2xl font-medium text-black">
+                2. Documentos para la conformidad de designación de asesor
               </h2>
-              <ModalToolTip :infoModal="[{
-                info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.'
-              },]" />
+              <ModalToolTip :infoModal="[
+                {
+                  info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.',
+                },
+              ]" />
             </div>
-            <span :class="estadoClase(estadoDocumentos)" class="estado-estilo ml-4">
-              {{ estadoDocumentos ? estadoDocumentos.charAt(0).toUpperCase() + estadoDocumentos.slice(1).toLowerCase() :
-                'Desconocido' }}
-            </span>
-
+            <Estados :estado="estadoDocumentos" />
           </div>
 
           <!-- Listado de documentos -->
@@ -570,10 +599,7 @@ const handleNextButtonClick = () => {
                   <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
 
                   <!-- Estado del documento -->
-                  <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">
-                    {{ oficio.estado ? oficio.estado.charAt(0).toUpperCase() + oficio.estado.slice(1).toLowerCase() :
-                      'Desconocido' }}
-                  </span>
+                  <Estados :estado="capitalizarEstado(oficio.estado)" />
 
                 </div>
               </div>
@@ -608,8 +634,7 @@ const handleNextButtonClick = () => {
                   <!-- Mensaje de que aún no está cargado -->
                   <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
                   <!-- Estado del documento -->
-                  <span :class="estadoClase(resolucion.estado)" class="estado-estilo ml-4">{{ resolucion.estado
-                    }}</span>
+                  <Estados :estado="capitalizarEstado(resolucion.estado)" />
                 </div>
               </div>
             </div>
@@ -617,8 +642,12 @@ const handleNextButtonClick = () => {
         </div>
         <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
-          <button @click="handleNextButtonClick"
-            :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled ? 'bg-gray-300 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600']">
+          <button @click="handleNextButtonClick" :class="[
+            'px-4 py-2 text-white rounded-md',
+            isNextButtonDisabled
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-green-500 hover:bg-green-600',
+          ]">
             Siguiente
           </button>
         </div>
@@ -720,9 +749,7 @@ const handleNextButtonClick = () => {
             </div>
           </div>
         </div>
-
       </div>
-
     </template>
   </template>
 </template>
@@ -738,5 +765,21 @@ const handleNextButtonClick = () => {
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce {
+  animation: bounce 1.5s infinite;
 }
 </style>
