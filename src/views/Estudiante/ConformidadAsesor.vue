@@ -75,14 +75,21 @@ const obtenerDatosEstudiante = async () => {
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/student/get-review/${student_id}`);
-    //console.log("Mostrando lo recibido", response.data);
+    console.log("Mostrando lo recibido", response.data);
     obtener.value = response.data;
+
+    // Asegúrate de llenar la lista de documentos
+    if (response.data.revision?.archivos) {
+      documentos.value = JSON.parse(response.data.revision.archivos); // Asegúrate de que sea un array
+    }
+    console.log("Documentos cargados:", documentos.value);
   } catch (error) {
     console.error("Error al obtener datos", error);
   } finally {
     load.value = false;
   }
 };
+
 
 // funcion de disparador para solicitar revision asesor
 const solicitarRevisionAsesorProyecto = async () => {
@@ -197,9 +204,9 @@ onMounted(() => {
               ]"
             />
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
+          <p class="text-gray-500 mt-2 mb-1 text-xm">
             Haz clic en
-            <strong class="text-green-500 text-lg font-medium"
+            <strong class="text-green-500 text-xm font-medium"
               >"Solicitar revisión"</strong
             >
             para iniciar las observaciones del proyecto de investigación.
@@ -230,22 +237,18 @@ onMounted(() => {
             />
           </div>
 
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
-            Si tu asesor deja observaciones, el estado será
-            <strong class="text-[#8898aa] text-lg font-medium"
+          <p class="text-gray-500 mt-2 mb-1 text-xm">
+            Si tu asesor deja observaciones el estado será
+            <strong class="text-[#8898aa] text-xm font-medium"
               >"Pendiente"</strong
-            >. Corrige en Google Docs.
-          </p>
-          <p class="text-gray-500 text-lg">
-            Luego, haz clic en
-            <strong class="text-green-500 text-lg font-medium"
+            >. Corrígelas en Google Docs. Luego, haz clic en   <strong class="text-green-500 text-xm font-medium"
               >“Observaciones corregidas”</strong
             >. Si todo está bien, el estado cambiará a
-            <strong class="text-green-500 text-lg font-medium"
+            <strong class="text-green-500 text-xm font-medium"
               >"Aprobado"</strong
             >.
           </p>
-
+          
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
             <CorrecionAsesorPY
@@ -255,48 +258,86 @@ onMounted(() => {
           </div>
         </div>
 
-        <!--  informe de conformidad de observaciones -->
-        <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documento para verificar la conformidad del proyecto de
-              tesis
-              por el asesor</h2>
+        <!-- Informe de conformidad de observaciones -->
+<div class="bg-white rounded-lg shadow-lg p-6 relative">
+  <div class="flex items-center">
+    <h2 class="text-2xl font-medium text-black">
+      3. Documento para verificar la conformidad del proyecto de tesis por el asesor
+    </h2>
+    <!-- ToolTip -->
+    <ModalToolTip
+      :infoModal="[{
+        info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.'
+      }]"
+    />
+  </div>
 
-            <!--toolTip-->
-            <ModalToolTip
-              :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
-          </div>
-          <div class="mt-4 space-y-4">
-            <div v-for="(documento, index) in documentos" :key="documento.nombre"
-              class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="w-full md:w-auto mb-2 md:mb-0 text-xm bg-gray-50">Informe de conformidad de observaciones
-                  por el asesor</span>
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-                  <div v-if="documento.estado === 'Hecho'"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-                    <!-- Botón de Ver -->
-                    <a :href="`${VIEW_CPA}/${documento.revision_id}`" target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a :href="`${DOWNLOAD_CPA}/${documento.revision_id}`" download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
-                  <span
-                    :class="`estado-estilo estado-${documentos[documentos.length - 1].estado.toLowerCase().replace(' ', '-')}`">
-                    {{ documentos[documentos.length - 1].estado || "Estado desconocido" }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- Contenedor de documentos -->
+  <div class="mt-4 space-y-4">
+    <!-- Mostrar mensaje si no hay documentos -->
+    <div v-if="documentos.length === 0" class="text-gray-500 italic text-center">
+      Aún no se ha cargado ningún documento.
+    </div>
+    
+    
+    <!-- Mostrar lista de documentos -->
+    <div
+      v-else
+      v-for="(documento, index) in documentos"
+      :key="documento.nombre"
+      class="bg-gray-50 p-4 border border-gray-200 rounded-md"
+    >
+      <div class="flex flex-col md:flex-row justify-between md:items-center">
+        <!-- Título del documento -->
+        <span class="text-xm bg-gray-50 font-medium">
+          Informe de conformidad de observaciones por el asesor
+        </span>
+
+        <div
+          class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
+        >
+          <!-- Opciones de acción -->
+          <template v-if="documento.estado === 'aprobado'">
+            <!-- Botón de Ver -->
+            <a
+              :href="`${VIEW_CPA}/${documento.revision_id}`"
+              target="_blank"
+              class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+            >
+              <i class="fas fa-eye mr-2"></i> Ver
+            </a>
+            <!-- Botón de Descargar -->
+            <a
+              :href="`${DOWNLOAD_CPA}/${documento.revision_id}`"
+              download
+              class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+            >
+              <i class="fas fa-download mr-2"></i> Descargar
+            </a>
+          </template>
+
+          <!-- Estado del documento no cargado -->
+          <span v-else class="text-gray-500 italic">
+            El documento aún no se ha cargado.
+          </span>
         </div>
+      </div>
+
+      <!-- Estado del documento -->
+      <span
+        class="mt-2 block text-sm font-medium text-gray-700"
+        :class="{
+          'text-green-500': documento.estado === 'Aprobado',
+          'text-yellow-500': documento.estado === 'Pendiente',
+          'text-red-500': documento.estado === 'Observado'
+        }"
+      >
+        Estado: {{ documento.estado || 'Desconocido' }}
+      </span>
+    </div>
+  </div>
+</div>
+
 
         <!--Botones siguiente y anteerior-->
         <NavigationButton
@@ -316,8 +357,26 @@ onMounted(() => {
   border-radius: 0.375rem;
   display: inline-block;
 }
+
 .text-center {
   text-align: center;
   padding: 1rem;
 }
+
+/* Ajustar márgenes en el contenedor principal */
+.flex-1 {
+  padding: 10px 12px; /* Ajuste de margen más uniforme */
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1200px; /* Para centrar el contenido */
+  background-color: #f9fafb; /* Fondo ligeramente diferente para realzar */
+}
+
+/* Ajustes para pantallas grandes */
+@media (min-width: 768px) {
+  .flex-1 {
+    padding: 20px 24px;
+  }
+}
 </style>
+

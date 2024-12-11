@@ -395,7 +395,10 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center">
-                <span class="flex-1 text-xm">{{ documentos[2].nombre }}</span>
+                <div v-if="documentos.length === 0" class="text-gray-500 italic text-center">
+      Aún no se ha cargado ningún documento.
+    </div>
+                <span  v-else class="flex-1 text-xm">{{ documentos[2].nombre }}</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="documentos[2].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- BOTON VER -->

@@ -144,8 +144,8 @@ onMounted(() => {
           <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
           <ModalToolTip :infoModal="[{ info: 'Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
         </div>
-        <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en  
-          <strong class="text-green-500 text-lg font-medium">"Solicitar revisión"</strong> para iniciar las observaciones del informe final. 
+        <p class="text-gray-500 mt-2 mb-1 text-xm">Haz clic en  
+          <strong class="text-base text-xm font-medium">"Solicitar revisión"</strong> para iniciar las observaciones del informe final. 
         </p>
         <div class="flex justify-center mt-2">
           <!-- boton para solicitar revision de asesor -->
@@ -164,13 +164,14 @@ onMounted(() => {
           <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.' },]" />            
         </div>
 
-        <p class="text-gray-500 mt-2 mb-1 text-lg">Si tu asesor deja observaciones, el estado será 
-          <strong class="text-[#8898aa] text-lg font-medium">"Pendiente"</strong>. Corrige en Google Docs.
-        </p>
-        <p class="text-gray-500 text-lg">Luego, haz clic en 
+        <p class="text-gray-500 mt-2 mb-1 text-xm">Si tu asesor deja observaciones el estado será 
+          <strong class="text-[#8898aa] text-xm font-medium">"Pendiente"</strong>. Corrígelas en Google Docs. Luego, haz clic en <strong class="text-green-500 text-xm font-medium">“Observaciones corregidas”</strong>. Si todo está bien, el estado cambiará a 
+          <strong class="text-base text-xm font-medium">"Aprobado"</strong>.
+        </p> 
+        <!-- <p class="text-gray-500 text-xm">Luego, haz clic en
           <strong class="text-green-500 text-lg font-medium">“Observaciones corregidas”</strong>. Si todo está bien, el estado cambiará a 
           <strong class="text-green-500 text-lg font-medium">"Aprobado"</strong>.
-        </p>
+        </p> -->
 
         <!-- Tabla de observaciones -->
         <div class="overflow-x-auto mt-4">

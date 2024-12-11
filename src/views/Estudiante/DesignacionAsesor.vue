@@ -8,6 +8,7 @@ import Estados from "@/components/Estados.vue";
 import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
+import SkeletonConformidadesAsesor from "@/components/SkeletonConformidadesAsesor.vue";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
 const text = "Designación de Asesor";
@@ -34,29 +35,10 @@ const full_name = ref<string>('');
 
 // VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
-const DOWNLOAD_LETTER = import.meta.env.VITE_URL_DOWNLOAD_LETTER;
 const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const DOWNLOAD_OFFICE = import.meta.env.VITE_URL_DOWNLOAD_OFFICE;
 const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION;
-const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
-
-// Método para determinar la clase CSS dependiendo del estado
-const estadoClase = (estado: string): string => {
-  const estados = {
-    pendiente: "bg-gray-400 text-white",
-    rechazado: "bg-red-500 text-white",
-    aceptado: "bg-green-500 text-white",
-    tramitado: "bg-green-500 text-white",
-    observado: "bg-orange-500 text-white",
-    "en progreso": "bg-orange-500 text-white",
-    hecho: "bg-green-500 text-white",
-  };
-
-  return estados[estado.toLowerCase() as keyof typeof estados] || "bg-gray-200 text-gray-700";
-};
-
 const capitalizarEstado = (estado: string): string => {
-  if (!estado) return "Desconocido";
+  if (!estado) return "Pendiente";
   return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
 };
 
@@ -64,7 +46,7 @@ const procesos = ref([
   {
     título: "TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA TESIS",
     estado: "Hecho",
-  }, // Eliminamos "Pago de Trámite"
+  },
 ]);
 
 // Inicialización de estados y almacenes
@@ -72,13 +54,12 @@ const authStore = useAuthStore();
 const initSolicitude = ref(false);
 const advisers = ref<{ id: string; nombre: string }[]>([]);
 const load = ref(false);
-const enviado = ref(false);
 
 const solicitude = ref<Solicitude>({
   estudiante_id: "",
   titulo: "",
   asesor_id: "",
-  estado: "",
+  estado: "pendiente",
   solicitud_id: "",
   observacion: "",
   tipo_investigacion: "",
@@ -91,8 +72,6 @@ const oficio = ref<Oficio>({
   nombre_de_oficio: "",
   observacion: "",
 });
-
-
 
 // Tipos definidos para mayor seguridad y claridad
 interface Solicitude {
@@ -155,12 +134,11 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
 // Al montar el componente, cargamos los asesores y la información del estudiante
 onMounted(() => {
+ 
   full_name.value = authStore.fullName!;
   getAdvisers();
   getInfoStudent();
 });
-
-
 
 // Función para redirigir a la siguiente página
 const goToNextPage = () => {
@@ -173,6 +151,10 @@ const getInfoStudent = async () => {
   await axios
     .get(`/api/student/getInfo/${authStore.id}`)
     .then((response) => {
+      if (response.data.status) {
+      // Si el estado no viene definido, lo asignamos como "pendiente"
+      solicitude.value.estado = response.data.solicitud.estado || "pendiente";
+    }
       // console.log(response.data);
       if (response.data.status) {
         // Actualizamos los datos de solicitud
@@ -353,116 +335,44 @@ const handleNextButtonClick = () => {
 
 
 <template>
-  <!-- Muestra si hay una solicitud ya sea pendiente rechazada o aceptada -->
-  <template v-if="load">
-    <div class="flex-1 p-10 border-s-2 bg-gray-100">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col"
-      >
-        <h3
-          class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"
-        ></h3>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-10 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-        </div>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-        </div>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-1 w-15 rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-        </div>
-      </div>
-    </div>
-  </template>
-
+  <template v-if="load"><SkeletonConformidadesAsesor /></template>
   <template v-else>
     <template v-if="!solicitude.estado">
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-50 h-screen">
-  <div class="p-12 bg-white rounded-xl shadow-lg space-y-10 text-center">
-    <!-- Título Principal -->
-    <h3 class="text-3xl font-bold text-azul leading-tight">
-      Hola <span class="text-[39B49E] text-3xl  capitalize">{{ full_name }}</span>, 
-      empieza designando un asesor para tu proyecto.
-    </h3>
+        <div class="p-12 bg-white rounded-xl shadow-lg space-y-10 text-center">
+          <!-- Título Principal -->
+          <h3 class="text-3xl font-bold text-azul leading-tight">
+            Hola <span class="text-[39B49E] text-3xl  capitalize">{{ full_name }}</span>, 
+            empieza designando un asesor para tu proyecto.
+          </h3>
 
-    <!-- Subtítulo -->
-    <p class="text-gray-600 text-lg">
-      Haz clic en <strong>'Iniciar trámite'</strong> para iniciar tu proceso de titulación.
-    </p>
-
-
-    <!-- Imagen Central -->
-    <div class="flex justify-center">
-      <img
-        src="/img/notInitSolicitude.svg"
-        alt="Iniciar trámite o solicitar asesor"
-        class="w-1/3 h-auto object-contain"
-      />
-    </div>
-
-    <!-- Botón de Acción -->
-    <div class="flex justify-center">
-      <button
-        v-if="authStore.id"
-        class="bg-base text-white px-10 py-4  text-lg  shadow-lg hover:bg-green-600 transition-all transform hover:scale-105 duration-300 bounce"
-        @click="sendSolicitude(authStore.id)"
-      >
-        Iniciar trámite
-      </button>
-    </div>
-  </div>
-</div>
+          <!-- Subtítulo -->
+          <p class="text-gray-600 text-lg">
+            Haz clic en <strong>'Iniciar trámite'</strong> para iniciar tu proceso de titulación.
+          </p>
 
 
+          <!-- Imagen Central -->
+          <div class="flex justify-center">
+            <img
+              src="/img/notInitSolicitude.svg"
+              alt="Iniciar trámite o solicitar asesor"
+              class="w-1/3 h-auto object-contain"
+            />
+          </div>
 
+          <!-- Botón de Acción -->
+          <div class="flex justify-center">
+            <button
+              v-if="authStore.id"
+              class="bg-base text-white px-10 py-4  text-lg  shadow-lg hover:bg-green-600 transition-all transform hover:scale-105 duration-300 bounce"
+              @click="sendSolicitude(authStore.id)"
+            >
+              Iniciar trámite
+            </button>
+          </div>
+        </div>
+      </div>
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
@@ -476,6 +386,26 @@ const handleNextButtonClick = () => {
               class="flex flex-col sm:flex-row items-center justify-between w-full"
             >
               <div class="flex items-center">
+                <!-- Indicador dinámico de estado -->
+                <span
+                  class="flex items-center justify-center w-6 h-6 rounded-full text-white text-sm mr-2"
+                  :class="{
+                    'bg-green-500': solicitude.estado === 'aceptado',
+                    'bg-gray-500': solicitude.estado === 'pendiente',
+                    'bg-orange-400': solicitude.estado === 'en progreso' || !solicitude.estado,
+                    'bg-red-400': solicitude.estado === 'rechazado'
+                  }"
+                >
+                  <!-- Ícono dinámico -->
+                  <i
+                    :class="{
+                      'fas fa-check': solicitude.estado === 'aceptado',
+                      'fas fa-ellipsis-h': estadoDocumentos === 'pendiente',
+                      'fas fa-hourglass-half': solicitude.estado === 'en progreso',
+                      'fas fa-circle-notch': solicitude.estado === 'rechazado'
+                    }"
+                  ></i>
+                </span>
                 <h2 class="text-2xl font-medium text-black">
                   1. Solicita tu asesor
                 </h2>
@@ -487,18 +417,17 @@ const handleNextButtonClick = () => {
                   ]"
                 />
               </div>
-              <Estados :estado="capitalizarEstado(solicitude.estado)" />
             </div>
           </div>
 
           <div class="mt-4">
             <!-- Título de tesis -->
-            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título del proyecto de investigación (provisional)</label>
+            <label for="tituloTesis" class="block text-xm font-medium text-black mb-2">Título del proyecto de investigación (provisional)</label>
             <input id="tituloTesis" type="text" v-model="solicitude.titulo"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
               placeholder="Escribe tu título de proyecto de investigación aquí..." />
-            <label for="nombreAsesor" class="block text-lg font-medium text-gray-700 mb-2">Elige a tu asesor</label>
+            <label for="nombreAsesor" class="block text-xm font-medium text-black mb-2">Elige a tu asesor</label>
             <select id="nombreAsesor" v-model="solicitude.asesor_id"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
@@ -514,7 +443,7 @@ const handleNextButtonClick = () => {
             </select>
 
             <!-- Select para elegir tipo de investigacion -->
-            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Selecciona tu tipo de investigación</label>
+            <label for="tipoInvestigacion" class="block text-xm font-medium text-black mb-2">Selecciona tu tipo de investigación</label>
             <select id="tipoInvestigacion" v-model="solicitude.tipo_investigacion"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
@@ -553,9 +482,9 @@ const handleNextButtonClick = () => {
           >
             <div
               class="flex flex-col md:flex-row justify-between md:items-center"
-            >
+            > 
               <h4 class="text-black">
-                Respuesta del asesor:
+                Carta de aceptación/rechazo
                 <span
                   v-if="solicitude.estado === 'rechazado'"
                   class="text-red-500 italic"
@@ -575,17 +504,9 @@ const handleNextButtonClick = () => {
                   <a
                     :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
                     target="_blank"
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
+                    class="flex items-center px-3 py-2 rounded-lg text-white bg-base hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 shadow-lg transform hover:scale-105"
                   >
-                    <i class="fas fa-eye mr-2"></i> Ver
-                  </a>
-                  <!-- Botón de Descargar -->
-                  <a
-                    :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`"
-                    download
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                  >
-                    <i class="fas fa-download mr-2"></i> Descargar
+                  <i class="fas fa-file-alt text-white mr-2"></i> Ver
                   </a>
                 </div>
                 <Estados :estado="capitalizarEstado(solicitude.estado)" />
@@ -617,8 +538,7 @@ const handleNextButtonClick = () => {
           <span
             v-else-if="solicitude.estado === 'aceptado'"
             class="text-green-500 italic"
-            >El asesor ha aceptado tu solicitud, puedes revisar tus documentos
-            de conformidad de designación de asesor en el punto 2.</span
+            >El asesor ha aceptado tu solicitud, porfavor espera a que se carguen tus documentos de conformidad en el punto 2.</span
           >
         </div>
         <br />
@@ -630,8 +550,8 @@ const handleNextButtonClick = () => {
               solicitude.estado
             )
           "
-          :class="[
-            'rounded-lg shadow-lg p-6 relative mt-6',
+          :class="[ 
+            'rounded-lg shadow-xm p-6 relative mt-6',
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado
             )
@@ -643,122 +563,98 @@ const handleNextButtonClick = () => {
             class="flex flex-col sm:flex-row items-center justify-between w-full"
           >
             <div class="flex items-center">
+              <!-- Indicador dinámico de estado -->
+              <span
+                class="flex items-center justify-center w-6 h-6 rounded-full text-white text-sm mr-2"
+                :class="{
+                  'bg-green-500': estadoDocumentos === 'hecho',
+                  //'bg-orange-400': estadoDocumentos === 'en_progreso',
+                  'bg-gray-400': estadoDocumentos === 'pendiente'
+                }"
+              >
+                <i
+                  :class="{
+                    'fas fa-check': estadoDocumentos === 'hecho',
+                    //'fas fa-hourglass-half': estadoDocumentos === 'en progreso',
+                    'fas fa-ellipsis-h': estadoDocumentos === 'pendiente'
+
+                    
+                  }"
+                ></i>
+            
+              </span>
+
               <h2 class="text-2xl font-medium text-black">
                 2. Documentos para la conformidad de designación de asesor
               </h2>
               <ModalToolTip
-                :infoModal="[
-                  {
-                    info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.',
-                  },
-                ]"
+                :infoModal="[{
+                  info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.',
+                }]"
               />
             </div>
-            <Estados :estado="estadoDocumentos" />
+          
           </div>
 
-          <!-- Listado de documentos -->
           <div class="mt-4 space-y-4">
-            <!-- Listado de documentos OFICIO-->
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
-                <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0">
+            <!-- Listado de documentos OFICIO -->
+          <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <div class="flex flex-col md:flex-row justify-between md:items-center">
+              <!-- Nombre del documento -->
+              <div class="flex flex-col w-full">
+                <span class="text-xm text-black">
                   Oficio del Programa Académico de Ingeniería de Sistemas.
-                  <p v-if="oficio.estado === 'observado'" class="italic">
-                    "{{ oficio.observacion }}"
-                  </p>
                 </span>
+              </div>
 
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
-                  <!-- Mostrar botones si el documento está listo -->
-                  <div
-                    v-if="['tramitado'].includes(oficio.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
+              <div class="flex flex-row space-x-4 items-center mt-2 md:mt-0 w-full md:w-auto">
+                <!-- Botón "Ver" -->
+                <template v-if="oficio.estado === 'tramitado'">
+                  <a
+                    :href="`${VIEW_OFFICE}/${oficio.id}`"
+                    target="_blank"
+                    class="flex items-center px-3 py-2 rounded-lg text-white bg-base hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 shadow-lg transform hover:scale-105"
                   >
-                    <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_OFFICE}/${oficio.id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_OFFICE}/${oficio.id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
+                    <i class="fas fa-file-alt text-white mr-2"></i> Ver
+                  </a>
+                </template>
 
-                  <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-
-                  <!-- Estado del documento -->
-                  <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">{{ oficio.estado
-                    }}</span>
-
-                </div>
+                <!-- Estado del documento -->
+                <Estados :estado="capitalizarEstado(oficio.estado)" />
               </div>
             </div>
+          </div>
 
-            <!-- Listado de documentos RESOLUCION-->
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
-                <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0">
+          <!-- Listado de documentos RESOLUCIÓN -->
+          <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+            <div class="flex flex-col md:flex-row justify-between md:items-center">
+              <!-- Nombre del documento -->
+              <div class="flex flex-col w-full">
+                <span class="text-xm text-black">
                   Resolución de Facultad de Ingeniería.
-                  <p v-if="resolucion.estado === 'observado'" class="italic">
-                    "{{ resolucion.observacion }}"
-                  </p>
                 </span>
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
-                  <!-- Mostrar botones si el documento está listo -->
-                  <div
-                    v-if="['tramitado'].includes(resolucion.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
-                    <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_RESOLUTION}/${resolucion.id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-                  <!-- Estado del documento -->
-                  <Estados :estado="capitalizarEstado(resolucion.estado)" />
-                </div>
               </div>
+
+              <div class="flex flex-row space-x-4 items-center mt-2 md:mt-0 w-full md:w-auto">
+                <!-- Botón "Ver" -->
+                <template v-if="resolucion.estado === 'tramitado'">
+                  <a
+                    :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
+                    target="_blank"
+                    class="flex items-center px-3 py-2 rounded-lg text-white bg-base hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-blue-300 transition-all duration-300 shadow-lg transform hover:scale-105"
+                  >
+                    <i class="fas fa-file-alt text-white mr-2"></i> Ver
+                  </a>
+                </template>
+
+                <!-- Estado del documento -->
+                <Estados :estado="capitalizarEstado(resolucion.estado)" />
+              </div>
+            </div>
             </div>
           </div>
         </div>
+
         <!-- Botón "Siguiente" -->
         <div class="flex justify-end mt-6">
           <button

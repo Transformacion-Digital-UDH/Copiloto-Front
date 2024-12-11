@@ -325,7 +325,7 @@ const rejectResolution = async () => {
                         <button v-if="['pendiente', 'observado'].includes(u.resolucion_estado)" :class="['w-24 px-3 py-1 mb-2 text-sm text-white bg-[#e79e38] rounded-xl focus:outline-none',
                           ['tramitado'].includes(u.resolucion_estado)
                             ? 'cursor-not-allowed'
-                            : 'hover:bg-[#f1aa47e8]'
+                            : 'hover:bg-[#f1aa47e8]' 
                         ]" :disabled="['tramitado'].includes(u.resolucion_estado)" @click="openRejectModal(u.id)">
                           Observar
                         </button>

@@ -12,6 +12,8 @@ export default {
       switch (estadoLowerCase) {
         case "pendiente":
           return "bg-gray-400 text-white";
+        case "en progreso":
+          return "bg-gray-400 text-white";
         case "aceptado":
           return "bg-green-500 text-white";
         case "tramitado":
@@ -43,7 +45,9 @@ export default {
   padding: 0.25rem 0.5rem;
   font-size: 0.875rem;
   font-weight: 400;
-  border-radius: 0.375rem;
+  border-radius: 9999px; /* Esto aplica rounded-full */
+  border: 1px solid #d1d5db;
+
 }
 
 .bg-gray-400 {

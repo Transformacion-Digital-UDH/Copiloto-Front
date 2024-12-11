@@ -53,35 +53,35 @@ export default defineComponent({
       const allSections: Section[] = [
         {
           name: 'ProyectoDeTesis',
-          label: 'Proyecto de Investigación',
+          label: '1. Proyecto de Investigación',
           isOpen: false,
           icon: markRaw(proyecto),
           submenus: [] // Se llenará según el rol
         },
         {
           name: 'Ejecucion',
-          label: 'Ejecución',
+          label: '2. Ejecución',
           isOpen: false,
           icon: markRaw(ejecucion),
           submenus: [] // Se llenará según el rol
         },
         {
           name: 'InformeFinal',
-          label: 'Informe Final',
+          label: '3. Informe Final',
           isOpen: false,
           icon: markRaw(informe),
           submenus: [] // Se llenará según el rol
         },
         {
           name: 'Sustentacion',
-          label: 'Sustentación',
+          label: '4. Sustentación',
           isOpen: false,
           icon: markRaw(sustentacion),
           submenus: [] // Se llenará según el rol
         },
         {
           name: 'Cierre',
-          label: 'Cierre de Trámites',
+          label: '5. Cierre de Trámites',
           isOpen: false,
           icon: markRaw(cierre),
           submenus: [] // Se llenará según el rol
@@ -106,21 +106,21 @@ export default defineComponent({
       if (role.value === 'estudiante') {
         // Estudiante tiene acceso a todas las secciones
         allSections[0].submenus.push(
-          { name: 'Designacion de asesor', label: 'Designación de Asesor', path: '/estudiante/designacion-asesor' },
-          { name: 'Conformidad por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-asesor' },
-          { name: 'Designacion de jurados', label: 'Designación de Jurados', path: '/estudiante/designacion-jurado' },
-          { name: 'Conformidad por los jurados', label: 'Conformidad por los Jurados', path: '/estudiante/conformidad-jurado' },
-          { name: 'Aprobacion del proyecto', label: 'Aprobación del Proyecto', path: '/estudiante/aprobacion-proyecto' }
+          { name: 'Designacion de asesor', label: '1.1 Designación de Asesor', path: '/estudiante/designacion-asesor' },
+          { name: 'Conformidad por el asesor', label: '1.2 Conformidad por el Asesor', path: '/estudiante/conformidad-asesor' },
+          { name: 'Designacion de jurados', label: '1.3 Designación de Jurados', path: '/estudiante/designacion-jurado' },
+          { name: 'Conformidad por los jurados', label: '1.4 Conformidad por los Jurados', path: '/estudiante/conformidad-jurado' },
+          { name: 'Aprobacion del proyecto', label: '1.5 Aprobación del Proyecto', path: '/estudiante/aprobacion-proyecto' }
         );
         allSections[1].submenus.push(
           { name: 'Progreso', label: 'Progreso de la Investigación', path: '/estudiante/progreso' }
         );
         allSections[2].submenus.push(
-          { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
-          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurado', path: '/estudiante/designacion-informe-jurado' },
-          { name: 'Conformidad del informe final por los jurados', label: 'Conformidad del Informe Final', path: '/estudiante/conformidad-informe-jurado' },
-          { name: 'Conformidad por integridad VRI', label: 'Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' },
-          { name: 'Aprobacion del informe final', label: 'Aprobación del Informe Final', path: '/estudiante/aprobacion-informe' }
+          { name: 'Conformidad del informe final por el asesor', label: '3.1 Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
+          { name: 'Designacion de jurado para el informe final', label: '3.2 Designación de Jurado', path: '/estudiante/designacion-informe-jurado' },
+          { name: 'Conformidad del informe final por los jurados', label: '3.3 Conformidad del Informe Final', path: '/estudiante/conformidad-informe-jurado' },
+          { name: 'Conformidad por integridad VRI', label: '3.4 Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' },
+          { name: 'Aprobacion del informe final', label: '3.5 Aprobación del Informe Final', path: '/estudiante/aprobacion-informe' }
         );
         allSections[3].submenus.push(
           //{ name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' },
