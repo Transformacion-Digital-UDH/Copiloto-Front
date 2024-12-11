@@ -16,7 +16,7 @@ const showArchivoModal = ref(false);
 const load = ref(false);
 
 // Texto que se escribe automáticamente
-const text = "Correciones Pendientes de Proyecto de Tesis";
+const text = "Correciones Pendientes de Proyecto de Investigación";
 const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -330,7 +330,7 @@ onMounted(() => {
 
                       <!-- Mostrar presidente si el asesor no es presidente -->
                       <div v-if="u.rol !== 'presidente'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full" 
+                        <span class="block px-3 py-1 text-sm text-black rounded-full" 
                         >
                           Presidente: 
                           <span v-if="u.presidente_aprobado">
@@ -344,7 +344,7 @@ onMounted(() => {
 
                       <!-- Mostrar secretario si el asesor no es secretario -->
                       <div v-if="u.rol !== 'secretario'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full" 
+                        <span class="block px-3 text-sm py-1 text-black rounded-full" 
                         >
                           Secretario: 
                           <span v-if="u.secretario_aprobado">
@@ -358,7 +358,7 @@ onMounted(() => {
 
                       <!-- Mostrar vocal si el asesor no es vocal -->
                       <div v-if="u.rol !== 'vocal'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full" 
+                        <span class="block px-3 text-sm py-1 text-black rounded-full" 
                         >
                           Vocal: 
                           <span v-if="u.vocal_aprobado">
@@ -430,10 +430,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el Proyecto de Tesis ya no requiere más observaciones?</h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el proyecto de investigación ya no requiere más observaciones?</h5>
           </div>
           <div class="p-6">
-              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de oficio para el documento de conformidad</p>
               <input
                 type="text"
                 id="nroCarta"

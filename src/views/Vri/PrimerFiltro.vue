@@ -109,7 +109,7 @@ const approveSolicitud = async (filterId: string) => {
     const payload = {
       fil_estado: "aprobado", // Estado que se enviará
     };
-    const response = await axios.put(`/api/vri/update-filter/${filterId}/status`, payload);
+    const response = await axios.post(`/api/vri/update-filter/${filterId}/status?_method=PUT`, payload);
 
     if (response.data.estado === "aprobado") {
       // Actualizar el estado en la tabla

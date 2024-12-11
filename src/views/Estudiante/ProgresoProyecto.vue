@@ -135,6 +135,7 @@ onMounted(() => {
                 <div class="w-20 h-20 bg-gray-300 rounded-full duration-200 skeleton-loader"></div>
                 <div class="h-4 w-16 mt-4 bg-gray-300 rounded duration-200 skeleton-loader"></div>
               </div>
+              <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Tesis</span>
             </div>
             <div class="h-4 w-2/3 bg-gray-300 mx-auto rounded duration-200 skeleton-loader"></div>
             <div class="flex flex-col md:flex-row justify-around items-center w-full space-y-4 md:space-y-0 md:space-x-8">
