@@ -56,6 +56,7 @@ const loading = ref<{[key: string]: boolean}>({});
 const obtener = ref<Estudiante | null>(null);
 const jurados = computed(() => obtener.value?.data ?? []);
 const estadoRevision = ref<string | null>(null);
+const documentos = ref<Array<{ nombre: string; estado: string; revision_id: string }>>([]);
 
 const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
@@ -104,7 +105,12 @@ interface Revision {
   numero_revision: number;
   fecha: string | null;
   estado: string;
+ 
 }
+
+const review_id_presidente = presidente_id;
+const review_id_secretario = secretario_id;
+const review_id_vocal = vocal_id;
 
 const obtenerConformidadJuradosProyecto = async () => {
   load.value = true;
@@ -216,9 +222,9 @@ onMounted(() => {
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
       <div class="mt-6 space-y-10">
-        <!-- card para mostrar los jurados y titulo -->
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
-          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de tesis. Verifica la información y revisa las actualizaciones.</p>
+        <div class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4">
+          <div class="text-center"><p class="text-gray-600 text-sm">A continuación, se muestra los jurados designados a tu proyecto de tesis y el título. Asegúrate de verificar la información y estar atento a las actualizaciones.</p></div>
+          <!-- Información de los jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <JuradoCard 
               v-for="jurado in jurados"
@@ -277,7 +283,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
           <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será 
@@ -322,39 +328,96 @@ onMounted(() => {
         <!-- documentos de cada jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos de conformidad del proyecto de tesis por los jurados</h2>
+            <h2 class="text-2xl font-medium text-black">2. Documentos para verificar la conformidad del proyecto de tesis por los jurados</h2>
             <ModalToolTip
             :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL PRESIDENTE -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-              titulo='Informe de conformidad - Presidente'
-              :estado="obtenerEstadoDocumento(presidenteRevisiones[0]?.estado || '')"
-              :id="presidente_id"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm">{{ documentos[0].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[0].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- BOTON VER -->
+                    <a
+                      :href="`${VIEW_CPA}/${review_id_presidente}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- BOTON DESCARGAR -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${review_id_presidente}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[0].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[0].estado || "Estado desconocido" }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL SECRETARIO -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-              titulo='Informe de conformidad - Secretario'
-              :estado="obtenerEstadoDocumento(secretarioRevisiones[0]?.estado || '')"
-              :id="secretario_id"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm">{{ documentos[1].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[1].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- BOTON VER -->
+                    <a
+                      :href="`${VIEW_CPA}/${review_id_secretario}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- BOTON DESCARGAR -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${review_id_secretario}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[1].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[1].estado || "Estado desconocido" }}</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL VOCAL -->
           <div class="mt-4 space-y-4">
-            <DocumentCard 
-              titulo='Informe de conformidad - Secretario'
-              :estado="obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '')"
-              :id="vocal_id"
-              :view="VIEW_CPA"
-              :download="DOWNLOAD_CPA"/>
+            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
+              <div class="flex flex-col md:flex-row justify-between md:items-center">
+                <span class="flex-1 text-xm">{{ documentos[2].nombre }}</span>
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <div v-if="documentos[2].estado === 'Aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
+                    <!-- BOTON VER -->
+                    <a
+                      :href="`${VIEW_CPA}/${review_id_vocal}`"
+                      target="_blank"
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-eye mr-2"></i> Ver
+                    </a>
+                    <!-- BOTON DESCARGAR -->
+                    <a
+                      :href="`${DOWNLOAD_CPA}/${review_id_vocal}`"
+                      download
+                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
+                      <i class="fas fa-download mr-2"></i> Descargar
+                    </a>
+                  </div>
+                  <span v-else class="text-gray-500 italic ">El documento aún no se ha cargado</span>
+                  <span :class="`estado-estilo estado-${documentos[2].estado.toLowerCase().replace(' ', '-')}`">{{ documentos[2].estado || "Estado desconocido" }}</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 

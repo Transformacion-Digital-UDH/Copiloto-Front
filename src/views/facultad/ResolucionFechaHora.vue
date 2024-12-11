@@ -350,7 +350,7 @@ onMounted(() => {
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              Se autogenerará la resolución de aprobación del proyecto de tesis
+              Se autogenerará la resolución de aprobación del proyecto de investigación
             </h5>
           </div>
           <div class="p-6">

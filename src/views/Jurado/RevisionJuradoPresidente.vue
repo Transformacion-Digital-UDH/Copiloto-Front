@@ -13,7 +13,7 @@ const showSendModal = ref(false); //modal para enviar las revisiones de todos lo
 const showArchivoModal = ref(false);
 
 // ***** Texto que escribe automáticamente ********
-const text = "Correcciones Pendientes de Proyecto de Tesis";
+const text = "Correcciones Pendientes de Proyecto de Investigación";
 const textoTipiado = ref<string>("");  // Definimos el tipo de `textoTipiado` como string
 let index = 0;
 const typeWriter = () => {
@@ -330,7 +330,7 @@ const tableData = ref([
           </div>
           <div class="p-6">
             <p class="text-gray-600 text-lg text-center">
-              ¿Estás seguro que este proyecto de tesis no necesita más correciones?
+              ¿Estás seguro que este proyecto de investigación no necesita más correciones?
             </p>
           </div>
           <div
@@ -372,7 +372,7 @@ const tableData = ref([
           </div>
           <div class="p-6">
             <p class="text-gray-600 text-lg text-center">
-              ¿Aún le falta correciones a este proyecto de tesis?
+              ¿Aún le falta correciones a este proyecto de investigación?
             </p>
           </div>
           <div
@@ -409,7 +409,7 @@ const tableData = ref([
             class="flex items-start justify-between p-3 border-b border-gray-200"
           >
             <h5 class="text-xl font-ligth text-gray-900 text-center flex-1">
-              ¿Está seguro que todo el proyecto de tesis está corregido por los jurados?
+              ¿Está seguro que todo el proyecto de investigación está corregido por los jurados?
             </h5>
 
           </div>

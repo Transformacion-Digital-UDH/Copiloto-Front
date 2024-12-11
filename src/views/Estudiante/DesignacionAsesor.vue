@@ -30,6 +30,7 @@ const mostrarModalDocumentos = ref(false);
 const mostrarModalCambioAsesor = ref(false);
 const mostrarModalConfirmacion = ref(false);
 const mostrarModalSolicitudAsesor = ref(false);
+const full_name = ref<string>('');
 
 // VARIABLES DE ENTORNO
 const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
@@ -90,6 +91,8 @@ const oficio = ref<Oficio>({
   nombre_de_oficio: "",
   observacion: "",
 });
+
+
 
 // Tipos definidos para mayor seguridad y claridad
 interface Solicitude {
@@ -152,9 +155,12 @@ axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
 
 // Al montar el componente, cargamos los asesores y la información del estudiante
 onMounted(() => {
+  full_name.value = authStore.fullName!;
   getAdvisers();
   getInfoStudent();
 });
+
+
 
 // Función para redirigir a la siguiente página
 const goToNextPage = () => {
@@ -419,32 +425,44 @@ const handleNextButtonClick = () => {
 
   <template v-else>
     <template v-if="!solicitude.estado">
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center">
-          <h3 class="text-4xl font-semibold text-azul">
-            Usted no ha iniciado un trámite
-          </h3>
-          <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
+      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-50 h-screen">
+  <div class="p-12 bg-white rounded-xl shadow-lg space-y-10 text-center">
+    <!-- Título Principal -->
+    <h3 class="text-3xl font-bold text-azul leading-tight">
+      Hola <span class="text-[39B49E] text-3xl  capitalize">{{ full_name }}</span>, 
+      empieza designando un asesor para tu proyecto.
+    </h3>
 
-          <div class="flex justify-center">
-            <img
-              src="/img/notInitSolicitude.svg"
-              alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md"
-            />
-          </div>
+    <!-- Subtítulo -->
+    <p class="text-gray-600 text-lg">
+      Haz clic en <strong>'Iniciar trámite'</strong> para iniciar tu proceso de titulación.
+    </p>
 
-          <div class="flex justify-center">
-            <button
-              v-if="authStore.id"
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)"
-            >
-              Iniciar trámite
-            </button>
-          </div>
-        </div>
-      </div>
+
+    <!-- Imagen Central -->
+    <div class="flex justify-center">
+      <img
+        src="/img/notInitSolicitude.svg"
+        alt="Iniciar trámite o solicitar asesor"
+        class="w-1/3 h-auto object-contain"
+      />
+    </div>
+
+    <!-- Botón de Acción -->
+    <div class="flex justify-center">
+      <button
+        v-if="authStore.id"
+        class="bg-base text-white px-10 py-4  text-lg  shadow-lg hover:bg-green-600 transition-all transform hover:scale-105 duration-300 bounce"
+        @click="sendSolicitude(authStore.id)"
+      >
+        Iniciar trámite
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
     </template>
     <template v-else>
       <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
@@ -475,27 +493,13 @@ const handleNextButtonClick = () => {
 
           <div class="mt-4">
             <!-- Título de tesis -->
-            <label
-              for="tituloTesis"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Título de tesis</label
-            >
-            <input
-              id="tituloTesis"
-              type="text"
-              v-model="solicitude.titulo"
+            <label for="tituloTesis" class="block text-lg font-medium text-gray-700 mb-2">Título del proyecto de investigación (provisional)</label>
+            <input id="tituloTesis" type="text" v-model="solicitude.titulo"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-              placeholder="Escribe tu título de tesis aquí..."
-            />
-            <label
-              for="nombreAsesor"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Elige a tu asesor</label
-            >
-            <select
-              id="nombreAsesor"
-              v-model="solicitude.asesor_id"
+              placeholder="Escribe tu título de proyecto de investigación aquí..." />
+            <label for="nombreAsesor" class="block text-lg font-medium text-gray-700 mb-2">Elige a tu asesor</label>
+            <select id="nombreAsesor" v-model="solicitude.asesor_id"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
             >
@@ -510,14 +514,8 @@ const handleNextButtonClick = () => {
             </select>
 
             <!-- Select para elegir tipo de investigacion -->
-            <label
-              for="tipoInvestigacion"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Elige tu tipo de investigación</label
-            >
-            <select
-              id="tipoInvestigacion"
-              v-model="solicitude.tipo_investigacion"
+            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2">Selecciona tu tipo de investigación</label>
+            <select id="tipoInvestigacion" v-model="solicitude.tipo_investigacion"
               :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
               class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
             >
@@ -706,7 +704,9 @@ const handleNextButtonClick = () => {
                   >
 
                   <!-- Estado del documento -->
-                  <Estados :estado="capitalizarEstado(oficio.estado)" />
+                  <span :class="estadoClase(oficio.estado)" class="estado-estilo ml-4">{{ oficio.estado
+                    }}</span>
+
                 </div>
               </div>
             </div>
@@ -718,7 +718,7 @@ const handleNextButtonClick = () => {
               >
                 <!-- Nombre del documento -->
                 <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Resolución de Facultad de Ingeniería de Sistemas.
+                  Resolución de Facultad de Ingeniería.
                   <p v-if="resolucion.estado === 'observado'" class="italic">
                     "{{ resolucion.observacion }}"
                   </p>
@@ -895,4 +895,18 @@ const handleNextButtonClick = () => {
   background-color: #8898aa;
   color: #ffffff;
 }
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce {
+  animation: bounce 1.5s infinite;
+}
+
 </style>

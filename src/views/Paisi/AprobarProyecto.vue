@@ -23,7 +23,7 @@ interface Solicitude {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Aprobación de Proyecto de Tesis";
+const text = "Aprobación de Proyecto de Investigación";
 const textoTipiado1 = ref('');
 let index = 0;
 const typeWriter = () => {
@@ -331,7 +331,7 @@ function closeDocumentModal() {
                       class="text-center text-azul border-b-2 bg-gray-300"
                     >
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
-                      <th class="py-2 px-3 text-left tracking-wider">CONFORMIDAD ASESOR </th>
+                      <th class="py-2 px-3 text-center tracking-wider">CONFORMIDAD ASESOR </th>
                       <th class="py-2 px-4 tracking-wider">CONFORMIDAD JURADO</th>
                       <th class="py-2 px-3 tracking-wider">ACCIÓN</th>
                       <th class="py-2 px-3 tracking-wider">ESTADO</th>
@@ -344,7 +344,7 @@ function closeDocumentModal() {
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
                     >
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52 uppercase">
+                        <p class="text-black whitespace-nowrap w-52 uppercase">
                           {{ solicitude.nombre }} 
                         </p>
                       </td>
@@ -360,20 +360,22 @@ function closeDocumentModal() {
                       <td class="text-center px-4">
                         <div class="flex justify-center items-center">
                           <!-- Botón de Documentos -->
-                          <button 
+                          <button
                             @click="openDocumentModal(
-                              solicitude.revision_id_presidente ? String(solicitude.revision_id_presidente) : null, 
-                              solicitude.revision_id_secretario ? String(solicitude.revision_id_secretario) : null, 
+                              solicitude.revision_id_presidente ? String(solicitude.revision_id_presidente) : null,
+                              solicitude.revision_id_secretario ? String(solicitude.revision_id_secretario) : null,
                               solicitude.revision_id_vocal ? String(solicitude.revision_id_vocal) : null
-                            )" 
-                            class="focus:outline-none flex justify-center items-center space-x-1"
+                            )"
+                            class="focus:outline-none flex justify-center items-center space-x-1 relative group"
                           >
-                            <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                            <IconEyeAbrir v-else class="mr-1"/>
+                            <!-- Íconos alternados usando group -->
+                            <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                            <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                             <span class="text-[#34495e]">Informes de Conformidad</span>
                           </button>
                         </div>
                       </td>
+
 
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <!-- Botón para Generar -->
@@ -540,52 +542,46 @@ function closeDocumentModal() {
             <div class="p-6 bg-white rounded-lg">
               <!-- Conformidad Presidente -->
               <div class="flex justify-between items-center" v-if="presidenteId">
-                <p class="text-gray-600 text-lg">Conformidad Presidente</p>
+                <p class="text-gray-600 text-md">Informe Conformidad Presidente</p>
                 <a
                   :href="`${VIEW_CPA}/${presidenteId}`"
                   target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
+                  class="flex items-center m-2 relative group">
+                  <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                  <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                  <span class="text-[#34495e] text-sm">Visualizar</span>
                 </a>
               </div>
-              <hr>
-        <br>
+              <br>
 
-              <!-- Conformidad Secretario -->
-              <div class="flex justify-between items-center" v-if="secretarioId">
-                <p class="text-gray-600 text-lg">Conformidad Secretario</p>
-                <a
-                  :href="`${VIEW_CPA}/${secretarioId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
+                <!-- Conformidad Secretario -->
+                <div class="flex justify-between items-center" v-if="secretarioId">
+                  <p class="text-gray-600 text-md">Informe Conformidad Secretario</p>
+                  <a
+                    :href="`${VIEW_CPA}/${secretarioId}`"
+                    target="_blank"
+                    class="flex items-center m-2 relative group">
+                    <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                    <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                    <span class="text-[#34495e] text-sm">Visualizar</span>
+                  </a>
+                </div>
+                <br>
+
+                <!-- Conformidad Vocal -->
+                <div class="flex justify-between items-center" v-if="vocalId">
+                  <p class="text-gray-600 text-md">Informe Conformidad Vocal</p>
+                  <a
+                    :href="`${VIEW_CPA}/${vocalId}`"
+                    target="_blank"
+                    class="flex items-center m-2 relative group">
+                    <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                    <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+                    <span class="text-[#34495e] text-sm">Visualizar</span>
+                  </a>
+                </div>
               </div>
-        <hr>
-        <br>
-              <!-- Conformidad Vocal -->
-              <div class="flex justify-between items-center" v-if="vocalId">
-                <p class="text-gray-600 text-lg">Conformidad Vocal</p>
-                <a
-                  :href="`${VIEW_CPA}/${vocalId}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
-                  <span class="text-[#34495e]">Visualizar</span>
-                </a>
-              </div>
-            </div>
+
             <div class="flex items-center justify-center p-6 border-t border-gray-200">
               <button class="px-3 py-2 text-xm font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cancelar</button>
             </div>
