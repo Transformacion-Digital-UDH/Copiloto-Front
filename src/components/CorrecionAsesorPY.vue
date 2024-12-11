@@ -11,7 +11,7 @@
     <tbody v-if="revisiones && revisiones.length > 0">
       <tr
         v-for="revision in revisiones"
-        :key="revision.estudiante_id"
+        :key="revision.revision_id"
         class="text-center">
         <td class="px-4 py-2 text-base text-gray-600">
           <p class="truncate">{{ revision.cantidad || 'Sin revisión' }}</p>
@@ -27,7 +27,7 @@
               revision.estado === 'pendiente' || revision.estado === 'aprobado' 
               ? 'bg-gray-300 cursor-not-allowed' 
               : 'bg-base hover:bg-[#29a790]',]"
-              @click="actualizarEstado(revision.estudiante_id)">Observaciones corregidas
+              @click="actualizarEstado(revision.revision_id)">Observaciones corregidas
           </button>
         </td>
         <td class="px-4 py-2">
@@ -51,7 +51,7 @@
 import type { PropType } from "vue";
 
 interface Revision {
-  estudiante_id: string;
+  revision_id: string;
   cantidad: number;
   estado: string;
   fecha: string;

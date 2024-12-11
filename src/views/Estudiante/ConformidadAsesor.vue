@@ -41,7 +41,7 @@ const isRevisionDisabled = computed(() => {
 });
 
 interface Revision {
-  estudiante_id: string;
+  revision_id: string;
   estado: string;
   cantidad: number;
   archivos: string;
@@ -277,7 +277,7 @@ onMounted(() => {
                   ? obtener?.revision?.estado ?? ''
                   : ''
               "
-              :id="obtener?.revision?.estudiante_id ?? ''"
+              :id="obtener?.revision?.revision_id ?? ''"
               :view="VIEW_CPA"
               :download="DOWNLOAD_CPA"
             />
