@@ -26,25 +26,6 @@ onMounted(() => {
 });
 /******************************************************** */
 
-// PARA QUE PERSONALIZES TU ALERTA
-const alertToast = (
-  message: string,
-  title: string,
-  icon: "success" | "error" | "warning" | "info" | "question",
-  options: { timer?: number } = {}
-) => {
-  Swal.fire({
-    title,
-    text: message,
-    icon,
-    timer: options.timer || 5000,
-    timerProgressBar: true,
-    showConfirmButton: false,
-    toast: true,
-    position: "bottom-end",
-  });
-};
-
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -116,7 +97,7 @@ const obtenerDatosEstudiante = async () => {
       response.data.jurados.length === 0
     )
 
-    obtener.value = response.data;
+      obtener.value = response.data;
     jurados.value = response.data.jurados.map(
       (jurado: { rol: string; asesor: string }) => ({
         rol: jurado.rol,
@@ -129,15 +110,13 @@ const obtenerDatosEstudiante = async () => {
         "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
         "Advertencia",
         "warning",
-        { timer: 2000 }
       );
     } else {
       alertToast(
         error.message ||
-          "Error inesperado al obtener los datos de los jurados.",
+        "Error inesperado al obtener los datos de los jurados.",
         "Error",
         "error",
-        { timer: 2000 }
       );
     }
   } finally {
@@ -182,61 +161,35 @@ onMounted(() => {
 <template>
   <template v-if="load">
     <div class="flex-1 p-10 bg-gray-100 min-h-full">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col"
-      >
-        <h3
-          class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"
-        ></h3>
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"></h3>
         <br />
       </div>
       <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
+            <h2 class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-4">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"></h2>
+            <h2 class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
+        <div class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200">
           <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"></h2>
+            <h2 class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
         <div class="flex justify-between">
           <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2>
           </div>
           <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
-            ></h2>
+            <h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2>
           </div>
         </div>
       </div>
@@ -278,29 +231,21 @@ onMounted(() => {
             <h2 class="text-2xl font-medium text-black">
               1. Solicitar designación de jurados
             </h2>
-            <ModalToolTip
-              :infoModal="[
-                {
-                  info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
-                },
-              ]"
-            />
+            <ModalToolTip :infoModal="[
+              {
+                info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
+              },
+            ]" />
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-lg">
             Haz clic en el botón
-            <strong class="text-green-500 text-lg font-medium"
-              >"Solicitar jurados"</strong
-            >
+            <strong class="text-green-500 text-lg font-medium">"Solicitar jurados"</strong>
             para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-2">
-            <ButtonRequest
-              label="Solicitar jurados"
-              :loading="isLoading"
-              :disabled="isSolicitarDisabled"
-              @click="solicitarJuradoProyecto"
-            />
+            <ButtonRequest label="Solicitar jurados" :loading="isLoading" :disabled="isSolicitarDisabled"
+              @click="solicitarJuradoProyecto" />
           </div>
         </div>
 
@@ -323,45 +268,32 @@ onMounted(() => {
               <h2 class="text-2xl font-medium text-black">
                 3. Documento para la conformidad de designación de jurados
               </h2>
-              <ModalToolTip
-                :infoModal="[
-                  {
-                    info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
-                  },
-                ]"
-              />
+              <ModalToolTip :infoModal="[
+                {
+                  info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
+                },
+              ]" />
             </div>
           </div>
           <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
-            <DocumentCard
-              titulo="Oficio Múltiple."
-              :estado="obtener?.estado || ''"
-              :id="obtener?.docof_id ?? ''"
-              :view="VIEW_OFFICEJURADO"
-              :download="DOWNLOAD_OFFICEJURADO"
-            />
+            <DocumentCard titulo="Oficio Múltiple." :estado="obtener?.estado || ''" :id="obtener?.docof_id ?? ''"
+              :view="VIEW_OFFICEJURADO" :download="DOWNLOAD_OFFICEJURADO" />
           </div>
         </div>
 
         <!--Botones siguiente y anteerior-->
         <div class="flex justify-between">
-          <button
-            @click="$router.push('/estudiante/conformidad-asesor')"
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          >
+          <button @click="$router.push('/estudiante/conformidad-asesor')"
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">
             Anterior
           </button>
-          <button
-            @click="handleNextButtonClick"
-            :disabled="isNextButtonDisabled"
-            :class="[
-              'px-4 py-2 text-white rounded-md',
-              isNextButtonDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',
-            ]"
-          >
+          <button @click="handleNextButtonClick" :disabled="isNextButtonDisabled" :class="[
+            'px-4 py-2 text-white rounded-md',
+            isNextButtonDisabled
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-green-500 hover:bg-green-600',
+          ]">
             Siguiente
           </button>
         </div>
@@ -432,6 +364,7 @@ onMounted(() => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
+
 .text-center {
   text-align: center;
   padding: 1rem;
