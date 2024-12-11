@@ -1,336 +1,59 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from "vue";
-import Swal from "sweetalert2";
+import { alertToast } from "@/functions";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
-import { alertToast, alertConfirmation } from "@/functions";
-import Estados from "@/components/Estados.vue";
-import confetti from "canvas-confetti";
+import { ref, computed, onMounted } from "vue";
 import router from "@/router";
+import Swal from "sweetalert2";
 import ModalToolTip from "@/components/modalToolTip.vue";
+import DocumentCard from "@/components/DocumentCard.vue";
+import ButtonRequest from "@/components/ButtonRequest.vue";
+import JuradoTabla from "@/components/JuradoTabla.vue";
 
 // ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Asesor";
-const textoTipiado = ref("");
+const text = "Designación de Jurados para el Proyecto de Tesis";
+const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
   if (index < text.length) {
-    textoTipiado.value += text.charAt(index);
+    textoTipiado2.value += text.charAt(index);
     index++;
-    setTimeout(typeWriter, 80); // Llama de nuevo la función cada 80ms
+    setTimeout(typeWriter, 80);
   }
 };
 onMounted(() => {
   typeWriter();
 });
+/******************************************************** */
 
-// Estados para controlar los modales
-const mostrarModalTramite = ref(false);
-const mostrarModalDocumentos = ref(false);
-const mostrarModalCambioAsesor = ref(false);
-const mostrarModalConfirmacion = ref(false);
-const mostrarModalSolicitudAsesor = ref(false);
-
-// VARIABLES DE ENTORNO
-const VIEW_LETTER = import.meta.env.VITE_URL_VIEW_LETTER;
-const DOWNLOAD_LETTER = import.meta.env.VITE_URL_DOWNLOAD_LETTER;
-const VIEW_OFFICE = import.meta.env.VITE_URL_VIEW_OFFICE;
-const DOWNLOAD_OFFICE = import.meta.env.VITE_URL_DOWNLOAD_OFFICE;
-const VIEW_RESOLUTION = import.meta.env.VITE_URL_VIEW_RESOLUTION;
-const DOWNLOAD_RESOLUTION = import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION;
-
-// Método para determinar la clase CSS dependiendo del estado
-const estadoClase = (estado: string): string => {
-  const estados = {
-    rechazado: "bg-red-500 text-white",
-    pendiente: "bg-gray-400 text-white",
-    aceptado: "bg-green-500 text-white",
-    tramitado: "bg-green-500 text-white",
-    observado: "bg-gray-400 text-white",
-    en_progreso: "bg-gray-400 text-white",
-  };
-
-  return estados[estado as keyof typeof estados] || "bg-gray-400 text-white";
-};
-
-const capitalizarEstado = (estado: string): string => {
-  if (!estado) return "Pendiente";
-  return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
-};
-
-const procesos = ref([
-  {
-    título: "TRAMITE: DESIGNACIÓN DEL DOCENTE ASESOR PARA LA TESIS",
-    estado: "Hecho",
-  }, // Eliminamos "Pago de Trámite"
-]);
-
-// Inicialización de estados y almacenes
-const authStore = useAuthStore();
-const initSolicitude = ref(false);
-const advisers = ref<{ id: string; nombre: string }[]>([]);
-const load = ref(false);
-const enviado = ref(false);
-
-const solicitude = ref<Solicitude>({
-  estudiante_id: "",
-  titulo: "",
-  asesor_id: "",
-  estado: "",
-  solicitud_id: "",
-  observacion: "",
-  tipo_investigacion: "",
-});
-
-const oficio = ref<Oficio>({
-  id: "",
-  estado: "",
-  fecha_creado: "",
-  nombre_de_oficio: "",
-  observacion: "",
-});
-
-// Tipos definidos para mayor seguridad y claridad
-interface Solicitude {
-  estudiante_id: string;
-  titulo: string;
-  asesor_id: string;
-  estado: string;
-  solicitud_id: string;
-  observacion: string;
-  tipo_investigacion: string;
-  oficio?: Oficio; // Se añadió oficio como opcional
-  resolucion?: Resolucion; // Se añadió resolucion como opcional
-}
-
-interface Resolucion {
-  id: string;
-  nombre: string;
-  fecha_creado: string;
-  estado: string;
-  observacion: string;
-}
-
-interface Oficio {
-  id: string;
-  estado: string;
-  fecha_creado: string;
-  nombre_de_oficio: string;
-  observacion: string;
-}
-interface SolicitudeResponse {
-  data: {
-    _id: string;
-    sol_title_inve: string;
-    adviser_id?: string;
-    sol_status: string;
-  };
-}
-
-const resolucion = ref<Resolucion>({
-  id: "",
-  nombre: "",
-  fecha_creado: "",
-  estado: "",
-  observacion: "",
-});
-
-// Historial de acciones
-const historial = ref<
-  {
-    accion: string;
-    asesor: string;
-    fecha: string;
-    observacion: string;
-    titulo: string;
-  }[]
->([]);
-
-// Configuración de los headers de axios para la autenticación
-axios.defaults.headers.common["Authorization"] = `Bearer ${authStore.token}`;
-
-// Al montar el componente, cargamos los asesores y la información del estudiante
-onMounted(() => {
-  getAdvisers();
-  getInfoStudent();
-});
-
-// Función para redirigir a la siguiente página
-const goToNextPage = () => {
-  router.push("/estudiante/conformidad-asesor");
-};
-
-// Función para obtener la información del estudiante
-const getInfoStudent = async () => {
-  load.value = true;
-  await axios
-    .get(`/api/student/getInfo/${authStore.id}`)
-    .then((response) => {
-      // console.log(response.data);
-      if (response.data.status) {
-        // Actualizamos los datos de solicitud
-        solicitude.value.solicitud_id = response.data.solicitud.id;
-        solicitude.value.titulo = response.data.solicitud.titulo;
-        solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
-        solicitude.value.estado = response.data.solicitud.estado;
-        solicitude.value.observacion = response.data.solicitud.observacion;
-        solicitude.value.tipo_investigacion =
-          response.data.solicitud.tipo_investigacion || "";
-
-        // Actualizamos oficio y resolución
-        if (response.data.resolucion) {
-          resolucion.value.id = response.data.resolucion.id;
-          resolucion.value.nombre = response.data.resolucion.nombre;
-          resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
-          resolucion.value.estado = response.data.resolucion.estado;
-          resolucion.value.observacion = response.data.resolucion.observacion;
-        }
-
-        if (response.data.oficio) {
-          oficio.value.id = response.data.oficio.id;
-          oficio.value.estado = response.data.oficio.estado;
-          oficio.value.fecha_creado = response.data.oficio.fecha_creado;
-          oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
-          oficio.value.observacion = response.data.oficio.observacion;
-        }
-
-        historial.value = response.data.historial;
-      }
-    })
-    .catch((error) => {
-      // alertToast(error.response.data.message, 'Error', 'error')
-    })
-    .finally(() => {
-      load.value = false;
-    });
-};
-
-const sendSolicitude = async (student_id: string) => {
-  try {
-    const params = {
-      student_id: student_id,
-    };
-
-    alertConfirmation(
-      "Estás seguro de iniciar este trámite?",
-      "Iniciar trámite",
-      "question",
-      params,
-      "/api/solicitudes-store",
-      "POST",
-      (response: SolicitudeResponse) => {
-        // Tipamos aquí la respuesta
-        solicitude.value.solicitud_id = response.data._id;
-        solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id || "";
-        solicitude.value.estado = response.data.sol_status;
-
-        //Lanza confetti en la pantalla
-        confetti({
-          particleCount: 500,
-          spread: 1010,
-          origin: { y: 0.6 },
-        });
-      }
-    );
-  } catch (error: any) {
-    let description = "";
-    error.response.data.error.forEach((e: any) => {
-      description = description + " " + e;
-    });
-    alertToast(description, "Error", "error");
-  }
-};
-
-// Función para obtener la lista de asesores
-const getAdvisers = async () => {
-  try {
-    const res = await axios.get("/api/adviser/get-select");
-    advisers.value = res.data.data;
-  } catch (error) {
-    console.error("Error al cargar los asesores", error);
-  }
-};
-
-// Función para actualizar una solicitud de asesor existente
-const updateSolicitude = async (
-  solicitud_id: string,
-  titulo: string,
-  asesor_id: string,
-  estado: string,
-  tipo_investigacion: string
+// PARA QUE PERSONALIZES TU ALERTA
+const alertToast = (
+  message: string,
+  title: string,
+  icon: "success" | "error" | "warning" | "info" | "question",
+  options: { timer?: number } = {}
 ) => {
-  if (["aceptado"].includes(estado)) {
-    alertToast(
-      "No puedes actualizar una solicitud que fue aceptada",
-      "Error",
-      "error"
-    );
-    return;
-  }
-  try {
-    const params = {
-      sol_title_inve: titulo,
-      adviser_id: asesor_id,
-      sol_status: "pendiente",
-      sol_type_inve: tipo_investigacion,
-    };
-    alertConfirmation(
-      "Verifica que los datos sean correctos antes de proceder",
-      "¿Confirmas tu solicitud de asesor?",
-      "question",
-      params,
-      `/api/solicitudes/${solicitud_id}`,
-      "PUT",
-      (response: any) => {
-        solicitude.value.titulo = response.data.sol_title_inve;
-        solicitude.value.asesor_id = response.data.adviser_id ?? "";
-        solicitude.value.estado = response.data.sol_status;
-        solicitude.value.tipo_investigacion = response.data.sol_type_inve || "";
-      }
-    );
-  } catch (error: any) {
-    let description = "";
-    error.response.data.error.forEach((e: any) => {
-      description = description + " " + e;
-    });
-    alertToast(description, "Error", "error");
-  }
+  Swal.fire({
+    title,
+    text: message,
+    icon,
+    timer: options.timer || 5000,
+    timerProgressBar: true,
+    showConfirmButton: false,
+    toast: true,
+    position: "bottom-end",
+  });
 };
 
-// Función para solicitar el cambio de asesor
-const solicitarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = true;
+
+// Función para solicitar cambio de jurado
+const solicitarCambioJurado = (jurado: any) => {
+  alert(`Has solicitado el cambio del jurado: ${jurado.nombre}`);
+  // Aquí puedes agregar la lógica adicional para solicitar el cambio del jurado
 };
-
-// Función para confirmar el cambio de asesor
-const confirmarCambioAsesor = () => {
-  mostrarModalConfirmacion.value = false;
-  alertToast("Solicitud enviada correctamente", "Éxito", "success");
-};
-
-// Computed para determinar el estado de los documentos
-const estadoDocumentos = computed(() => {
-  if (
-    oficio.value.estado === "tramitado" &&
-    resolucion.value.estado === "tramitado"
-  ) {
-    return "hecho";
-  } else {
-    return "pendiente";
-  }
-});
-
-//alerta Boton siguiente
-
-const isNextButtonDisabled = computed(() => {
-  // Tu lógica para habilitar o deshabilitar el botón
-  return estadoDocumentos.value !== "hecho";
-});
 
 const handleNextButtonClick = () => {
   if (isNextButtonDisabled.value) {
-    // Mostrar un mensaje si el botón está deshabilitado
     Swal.fire({
       icon: "warning",
       title: "Pasos incompletos",
@@ -338,430 +61,300 @@ const handleNextButtonClick = () => {
       confirmButtonText: "OK",
     });
   } else {
-    // Navegar a la siguiente página
     goToNextPage();
   }
 };
+
+const goToNextPage = () => {
+  router.push("/estudiante/conformidad-jurado");
+};
+
+const isNextButtonDisabled = computed(() => {
+  return obtener.value?.estado !== "tramitado";
+});
+
+//************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
+const authStore = useAuthStore();
+const solicitudEstado = ref<string>("");
+const isLoading = ref(false);
+const load = ref(false);
+const obtener = ref<Informacion | null>(null);
+const jurados = ref<Jurado[]>([]);
+
+const VIEW_OFFICEJURADO = import.meta.env.VITE_URL_VIEW_OFFICEJURADO;
+const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
+
+// para que el boton quede deshabilitado
+const bloquear = ["pendiente", "observado", "tramitado"];
+const isSolicitarDisabled = computed(() => {
+  return isLoading.value || bloquear.includes(obtener.value?.estado ?? "");
+});
+
+interface Jurado {
+  rol: string;
+  nombre: string;
+}
+
+interface Informacion {
+  estudiante_id: string;
+  tramite?: string;
+  estado: string;
+  docof_id?: string;
+  jurados: Jurado[];
+  mensaje?: string;
+}
+
+// funcion para ver los jurados asignados
+const obtenerDatosEstudiante = async () => {
+  load.value = true;
+  try {
+    const response = await axios.get(`api/student/get-juries/${authStore.id}`);
+
+    if (
+      !response.data ||
+      !response.data.jurados ||
+      response.data.jurados.length === 0
+    )
+
+    obtener.value = response.data;
+    jurados.value = response.data.jurados.map(
+      (jurado: { rol: string; asesor: string }) => ({
+        rol: jurado.rol,
+        nombre: jurado.asesor,
+      })
+    );
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      alertToast(
+        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
+        "Advertencia",
+        "warning",
+        { timer: 2000 }
+      );
+    } else {
+      alertToast(
+        error.message ||
+          "Error inesperado al obtener los datos de los jurados.",
+        "Error",
+        "error",
+        { timer: 2000 }
+      );
+    }
+  } finally {
+    load.value = false;
+  }
+};
+
+// funcion para solicitar que me asignen jurados
+const solicitarJuradoProyecto = async () => {
+  isLoading.value = true;
+  const student_id = authStore.id;
+  try {
+    const response = await axios.get(
+      `api/office/solicitude-juries/${student_id}`
+    );
+
+    if (response.data.estado) {
+      solicitudEstado.value = "pendiente";
+      alertToast(
+        "Solicitud enviada. Espere las indicaciones para la designación de tus jurados",
+        "Éxito",
+        "success"
+      );
+      await obtenerDatosEstudiante();
+    }
+  } catch (error: any) {
+    if (error.response && error.response.data && error.response.data.message) {
+      const mensaje = error.response.data.message;
+      alertToast(mensaje, "Advertencia", "warning");
+    } else {
+      alertToast("Error en la solicitud.", "Error", "error");
+    }
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+onMounted(() => {
+  obtenerDatosEstudiante();
+});
 </script>
-
-
 <template>
-  <!-- Muestra si hay una solicitud ya sea pendiente rechazada o aceptada -->
   <template v-if="load">
-    <div class="flex-1 p-10 border-s-2 bg-gray-100">
+    <div class="flex-1 p-10 bg-gray-100 min-h-full">
       <div
         class="flex justify-center items-center content-center px-14 flex-col"
       >
         <h3
-          class="bg-gray-200 h-12 w-[70%] rounded-lg duration-200 skeleton-loader"
+          class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"
         ></h3>
+        <br />
       </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-10 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-10 mt-1 w-[5%] rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+      <div class="mt-6 space-y-10">
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-4">
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
         </div>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-4">
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
         </div>
-      </div>
-      <div
-        class="bg-white rounded-lg shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-      >
-        <div class="block space-y-5">
-          <h2
-            class="bg-gray-200 h-7 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-1 w-15 rounded-md skeleton-loader duration-200"
-          ></h2>
-          <h2
-            class="bg-gray-200 h-14 mt-4 w-full rounded-md skeleton-loader duration-200"
-          ></h2>
+        <div
+          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
+        >
+          <div class="block space-y-5">
+            <h2
+              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"
+            ></h2>
+            <h2
+              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+        </div>
+        <div class="flex justify-between">
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
+          <div class="block space-y-5">
+            <h2
+              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
+            ></h2>
+          </div>
         </div>
       </div>
     </div>
   </template>
-
   <template v-else>
-    <template v-if="!solicitude.estado">
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center">
-          <h3 class="text-4xl font-semibold text-azul">
-            Usted no ha iniciado un trámite
-          </h3>
-          <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
-
-          <div class="flex justify-center">
-            <img
-              src="/img/notInitSolicitude.svg"
-              alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md"
-            />
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+      <h3 class="text-4xl font-bold text-center text-azul">
+        {{ textoTipiado2 }}
+      </h3>
+      <div class="mt-6 space-y-10">
+        <!-- Card 1: Pago de Trámite
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">1. Pago de Trámite</h2>
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+                @mouseover="mostrarModalTramite = true"
+                @mouseleave="mostrarModalTramite = false" />
           </div>
 
-          <div class="flex justify-center">
-            <button
-              v-if="authStore.id"
-              class="bg-base text-white px-6 py-3 rounded-lg text-lg hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)"
-            >
-              Iniciar trámite
-            </button>
+          <div v-show="mostrarModalTramite" class="absolute left-0 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">
+              Asegurate de haber realizado el pago del trámite.
+            </p>
           </div>
-        </div>
-      </div>
-    </template>
-    <template v-else>
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
-        <h3 class="text-4xl font-semibold text-center text-azul">
-          {{ textoTipiado }}
-        </h3>
-        <br />
-        <div class="bg-white rounded-lg shadow-lg p-6 mt-6 relative">
-          <div class="flex justify-between">
-            <div
-              class="flex flex-col sm:flex-row items-center justify-between w-full"
-            >
-              <div class="flex items-center">
-                <h2 class="text-2xl font-medium text-black">
-                  1. Solicita tu asesor
-                </h2>
-                <ModalToolTip
-                  :infoModal="[
-                    {
-                      info: ' Aquí puedes gestionar la solicitud de tu asesor. Recuerda que una vez enviada, deberás esperar la respuesta.',
-                    },
-                  ]"
-                />
-              </div>
-              <Estados :estado="capitalizarEstado(solicitude.estado)" />
+
+           Listado de trámites dinámico -->
+        <!-- <div class="mt-4 space-y-6">
+            <div v-for="(proceso, index) in procesos.slice(0, 1)" :key="index"
+              class="bg-gray-50 p-4 border border-gray-200 rounded-md flex items-center justify-between">
+              <h4 class="text-black flex-1">{{ proceso.título }}</h4>
+              <span :class="estadoClase(proceso.estado)" class="estado-estilo ml-4">{{ proceso.estado }}</span>
             </div>
           </div>
-
-          <div class="mt-4">
-            <!-- Título de tesis -->
-            <label
-              for="tituloTesis"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Título de tesis</label
-            >
-            <input
-              id="tituloTesis"
-              type="text"
-              v-model="solicitude.titulo"
-              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-              placeholder="Escribe tu título de tesis aquí..."
-            />
-            <label
-              for="nombreAsesor"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Elige a tu asesor</label
-            >
-            <select
-              id="nombreAsesor"
-              v-model="solicitude.asesor_id"
-              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-            >
-              <option disabled value="">Selecciona un asesor...</option>
-              <option
-                v-for="asesor in advisers"
-                :key="asesor.id"
-                :value="asesor.id"
-              >
-                {{ asesor.nombre }}
-              </option>
-            </select>
-
-            <!-- Select para elegir tipo de investigacion -->
-            <label
-              for="tipoInvestigacion"
-              class="block text-lg font-medium text-gray-700 mb-2"
-              >Elige tu tipo de investigación</label
-            >
-            <select
-              id="tipoInvestigacion"
-              v-model="solicitude.tipo_investigacion"
-              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6"
-            >
-              <option disabled value="">Selecciona un tipo...</option>
-              <option value="cientifica">CIENTÍFICA</option>
-              <option value="tecnologica">TECNOLÓGICA</option>
-            </select>
-
-            <!-- Botón de enviar -->
-            <button
-              @click="
-                updateSolicitude(
-                  solicitude.solicitud_id,
-                  solicitude.titulo,
-                  solicitude.asesor_id,
-                  solicitude.estado,
-                  solicitude.tipo_investigacion
-                )
-              "
-              :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-              :class="[
-                'px-3 py-2 text-white rounded-md focus:outline-none',
-                ['pendiente', 'aceptado'].includes(solicitude.estado)
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-green-500 hover:bg-green-600',
+        </div> -->
+        <!-- solicitar designacion de jurados PY -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="relative flex items-center">
+            <h2 class="text-2xl font-medium text-black">
+              1. Solicitar designación de jurados
+            </h2>
+            <ModalToolTip
+              :infoModal="[
+                {
+                  info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
+                },
               ]"
-            >
-              Enviar
-            </button>
+            />
           </div>
-          <!-- Respuesta del asesor -->
-          <div
-            class="mt-6 bg-gray-50 p-4 border border-gray-200 rounded-md"
-            v-if="solicitude.estado !== 'en progreso'"
-          >
-            <div
-              class="flex flex-col md:flex-row justify-between md:items-center"
+          <p class="text-gray-500 mt-2 mb-1 text-lg">
+            Haz clic en el botón
+            <strong class="text-green-500 text-lg font-medium"
+              >"Solicitar jurados"</strong
             >
-              <h4 class="text-black">
-                Respuesta del asesor:
-                <span
-                  v-if="solicitude.estado === 'rechazado'"
-                  class="text-red-500 italic"
-                >
-                  "{{ solicitude.observacion }}"</span
-                >
-              </h4>
-
-              <div
-                class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-              >
-                <div
-                  v-if="['aceptado'].includes(solicitude.estado)"
-                  class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                >
-                  <!-- Botón de Ver -->
-                  <a
-                    :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
-                    target="_blank"
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                  >
-                    <i class="fas fa-eye mr-2"></i> Ver
-                  </a>
-                  <!-- Botón de Descargar -->
-                  <a
-                    :href="`${DOWNLOAD_LETTER}/${solicitude.solicitud_id}`"
-                    download
-                    class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                  >
-                    <i class="fas fa-download mr-2"></i> Descargar
-                  </a>
-                </div>
-                <Estados :estado="capitalizarEstado(solicitude.estado)" />
-
-                <a
-                  href="#historial"
-                  v-if="solicitude.estado === 'rechazado'"
-                  class="ml-4 p-1 text-blue-500"
-                >
-                  ver motivo
-                </a>
-              </div>
-            </div>
+            para la designación de jurados.
+          </p>
+          <!-- boton para solicitar designacion de jurados -->
+          <div class="flex justify-center mt-2">
+            <ButtonRequest
+              label="Solicitar jurados"
+              :loading="isLoading"
+              :disabled="isSolicitarDisabled"
+              @click="solicitarJuradoProyecto"
+            />
           </div>
-          <br />
-          <!-- Mensaje de espera según el estado -->
-          <span
-            v-if="solicitude.estado === 'pendiente'"
-            class="text-gray-500 italic"
-            >Estamos esperando la respuesta del asesor. Se mostrará aquí cuando
-            esté disponible.</span
-          >
-          <span
-            v-else-if="solicitude.estado === 'rechazado'"
-            class="text-red-500 italic"
-            >El asesor ha rechazado la solicitud, revise el historial de
-            acciones y porfavor vuelve a seleccionar tu asesor.</span
-          >
-          <span
-            v-else-if="solicitude.estado === 'aceptado'"
-            class="text-green-500 italic"
-            >El asesor ha aceptado tu solicitud, puedes revisar tus documentos
-            de conformidad de designación de asesor en el punto 2.</span
-          >
         </div>
-        <br />
-        <!-- Card 2: Documentos -->
-        <div
-          class="mt-4"
-          :disabled="
-            ['en progreso', 'pendiente', 'rechazado'].includes(
-              solicitude.estado
-            )
-          "
-          :class="[
-            'rounded-lg shadow-lg p-6 relative mt-6',
-            ['en progreso', 'pendiente', 'rechazado'].includes(
-              solicitude.estado
-            )
-              ? 'cursor-not-allowed bg-gray-50'
-              : 'bg-white',
-          ]"
-        >
-          <div
-            class="flex flex-col sm:flex-row items-center justify-between w-full"
-          >
+
+        <!-- jurados designados por el decano -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">
+              2. Tus jurados designados son:
+            </h2>
+          </div>
+          <div class="overflow-x-auto mt-4 flex justify-center">
+            <JuradoTabla :jurados="jurados" />
+          </div>
+        </div>
+
+        <!-- se muestra oficio mutiple -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center justify-between">
             <div class="flex items-center">
               <h2 class="text-2xl font-medium text-black">
-                2. Documentos para la conformidad de designación de asesor
+                3. Documento para la conformidad de designación de jurados
               </h2>
               <ModalToolTip
                 :infoModal="[
                   {
-                    info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente paso.',
+                    info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
                   },
                 ]"
               />
             </div>
-            <!-- <Estados :estado="estadoDocumentos" /> -->
           </div>
-
-          <!-- Listado de documentos -->
+          <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
-            <!-- Listado de documentos OFICIO-->
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
-                <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Oficio del Programa Académico de Ingeniería de Sistemas.
-                  <p v-if="oficio.estado === 'observado'" class="italic">
-                    "{{ oficio.observacion }}"
-                  </p>
-                </span>
-
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
-                  <!-- Mostrar botones si el documento está listo -->
-                  <div
-                    v-if="['tramitado'].includes(oficio.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
-                    <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_OFFICE}/${oficio.id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_OFFICE}/${oficio.id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-
-                  <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-
-                  <!-- Estado del documento -->
-                  <Estados :estado="capitalizarEstado(oficio.estado)" />
-                </div>
-              </div>
-            </div>
-
-            <!-- Listado de documentos RESOLUCION-->
-            <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div
-                class="flex flex-col md:flex-row justify-between md:items-center"
-              >
-                <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0">
-                  Resolución de Facultad de Ingeniería de Sistemas.
-                  <p v-if="resolucion.estado === 'observado'" class="italic">
-                    "{{ resolucion.observacion }}"
-                  </p>
-                </span>
-                <div
-                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4"
-                >
-                  <!-- Mostrar botones si el documento está listo -->
-                  <div
-                    v-if="['tramitado'].includes(resolucion.estado)"
-                    class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"
-                  >
-                    <!-- Botón de Ver -->
-                    <a
-                      :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
-                      target="_blank"
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
-                    <!-- Botón de Descargar -->
-                    <a
-                      :href="`${DOWNLOAD_RESOLUTION}/${resolucion.id}`"
-                      download
-                      class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center"
-                    >
-                      <i class="fas fa-download mr-2"></i> Descargar
-                    </a>
-                  </div>
-                  <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-gray-500 italic"
-                    >El documento aún no se ha cargado</span
-                  >
-                  <!-- Estado del documento -->
-                  <Estados :estado="capitalizarEstado(resolucion.estado)" />
-                </div>
-              </div>
-            </div>
+            <DocumentCard
+              titulo="Oficio Múltiple."
+              :estado="obtener?.estado || ''"
+              :id="obtener?.docof_id ?? ''"
+              :view="VIEW_OFFICEJURADO"
+              :download="DOWNLOAD_OFFICEJURADO"
+            />
           </div>
         </div>
-        <!-- Botón "Siguiente" -->
-        <div class="flex justify-end mt-6">
+
+        <!--Botones siguiente y anteerior-->
+        <div class="flex justify-between">
+          <button
+            @click="$router.push('/estudiante/conformidad-asesor')"
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Anterior
+          </button>
           <button
             @click="handleNextButtonClick"
+            :disabled="isNextButtonDisabled"
             :class="[
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
@@ -772,113 +365,63 @@ const handleNextButtonClick = () => {
             Siguiente
           </button>
         </div>
-        <!-- Card 3: Solicitar Cambio de Asesor -->
-        <!-- <div :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
-          solicitude.estado
-        )
-          " :class="[
-            'rounded-lg shadow-lg p-6 relative mt-6',
-            ['en progreso', 'pendiente', 'rechazado'].includes(
-              solicitude.estado
-            )
-              ? 'cursor-not-allowed bg-gray-50'
-              : 'bg-white',
-          ]">
+
+        <!-- Card 4: Solicitar cambio de jurado
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-[#39B49E]"> * Cambio de asesor</h2>
-            <ModalToolTip
-              :infoModal="[{ info: 'Si consideras que necesitas un cambio de asesor, puedes solicitarlo en cualquier momento.' },]" />
+            <h2 class="text-2xl font-medium text-gray-500"> Solicitar cambio de jurado</h2>
+            <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
+              @mouseover="mostrarModalCambioJurado = true"
+              @mouseleave="mostrarModalCambioJurado = false" />
           </div>
 
-          <br />
-          
-          <p class="text-gray-400">
-            Este botón se activará cuando recibas la resolución de designación de asesor por parte de la Facultad de
-            Ingeniería de Sistemas.
-          </p>
+          <div v-show="mostrarModalCambioJurado" class="absolute left-56 mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-lg w-64 z-10">
+            <p class="text-sm text-gray-600">Puedes solicitar el cambio de uno o más jurados si consideras necesario.</p>
+          </div>
 
-          <div class="mt-4 space-y-4">
-            //Botón de Solicitar Cambio de Asesor 
-            <div class="flex justify-center">
-              <button :disabled="['pendiente', 'en progreso', 'rechazado'].includes(
-                solicitude.estado
-              )
-                " @click="solicitarCambioAsesor" :class="[
-                  'px-4 py-2 text-white rounded-md focus:outline-none',
-                  ['en progreso', 'pendiente', 'rechazado'].includes(
-                    solicitude.estado
-                  )
-                    ? 'cursor-not-allowed bg-gray-400'
-                    : 'bg-base hover:bg-green-500 ',
-                ]">
-                Solicitar cambio de asesor
+          <div class="flex items-center justify-between mt-2">
+            <p class="text-lg text-gray-800">Haz clic en el botón para solicitar un cambio de jurado.</p>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex justify-center mt-6">
+              <button class="px-4 py-2 bg-base text-white rounded-md" @click="solicitarCambioJurado">
+                SOLICITAR CAMBIO DE JURADO
               </button>
             </div>
           </div>
-        </div> -->
-        <!-- Historial de Acciones -->
-        <!-- <div class="bg-baseClarito rounded-lg shadow-lg p-6 mt-6" id="historial">
-          <h2 class="text-2xl font-medium text-azul">Historial de acciones</h2>
-          <div class="overflow-x-auto mt-4">
-            <table class="min-w-full table-auto bg-gray-50 rounded-lg">
-              <thead class="bg-gray-100 rounded-lg text-azul">
-                <tr>
-                  <th class="px-4 py-2 text-left font-medium">Acción</th>
-                  <th class="px-4 py-2 text-left font-medium">Asesor</th>
-                  <th class="px-4 py-2 text-left font-medium">Fecha</th>
-                  <th class="px-4 py-2 text-left font-medium">Observación</th>
-                  <th class="px-4 py-2 text-left font-medium">Título</th>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6">
+          <div class="flex items-center justify-between">
+            <h2 class="text-2xl font-medium text-gray-500">Selecciona los Jurados que deseas cambiar</h2>
+            <span :class="`estado-${procesos[3].estado.toLowerCase().replace(' ', '-')}`" class="estado-estilo ml-4">{{ procesos[3].estado }}</span>
+          </div>
+          <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full text-left uppercase bg-gray-50 border border-gray-200 rounded-md shadow">
+              <thead>
+                <tr class="text-black border-b-2 bg-gray-300">
+                  <th class="px-4 py-2 text-gray-600 border-b">ROL</th>
+                  <th class="px-4 py-2 text-gray-600 border-b">NOMBRE Y APELLIDO</th>
+                  <th class="px-4 py-2 text-gray-600 border-b">Acción</th>
                 </tr>
               </thead>
               <tbody>
-                <tr v-if="historial.length > 0" v-for="(h, index) in historial" :key="index">
-                  <td class="px-4 py-2">{{ h.accion }}</td>
-                  <td class="px-4 py-2">{{ h.asesor }}</td>
-                  <td class="px-4 py-2">{{ h.fecha }}</td>
-                  <td class="px-4 py-2">{{ h.observacion }}</td>
-                  <td class="px-4 py-2">{{ h.titulo }}</td>
-                </tr>
-                <tr v-else>
-                  <td class="px-4 py-2 text-center h-5 text-gray-500" colspan="5">
-                    Aún no hay acciones registradas
+                <tr v-for="jurado in jurados" :key="jurado.id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                  <td class="px-4 py-2 border-b">{{ jurado.rol }}</td>
+                  <td class="px-4 py-2 border-b">{{ jurado.asesor }}</td>
+                  <td class="px-4 py-2 border-b">
+                  <button class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 text-sm" @click="solicitarCambioJurado(jurado)">
+                    Cambiar
+                  </button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div> -->
-        <!-- Modal de Confirmación -->
-        <div
-          v-if="mostrarModalConfirmacion"
-          class="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center"
-        >
-          <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4">
-            <!-- Responsivo -->
-            <h3 class="text-3xl text-center font-medium mb-4">Confirmación</h3>
-            <hr />
-            <br />
-            <p class="mb-6">
-              ¿Estás seguro de que deseas solicitar un cambio de asesor? Todo el
-              proceso tendrá que repetirse.
-            </p>
-            <div class="flex justify-end">
-              <button
-                @click="mostrarModalConfirmacion = false"
-                class="px-4 py-2 bg-gray-500 text-white rounded-md mr-2 hover:bg-gray-600"
-              >
-                Cancelar
-              </button>
-              <button
-                @click="confirmarCambioAsesor"
-                class="px-4 py-2 bg-base text-white rounded-md hover:bg-green-500"
-              >
-                Aceptar
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
-    </template>
+    </div>
   </template>
 </template>
 
@@ -889,9 +432,8 @@ const handleNextButtonClick = () => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
-
-.estado-pendiente {
-  background-color: #8898aa;
-  color: #ffffff;
+.text-center {
+  text-align: center;
+  padding: 1rem;
 }
 </style>

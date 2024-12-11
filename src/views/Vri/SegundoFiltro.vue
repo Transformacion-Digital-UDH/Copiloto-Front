@@ -112,7 +112,7 @@ const handleFileChange = (event: Event) => {
 const approveSolicitud = async (filterId: string) => {
   try {
     loading.value = true;
-        
+
     const formData = new FormData();
 
     // Agregar el estado directamente como un campo
@@ -130,12 +130,12 @@ const approveSolicitud = async (filterId: string) => {
 
     // Realizar la petición
     const response = await axios.post(
-      `/api/vri/update-filter/${filterId}/status`,
+      `/api/vri/update-filter/${filterId}/status?_method=PUT`,
       formData,
       {
         headers: {
           "Content-Type": "multipart/form-data",
-          'Accept': 'application/json',
+          Accept: "application/json",
         },
       }
     );
@@ -144,8 +144,13 @@ const approveSolicitud = async (filterId: string) => {
 
     if (response.data.estado === "aprobado") {
       alertToast("Solicitud aprobada correctamente.", "Éxito", "success");
-    }
 
+      // Cerrar el modal
+      closeApprovalModal();
+
+      // Recargar las solicitudes para reflejar el cambio en el estado
+      await fetchSolicitudes();
+    }
   } catch (error) {
     if (axios.isAxiosError(error)) {
       console.error("Error en Axios:", error.response?.data || error.message);
@@ -285,7 +290,7 @@ onMounted(() => {
                     <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
                     <th class="py-2 px-3 text-center tracking-wider">FECHA</th>
                     <th class="py-2 px-4 text-center tracking-wider">DOCUMENTOS</th>
-                    <th class="py-2 px-3 text-center tracking-wider">OBSERVACIONES</th> <!-- Nueva columna -->
+                   <!-- <th class="py-2 px-3 text-center tracking-wider">OBSERVACIONES</th>  Nueva columna -->
                     <th class="py-2 px-3 text-center tracking-wider">ACCIÓN</th>
                     <th class="py-2 px-3 text-center tracking-wider">ESTADO</th>
                   </tr>
@@ -310,7 +315,7 @@ onMounted(() => {
                       </a>
                     </td>
                   <!-- Falta agregar el link para descargar las observaciones-->  
-                    <td class="px-3 py-5 text-center">
+                    <!-- <td class="px-3 py-5 text-center">
                         <a
                           :href="solicitude.documentos[0]?.doc_link"
                           download
@@ -324,7 +329,7 @@ onMounted(() => {
                           />
                           <span>Descargar</span>
                         </a>
-                      </td>
+                      </td> -->
                     <td class="px-3 py-5 flex flex-col items-center justify-center">
                       <button
                         :class="[ 

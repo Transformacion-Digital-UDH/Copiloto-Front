@@ -20,7 +20,7 @@ interface Review {
 }
 
 // ***** Texto que escribe automáticamente ********
-const text = "Revisiones Pendientes de Proyecto de Tesis";
+const text = "Revisiones Pendientes de Proyecto de Investigación";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -296,31 +296,32 @@ onMounted(() => {
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
                     <tr class="text-center text-azul border-b-2 bg-gray-300">
-                      <th class="py-2 px-3 text-left tracking-wider">ESTUDIANTE</th>
-                      <th class="py-2 px-3 text-left tracking-wider">TÍTULO</th>
-                      <th class="py-2 px-4 tracking-wider">VISUALIZAR TESIS</th>
-                      <th class="py-2 px-3 tracking-wider">N° REVISIÓN</th>
+                      <th class="py-2 px-3 text-left tracking-wider col-estudiante">ESTUDIANTE</th>
+                      <th class="py-2 px-3 text-left tracking-wider col-titulo">TÍTULO</th>
+                      <th class="py-2 px-4 tracking-wider whitespace-nowrap">LINK</th>
+                      <th class="py-2 px-3 tracking-wider whitespace-nowrap">N° REVISIÓN</th>
                       <th class="py-2 px-4 tracking-wider">ACCIÓN</th>
                       <th class="py-2 px-4 tracking-wider">ESTADO</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr v-for="(u, index) in filteredTableData" :key="u.solicitude_id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 whitespace-nowrap w-64">{{ u.stu_name || "Nombre desconocido" }}</p>
+                      <td class="px-3 py-5 text-base col-estudiante">
+                        <p class="text-gray-900 whitespace-nowrap">{{ u.stu_name || "Nombre desconocido" }}</p>
                       </td>
-                      <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-80 uppercase">{{ u.sol_title_inve || "Título no disponible" }}</p>
+                      <td class="px-3 py-5 text-base col-titulo">
+                        <p class="text-gray-900 text-wrap uppercase">{{ u.sol_title_inve || "Título no disponible" }}</p>
                       </td>
                       <td class="px-3 py-5 text-center">
-                        <a :href="u['link-tesis']" target="_blank" class="text-blue-800 hover:text-base flex items-center justify-center group">
-                          <!-- Ícono que se muestra normalmente -->
-                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
-                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
-                          <span class="text-[#34495e]">Ver proyecto</span>
+                        <a :href="u['link-tesis']" target="_blank" class="text-blue-800 hover:text-base flex items-center group">
+                          <!-- Contenedor con tamaño fijo para el ícono -->
+                          <div class="flex-shrink-0 mr-2" style="width: 24px; height: 24px;">
+                            <IconEyeCerrar class="group-hover:hidden w-full h-full" />
+                            <IconEyeAbrir class="hidden group-hover:block w-full h-full" />
+                          </div>
+                          <span class="text-[#34495e] text-sm text-center whitespace-nowrap">Ver proyecto</span>
                         </a>
                       </td>
-
                       <td class="px-3 py-5 text-center">{{ u.rev_count }}</td>
                       <td class="px-3 py-5 text-center align-middle">
                         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
@@ -382,10 +383,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el Proyecto de Tesis ya no requiere mas observaciones?</h5>
+            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el proyecto de investigación ya no requiere más observaciones?</h5>
           </div>
           <div class="p-6">
-              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el documento de conformidad</p>
               <input
                 type="text"
                 id="nroCarta"
@@ -473,4 +474,20 @@ onMounted(() => {
   font-size: 16px;
   text-transform: uppercase;
 }
+.col-estudiante {
+  width: 20%; /* Ajusta según tus necesidades */
+  max-width: 20%; /* Evita que se expanda más de lo necesario */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; /* Evita que el texto se desborde */
+}
+
+.col-titulo {
+  width: 40%; /* Ajusta según tus necesidades */
+  max-width: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 </style>

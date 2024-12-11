@@ -331,7 +331,7 @@ onMounted(() => {
 
                       <!-- Mostrar presidente si el asesor no es presidente -->
                       <div v-if="u.rol !== 'presidente'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full">
+                        <span class="block px-3 py-1 text-sm text-black rounded-full">
                           Presidente:
                           <span v-if="u.presidente_aprobado">
                             <i class="fas fa-check-circle text-green-500"></i>
@@ -344,7 +344,7 @@ onMounted(() => {
 
                       <!-- Mostrar secretario si el asesor no es secretario -->
                       <div v-if="u.rol !== 'secretario'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full">
+                        <span class="block px-3 text-sm py-1 text-black rounded-full">
                           Secretario:
                           <span v-if="u.secretario_aprobado">
                             <i class="fas fa-check-circle text-green-500"></i> <!-- Ícono de aprobado -->
@@ -357,7 +357,7 @@ onMounted(() => {
 
                       <!-- Mostrar vocal si el asesor no es vocal -->
                       <div v-if="u.rol !== 'vocal'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full">
+                        <span class="block px-3 text-sm py-1 text-black rounded-full">
                           Vocal:
                           <span v-if="u.vocal_aprobado">
                             <i class="fas fa-check-circle text-green-500"></i> <!-- Ícono de aprobado -->
