@@ -341,7 +341,7 @@ const getTitulo = async () => {
       solicitude.value.titulo = response.data.titulo;
       tituloExistente.value = true;
     } else {
-      solicitude.value.titulo = solicitude.value.titulo || "Título provisional no asignado";
+      solicitude.value.titulo = solicitude.value.titulo || "";
       tituloExistente.value = false;
       console.log(solicitude.value);
     }
