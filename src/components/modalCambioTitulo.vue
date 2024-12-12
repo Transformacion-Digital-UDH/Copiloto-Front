@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { defineEmits, defineProps } from "vue";
+import IconCerrar from "./icons/IconCerrar.vue";
 
 defineProps<{ showModal: boolean; initialTitle: string }>();
 const emit = defineEmits(["close", "tituloGuardado", "solicitarAprobacionProyecto"]);
@@ -18,17 +19,17 @@ const mostrarInputCambio = ref(false);
                         class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
                         @click="emit('close')">
                         <!-- IconCerrar puede ser añadido aquí -->
-                        ✖
+                        <IconCerrar />
                     </button>
                 </div>
                 <div class="flex items-start justify-between p-3 border-b border-gray-200">
                     <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-                        ¿Acepta cambiar su titulo de proyecto de investigación?
+                        ¿Confirma el cambio del título de su proyecto de investigación?
                     </h5>
                 </div>
                 <div class="p-6">
                     <p class="text-gray-500 text-lg text-center">
-                        Por favor, confirme o no su título para el informe final.
+                        Por favor, indique su aprobación o rechazo para que el título pueda ser registrado en el informe final.
                     </p>
                 </div>
                 <div class="flex items-center justify-center p-3 border-gray-200">
