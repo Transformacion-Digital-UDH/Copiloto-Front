@@ -237,23 +237,17 @@ onMounted(() => {
       <!-- revisiones de cada jurado P,S y V -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
-          <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
+          <h4 class="text-xl font-medium text-black">1. Revisión de observaciones</h4>
             <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tus jurados, hasta que esté todo conforme.' },]" />
         </div>
 
-        <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será 
-          <strong class="text-[#8898AA] text-lg font-medium">Pendiente</strong>. Corrige las observaciones en Google Docs.
-        </p>
-        <p class="text-gray-500 mt-1 text-lg">Al corregir, haz clic en  
-          <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong> para una nueva revisión.
-        </p>
-        <p class="text-gray-500 mt-1 text-lg">Cuando los 3 jurados aprueben, el estado cambiará a 
-          <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
+        <p class="text-gray-500 mt-1 text-sm">Si el jurado deja observaciones el estado será 
+          <strong class="text-gray-400 text-sm font-medium">"Pendiente"</strong>. Corrige las observaciones en Google Docs. Luego de corregir, haz clic en<strong class="text-green-500 text-sm font-medium">“Solicitar revisión”</strong> para una nueva revisión.<br> Cuando los 3 jurados aprueben, el estado cambiará a <strong class="text-green-500 text-sm font-medium">Aprobado</strong>
         </p>
 
         <!-- Tabla del Presidente -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado presidente</p>
+          <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado presidente</p>
           <CorrecionTabla
             :revisiones="presidenteRevisiones"
             :loading="loading"
@@ -262,7 +256,7 @@ onMounted(() => {
         </div>
         <!-- Tabla del Secretario -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado secretario</p>
+          <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado secretario</p>
           <CorrecionTabla
             :revisiones="secretarioRevisiones"
             :loading="loading"
@@ -271,7 +265,7 @@ onMounted(() => {
         </div>        
         <!-- Tabla del Vocal -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado vocal</p>
+          <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado vocal</p>
           <CorrecionTabla
             :revisiones="vocalRevisiones"
             :loading="loading"

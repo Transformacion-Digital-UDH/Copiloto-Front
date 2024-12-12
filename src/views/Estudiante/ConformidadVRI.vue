@@ -11,36 +11,6 @@ import router from '@/router';
 import { alertToast } from '@/functions';
 import { useTypewriter } from '@/composables/useTypewriter';
 
-// Estado de la constancia de curso
-// const constanciaCurso = ref({
-//   titulo: '2. Constancia de Tu Coach UDH',
-//   descripcion: 'Te falta llevar el curso de TCOACH, por favor haz click en llevar curso',
-//   estado: 'Pendiente',
-//   completado: false, // Indica si el curso ha sido completado
-//   documentoUrl: '',  // URL para el certificado o documento del curso
-// });
-
-// // Estado de las observaciones de buenas prácticas
-// const observaciones = ref([
-//   { descripcion: 'Tienes observaciones', observacion: 'Malas_Practicas.xlsx', veces: 1, fecha: '20/09/2023', accion: 'Solicitar Revisión', estado: 'Pendiente' }
-// ]);
-
-// // Estado de la revisión de Turnitin
-// const turnitinObservacion = ref([
-//   { descripcion: 'Rechazado con porcentaje mínimo', observacion: 'turnitin.xlsx', veces: 1, fecha: '20/09/2023', accion: 'Revisar', estado: 'Rechazado' }
-// ]);
-
-// // Estado de los documentos
-// const documentos = ref([
-//   { nombre: 'Constancia de originalidad', estado: 'Hecho', documentoUrl: 'resolucion_xxxxxx' }
-// ]);
-
-// // Función para cambiar el estado de la solicitud de revisión
-// function solicitarRevision() {
-//   observaciones.value[0].estado = 'Hecho';
-//   //tramites.value[0].estado = 'Hecho'; Trámite en el Sistema pasa a Hecho
-// }
-
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Conformidad por Integridad VRI");
 onMounted(typeWriter);
@@ -206,16 +176,16 @@ onMounted(() => {
         <!-- constancia de tucoach -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h4 class="text-2xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
+            <h4 class="text-xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
           </div>
 
-          <p class="text-gray-500 mt-1 text-lg">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
-          <p class="text-gray-500 mt-1 text-lg">Haz clic en
-            <strong class="text-lg font-medium text-green-500">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento.
+          <p class="text-gray-500 mt-1 text-sm">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
+          <p class="text-gray-500 mt-1 text-sm">Haz clic en
+            <strong class="text-sm font-medium text-green-500">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento.
           </p>
           
           <!-- documento de buuenas practicas -->
-          <div class="mt-4 space-y-4">
+          <div class="mt-4 space-y-4 text-gray-700 font-medium">
             <CursoCoachCard 
             :titulo="'Documento emitido por TUCOACH'"
             :estado="obtener?.tu_coach.doc_estado || ''"
@@ -226,10 +196,10 @@ onMounted(() => {
         <!-- solicitar conformidad por VRI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Solicitar conformidad de VRI</h2>      
+            <h2 class="text-xl font-medium text-black">2. Solicitar conformidad de VRI</h2>      
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar conformidad"</strong> para enviar tu solicitud.
+          <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
+            <strong class="text-green-500 text-sm font-medium">"Solicitar conformidad"</strong> para enviar tu solicitud.
           </p>
           <!-- boton para solicitar aprobacion informe final -->
           <div class="flex justify-center mt-2">
@@ -302,16 +272,16 @@ onMounted(() => {
         <!-- documentos de cada filtro del VRI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documentos de cada filtro del VRI</h2>
+            <h2 class="text-xl font-medium text-black">3. Documentos de cada filtro del VRI</h2>
           </div>
 
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-              <div class="flex flex-col md:flex-row justify-between md:items-center">
+              <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
                 <span class="flex-1 text-xm bg-gray-50">Primer Filtro - VRI.</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
-                  <span v-else class="text-gray-500 italic">Solicitud en espera</span>
+                  <span v-else class="text-gray-500 italic text-sm">Solicitud en espera</span>
                   <span :class="`estado-estilo estado-${primerFiltro.fil_estado.toLowerCase().replace(' ', '-')}`">
                     {{ formatearTexto(primerFiltro.fil_estado) }}
                   </span>
@@ -366,7 +336,7 @@ onMounted(() => {
   color: #ffffff;
 }
 .estado-aprobado {
-  background-color: #38a169;
+  background-color: #39B49E;
   color: #ffffff;
 }
 .text-center {

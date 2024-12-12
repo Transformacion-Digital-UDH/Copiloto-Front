@@ -1,6 +1,6 @@
 <template>
   <table class="w-full max-w-full bg-white border rounded-md shadow">
-    <thead>
+    <thead class="text-sm">
       <tr class="text-center text-azul bg-gray-300 truncate">
         <th class="px-2 py-2 tracking-wider">N° REVISIÓN</th>
         <th class="px-2 py-2 tracking-wider">FECHA</th>
@@ -72,7 +72,7 @@ const props = defineProps<{
 }
 .estado-tramitado,
 .estado-aprobado {
-  background-color: #48bb78;
+  background-color: #38a169;
   color: #ffffff;
 }
 .estado-observado {

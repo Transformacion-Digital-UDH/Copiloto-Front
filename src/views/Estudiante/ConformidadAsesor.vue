@@ -73,7 +73,7 @@ const obtenerDatosEstudiante = async () => {
   const student_id = authStore.id;
   try {
     const response = await axios.get(`/api/student/get-review/${student_id}`);
-    //console.log("Mostrando lo recibido", response.data);
+    console.log("Mostrando lo recibido", response.data);
     obtener.value = response.data;
   } catch (error) {
     console.error("Error al obtener datos", error);
@@ -90,6 +90,7 @@ const solicitarRevisionAsesorProyecto = async () => {
     const response = await axios.post(
       `/api/student/first-review/${student_id}`
     );
+    console.log("ak", response.data);
 
     if (response.data.status) {
       solicitudEstado.value = "pendiente";
@@ -121,6 +122,7 @@ const actualizarEstadoRevision = async () => {
       `/api/student/review/${student_id}/status`,
       payload
     );
+    
 
     if (response.data.message) {
       alertToast(
@@ -184,7 +186,9 @@ onMounted(() => {
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">
+            
+            
+            <h2 class="text-xl font-medium text-black">
               1. Correcciones con tu asesor
             </h2>
             <ModalToolTip
@@ -195,9 +199,9 @@ onMounted(() => {
               ]"
             />
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
+          <p class="text-gray-500 mt-2 mb-3 text-sm">
             Haz clic en
-            <strong class="text-green-500 text-lg font-medium"
+            <strong class="text-green-500 text-sm font-medium"
               >"Solicitar revisión"</strong
             >
             para iniciar las observaciones del proyecto de investigación.
@@ -216,7 +220,7 @@ onMounted(() => {
         <!-- revision del asesor para PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h4 class="text-2xl font-medium text-black">
+            <h4 class="text-xl font-medium text-black">
               2. Revisión de observaciones
             </h4>
             <ModalToolTip
@@ -228,24 +232,15 @@ onMounted(() => {
             />
           </div>
 
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
-            Si tu asesor deja observaciones, el estado será
-            <strong class="text-[#8898aa] text-lg font-medium"
-              >"Pendiente"</strong
-            >. Corrige en Google Docs.
+          <p class="text-gray-500 mt-2 mb-1 text-sm">
+            Si tu asesor deja observaciones el estado será
+            <strong class="text-gray-500 text-xm font-medium">"Pendiente"</strong>. Corrige las observaciones en el documento de Google Docs. Luego, haz click en <br>
+            <strong class="text-green-500 text-xm font-medium">“Observaciones corregidas”</strong> para que el asesor pueda ver tus correcciones. Si todo está bien, el estado cambiará a
+            <strong class="text-green-500 text-xm font-medium">"Aprobado"</strong>.
           </p>
-          <p class="text-gray-500 text-lg">
-            Luego, haz clic en
-            <strong class="text-green-500 text-lg font-medium"
-              >“Observaciones corregidas”</strong
-            >. Si todo está bien, el estado cambiará a
-            <strong class="text-green-500 text-lg font-medium"
-              >"Aprobado"</strong
-            >.
-          </p>
-
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por tu docente asesor </p>
             <CorrecionAsesorPY
               :revisiones="obtener?.revision ? [obtener.revision] : []"
               @actualizarEstado="actualizarEstadoRevision"
@@ -257,7 +252,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">
+              <h2 class="text-xl font-medium text-black">
                 3. Documento de conformidad del proyecto de investigación
               </h2>
               <ModalToolTip
@@ -271,7 +266,7 @@ onMounted(() => {
           </div>
           <div class="mt-4 space-y-4">
             <DocumentCard
-              titulo="Acta de conformidad del proyecto de investigación - por el asesor"
+              titulo="ACTA DE CONFORMIDAD DEL PROYECTO DE INVESTIGACION - POR EL ASESOR"
               :estado="
                 ['aprobado'].includes(obtener?.revision?.estado ?? '')
                   ? obtener?.revision?.estado ?? ''
@@ -282,6 +277,7 @@ onMounted(() => {
               :download="DOWNLOAD_CPA"
             />
           </div>
+
         </div>
 
         <!--Botones siguiente y anteerior-->
@@ -298,7 +294,7 @@ onMounted(() => {
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   border-radius: 0.375rem;
   display: inline-block;
 }

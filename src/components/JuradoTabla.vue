@@ -1,7 +1,7 @@
 <template>
   <table class="w-full max-w-4xl bg-white border rounded-md shadow">
-    <thead>
-      <tr class="text-center text-azul bg-gray-300 truncate">
+    <thead class="text-sm">
+      <tr class="text-center text-azul bg-gray-200 truncate">
         <th class="px-2 py-2 tracking-wider">ROL</th>
         <th class="px-2 py-2 tracking-wider">NOMBRE Y APELLIDO</th>
       </tr>

@@ -1,7 +1,7 @@
 <template>
   <table class="w-full max-w-full bg-white border rounded-md shadow">
-    <thead>
-      <tr class="text-center text-azul bg-gray-300 truncate">
+    <thead class="text-sm ">
+      <tr class="text-center text-azul bg-gray-200 truncate">
         <th class="px-2 py-2 tracking-wider">N° REVISIÓN</th>
         <th class="px-2 py-2 tracking-wider">FECHA</th>
         <th class="px-2 py-2 tracking-wider">ACCIÓN</th>
@@ -77,18 +77,17 @@ const formatearTexto = (text: string): string =>
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   border-radius: 0.375rem;
   display: inline-block;
 }
-.estado-no-iniciado,
 .estado-pendiente {
   background-color: #8898aa;
   color: #ffffff;
 }
 .estado-tramitado,
 .estado-aprobado {
-  background-color: #48bb78;
+  background-color: #38a169;
   color: #ffffff;
 }
 .estado-observado {

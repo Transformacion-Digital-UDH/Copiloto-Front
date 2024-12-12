@@ -20,6 +20,7 @@ const typeWriter = () => {
   }
 };
 
+
 // Definimos una interfaz para tipar los elementos de `tableData`
 interface Resolucion {
   id: string;
@@ -209,7 +210,6 @@ const rejectResolution = async () => {
       <div class="flex-1 p-10 overflow-auto">
         <!-- Texto tipiado -->
         <h3 class="text-4xl font-semibold text-center text-azul">{{ textoTipiado }}</h3>
-
         <!-- Tabla de datos -->
         <div class="mt-8">
           <!-- Filtros de tabla -->
@@ -246,8 +246,6 @@ const rejectResolution = async () => {
                 </div>
               </div>
             </div>
-            <br>
-
             <!-- Tabla de datos -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6">
               <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
@@ -266,10 +264,10 @@ const rejectResolution = async () => {
                     <tr v-for="(u, index) in filteredTableData" :key="u.id"
                       class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-64">{{ u.estudiante_nombre || 'Nombre desconocido' }}</p>
+                        <p class="text-gray-700 text-wrap w-64">{{ u.estudiante_nombre || 'Nombre desconocido' }}</p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-gray-900 text-wrap w-64">{{ u.asesor_nombre || 'Asesor desconocido' }}</p>
+                        <p class="text-gray-700 text-wrap w-64">{{ u.asesor_nombre || 'Asesor desconocido' }}</p>
                       </td>
                       <td class="text-center px-4">
                         <a :href="`${VIEW_OFFICE}/${u.id}`" target="_blank">
@@ -312,7 +310,7 @@ const rejectResolution = async () => {
                         </a>
                       </td>
                       <td class="px-3 py-5 text-base text-center">
-                        <p class="text-gray-900 text-wrap w-32">{{ u.fecha_creado || 'Fecha no disponible' }}</p>
+                        <p class="text-gray-700 text-wrap w-32">{{ u.fecha_creado || 'Fecha no disponible' }}</p>
                       </td>
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
                         <button v-if="['pendiente', 'observado'].includes(u.resolucion_estado)" :class="['w-24 px-4 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none',
@@ -342,6 +340,7 @@ const rejectResolution = async () => {
                           {{ u.resolucion_estado ? u.resolucion_estado.charAt(0).toUpperCase() +
                             u.resolucion_estado.slice(1).toLowerCase() : 'Estado desconocido' }}
                         </span>
+                       
                       </td>
 
                     </tr>
