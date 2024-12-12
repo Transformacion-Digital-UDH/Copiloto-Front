@@ -66,9 +66,9 @@ const fetchThesisInfo = async () => {
       {
         nombre: response.data.designacion_asesor.nombre_res,
         emisor: response.data.designacion_asesor.res_emisor,
-        fechaEmision: response.data.designacion_asesor.doc_fecha,
-        urlView: `${import.meta.env.VITE_URL_VIEW_LETTER}/${response.data.designacion_asesor.doc_id}`,
-        urlDownload: `${import.meta.env.VITE_URL_DOWNLOAD_LETTER}/${response.data.designacion_asesor.doc_id}`,
+        fechaEmision: response.data.designacion_asesor.res_fecha,
+        urlView: `${import.meta.env.VITE_URL_VIEW_RESOLUTION}/${response.data.designacion_asesor.res_id}`,
+        urlDownload: `${import.meta.env.VITE_URL_DOWNLOAD_RESOLUTION}/${response.data.designacion_asesor.res_id}`,
       },
       {
         nombre: response.data.conformidad_asesor.nombre_doc,
