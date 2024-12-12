@@ -176,8 +176,6 @@ const getInfoStudent = async () => {
     }
   } catch (error) {
     console.error("Error al obtener información del estudiante:", error);
-  } finally {
-    load.value = false;
   }
 };
 
@@ -350,6 +348,8 @@ const getTitulo = async () => {
   } catch (error) {
     console.error("Error al obtener el título:", error);
     tituloExistente.value = false;
+  } finally {
+    load.value = false;
   }
 };
 
