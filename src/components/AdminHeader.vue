@@ -94,7 +94,7 @@ onMounted(() => {
         </svg>
       </button> -->
 
-      <!-- boton del usuario, perfil y cerrar sesion 
+      <!-- boton del usuario, perfil y cerrar sesion -->
       <div class="relative ml-4">
         <button
           @click="dropdownOpen = !dropdownOpen"
@@ -125,11 +125,13 @@ onMounted(() => {
             v-show="dropdownOpen"
             class="absolute right-0 z-20 w-48 py-2 mt-2 bg-white rounded-md shadow-xl"
           >
+          <!-- NO TENEMOS API ASI QUE VA A ESTAR OCULTO PARA LOS NUEVOS PRACTICANTES :3
             <a
               href="/perfil"
               class="block px-4 py-2 text-sm text-gray-900 hover:bg-base hover:text-white"
               >Perfil</a
             >
+            -->
             <button
               @click="logout"
               class="block w-full text-start px-4 py-2 text-sm text-gray-900 hover:bg-base hover:text-white"
@@ -139,7 +141,7 @@ onMounted(() => {
           </div>
         </transition>
       </div>
-      -->
+      
     </div>
   </header>
 </template>
