@@ -188,6 +188,8 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             
+            <!-- Implementacion de Estados en Circulo -->
+
             
             <h2 class="text-xl font-medium text-black">
               1. Correcciones con tu asesor
