@@ -588,7 +588,7 @@ const handleNextButtonClick = () => {
                   <a
                     :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
                     target="_blank"
-                    class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito justify-center w-full sm:w-auto text-sm"
+                    class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito justify-center w-full sm:w-auto"
                   >
 
                     <i class="fas fa-eye mr-2"></i> Ver
@@ -694,7 +694,7 @@ const handleNextButtonClick = () => {
                     <a
                       :href="`${VIEW_OFFICE}/${oficio.id}`"
                       target="_blank"
-                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center text-sm"
+                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center"
                     >
 
                       <i class="fas fa-eye mr-2"></i> Ver
@@ -733,7 +733,7 @@ const handleNextButtonClick = () => {
                     <a
                       :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
                       target="_blank"
-                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center text-sm"
+                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center"
                     >
 
                       <i class="fas fa-eye mr-2"></i> Ver

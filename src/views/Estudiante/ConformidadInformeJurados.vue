@@ -207,7 +207,7 @@ onMounted(() => {
   <template v-else>
   <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-    <div class="mt- space-y-8">
+    <div class="space-y-8">
       <!-- card para mostrar jurados y titulo -->
       <div v-if="obtener" class=" text-azul space-y-2 relative">
         <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu informe. Verifica la información y revisa las actualizaciones.</p>
@@ -238,7 +238,7 @@ onMounted(() => {
                   {{ obtener?.titulo || 'Título no asignado' }}
                 </p>
               </div>
-            </div>      
+            </div>       
       </div>
 
       <!-- revisiones de cada jurado P,S y V -->

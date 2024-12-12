@@ -130,21 +130,13 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="mt-6 space-y-10">
+      <div class="space-y-10">
         <!-- card para mostrar los jurados y titulo -->
-        <div v-if="obtener" class=" text-lg text-azul space-y-2 relative">
+        <div v-if="obtener" class=" text-xm text-azul space-y-2 relative">
           <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de investigación. Verifica la información y revisa las actualizaciones.</p>
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
-
-          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de investigación. 
-          Verifica la información y revisa las actualizaciones.</p>
-
+        <div v-if="obtener" class=" text-xm text-azul space-y-4 relative">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <JuradoCard v-for="jurado in jurados" :key="jurado.revision_id" :rol="jurado.rol" :nombre="jurado.nombre" />
-          </div>
-          <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-            <p class="max-full text-xm text-gray-600 uppercase text-center">{{ obtener?.titulo || 'Título no asignado'
-              }}</p>
           </div>
           <!-- Enlace del proyecto de Tesis -->
           <div v-if="obtener?.link" class="text-center mt-6">
@@ -165,9 +157,6 @@ onMounted(() => {
             </div>
 
           </div>
-          <!-- Explicación breve -->
-          <p class="text-sm text-gray-600 text-center">Asegúrate de corregir y actualizar tu información en Google Docs
-            antes de hacer clic en "Solicitar revisión".</p>
         </div>
 
         <!-- Card 2:  Solicitar revisión para las observaciones -->
@@ -204,37 +193,30 @@ onMounted(() => {
         <!-- Revisión de levantamiento de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
+            <h4 class="text-xl font-medium text-black">1. Revisión de observaciones</h4>
             <ModalToolTip
               :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
-          <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será
-            <strong class="text-[#8898AA] text-lg font-medium">Pendiente</strong>. Corrige las observaciones en Google
-            Docs.
-          </p>
-          <p class="text-gray-500 mt-1 text-lg">Al corregir, haz clic en
-            <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong> para una nueva revisión.
-          </p>
-          <p class="text-gray-500 mt-1 text-lg">Cuando los 3 jurados aprueben, el estado cambiará a
-            <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
-          </p>
+          <p class="text-gray-500 mt-1 text-sm">Si el jurado deja observaciones el estado será 
+          <strong class="text-gray-400 text-sm font-medium">"Pendiente"</strong>. Corrige las observaciones en Google Docs. Luego de corregir, haz clic en<strong class="text-green-500 text-sm font-medium">“Solicitar revisión”</strong> para una nueva revisión.<br> Cuando los 3 jurados aprueben, el estado cambiará a <strong class="text-green-500 text-sm font-medium">Aprobado</strong>
+        </p>
 
           <!-- Tabla de observaciones Presidente -->
           <div class="overflow-x-auto mt-4">
-            <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado presidente</p>
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado presidente</p>
             <CorrecionTabla :revisiones="presidenteRevisiones" :loading="loading"
               :isRevisionDisabled="isRevisionDisabled" :solicitarRevision="solicitarRevisionProyecto" />
           </div>
           <!-- Tabla de observaciones Secretario -->
           <div class="overflow-x-auto mt-4">
-            <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado secretario</p>
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado secretario</p>
             <CorrecionTabla :revisiones="secretarioRevisiones" :loading="loading"
               :isRevisionDisabled="isRevisionDisabled" :solicitarRevision="solicitarRevisionProyecto" />
           </div>
           <!-- Tabla de observaciones Vocal -->
           <div class="overflow-x-auto mt-4">
-            <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado vocal</p>
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado vocal</p>
             <CorrecionTabla :revisiones="vocalRevisiones" :loading="loading" :isRevisionDisabled="isRevisionDisabled"
               :solicitarRevision="solicitarRevisionProyecto" />
           </div>
