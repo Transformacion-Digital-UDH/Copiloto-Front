@@ -341,7 +341,7 @@ const getTitulo = async () => {
       titulo.value = response.data.titulo;
       tituloExistente.value = true;
     } else {
-      titulo.value = solicitude.value.titulo || "Título provisional no asignado";
+      titulo.value = solicitude.value.titulo || "";
       tituloExistente.value = false;
       console.log(titulo.value);
     }
@@ -459,7 +459,7 @@ onMounted(() => { getTitulo(); });
               Título de proyecto de investigación (provisional)
             </label>
             <div class="flex items-center">
-              <input id="tituloTesis" type="text" v-model="titulo" :disabled="tituloExistente || titulo.length > 0"
+              <input id="tituloTesis" type="text" v-model="titulo" :disabled="tituloExistente"
                 class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Escribe el título de tu proyecto de investigación aquí" />
               <!-- Mostrar un mensaje de éxito si el título existe -->
