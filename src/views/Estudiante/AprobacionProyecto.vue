@@ -12,6 +12,7 @@ import DocumentCard from '@/components/DocumentCard.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
 import NavigationButton from '@/components/NavigationButton.vue';
 
+
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter(
   "Aprobación del Proyecto de Investigación"
@@ -127,14 +128,14 @@ onMounted(() =>{
           <!-- solicitar aprobacion de proyecto de tesis-->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="relative flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
+              <h2 class="text-xl font-medium text-black">1. Solicitar aprobación</h2>
                 <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
             </div>            
-            <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
-              <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
+            <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
+              <strong class="text-green-500 text-sm font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
             </p>
             <!-- boton para solicitar aprobacion de proyecto de tesis -->
-            <div class="flex justify-center mt-2">
+            <div class="flex justify-center mt-4">
               <ButtonRequest 
               label="Solicitar aprobación" 
               :loading="isLoading" 
@@ -146,12 +147,14 @@ onMounted(() =>{
           <!-- documentos -->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis </h2>
+              <h2 class="text-xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis </h2>
             </div>
             <!-- oficio de programa academico-->
             <div class="mt-4 space-y-4">
               <DocumentCard 
+
                 titulo="OFICIO DE APROBACIÓN DEL TRABAJO DE INVESTIGACIÓN (TESIS)"
+                
                 :estado="obtener?.oficio_estado || ''"
                 :id="obtener?.oficio_id ?? ''"
                 :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
@@ -162,10 +165,12 @@ onMounted(() =>{
             <!-- resolución de Facultad -->
             <div class="mt-4 space-y-4">
               <DocumentCard 
+
                 titulo="RESOLUCION DE APROBACIÓN DEL TRABAJO DE INVESTIGACIÓN (TESIS)"
                 :estado="obtener?.resolucion_estado || ''"
                 :id="obtener?.resolucion_id ?? ''"
                 :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
+
                 :view="VIEW_APROBACIONFACULTAD"
                 :download="DOWNLOAD_APROBACIONFACULTAD || ''"/>
             </div>

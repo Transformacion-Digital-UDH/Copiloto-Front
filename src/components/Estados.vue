@@ -45,7 +45,7 @@ export default {
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   font-weight: 400;
   border-radius: 0.375rem;
 }

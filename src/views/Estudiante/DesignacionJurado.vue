@@ -13,11 +13,13 @@ import { useTypewriter } from "@/composables/useTypewriter";
 import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonDesignarJurados from "@/components/SkeletonDesignarJurados.vue";
 
+
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter(
   "Designación de Jurados para el Proyecto de Investigación"
 );
 onMounted(typeWriter);
+
 
 // Función para solicitar cambio de jurado
 const solicitarCambioJurado = (jurado: any) => {
@@ -165,7 +167,7 @@ onMounted(() => {
         <!-- solicitar designacion de jurados PY -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">
+            <h2 class="text-xl font-medium text-black">
               1. Solicitar designación de jurados
             </h2>
             <ModalToolTip
@@ -176,15 +178,15 @@ onMounted(() => {
               ]"
             />
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
+          <p class="text-gray-500 mt-2 mb-1 text-sm">
             Haz clic en el botón
-            <strong class="text-green-500 text-lg font-medium"
+            <strong class="text-green-500 text-sm font-medium"
               >"Solicitar jurados"</strong
             >
             para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-4">
             <ButtonRequest
               label="Solicitar jurados"
               :loading="isLoading"
@@ -197,8 +199,8 @@ onMounted(() => {
         <!-- jurados designados por el decano -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">
-              2. Tus jurados designados son:
+            <h2 class="text-xl font-medium text-black">
+              2. Los jurados designados para tu proyecto de investigación son:
             </h2>
           </div>
           <div class="overflow-x-auto mt-4 flex justify-center">
@@ -210,8 +212,10 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">
-                3. Documento de designación de jurados
+
+              <h2 class="text-xl font-medium text-black">
+                3. Documento para la designación de jurados de proyecto de investigación
+
               </h2>
               <ModalToolTip
                 :infoModal="[

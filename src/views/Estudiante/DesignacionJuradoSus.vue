@@ -220,7 +220,7 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Solicitar designación de jurados</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar designación de jurados</h2>
             <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer"
                 @mouseover="mostrarModalJurados = true"
                 @mouseleave="mostrarModalJurados = false" />                
@@ -231,13 +231,8 @@ onMounted(() => {
           </div>
 
           <div class="flex items-center justify-between mt-2">
-            <p class="text-gray-500 text-base">Haz clic en el botón para solicitar la designación de jurados.</p>
-          </div>
-
-          <!-- <div class="flex justify-end">
-            <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]">{{ solicitudEstado2.charAt(0).toUpperCase() + solicitudEstado2.slice(1).toLowerCase() }}</span>
-          </div> -->
-          
+            <p class="text-gray-500 text-sm">Haz clic en el botón para solicitar la designación de jurados.</p>
+          </div>          
           <div class="mt-4">
             <div class="flex justify-center mt-2">
               <button
@@ -254,15 +249,15 @@ onMounted(() => {
         <!-- Jurados seleccionados -->
         <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
           <div class="flex items-center justify-between mt-2">
-            <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
+            <h2 class="text-xl font-medium text-black">2. Tus jurados designados son:</h2>
             <!-- <span :class="['estado-estilo', `estado-${solicitudEstado2.toLowerCase()}`]" class="ml-4">{{ solicitudEstado2 }}</span> -->
           </div>
 
           <div class="overflow-x-auto mt-4 flex justify-center">
             <div class="w-full max-w-2xl">
               <table class="w-full text-left bg-white border border-gray-200 rounded-md shadow-lg">
-                <thead class="leading-normal">
-                  <tr class="text-azul text-left border-b-2 bg-gray-300">
+                <thead class="leading-normal text-sm">
+                  <tr class="text-azul text-left border-b-2 bg-gray-300 ">
                     <th class="px-4 py-2 tracking-wide">ROL</th>
                     <th class="px-4 py-2 tracking-wide">NOMBRE Y APELLIDO</th>
                   </tr>
@@ -291,7 +286,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
+              <h2 class="text-xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
               <img src="/icon/info2.svg" alt="Info" class="ml-2 w-4 h-4 cursor-pointer" 
                   @mouseover="mostrarModalDocumentos = true"
                   @mouseleave="mostrarModalDocumentos = false" />

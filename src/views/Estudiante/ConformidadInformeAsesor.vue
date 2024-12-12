@@ -141,13 +141,13 @@ onMounted(() => {
       <!-- solicitar correcion al asesor IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
-          <h2 class="text-2xl font-medium text-black">1. Correcciones con tu asesor</h2>
+          <h2 class="text-xl font-medium text-black">1. Correcciones con tu asesor</h2>
           <ModalToolTip :infoModal="[{ info: 'Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
         </div>
-        <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en  
-          <strong class="text-green-500 text-lg font-medium">"Solicitar revisión"</strong> para iniciar las observaciones del informe final. 
+        <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en  
+          <strong class="text-green-500 text-sm font-medium">"Solicitar revisión"</strong> para iniciar las observaciones del informe final. 
         </p>
-        <div class="flex justify-center mt-2">
+        <div class="flex justify-center mt-4">
           <!-- boton para solicitar revision de asesor -->
           <ButtonRequest 
               label="Solicitar revisión" 
@@ -160,20 +160,18 @@ onMounted(() => {
       <!-- revision del asesor para IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
-          <h4 class="text-2xl font-medium text-black">2. Revisión de observaciones</h4>
+          <h4 class="text-xl font-medium text-black">2. Revisión de observaciones</h4>
           <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.' },]" />            
         </div>
-
-        <p class="text-gray-500 mt-2 mb-1 text-lg">Si tu asesor deja observaciones, el estado será 
-          <strong class="text-[#8898aa] text-lg font-medium">"Pendiente"</strong>. Corrige en Google Docs.
-        </p>
-        <p class="text-gray-500 text-lg">Luego, haz clic en 
-          <strong class="text-green-500 text-lg font-medium">“Observaciones corregidas”</strong>. Si todo está bien, el estado cambiará a 
-          <strong class="text-green-500 text-lg font-medium">"Aprobado"</strong>.
-        </p>
-
+        <p class="text-gray-500 mt-2 mb-1 text-sm">
+            Si tu asesor deja observaciones el estado será
+            <strong class="text-gray-500 text-xm font-medium">"Pendiente"</strong>. Corrige las observaciones en el documento de Google Docs. Luego, haz click en <br>
+            <strong class="text-green-500 text-xm font-medium">“Observaciones corregidas”</strong> para que el asesor pueda ver tus correcciones. Si todo está bien, el estado cambiará a
+            <strong class="text-green-500 text-xm font-medium">"Aprobado"</strong>.
+          </p>
         <!-- Tabla de observaciones -->
         <div class="overflow-x-auto mt-4">
+          <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por tu docente asesor</p>
           <CorrecionAsesor 
             :revisiones="obtener?.revision ? [obtener.revision] : []"
             @actualizarEstado="actualizarEstadoRevision"/>
@@ -184,7 +182,7 @@ onMounted(() => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documento de conformidad del informe final</h2>
+            <h2 class="text-xl font-medium text-black">3. Documento de conformidad del informe final</h2>
             <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
         </div>

@@ -42,6 +42,7 @@ const typeWriter = () => {
 onMounted(() => {
   typeWriter();
 });
+
 // *******************************************************
 
 // Estados y propiedades
@@ -299,8 +300,7 @@ const formIsValid = computed(() => {
                 <div class="relative">
                   <select
                   v-model="rowsPerPage"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="20">20</option>
@@ -311,8 +311,7 @@ const formIsValid = computed(() => {
                 <div class="relative">
                   <select
                   v-model="selectedFilter"
-                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300"
-                >
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300" >
                     <option value="">Todos</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="Observado">Observado</option>
@@ -321,18 +320,12 @@ const formIsValid = computed(() => {
                 </div>
               </div>
             </div>
-            <br>
-
             <!-- Tabla -->
             <div class="px-4 py-4 -mx-4 overflow-x-auto sm:-mx-8 sm:px-8 mt-6 ">
-              <div
-                class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white"
-              >
+              <div class="inline-block min-w-full overflow-hidden rounded-lg shadow bg-white">
                 <table class="min-w-full leading-normal">
                   <thead class="custom-thead font-Quicksand">
-                    <tr
-                      class="text-center text-azul border-b-2 bg-gray-300"
-                    >
+                    <tr class="text-center text-azul border-b-2 bg-gray-300">
                       <th class="py-2 px-3 text-left font-thin tracking-wider">ESTUDIANTE</th>
                       <th class="py-2 px-3 text-left tracking-wider">ASESOR</th>
                       <th class="py-2 px-4 tracking-wider">CARTA ACEPTACIÓN</th>
@@ -345,15 +338,14 @@ const formIsValid = computed(() => {
                     <tr
                       v-for="(solicitude, index) in filteredTableData"
                       :key="solicitude.oficio_id"
-                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300"
-                      >
+                      class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
+                        <p class="text-gray-700 text-wrap w-64">
                           {{ solicitude.estudiante.nombre_completo}}
                         </p>
                       </td>
                       <td class="px-3 py-5 text-base">
-                        <p class="text-black text-wrap w-52">
+                        <p class="text-gray-700 text-wrap w-64">
                           {{ solicitude.asesor.nombre_completo}}
                         </p>
                       </td>
@@ -368,7 +360,7 @@ const formIsValid = computed(() => {
                         <button v-if="!solicitude.link" @click="openModalLink(solicitude)"  class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">
                           Generar docs
                         </button>
-                        <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver documento</a>
+                        <a v-else :href="solicitude.link" target="_blank" class="text-azul font-medium hover:underline">Ver documento</a>
                       </td>
                       
                       <td class="px-3 py-5 flex flex-col items-center justify-center">
@@ -415,7 +407,6 @@ const formIsValid = computed(() => {
                           {{ solicitude.oficio_estado ? solicitude.oficio_estado.charAt(0).toUpperCase() + solicitude.oficio_estado.slice(1).toLowerCase() : 'Estado desconocido' }}
                         </span>
                       </td>
-
                     </tr>
                   </tbody>
                 </table>
@@ -577,7 +568,7 @@ const formIsValid = computed(() => {
 }
 
 .estado-tramitado {
-  background-color: #39B49E;
+  background-color: #48bb78;
   color: #ffffff;
 }
 
