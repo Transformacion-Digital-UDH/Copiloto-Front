@@ -82,6 +82,17 @@ const openModalLink = (solicitude: Solicitude) => {
   }
 }
 
+// Orden de estados
+const estadoOrden = ["pendiente", "observado", "tramitado"];
+
+// Función de comparación
+function compararEstados(a: Solicitude, b: Solicitude) {
+  const indexA = estadoOrden.indexOf((a.oficio_estado ?? "").toLowerCase());
+  const indexB = estadoOrden.indexOf((b.oficio_estado ?? "").toLowerCase());
+  return indexA - indexB;
+}
+
+
 // Función para cerrar modal
 function closeModal() {
   showModal.value = false;
@@ -137,7 +148,7 @@ const fetchSolicitudes = async () => {
   const programa_id = authStore.id;
   try {
     const response = await axios.get(`/api/paisi/getSolicitude/${programa_id}`);
-    tableData.value = response.data.data;  // Forzamos el tipo a `Solicitude[]`
+    tableData.value = response.data.data.sort(compararEstados);  // Forzamos el tipo a `Solicitude[]`
     // console.log("Solicitudes obtenidas:", tableData.value);
   } catch (error) {
     console.error('Error al cargar las solicitudes:', error);
