@@ -94,7 +94,7 @@ onMounted(() => {
         </svg>
       </button> -->
 
-      <!-- boton del usuario, perfil y cerrar sesion -->
+      <!-- boton del usuario, perfil y cerrar sesion 
       <div class="relative ml-4">
         <button
           @click="dropdownOpen = !dropdownOpen"
@@ -139,6 +139,7 @@ onMounted(() => {
           </div>
         </transition>
       </div>
+      -->
     </div>
   </header>
 </template>
