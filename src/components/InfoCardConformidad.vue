@@ -1,5 +1,5 @@
 <template>
-  <div v-if="data" class="bg-baseClarito rounded-lg shadow-lg text-xm text-azul w-full p-6">
+  <div class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
     <div class="space-y-4 relative max-w-[820px] w-full mx-auto">
       <!-- Información del Asesor -->
       <div class="grid grid-cols-1 gap-6">
