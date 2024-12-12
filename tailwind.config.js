@@ -14,6 +14,7 @@ export default {
         'amarillo': '#F2A603',
         'grisTabla': '#ECECEC',
         'azulbajo': '#5d6d7e',
+        'naranja': '#e79e38',
       },
       fontFamily: {
         Roboto: ["Roboto", "sans-serif"], // Corregido el formato aquí
