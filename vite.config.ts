@@ -12,15 +12,6 @@ export default defineConfig({
     vueJsx(),
     vueDevTools(),
   ],
-  server: {
-    proxy: {
-      '/faculty': {
-        target: 'https://titulacion-back.abimaelfv.site',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

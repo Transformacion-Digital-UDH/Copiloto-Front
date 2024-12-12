@@ -37,12 +37,12 @@ npm install vue3-google-login
     - Add variables or copy from file .env.example: 
         VITE_GOOGLE_CLIENT_ID="CLIENT_ID PASTE HERE"
         VITE_GOOGLE_CLIENT_SECRET="SECRET PASTE HERE" 
-        VITE_URL_VIEW_LETTER="https://titulacion-back.abimaelfv.site/api/view-letter"
-        VITE_URL_DOWNLOAD_LETTER="https://titulacion-back.abimaelfv.site/api/download-letter"
-        VITE_URL_VIEW_OFFICE="https://titulacion-back.abimaelfv.site/api/view-office"
-        VITE_URL_DOWNLOAD_OFFICE="https://titulacion-back.abimaelfv.site/api/download-office"
-        VITE_URL_VIEW_RESOLUTION="https://titulacion-back.abimaelfv.site/api/view-resolution"
-        VITE_URL_DOWNLOAD_RESOLUTION="https://titulacion-back.abimaelfv.site/api/download-resolution"
+        VITE_URL_VIEW_LETTER="https://copiloto.udh.edu.pe/titulacionback/api/view-letter"
+        VITE_URL_DOWNLOAD_LETTER="https://copiloto.udh.edu.pe/titulacionback/api/download-letter"
+        VITE_URL_VIEW_OFFICE="https://copiloto.udh.edu.pe/titulacionback/api/view-office"
+        VITE_URL_DOWNLOAD_OFFICE="https://copiloto.udh.edu.pe/titulacionback/api/download-office"
+        VITE_URL_VIEW_RESOLUTION="https://copiloto.udh.edu.pe/titulacionback/api/view-resolution"
+        VITE_URL_DOWNLOAD_RESOLUTION="https://copiloto.udh.edu.pe/titulacionback/api/download-resolution"
 
 ### Compile and Hot-Reload for Development
 
