@@ -335,8 +335,6 @@ const getTitulo = async () => {
     const email = authStore.email;
     const apiUrl = `https://copiloto.udh.edu.pe/ideas/api/titulo/${email}`;
     const response = await axios.get(apiUrl);
-
-    console.log(response.data);
     if (response.data.status == true) {
       solicitude.value.titulo = response.data.titulo;
       tituloExistente.value = true;
