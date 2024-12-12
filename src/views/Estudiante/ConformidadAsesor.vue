@@ -191,7 +191,15 @@ onMounted(() => {
 
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
+<<<<<<< HEAD
+          <div class="relative flex items-center">
+            
+            <!-- Implementacion de Estados en Circulo -->
+
+            
+=======
           <div class="relative flex items-center ">
+>>>>>>> 6253c75904d8bf35429da8045c100571404791e0
             <h2 class="text-xl font-medium text-black">
               1. Correcciones con tu asesor
             </h2>

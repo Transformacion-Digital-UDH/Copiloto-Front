@@ -325,7 +325,7 @@ export default defineComponent({
         </div>
       </div>
 
-      <!-- INFO DEL ESTUDIANTE COMO PROGRESO
+      <!-- INFO DEL ESTUDIANTE COMO PROGRESO FALTA FUNCIONALIDAD SI ERES NUEVO EN ESTO TOMALO COMO UN RETO :3
       <div class="px-6 mt-6 mb-8">
         <div class="flex justify-between mb-4">
           <span class="font-medium text-gray-600 dark:text-gray-300">Progreso General</span>
