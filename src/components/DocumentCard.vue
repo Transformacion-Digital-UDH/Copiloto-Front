@@ -1,29 +1,53 @@
 <template>
   <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
-    <div class="flex flex-row justify-between items-center text-gray-700 font-medium">
+    <div
+      class="flex flex-col sm:flex-row sm:justify-between sm:items-center text-gray-700 font-medium space-y-4 sm:space-y-0"
+    >
       <!-- Sección izquierda: Icono y título -->
-      <div class="flex items-center space-x-4">
-        <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
-        <span class="text-xm text-gray-700 font-medium">{{ titulo }}</span>
+      <div class="flex items-start sm:items-center sm:space-x-4">
+        <i class="fas fa-file-alt text-[#39B49E] text-xl sm:text-2xl mr-2"></i>
+        <span
+          class="text-sm sm:text-md font-medium break-all text-left text-gray-700"
+        >
+          {{ titulo }}
+        </span>
       </div>
 
       <!-- Sección derecha: Botón "Ver" y estado -->
-      <div class="flex items-center space-x-4">
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0 text-left sm:text-left"
+      >
         <!-- Botón Ver -->
-        <div v-if="estado === 'tramitado' || estado === 'aprobado' || estado === 'emitido'">
+        <div
+          v-if="estado === 'tramitado' || estado === 'aprobado' || estado === 'emitido'"
+        >
           <a
-        :href="generateURL(view, id)"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito transition">
-        <i class="fas fa-eye mr-2"></i> Ver
-      </a>  
+            :href="generateURL(view, id)"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito transition text-sm sm:text-md"
+          >
+            <i class="fas fa-eye mr-2"></i> Ver
+          </a>
         </div>
-        <p v-else-if="estado === 'observado'" class="text-gray-500 italic">{{ observacion }}</p>
-        <span v-else class="text-gray-400 italic text-sm">El documento aún no se ha cargado</span>
+        <p
+          v-else-if="estado === 'observado'"
+          class="text-gray-500 italic text-sm sm:text-base"
+        >
+          {{ observacion }}
+        </p>
+        <span
+          v-else
+          class="text-gray-400 italic text-sm sm:text-base"
+          >El documento aún no se ha cargado</span
+        >
 
         <!-- Estado -->
-        <span :class="`estado-estilo estado-${estado.toLowerCase().replace(' ', '-')}`">
+        <span
+          :class="`estado-estilo estado-${estado
+            .toLowerCase()
+            .replace(' ', '-')}`"
+        >
           {{ formatearTexto(estado) }}
         </span>
       </div>
@@ -61,7 +85,7 @@ const props = defineProps({
 
 const formatearTexto = (text: string): string =>
   text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-  const generateURL = (view: string, id: string): string => {
+const generateURL = (view: string, id: string): string => {
   console.log("Generando URL con:", { view, id });
   if (!view || !id) {
     console.error("View o ID no proporcionados correctamente:", { view, id });
@@ -69,7 +93,6 @@ const formatearTexto = (text: string): string =>
   }
   return `${view}/${id}`;
 };
-
 </script>
 
 <style scoped>
@@ -84,19 +107,11 @@ const formatearTexto = (text: string): string =>
   color: #ffffff;
 }
 .estado-aprobado {
-  background-color: #39B49E;
+  background-color: #39b49e;
   color: #ffffff;
 }
 .estado-tramitado {
   background-color: #38a169;
-  color: #ffffff;
-}
-.estado-tramitado {
-  background-color:  #38a169;
-  color: #ffffff;
-}
-.estado-tramitado {
-  background-color:  #38a169;
   color: #ffffff;
 }
 .estado-observado {
@@ -104,6 +119,6 @@ const formatearTexto = (text: string): string =>
   color: #ffffff;
 }
 .break-all {
-  word-break: break-all;
+  word-break: break-word;
 }
 </style>

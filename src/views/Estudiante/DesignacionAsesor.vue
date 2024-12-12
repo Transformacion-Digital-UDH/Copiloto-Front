@@ -142,46 +142,41 @@ const goToNextPage = () => {
 // Función para obtener la información del estudiante
 const getInfoStudent = async () => {
   load.value = true;
-  await axios
-    .get(`/api/student/getInfo/${authStore.id}`)
-    .then((response) => {
-      console.log(response.data);
-      if (response.data.status) {
-        // Actualizamos los datos de solicitud
-        solicitude.value.solicitud_id = response.data.solicitud.id;
-        solicitude.value.titulo = response.data.solicitud.titulo;
-        solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
-        solicitude.value.estado = response.data.solicitud.estado;
-        solicitude.value.observacion = response.data.solicitud.observacion;
-        solicitude.value.tipo_investigacion =
-          response.data.solicitud.tipo_investigacion || "";
+  try {
+    const response = await axios.get(`/api/student/getInfo/${authStore.id}`);
+    if (response.data.status) {
+      // Actualizamos los datos de solicitud
+      solicitude.value.solicitud_id = response.data.solicitud.id;
+      solicitude.value.titulo = response.data.solicitud.titulo;
+      solicitude.value.asesor_id = response.data.solicitud.asesor_id || "";
+      solicitude.value.estado = response.data.solicitud.estado;
+      solicitude.value.observacion = response.data.solicitud.observacion;
+      solicitude.value.tipo_investigacion =
+        response.data.solicitud.tipo_investigacion || "";
 
-        // Actualizamos oficio y resolución
-        if (response.data.resolucion) {
-          resolucion.value.id = response.data.resolucion.id;
-          resolucion.value.nombre = response.data.resolucion.nombre;
-          resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
-          resolucion.value.estado = response.data.resolucion.estado;
-          resolucion.value.observacion = response.data.resolucion.observacion;
-        }
-
-        if (response.data.oficio) {
-          oficio.value.id = response.data.oficio.id;
-          oficio.value.estado = response.data.oficio.estado;
-          oficio.value.fecha_creado = response.data.oficio.fecha_creado;
-          oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
-          oficio.value.observacion = response.data.oficio.observacion;
-        }
-
-        historial.value = response.data.historial;
+      // console.log(response.data.solicitud.titulo);
+      // Actualizamos oficio y resolución
+      if (response.data.resolucion) {
+        resolucion.value.id = response.data.resolucion.id;
+        resolucion.value.nombre = response.data.resolucion.nombre;
+        resolucion.value.fecha_creado = response.data.resolucion.fecha_creado;
+        resolucion.value.estado = response.data.resolucion.estado;
+        resolucion.value.observacion = response.data.resolucion.observacion;
       }
-    })
-    .catch((error) => {
-      // alertToast(error.response.data.message, 'Error', 'error')
-    })
-    .finally(() => {
-      load.value = false;
-    });
+
+      if (response.data.oficio) {
+        oficio.value.id = response.data.oficio.id;
+        oficio.value.estado = response.data.oficio.estado;
+        oficio.value.fecha_creado = response.data.oficio.fecha_creado;
+        oficio.value.nombre_de_oficio = response.data.oficio.nombre_de_oficio;
+        oficio.value.observacion = response.data.oficio.observacion;
+      }
+
+      historial.value = response.data.historial;
+    }
+  } catch (error) {
+    console.error("Error al obtener información del estudiante:", error);
+  }
 };
 
 const sendSolicitude = async (student_id: string) => {
@@ -327,6 +322,39 @@ const handleNextButtonClick = () => {
     goToNextPage();
   }
 };
+
+/*********************** */
+//esta funcion es para obtener el titulo del C2 si existe o no en caso contrario
+const titulo = ref<string>("");
+const tituloExistente = ref(false);
+
+const getTitulo = async () => {
+  try {
+    // para obtener el email y mostrar el titulo
+    await getInfoStudent();
+    const email = authStore.email;
+    const apiUrl = `https://copiloto.udh.edu.pe/ideas/api/titulo/${email}`;
+    const response = await axios.get(apiUrl);
+
+    console.log(response.data);
+    if (response.data.statusCode == true) {
+      titulo.value = response.data.titulo;
+      tituloExistente.value = true;
+    } else {
+      titulo.value = solicitude.value.titulo || "Título provisional no asignado";
+      tituloExistente.value = false;
+      console.log(titulo.value);
+    }
+  } catch (error) {
+    console.error("Error al obtener el título:", error);
+    tituloExistente.value = false;
+  } finally {
+    load.value = false;
+  }
+};
+
+onMounted(() => { getTitulo(); });
+/*********************** */
 </script>
 
 
@@ -380,12 +408,10 @@ const handleNextButtonClick = () => {
           </div>
 
           <div class="flex justify-center">
-          
-            <button
-              v-if="authStore.id"
+
+            <button v-if="authStore.id"
               class="bg-base text-white px-6 py-3 rounded-lg text-xm hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)"
-            >
+              @click="sendSolicitude(authStore.id)">
 
               Iniciar trámite
             </button>
@@ -428,73 +454,57 @@ const handleNextButtonClick = () => {
           </div>
 
           <div class="mt-4">
-              <!-- Título de tesis -->
-              <label for="tituloTesis" class="block text-xm font-medium text-gray-700 mb-2">
-                Título de proyecto de investigación (provisional)
-              </label>
-              <div class="flex items-center">
-                <input
-                  id="tituloTesis"
-                  type="text"
-                  v-model="solicitude.titulo"
-                  :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Escribe el título de tu proyecto de investigación aquí"
-                />
-                <!-- Ícono de check solo si el título está completo -->
-                <span v-if="solicitude.titulo && solicitude.titulo.trim() !== ''" class="ml-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="7"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-              </div>
+            <!-- Título de tesis -->
+            <label for="tituloTesis" class="block text-xm font-medium text-gray-700 mb-2">
+              Título de proyecto de investigación (provisional)
+            </label>
+            <div class="flex items-center">
+              <input id="tituloTesis" type="text" v-model="titulo" :disabled="tituloExistente || titulo.length > 0"
+                class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              <!-- Mostrar un mensaje de éxito si el título existe -->
+              <p v-if="tituloExistente" class="text-green-600 text-sm mt-2">
+                Tienes un título asignado
+              </p>
+              <!-- Ícono de check solo si el título está completo -->
+              <span v-if="solicitude.titulo && solicitude.titulo.trim() !== ''" class="ml-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="7">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+            </div>
 
-              <!-- Select para elegir asesor -->
-              <label for="nombreAsesor" class="block text-xm font-medium text-gray-700 mb-2 mt-4">
-                Elige a tu asesor
-              </label>
-              <div class="flex items-center">
-                <select
-                  id="nombreAsesor"
-                  v-model="solicitude.asesor_id"
-                  :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option disabled value="">Selecciona un docente asesor</option>
-                  <option v-for="asesor in advisers" :key="asesor.id" :value="asesor.id">
-                    {{ asesor.nombre }}
-                  </option>
-                </select>
-                <!-- Ícono de check solo si un asesor ha sido seleccionado -->
-                <span v-if="solicitude.asesor_id" class="ml-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="7"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-              </div>
+            <!-- Select para elegir asesor -->
+            <label for="nombreAsesor" class="block text-xm font-medium text-gray-700 mb-2 mt-4">
+              Elige a tu asesor
+            </label>
+            <div class="flex items-center">
+              <select id="nombreAsesor" v-model="solicitude.asesor_id"
+                :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
+                class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option disabled value="">Selecciona un docente asesor</option>
+                <option v-for="asesor in advisers" :key="asesor.id" :value="asesor.id">
+                  {{ asesor.nombre }}
+                </option>
+              </select>
+              <!-- Ícono de check solo si un asesor ha sido seleccionado -->
+              <span v-if="solicitude.asesor_id" class="ml-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="7">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              </span>
+            </div>
 
             <!-- Select para elegir tipo de investigacion -->
-            <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2 mt-4">
+            <label for="tipoInvestigacion" class="block text-xm font-medium text-gray-700 mb-2 mt-4">
               Elige tu tipo de investigación
             </label>
             <div class="flex items-center">
               <select id="tipoInvestigacion" v-model="solicitude.tipo_investigacion"
                 :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-                class="w-full p-3 bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option disabled value="">Selecciona un tipo de investigación</option>
                 <option value="cientifica">CIENTÍFICA</option>
                 <option value="tecnologica">TECNOLÓGICA</option>
@@ -508,27 +518,24 @@ const handleNextButtonClick = () => {
               </span>
             </div>
 
-              <!-- Botón de enviar -->
-              <button
-                @click="
-                  updateSolicitude(
-                    solicitude.solicitud_id,
-                    solicitude.titulo,
-                    solicitude.asesor_id,
-                    solicitude.estado,
-                    solicitude.tipo_investigacion
-                  )
-                "
-                :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-                :class="[
-                  'px-3 py-2 text-white rounded-md focus:outline-none mt-4',
-                  ['pendiente', 'aceptado'].includes(solicitude.estado)
-                    ? 'bg-gray-400 cursor-not-allowed'
-                    : 'bg-green-500 hover:bg-green-600',
-                ]"
-              >
-                Enviar
-              </button>
+
+            <!-- Botón de enviar -->
+            <button @click="
+              updateSolicitude(
+                solicitude.solicitud_id,
+                solicitude.titulo,
+                solicitude.asesor_id,
+                solicitude.estado,
+                solicitude.tipo_investigacion
+              )
+              " :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)" :class="[
+                'px-3 py-2 text-white rounded-md focus:outline-none mt-4',
+                ['pendiente', 'aceptado'].includes(solicitude.estado)
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600',
+              ]">
+              Enviar
+            </button>
           </div>
 
           <!-- Respuesta del asesor -->
@@ -542,24 +549,22 @@ const handleNextButtonClick = () => {
                 <i class="fas fa-info-circle text-blue-500 mr-2"></i> Respuesta del asesor:
 
                 <span v-if="solicitude.estado === 'aceptado'" class="ml-2 text-gray-700  font-medium md:text-xm">
-                   Carta de aceptación 😊
+                  Carta de aceptación 😊
                 </span>
                 <span v-else-if="solicitude.estado === 'rechazado'" class="ml-2 text-red-500 font-medium md:text-xm">
-                   {{ solicitude.observacion }} 😢
+                  {{ solicitude.observacion }} 😢
 
                 </span>
               </h4>
 
               <!-- Contenedor de botones y estado -->
-              <div class="flex flex-col  sm:space-y-0 sm:flex-row sm:space-x-4 items-start sm:items-center md:space-y-0 md:space-x-4">
+              <div
+                class="flex flex-col  sm:space-y-0 sm:flex-row sm:space-x-4 items-start sm:items-center md:space-y-0 md:space-x-4">
                 <div v-if="['aceptado'].includes(solicitude.estado)" class="w-full sm:w-auto">
                   <!-- Botón de Ver -->
 
-                  <a
-                    :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`"
-                    target="_blank"
-                    class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito justify-center w-full sm:w-auto"
-                  >
+                  <a :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`" target="_blank"
+                    class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito justify-center w-full sm:w-auto">
 
                     <i class="fas fa-eye mr-2"></i> Ver
                   </a>
@@ -589,14 +594,11 @@ const handleNextButtonClick = () => {
               </span>
             </div>
           </div>
-        </div>   
+        </div>
 
         <!-- Card 2: Documentos -->
-        <div class="mt-8"
-          :disabled="
-            ['en progreso', 'pendiente', 'rechazado'].includes(
-              solicitude.estado)"
-         :class="[
+        <div class="mt-8" :disabled="['en progreso', 'pendiente', 'rechazado'].includes(
+          solicitude.estado)" :class="[
             'rounded-lg shadow-lg p-6 relative mt-6',
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado
@@ -618,17 +620,14 @@ const handleNextButtonClick = () => {
                   'fas fa-ellipsis-h': estadoDocumentos === 'pendiente',
                   'fas fa-exclamation-circle': estadoDocumentos === 'observado'
 
-                }"
-                class="text-sm"
-              ></i>
-            </span>
-            <!-- Título -->
-            <h2 class="text-xl font-medium text-black">
-              2. Documentos para la conformidad de designación de asesor
-            </h2>
-            <!-- Tooltip -->
-            <ModalToolTip
-              :infoModal="[{
+                }" class="text-sm"></i>
+              </span>
+              <!-- Título -->
+              <h2 class="text-xl font-medium text-black">
+                2. Documentos para la conformidad de designación de asesor
+              </h2>
+              <!-- Tooltip -->
+              <ModalToolTip :infoModal="[{
 
                 info: 'Por favor espere que se carguen los documentos que verifican su trámite de Designación de Asesor para continuar con el siguiente trámite.',
               }]" />
@@ -655,17 +654,15 @@ const handleNextButtonClick = () => {
                     </p>
                   </div>
                 </div>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
                   <div v-if="['tramitado'].includes(oficio.estado)"
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
 
-                    <a
-                      :href="`${VIEW_OFFICE}/${oficio.id}`"
-                      target="_blank"
-                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center"
-                    >
+                    <a :href="`${VIEW_OFFICE}/${oficio.id}`" target="_blank"
+                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
 
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
@@ -683,28 +680,26 @@ const handleNextButtonClick = () => {
               <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
                 <div class="flex items-center space-x-4 text-gray-700 font-medium">
                   <!-- Icono -->
-                  <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>     
-                <!-- Nombre del documento -->
-                <div>
-                <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                  <!-- {{resolucion.nombre}}  --> RESOLUCIÓN DE DESIGNACIÓN DE ASESOR.
-                  <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
-                    <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
-                  </p>
-                </span>
-              </div>
-            </div>
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
+                  <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
+                  <!-- Nombre del documento -->
+                  <div>
+                    <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
+                      <!-- {{resolucion.nombre}}  --> RESOLUCIÓN DE DESIGNACIÓN DE ASESOR.
+                      <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
+                        <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
+                      </p>
+                    </span>
+                  </div>
+                </div>
+                <div
+                  class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
                   <div v-if="['tramitado'].includes(resolucion.estado)"
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
 
-                    <a
-                      :href="`${VIEW_RESOLUTION}/${resolucion.id}`"
-                      target="_blank"
-                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center"
-                    >
+                    <a :href="`${VIEW_RESOLUTION}/${resolucion.id}`" target="_blank"
+                      class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
 
                       <i class="fas fa-eye mr-2"></i> Ver
                     </a>
