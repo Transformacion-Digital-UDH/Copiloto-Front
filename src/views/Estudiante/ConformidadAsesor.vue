@@ -176,6 +176,7 @@ onMounted(() => {
 
         <!-- Informacion de asesor y titulo con la tesis -->
         <InfoCardConformidad
+          v-if="obtener?.data"
           :data="{
             asesor: obtener?.data?.asesor || 'No asignado',
             titulo: obtener?.data?.titulo || 'Sin título',
