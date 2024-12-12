@@ -4,7 +4,7 @@ export default {
     estado: {
       type: String,
       required: true,
-    },
+    },    
   },
   computed: {
     estadoClase() {
@@ -15,7 +15,7 @@ export default {
         case "pendiente":
           return "bg-gray-400 text-white";
         case "aceptado":
-          return "bg-[#38a169] text-white";
+          return "bg-[#39B49E] text-white";
         case "tramitado":
           return "bg-[#38a169] text-white";
         case "observado":
