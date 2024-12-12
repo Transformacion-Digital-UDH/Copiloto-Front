@@ -19,7 +19,7 @@
       <!-- Título -->
       <div class="bg-baseClarito rounded-lg p-4 shadow-md w-full text-center hover:shadow-lg transition-all">
         <i class="fas fa-file-alt text-azul text-4xl mb-2"></i>
-        <p class="font-bold text-lg text-azul mb-2">Título provisional</p>
+        <p class="font-bold text-lg text-azul mb-2">Título Provisional</p>
         <p class="text-gray-700 uppercase text-sm font-medium">
           {{ data.titulo || 'Sin título' }}
         </p>

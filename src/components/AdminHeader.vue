@@ -74,7 +74,7 @@ onMounted(() => {
         <IconSun v-else />
       </button>
 
-      <!-- boton para la notificacion -->
+      <!-- boton para la notificacion 
       <button
         class="flex mx-4 dark:text-gray-100 text-gray-700 focus:outline-none"
       >
@@ -92,10 +92,10 @@ onMounted(() => {
             d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0M3.124 7.5A8.969 8.969 0 0 1 5.292 3m13.416 0a8.969 8.969 0 0 1 2.168 4.5"
           />
         </svg>
-      </button>
+      </button> -->
 
       <!-- boton del usuario, perfil y cerrar sesion -->
-      <div class="relative">
+      <div class="relative ml-4">
         <button
           @click="dropdownOpen = !dropdownOpen"
           class="relative z-10 block w-10 h-10 overflow-hidden rounded-full shadow focus:outline-none"
@@ -125,11 +125,13 @@ onMounted(() => {
             v-show="dropdownOpen"
             class="absolute right-0 z-20 w-48 py-2 mt-2 bg-white rounded-md shadow-xl"
           >
+          <!-- NO TENEMOS API ASI QUE VA A ESTAR OCULTO PARA LOS NUEVOS PRACTICANTES :3
             <a
               href="/perfil"
               class="block px-4 py-2 text-sm text-gray-900 hover:bg-base hover:text-white"
               >Perfil</a
             >
+            -->
             <button
               @click="logout"
               class="block w-full text-start px-4 py-2 text-sm text-gray-900 hover:bg-base hover:text-white"
@@ -139,6 +141,7 @@ onMounted(() => {
           </div>
         </transition>
       </div>
+      
     </div>
   </header>
 </template>
