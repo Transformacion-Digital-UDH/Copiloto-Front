@@ -9,21 +9,13 @@ import NavigationButton from "@/components/NavigationButton.vue";
 import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
+import { useTypewriter } from "@/composables/useTypewriter";
 
-// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Asesor";
-const textoTipiado = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80); // Llama de nuevo la función cada 80ms
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter(
+  "Designación de Asesor"
+);
+onMounted(typeWriter);
 
 // Estados para controlar los modales
 const mostrarModalTramite = ref(false);

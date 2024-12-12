@@ -271,7 +271,7 @@ onMounted(() => {
           </div>
           <div class="mt-4 space-y-4">
             <DocumentCard
-              titulo="Acta de conformidad del proyecto de investigación - por el asesor"
+              titulo="ACTA DE CONFORMIDAD DEL PROYECTO DE INVESTIGACION - POR EL ASESOR"
               :estado="
                 ['aprobado'].includes(obtener?.revision?.estado ?? '')
                   ? obtener?.revision?.estado ?? ''

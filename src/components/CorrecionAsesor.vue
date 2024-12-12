@@ -90,7 +90,7 @@ const formatearTexto = (text: string): string =>
 }
 .estado-tramitado,
 .estado-aprobado {
-  background-color: #48bb78;
+  background-color: #38a169;
   color: #ffffff;
 }
 .estado-observado {

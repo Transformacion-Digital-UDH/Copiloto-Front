@@ -11,6 +11,7 @@ import ButtonRequest from "@/components/ButtonRequest.vue";
 import JuradoTabla from "@/components/JuradoTabla.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 import NavigationButton from "@/components/NavigationButton.vue";
+import SkeletonDesignarJurados from "@/components/SkeletonDesignarJurados.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter(
@@ -38,11 +39,7 @@ const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
 // para que el boton quede deshabilitado
 const bloquear = ["pendiente", "observado", "tramitado"];
 const isSolicitarDisabled = computed(() => {
-  const disabled = isLoading.value || bloquear.includes(obtener.value?.estado ?? "");
-  console.log("isSolicitarDisabled:", disabled);
-  console.log("Estado actual:", obtener.value?.estado);
-  console.log("isLoading:", isLoading.value);
-  return disabled;
+  return (isLoading.value || (bloquear.includes(obtener.value?.estado ?? "")));
 });
 
 
@@ -65,7 +62,7 @@ const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
     const response = await axios.get(`api/student/get-juries/${authStore.id}`);
-    console.log(response.data)
+    //console.log(response.data)
     // if (
     //   !response.data ||
     //   !response.data.jurados ||
@@ -134,68 +131,7 @@ onMounted(() => {
 });
 </script>
 <template>
-  <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-full">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col"
-      >
-        <h3
-          class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"
-        ></h3>
-        <br />
-      </div>
-      <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-4">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-4">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div class="flex justify-between">
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
+  <template v-if="load"><SkeletonDesignarJurados/></template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">
@@ -289,7 +225,7 @@ onMounted(() => {
           <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard
-              titulo="Oficio Múltiple de Designación de Jurados para la Rev. del Trabajo de Inv. (Tesis) - por el Programa Académico"
+              titulo="OFICIO MULTIPLE DE DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS) - POR EL PROGRAMA ACADEMICO"
               :estado="obtener?.estado || ''"
               :id="obtener?.docof_id ?? ''"
               :view="VIEW_OFFICEJURADO"
