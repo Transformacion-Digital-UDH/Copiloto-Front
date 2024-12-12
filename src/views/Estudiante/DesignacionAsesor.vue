@@ -487,36 +487,6 @@ const handleNextButtonClick = () => {
                 </span>
               </div>
 
-              <!-- Select para elegir tipo de investigacion -->
-              <label for="tipoInvestigacion" class="block text-xm font-medium text-gray-700 mb-2 mt-4">
-                Elige tu tipo de investigación
-              </label>
-              <div class="flex items-center">
-                <select
-                  id="tipoInvestigacion"
-                  v-model="solicitude.tipo_investigacion"
-                  :disabled="['pendiente', 'aceptado'].includes(solicitude.estado)"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option disabled value="">Selecciona un tipo de investigación</option>
-                  <option value="cientifica">CIENTÍFICA</option>
-                  <option value="tecnologica">TECNOLÓGICA</option>
-                </select>
-                <!-- Ícono de check solo si el tipo de investigación ha sido seleccionado -->
-                <span v-if="solicitude.tipo_investigacion" class="ml-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5 text-green-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="7"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-              </div>
-
             <!-- Select para elegir tipo de investigacion -->
             <label for="tipoInvestigacion" class="block text-lg font-medium text-gray-700 mb-2 mt-4">
               Elige tu tipo de investigación
