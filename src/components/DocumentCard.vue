@@ -7,9 +7,15 @@
             <a
               :href="`${view}/${id}`"
               target="_blank"
-              class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
-              <i class="fas fa-eye mr-2"></i> Ver
+              class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-200 w-full md:w-auto justify-center">
+              <i class="fa-sharp fa-solid fa-eye mr-1"></i>Ver
             </a>
+            <a
+              :href="`${download}/${id}`"
+              download
+              class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-200 w-full md:w-auto justify-center">
+              <i class="fas fa-download mr-1"></i> Descargar
+            </a>            
           </div>
           <p v-else-if="estado === 'observado'" class="text-gray-500 italic">{{ observacion }}</p>
           <span v-else class="text-gray-400 italic text-sm">El documento aún no se ha cargado   
@@ -70,6 +76,10 @@ const formatearTexto = (text: string): string =>
   color: #ffffff;
 }
 .estado-aprobado {
+  background-color:  #38a169;
+  color: #ffffff;
+}
+.estado-tramitado {
   background-color:  #38a169;
   color: #ffffff;
 }
