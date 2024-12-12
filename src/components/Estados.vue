@@ -15,9 +15,9 @@ export default {
         case "pendiente":
           return "bg-gray-400 text-white";
         case "aceptado":
-          return "bg-[#38A169] text-white";
+          return "bg-[#38a169] text-white";
         case "tramitado":
-          return "bg-[#38A169] text-white";
+          return "bg-[#38a169] text-white";
         case "observado":
           return "bg-orange-400 text-white";
         case "en_progreso":

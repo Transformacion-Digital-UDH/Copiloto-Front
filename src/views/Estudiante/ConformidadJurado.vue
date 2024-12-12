@@ -22,7 +22,7 @@ onMounted(typeWriter);
 //*********************************** INTEGRACIÓN CON EL BACKEND PARA CONFORMIDAD DE JURADOS PY*************************************************** */
 const load = ref(false);
 const authStore = useAuthStore();
-const loading = ref<{[key: string]: boolean}>({});
+const loading = ref<{ [key: string]: boolean }>({});
 
 const obtener = ref<Estudiante | null>(null);
 const jurados = computed(() => obtener.value?.data ?? []);
@@ -32,7 +32,7 @@ const VIEW_CPA = import.meta.env.VITE_URL_VIEW_CPA;
 const DOWNLOAD_CPA = import.meta.env.VITE_URL_DOWNLOAD_CPA;
 
 // esta funcion es para obtener revisiones por cada rol con el array data[]
-const obtenerRol = (rol:string) => {
+const obtenerRol = (rol: string) => {
   return computed(() => obtener.value?.data?.filter(revision => revision.rol.toLowerCase() === rol.toLowerCase()) || []);
 };
 const presidenteRevisiones = obtenerRol('presidente');
@@ -49,7 +49,7 @@ const vocal_id = obtenerIdRol('vocal');
 
 //para mostrar el estado del docuemtno de cada jurado
 const obtenerEstadoDocumento = (estadoRevision: string | undefined): string => {
-  if(!estadoRevision) return '';
+  if (!estadoRevision) return '';
   return estadoRevision === 'aprobado' ? 'aprobado' : 'pendiente';
 }
 
@@ -84,8 +84,8 @@ const obtenerConformidadJuradosProyecto = async () => {
     const response = await axios.get(`api/review/get-review-jury/${student_id}`);
     //console.log('Mostrando lo recibido:',response.data);
     obtener.value = response.data;
-    
-  } catch(error) {
+
+  } catch (error) {
     console.error('Error al obtener datos:', error);
   } finally {
     load.value = false;
@@ -112,7 +112,7 @@ const solicitarRevisionProyecto = async (review_id: string, status: string, num_
       alertToast("Error en la solicitud.", "Error", "error");
     }
   } finally {
-    loading.value[review_id] = false; 
+    loading.value[review_id] = false;
   }
 };
 
@@ -130,7 +130,9 @@ onMounted(() => {
       </div>
       <div class="mt-6 space-y-10">
         <div class="bg-white rounded-md p-6 space-y-4 animate-pulse duration-200">
-          <div class="text-center"><p class="h-4 rounded w-2/3"></p></div>
+          <div class="text-center">
+            <p class="h-4 rounded w-2/3"></p>
+          </div>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div class="bg-gray-200 rounded-md h-36 p-6 skeleton-loader duration-200"></div>
             <div class="bg-gray-200 rounded-md h-36 p-6 skeleton-loader duration-200"></div>
@@ -139,7 +141,8 @@ onMounted(() => {
           <div class="bg-gray-200 h-44 rounded-md p-6 -m-0 skeleton-loader duration-200"></div>
           <div class="text-center mt-6">
             <div class="h-10 bg-gray-200 rounded w-44 mx-auto skeleton-loader duration-200"></div>
-          </div><p class="h-4 mt-6"></p>
+          </div>
+          <p class="h-4 mt-6"></p>
         </div>
         <div class="bg-white rounded-md p-6 relative animate-pulse">
           <div class="flex items-center">
@@ -176,8 +179,12 @@ onMounted(() => {
           </div>
         </div>
         <div class="flex justify-between">
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5">
+            <h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5">
+            <h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2>
+          </div>
         </div>
       </div>
     </div>
@@ -189,28 +196,25 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <!-- card para mostrar los jurados y titulo -->
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
-          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de tesis. Verifica la información y revisa las actualizaciones.</p>
+          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de
+            tesis. Verifica la información y revisa las actualizaciones.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <JuradoCard 
-              v-for="jurado in jurados"
-              :key="jurado.revision_id"
-              :rol="jurado.rol"
-              :nombre="jurado.nombre"/>
+            <JuradoCard v-for="jurado in jurados" :key="jurado.revision_id" :rol="jurado.rol" :nombre="jurado.nombre" />
           </div>
           <div class="bg-blue-50 rounded-lg p-6 shadow-lg">
-            <p class="max-full text-xm text-gray-600 uppercase text-center">{{ obtener?.titulo || 'Título no asignado' }}</p>
+            <p class="max-full text-xm text-gray-600 uppercase text-center">{{ obtener?.titulo || 'Título no asignado'
+              }}</p>
           </div>
           <!-- Enlace del proyecto de Tesis -->
           <div v-if="obtener?.link" class="text-center mt-6">
-            <a
-              :href="obtener?.link"
-              target="_blank"
+            <a :href="obtener?.link" target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <i class="fas fa-external-link-alt"></i> Abrir proyecto
             </a>
           </div>
           <!-- Explicación breve -->
-          <p class="text-sm text-gray-600 text-center">Asegúrate de corregir y actualizar tu información en Google Docs antes de hacer clic en "Solicitar revisión".</p>
+          <p class="text-sm text-gray-600 text-center">Asegúrate de corregir y actualizar tu información en Google Docs
+            antes de hacer clic en "Solicitar revisión".</p>
         </div>
 
         <!-- Card 2:  Solicitar revisión para las observaciones -->
@@ -248,54 +252,48 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
+            <ModalToolTip
+              :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
-          <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será 
-          <strong class="text-[#8898AA] text-lg font-medium">Pendiente</strong>. Corrige las observaciones en Google Docs.
+          <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será
+            <strong class="text-[#8898AA] text-lg font-medium">Pendiente</strong>. Corrige las observaciones en Google
+            Docs.
           </p>
-          <p class="text-gray-500 mt-1 text-lg">Al corregir, haz clic en  
+          <p class="text-gray-500 mt-1 text-lg">Al corregir, haz clic en
             <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong> para una nueva revisión.
           </p>
-          <p class="text-gray-500 mt-1 text-lg">Cuando los 3 jurados aprueben, el estado cambiará a 
+          <p class="text-gray-500 mt-1 text-lg">Cuando los 3 jurados aprueben, el estado cambiará a
             <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
           </p>
 
           <!-- Tabla de observaciones Presidente -->
           <div class="overflow-x-auto mt-4">
             <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado presidente</p>
-            <CorrecionTabla
-              :revisiones="presidenteRevisiones"
-              :loading="loading"
-              :isRevisionDisabled="isRevisionDisabled"
-              :solicitarRevision="solicitarRevisionProyecto"/>
+            <CorrecionTabla :revisiones="presidenteRevisiones" :loading="loading"
+              :isRevisionDisabled="isRevisionDisabled" :solicitarRevision="solicitarRevisionProyecto" />
           </div>
           <!-- Tabla de observaciones Secretario -->
           <div class="overflow-x-auto mt-4">
             <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado secretario</p>
-            <CorrecionTabla 
-              :revisiones="secretarioRevisiones"
-              :loading="loading"
-              :isRevisionDisabled="isRevisionDisabled"
-              :solicitarRevision="solicitarRevisionProyecto"/>
+            <CorrecionTabla :revisiones="secretarioRevisiones" :loading="loading"
+              :isRevisionDisabled="isRevisionDisabled" :solicitarRevision="solicitarRevisionProyecto" />
           </div>
           <!-- Tabla de observaciones Vocal -->
           <div class="overflow-x-auto mt-4">
             <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado vocal</p>
-            <CorrecionTabla 
-              :revisiones="vocalRevisiones"
-              :loading="loading"
-              :isRevisionDisabled="isRevisionDisabled"
-              :solicitarRevision="solicitarRevisionProyecto"/>
+            <CorrecionTabla :revisiones="vocalRevisiones" :loading="loading" :isRevisionDisabled="isRevisionDisabled"
+              :solicitarRevision="solicitarRevisionProyecto" />
           </div>
         </div>
 
         <!-- documentos de cada jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos de conformidad del proyecto de tesis por los jurados</h2>
+            <h2 class="text-2xl font-medium text-black">2. Documentos de conformidad del proyecto de tesis por los
+              jurados</h2>
             <ModalToolTip
-            :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
+              :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
           </div>
 
           <!-- INFORME DE CONFORMIDAD POR EL PRESIDENTE -->
@@ -330,11 +328,8 @@ onMounted(() => {
         </div>
 
         <!--Botones siguiente y anteerior-->
-        <NavigationButton
-          prevRoute="/estudiante/designacion-jurado"
-          nextRoute="/estudiante/aprobacion-proyecto"
-          :nextCondition="() => obtener?.estado_general === 'aprobado'"
-        />
+        <NavigationButton prevRoute="/estudiante/designacion-jurado" nextRoute="/estudiante/aprobacion-proyecto"
+          :nextCondition="() => obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '') === 'aprobado'" />
       </div>
     </div>
   </template>
@@ -347,6 +342,7 @@ onMounted(() => {
   border-radius: 0.375rem;
   display: inline-block;
 }
+
 .text-center {
   text-align: center;
   padding: 1rem;

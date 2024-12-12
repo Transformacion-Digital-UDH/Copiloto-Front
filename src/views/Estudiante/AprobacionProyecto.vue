@@ -9,6 +9,7 @@ import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
+import NavigationButton from '@/components/NavigationButton.vue';
 
 // ***** Texto que se escribe automáticamente ********
 const text = "Aprobación del Proyecto de Tesis";
@@ -50,7 +51,7 @@ const isNextButtonDisabled = computed(() => {
 /*************************************** INTEGRACION CON EL BACKEND PARA APROBACION DE PROYECTO ************************************************ */
 const load = ref(false);
 const authStore = useAuthStore();
-const solicitudEstado = ref<string>(""); 
+const solicitudEstado = ref<string>("");
 const isLoading = ref(false);
 const obtener = ref<Estudiante | null>(null);
 
@@ -96,7 +97,7 @@ const solicitarAprobacionProyecto = async () => {
     const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
     //console.log("Mostrando lo recibido: ",response);
 
-    if (response.data.estado){
+    if (response.data.estado) {
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada. Espere las indicaciones para la aprobación del proyecto de tesis.", "Éxito", "success");
       await obtenerDatosEstudiante();
@@ -110,11 +111,11 @@ const solicitarAprobacionProyecto = async () => {
       alertToast("Error en la solicitud.", "Error", "error");
     }
   } finally {
-    isLoading.value = false; 
+    isLoading.value = false;
   }
 };
 
-onMounted(() =>{
+onMounted(() => {
   obtenerDatosEstudiante();
 })
 
@@ -142,78 +143,65 @@ onMounted(() =>{
           </div>
         </div>
         <div class="flex justify-between">
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
-          <div class="block space-y-5"><h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2></div>
+          <div class="block space-y-5">
+            <h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2>
+          </div>
+          <div class="block space-y-5">
+            <h2 class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"></h2>
+          </div>
         </div>
       </div>
     </div>
   </template>
-  
+
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
-        <div class="mt-6 space-y-10">
-          <!-- solicitar aprobacion de proyecto de tesis-->
-          <div class="bg-white rounded-lg shadow-lg p-6 relative">
-            <div class="relative flex items-center">
-              <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
-                <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
-            </div>            
-            <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
-              <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
-            </p>
-            <!-- boton para solicitar aprobacion de proyecto de tesis -->
-            <div class="flex justify-center mt-2">
-              <ButtonRequest 
-              label="Solicitar aprobación" 
-              :loading="isLoading" 
-              :disabled="isAprobacionDisabled" 
+      <div class="mt-6 space-y-10">
+        <!-- solicitar aprobacion de proyecto de tesis-->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="relative flex items-center">
+            <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
+            <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
+          </div>
+          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón
+            <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud
+            a la Facultad y al Programa Académico.
+          </p>
+          <!-- boton para solicitar aprobacion de proyecto de tesis -->
+          <div class="flex justify-center mt-2">
+            <ButtonRequest label="Solicitar aprobación" :loading="isLoading" :disabled="isAprobacionDisabled"
               @click="solicitarAprobacionProyecto" />
-            </div>
-          </div>
-
-          <!-- documentos -->
-          <div class="bg-white rounded-lg shadow-lg p-6 relative">
-            <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis </h2>
-            </div>
-            <!-- oficio de programa academico-->
-            <div class="mt-4 space-y-4">
-              <DocumentCard 
-                titulo="Oficio emitido por el Programa Académico."
-                :estado="obtener?.oficio_estado || ''"
-                :id="obtener?.oficio_id ?? ''"
-                :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
-                :view="VIEW_APROBACIONPAISI"
-                :download="DOWNLOAD_APROBACIONPAISI || ''"/>
-            </div>
-
-            <!-- resolución de Facultad -->
-            <div class="mt-4 space-y-4">
-              <DocumentCard 
-                titulo="Resolución emitido por la Facultad."
-                :estado="obtener?.oficio_estado || ''"
-                :id="obtener?.oficio_id ?? ''"
-                :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría Facultad'"
-                :view="VIEW_APROBACIONFACULTAD"
-                :download="DOWNLOAD_APROBACIONFACULTAD || ''"/>
-            </div>
-          </div>
-
-          <!-- Botones siguiente y anteerior -->
-          <div class="flex justify-between">
-            <button 
-              @click="$router.push('/estudiante/conformidad-jurado')" 
-              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
-            </button>
-            <button
-              @click="handleNextButtonClick"
-              :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled 
-              ? 'bg-gray-300 cursor-not-allowed' 
-              : 'bg-green-500 hover:bg-green-600',]">Siguiente
-            </button>
           </div>
         </div>
+
+        <!-- documentos -->
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="flex items-center">
+            <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis
+            </h2>
+          </div>
+          <!-- oficio de programa academico-->
+          <div class="mt-4 space-y-4">
+            <DocumentCard titulo="Oficio emitido por el Programa Académico." :estado="obtener?.oficio_estado || ''"
+              :id="obtener?.oficio_id ?? ''"
+              :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
+              :view="VIEW_APROBACIONPAISI" :download="DOWNLOAD_APROBACIONPAISI || ''" />
+          </div>
+
+          <!-- resolución de Facultad -->
+          <div class="mt-4 space-y-4">
+            <DocumentCard titulo="Resolución emitido por la Facultad." :estado="obtener?.oficio_estado || ''"
+              :id="obtener?.oficio_id ?? ''"
+              :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría Facultad'"
+              :view="VIEW_APROBACIONFACULTAD" :download="DOWNLOAD_APROBACIONFACULTAD || ''" />
+          </div>
+        </div>
+
+        <!-- Botones siguiente y anteerior -->
+        <NavigationButton prevRoute="/estudiante/conformidad-jurado" nextRoute="/estudiante/progreso"
+          :nextCondition="() => obtener?.oficio_estado === 'tramitado'" />
+      </div>
     </div>
   </template>
 </template>
@@ -225,6 +213,7 @@ onMounted(() =>{
   border-radius: 0.375rem;
   display: inline-block;
 }
+
 .text-center {
   text-align: center;
   padding: 1rem;
