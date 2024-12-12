@@ -343,7 +343,6 @@ const getTitulo = async () => {
     } else {
       solicitude.value.titulo = solicitude.value.titulo || "";
       tituloExistente.value = false;
-      console.log(solicitude.value);
     }
   } catch (error) {
     console.error("Error al obtener el título:", error);
@@ -459,9 +458,16 @@ onMounted(() => { getTitulo(); });
               Título de proyecto de investigación (provisional)
             </label>
             <div class="flex items-center">
-              <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="tituloExistente"
-                class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              <template v-if="tituloExistente">
+                <input id="tituloTesis" type="text" v-model="tituloExistente" :disabled="tituloExistente"
+                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              </template>
+              <template v-else>
+                <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="solicitude.titulo"
+                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              </template>
               <!-- Mostrar un mensaje de éxito si el título existe -->
               <p v-if="tituloExistente" class="text-green-600 text-sm mt-2">
                 Tienes un título asignado
