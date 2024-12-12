@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-//import { alertToast } from "@/functions";
+import { alertToast } from "@/functions";
 import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 import { ref, computed, onMounted } from "vue";
@@ -9,41 +9,16 @@ import ModalToolTip from "@/components/modalToolTip.vue";
 import DocumentCard from "@/components/DocumentCard.vue";
 import ButtonRequest from "@/components/ButtonRequest.vue";
 import JuradoTabla from "@/components/JuradoTabla.vue";
+import { useTypewriter } from "@/composables/useTypewriter";
+import NavigationButton from "@/components/NavigationButton.vue";
+import SkeletonDesignarJurados from "@/components/SkeletonDesignarJurados.vue";
 
-// ***** Texto que se escribe automáticamente (efecto de máquina de escribir) ********
-const text = "Designación de Jurados para el Proyecto de Investigación";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-/******************************************************** */
 
-// PARA QUE PERSONALIZES TU ALERTA
-const alertToast = (
-  message: string,
-  title: string,
-  icon: "success" | "error" | "warning" | "info" | "question",
-  options: { timer?: number } = {}
-) => {
-  Swal.fire({
-    title,
-    text: message,
-    icon,
-    timer: options.timer || 5000,
-    timerProgressBar: true,
-    showConfirmButton: false,
-    toast: true,
-    position: "bottom-end",
-  });
-};
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter(
+  "Designación de Jurados para el Proyecto de Investigación"
+);
+onMounted(typeWriter);
 
 
 // Función para solicitar cambio de jurado
@@ -51,27 +26,6 @@ const solicitarCambioJurado = (jurado: any) => {
   alert(`Has solicitado el cambio del jurado: ${jurado.nombre}`);
   // Aquí puedes agregar la lógica adicional para solicitar el cambio del jurado
 };
-
-const handleNextButtonClick = () => {
-  if (isNextButtonDisabled.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Pasos incompletos",
-      text: "Por favor, completa todos los pasos antes de continuar.",
-      confirmButtonText: "OK",
-    });
-  } else {
-    goToNextPage();
-  }
-};
-
-const goToNextPage = () => {
-  router.push("/estudiante/conformidad-jurado");
-};
-
-const isNextButtonDisabled = computed(() => {
-  return obtener.value?.estado !== "tramitado";
-});
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -87,8 +41,9 @@ const DOWNLOAD_OFFICEJURADO = import.meta.env.VITE_URL_DOWNLOAD_OFFICEJURADO;
 // para que el boton quede deshabilitado
 const bloquear = ["pendiente", "observado", "tramitado"];
 const isSolicitarDisabled = computed(() => {
-  return isLoading.value || bloquear.includes(obtener.value?.estado ?? "");
+  return (isLoading.value || (bloquear.includes(obtener.value?.estado ?? "")));
 });
+
 
 interface Jurado {
   rol: string;
@@ -109,12 +64,12 @@ const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
     const response = await axios.get(`api/student/get-juries/${authStore.id}`);
-
-    if (
-      !response.data ||
-      !response.data.jurados ||
-      response.data.jurados.length === 0
-    )
+    //console.log(response.data)
+    // if (
+    //   !response.data ||
+    //   !response.data.jurados ||
+    //   response.data.jurados.length === 0
+    // )
 
     obtener.value = response.data;
     jurados.value = response.data.jurados.map(
@@ -128,16 +83,14 @@ const obtenerDatosEstudiante = async () => {
       alertToast(
         "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
         "Advertencia",
-        "warning",
-        { timer: 2000 }
+        "warning"
       );
     } else {
       alertToast(
         error.message ||
           "Error inesperado al obtener los datos de los jurados.",
         "Error",
-        "error",
-        { timer: 2000 }
+        "error"
       );
     }
   } finally {
@@ -180,72 +133,11 @@ onMounted(() => {
 });
 </script>
 <template>
-  <template v-if="load">
-    <div class="flex-1 p-10 bg-gray-100 min-h-full">
-      <div
-        class="flex justify-center items-center content-center px-14 flex-col"
-      >
-        <h3
-          class="bg-gray-200 h-10 w-full rounded-md duration-200 skeleton-loader"
-        ></h3>
-        <br />
-      </div>
-      <div class="mt-6 space-y-10">
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-4">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-10 w-64 mx-auto rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-4">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200 mb-10"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-28 w-2/4 mx-auto rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div
-          class="bg-white rounded-md shadow-lg p-6 h-auto mt-4 animate-pulse duration-200"
-        >
-          <div class="block space-y-5">
-            <h2
-              class="bg-gray-200 h-6 w-2/4 rounded-md skeleton-loader duration-200"
-            ></h2>
-            <h2
-              class="bg-gray-200 h-20 w-full rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-        <div class="flex justify-between">
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-          <div class="block space-y-5">
-            <h2
-              class="px-4 py-2 h-11 w-28 rounded-md skeleton-loader duration-200"
-            ></h2>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
+  <template v-if="load"><SkeletonDesignarJurados/></template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">
-        {{ textoTipiado2 }}
+        {{ textoTipiado }}
       </h3>
       <div class="mt-6 space-y-10">
         <!-- Card 1: Pago de Trámite
@@ -320,8 +212,10 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
+
               <h2 class="text-xl font-medium text-black">
-                3. Documento para la conformidad de designación de jurados
+                3. Documento para la designación de jurados de proyecto de investigación
+
               </h2>
               <ModalToolTip
                 :infoModal="[
@@ -335,7 +229,7 @@ onMounted(() => {
           <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard
-              titulo="Oficio Múltiple."
+              titulo="OFICIO MULTIPLE DE DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS) - POR EL PROGRAMA ACADEMICO"
               :estado="obtener?.estado || ''"
               :id="obtener?.docof_id ?? ''"
               :view="VIEW_OFFICEJURADO"
@@ -345,26 +239,11 @@ onMounted(() => {
         </div>
 
         <!--Botones siguiente y anteerior-->
-        <div class="flex justify-between">
-          <button
-            @click="$router.push('/estudiante/conformidad-asesor')"
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
-          >
-            Anterior
-          </button>
-          <button
-            @click="handleNextButtonClick"
-            :disabled="isNextButtonDisabled"
-            :class="[
-              'px-4 py-2 text-white rounded-md',
-              isNextButtonDisabled
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',
-            ]"
-          >
-            Siguiente
-          </button>
-        </div>
+        <NavigationButton
+          prevRoute="/estudiante/conformidad-asesor"
+          nextRoute="/estudiante/conformidad-jurado"
+          :nextCondition="() => obtener?.estado === 'tramitado'"
+        />
 
         <!-- Card 4: Solicitar cambio de jurado
         <div class="bg-white rounded-lg shadow-lg p-6 relative">

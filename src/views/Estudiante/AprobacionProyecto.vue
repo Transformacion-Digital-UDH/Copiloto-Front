@@ -9,43 +9,15 @@ import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
+import { useTypewriter } from '@/composables/useTypewriter';
+import NavigationButton from '@/components/NavigationButton.vue';
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Aprobación del Proyecto de Investigación";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
 
-onMounted(() => {
-  typeWriter();
-});
-
-const handleNextButtonClick = () => {
-  if (isNextButtonDisabled.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Pasos incompletos",
-      text: "Por favor, completa todos los pasos antes de continuar.",
-      confirmButtonText: "OK",
-    });
-  } else {
-    goToNextPage();
-  }
-};
-
-const goToNextPage = () => {
-  router.push("/estudiante/progreso");
-};
-
-const isNextButtonDisabled = computed(() => {
-  return obtener.value?.oficio_estado !== 'tramitado' || obtener.value.resolucion_estado !== 'tramitado';
-});
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter(
+  "Aprobación del Proyecto de Investigación"
+);
+onMounted(typeWriter);
 
 /*************************************** INTEGRACION CON EL BACKEND PARA APROBACION DE PROYECTO ************************************************ */
 const load = ref(false);
@@ -151,7 +123,7 @@ onMounted(() =>{
   
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
         <div class="mt-6 space-y-10">
           <!-- solicitar aprobacion de proyecto de tesis-->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -180,7 +152,9 @@ onMounted(() =>{
             <!-- oficio de programa academico-->
             <div class="mt-4 space-y-4">
               <DocumentCard 
-                titulo="Solicitud de resolución de aprobación del proyecto de investigación"
+
+                titulo="OFICIO DE APROBACIÓN DEL TRABAJO DE INVESTIGACIÓN (TESIS)"
+                
                 :estado="obtener?.oficio_estado || ''"
                 :id="obtener?.oficio_id ?? ''"
                 :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
@@ -191,28 +165,23 @@ onMounted(() =>{
             <!-- resolución de Facultad -->
             <div class="mt-4 space-y-4">
               <DocumentCard 
-                titulo="Resolución de aprobación del proyecto de investigación"
-                :estado="obtener?.oficio_estado || ''"
-                :id="obtener?.oficio_id ?? ''"
-                :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría Facultad'"
+
+                titulo="RESOLUCION DE APROBACIÓN DEL TRABAJO DE INVESTIGACIÓN (TESIS)"
+                :estado="obtener?.resolucion_estado || ''"
+                :id="obtener?.resolucion_id ?? ''"
+                :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
+
                 :view="VIEW_APROBACIONFACULTAD"
                 :download="DOWNLOAD_APROBACIONFACULTAD || ''"/>
             </div>
           </div>
 
           <!-- Botones siguiente y anteerior -->
-          <div class="flex justify-between">
-            <button 
-              @click="$router.push('/estudiante/conformidad-jurado')" 
-              class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
-            </button>
-            <button
-              @click="handleNextButtonClick"
-              :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled 
-              ? 'bg-gray-300 cursor-not-allowed' 
-              : 'bg-green-500 hover:bg-green-600',]">Siguiente
-            </button>
-          </div>
+          <NavigationButton
+            prevRoute="/estudiante/conformidad-jurado"
+            nextRoute="/estudiante/progreso"
+            :nextCondition="() => obtener?.oficio_estado === 'tramitado' && obtener?.resolucion_estado === 'tramitado'"
+          />
         </div>
     </div>
   </template>
