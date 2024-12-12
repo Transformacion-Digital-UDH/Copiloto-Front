@@ -1,6 +1,14 @@
 <template>
   <!--Botones siguiente y anterior-->
-  <div class="flex justify-between">
+  <div v-if="!prevRoute" class="flex justify-end mt-6">
+    <button 
+      @click="handleNext" 
+      :class="[ 'px-4 py-2 text-white rounded-md', isNextDisabled
+      ? 'bg-gray-300 cursor-not-allowed'
+      : 'bg-[#38A169] hover:bg-green-600',]">Siguiente
+    </button>
+  </div>
+  <div v-else class="flex justify-between mt-6">
     <button 
       v-if="prevRoute"
       @click="goToRoute(prevRoute)"
