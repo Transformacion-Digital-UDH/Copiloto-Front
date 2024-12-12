@@ -24,8 +24,8 @@
         <td class="px-4 py-4">
           <button
             :disabled="isRevisionDisabled(revision.estado) || loading[revision.revision_id]"
-            :class="[isRevisionDisabled(revision.estado) ? 'truncate px-4 py-2 bg-gray-400 cursor-not-allowed' : 'bg-base', loading[revision.revision_id] ? 'bg-azul' : '']"
-             class="px-4 py-1 w-44 text-white rounded-md text-lg"
+            :class="[isRevisionDisabled(revision.estado) ? 'truncate px-2 py-1 bg-gray-400 cursor-not-allowed' : 'bg-base', loading[revision.revision_id] ? 'bg-azul' : '']"
+             class="px-4 py-1 w-38 text-white rounded-md text-xm"
             @click="solicitarRevision(revision.revision_id, 'pendiente')">
             {{ loading[revision.revision_id] ? 'Enviando...' : 'Solicitar revisión' }}
           </button>
@@ -61,7 +61,7 @@ const props = defineProps<{
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   border-radius: 0.375rem;
   display: inline-block;
 }
@@ -72,7 +72,7 @@ const props = defineProps<{
 }
 .estado-tramitado,
 .estado-aprobado {
-  background-color: #38a169;
+  background-color: #39B49E;
   color: #ffffff;
 }
 .estado-observado {

@@ -379,7 +379,7 @@ onMounted(() => {
                         @click="openModal(u.revision_id)">Aprobar
                       </button>
                       <button v-if="!u.oficio_generado && u.estado !== 'aprobado'" :disabled="u.estado === 'observado'"
-                        :class="['w-24 px-3 py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gray-500 text-white']"
+                        :class="['w-24 px-3 py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-naranja text-white']"
                         @click="openRejectModal(u.revision_id)">Observar
                       </button>
                       <a v-if="u.estado === 'aprobado'" :href="`${VIEW_CPA}/${u.revision_id}`" target="_blank"
