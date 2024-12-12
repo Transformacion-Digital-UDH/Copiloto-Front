@@ -41,12 +41,14 @@ const isRevisionDisabled = computed(() => {
 });
 
 interface Revision {
+  revision_id: string;
   estudiante_id: string;
   estado: string;
   cantidad: number;
   archivos: string;
   fecha: string;
 }
+
 
 interface HistoryRevision {
   rev_file: string;
@@ -184,7 +186,7 @@ onMounted(() => {
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">
+            <h2 class="text-xl font-medium text-black">
               1. Correcciones con tu asesor
             </h2>
             <ModalToolTip
@@ -195,7 +197,7 @@ onMounted(() => {
               ]"
             />
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
+          <p class="text-gray-500 mt-2 mb-1 text-sm">
             Haz clic en
             <strong class="text-green-500 text-lg font-medium"
               >"Solicitar revisión"</strong
@@ -216,7 +218,7 @@ onMounted(() => {
         <!-- revision del asesor para PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h4 class="text-2xl font-medium text-black">
+            <h4 class="text-xl font-medium text-black">
               2. Revisión de observaciones
             </h4>
             <ModalToolTip
@@ -228,15 +230,15 @@ onMounted(() => {
             />
           </div>
 
-          <p class="text-gray-500 mt-2 mb-1 text-lg">
+          <p class="text-gray-500 mt-2 mb-1 text-sm">
             Si tu asesor deja observaciones, el estado será
-            <strong class="text-[#8898aa] text-lg font-medium"
+            <strong class="text-[#8898aa] text-sm font-medium"
               >"Pendiente"</strong
             >. Corrige en Google Docs.
           </p>
-          <p class="text-gray-500 text-lg">
+          <p class="text-gray-500 text-sm">
             Luego, haz clic en
-            <strong class="text-green-500 text-lg font-medium"
+            <strong class="text-green-500 text-sm font-medium"
               >“Observaciones corregidas”</strong
             >. Si todo está bien, el estado cambiará a
             <strong class="text-green-500 text-lg font-medium"
@@ -257,7 +259,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
             <div class="flex items-center">
-              <h2 class="text-2xl font-medium text-black">
+              <h2 class="text-xl font-medium text-black">
                 3. Documento de conformidad del proyecto de investigación
               </h2>
               <ModalToolTip
