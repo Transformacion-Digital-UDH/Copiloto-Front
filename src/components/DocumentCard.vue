@@ -91,6 +91,14 @@ const formatearTexto = (text: string): string =>
   background-color: #38a169;
   color: #ffffff;
 }
+.estado-tramitado {
+  background-color:  #38a169;
+  color: #ffffff;
+}
+.estado-tramitado {
+  background-color:  #38a169;
+  color: #ffffff;
+}
 .estado-observado {
   background-color: #e79e38;
   color: #ffffff;
