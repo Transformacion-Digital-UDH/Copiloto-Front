@@ -338,7 +338,7 @@ onMounted(() => {
                         <a v-if="u.of_status.toLowerCase() === 'tramitado'"
                           :href="`${VIEW_OFFICEJURADO}/${u.oficio_id}`" target="_blank"
                           class="flex items-center m-2 relative group">
-                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeCerrar class=" group-hover:hidden" />
                           <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                           <span class="text-[#34495e]">Oficio <br> Múltiple</span>
                         </a>
@@ -376,100 +376,95 @@ onMounted(() => {
                     class="px-4 py-2 text-white   bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
-
             </div>
           </div>
-
         </div>
 
         <!-- Modal para la designación de jurados -->
-<div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
-  <div class="relative max-w-lg w-full flex flex-col p-8 bg-white rounded-lg shadow-lg">
-    
-    <!-- Botón de cierre -->
-    <div class="flex justify-end items-start">
-      <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-        <IconCerrar />
-      </button>
-    </div>
+        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+          <div class="relative max-w-lg w-full flex flex-col p-8 bg-gray-100 rounded-lg shadow-lg">
+            
+            <!-- Botón de cierre -->
+            <div class="flex justify-end items-start">
+              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+                <IconCerrar />
+              </button>
+            </div>
 
-    <!-- Título del modal -->
-    <div class="w-full pr-4">
-      <div class="flex items-start justify-between p-3">
-        <h5 class="text-2xl font-light text-gray-900 text-center flex-1">Designación de jurados</h5>
-      </div>
-
-      <!-- Sección de selección de jurados -->
-      <div class="p-6">
-        <div class="flex-1">
-          <!-- Selección del presidente -->
-          <select v-model="selectedPresidente" id="presidente" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Presidente', selectedPresidente)">
-            <option disabled value="">Selecciona un presidente</option>
-            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
-              {{ jurado.asesor }}
-            </option>
-          </select>
-
-          <!-- Selección del secretario -->
-          <select v-model="selectedSecretario" id="secretario" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Secretario', selectedSecretario)">
-            <option disabled value="">Selecciona un secretario</option>
-            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
-              {{ jurado.asesor }}
-            </option>
-          </select>
-
-          <!-- Selección del vocal -->
-          <select v-model="selectedVocal" id="vocal" class="w-full p-2 border border-gray-300 rounded" @change="handleJuradoSelect('Vocal', selectedVocal)">
-            <option disabled value="">Selecciona un vocal</option>
-            <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
-              {{ jurado.asesor }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Botón para asignar los jurados seleccionados -->
-      <div class="mt-6 flex justify-center">
-        <button @click="asignarJurado" class="px-4 py-2 text-base text-white bg-[#5d6d7e] rounded-lg w-60">
-          Asignar
-        </button>
-      </div>
-      <br>
-
-      <!-- Tabla para mostrar las revisiones si existen -->
-      <div v-if="selectedRevisiones.length" class="mt-6">
-                <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
-                <!-- Aplicamos un contenedor con scroll si la tabla crece mucho -->
-                <div class="overflow-y-auto max-h-48"> <!-- Aquí se agrega el scroll -->
-                  <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
-                    <thead>
-                      <tr class="bg-gray-200 text-left">
-                        <th class="px-4 py-2">Rol</th>
-                        <th class="px-4 py-2">Estudiante</th>
-                        <th class="px-4 py-2">Días</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr v-for="(revision, index) in selectedRevisiones" :key="index">
-                        <td class="border px-4 py-2">{{ revision.rol }}</td>
-                        <td class="border px-4 py-2">{{ revision.estudiante }}</td>
-                        <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div> <!-- Fin del contenedor con scroll -->
+            <!-- Título del modal -->
+            <div class="w-full pr-4 ">
+              <div class="flex items-start justify-between p-3">
+                <h5 class="text-3xl text-gray-700 font-medium text-center flex-1">Designación de jurados</h5>
               </div>
 
-      <!-- Mensaje cuando no hay revisiones -->
-      <div v-else class="mt-6 text-gray-500 text-center">
-        <p>No hay revisiones disponibles para el jurado seleccionado.</p>
-      </div>
+              <!-- Sección de selección de jurados -->
+              <div class="p-6">
+                <div class="flex-1">
+                  <!-- Selección del presidente -->
+                  <select v-model="selectedPresidente" id="presidente" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Presidente', selectedPresidente)">
+                    <option disabled value="">Selecciona un presidente</option>
+                    <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+                      {{ jurado.asesor }}
+                    </option>
+                  </select>
 
-    </div>
-  </div>
-</div>
+                  <!-- Selección del secretario -->
+                  <select v-model="selectedSecretario" id="secretario" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Secretario', selectedSecretario)">
+                    <option disabled value="">Selecciona un secretario</option>
+                    <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+                      {{ jurado.asesor }}
+                    </option>
+                  </select>
 
+                  <!-- Selección del vocal -->
+                  <select v-model="selectedVocal" id="vocal" class="w-full p-2 border border-gray-300 rounded" @change="handleJuradoSelect('Vocal', selectedVocal)">
+                    <option disabled value="">Selecciona un vocal</option>
+                    <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
+                      {{ jurado.asesor }}
+                    </option>
+                  </select>
+                </div>
+              </div>
 
+              <!-- Botón para asignar los jurados seleccionados -->
+              <div class="mt-6 flex justify-center">
+                <button @click="asignarJurado" class="px-4 py-2 text-base text-white bg-base rounded-lg w-50">
+                  Asignar
+                </button>
+              </div>
+              <br>
+
+              <!-- Tabla para mostrar las revisiones si existen -->
+              <div v-if="selectedRevisiones.length" class="mt-6">
+                        <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
+                        <!-- Aplicamos un contenedor con scroll si la tabla crece mucho -->
+                        <div class="overflow-y-auto max-h-48"> <!-- Aquí se agrega el scroll -->
+                          <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
+                            <thead>
+                              <tr class="bg-gray-200 text-left">
+                                <th class="px-4 py-2">Rol</th>
+                                <th class="px-4 py-2">Estudiante</th>
+                                <th class="px-4 py-2">Días</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr v-for="(revision, index) in selectedRevisiones" :key="index">
+                                <td class="border px-4 py-2">{{ revision.rol }}</td>
+                                <td class="border px-4 py-2">{{ revision.estudiante }}</td>
+                                <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div> <!-- Fin del contenedor con scroll -->
+              </div>
+
+              <!-- Mensaje cuando no hay revisiones -->
+              <div v-else class="mt-4 text-gray-500 text-center">
+                <p>No hay revisiones disponibles para el jurado seleccionado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Modal para el envío de oficio -->
         <div v-if="showRejectModal"
           class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
@@ -553,7 +548,7 @@ onMounted(() => {
 }
 
 .estado-tramitado {
-  background-color: #39B49E;
+  background-color: #48bb78;
   color: #ffffff;
 }
 

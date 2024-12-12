@@ -310,7 +310,7 @@ onMounted(() => {
                         <button
                           v-if="!u.oficio_generado && u.rev_status !== 'aprobado'" 
                           :disabled="u.rev_status === 'observado'" 
-                          :class="['w-24 px-4 py-1 text-sm rounded-xl focus:outline-none', u.revision_estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gray-500 text-white']"
+                          :class="['w-24 px-4 py-1 text-sm rounded-xl focus:outline-none', u.revision_estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-naranja text-white']"
                           @click="openRejectModal(u.estudiante_id)">Observar
                         </button>
                         <a
@@ -415,7 +415,7 @@ onMounted(() => {
 }
 
 .estado-aprobado {
-  background-color: #48bb78;
+  background-color: #39B49E;
   color: #ffffff;
 }
 

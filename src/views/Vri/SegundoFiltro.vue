@@ -114,7 +114,7 @@ const approveSolicitud = async (filterId: string) => {
     loading.value = true;
         
     const formData = new FormData();
-
+    
     // Agregar el estado directamente como un campo
     formData.append("fil_estado", "aprobado");
 
@@ -130,7 +130,7 @@ const approveSolicitud = async (filterId: string) => {
 
     // Realizar la petición
     const response = await axios.post(
-      `/api/vri/update-filter/${filterId}/status`,
+      `/api/vri/update-filter/${filterId}/status?_method=PUT`,
       formData,
       {
         headers: {
@@ -141,6 +141,7 @@ const approveSolicitud = async (filterId: string) => {
     );
 
     console.log("Respuesta:", response.data);
+    console.log("Respuesta:", formData);
 
     if (response.data.estado === "aprobado") {
       alertToast("Solicitud aprobada correctamente.", "Éxito", "success");

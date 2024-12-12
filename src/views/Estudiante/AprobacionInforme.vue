@@ -145,7 +145,7 @@ onMounted(() =>{
       <div class="mt-6 space-y-10">
         <!-- solicitar aprobacion de informe final -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
             <h2 class="text-xl font-medium text-black">1. Solicitar aprobación</h2>
               <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />       
           </div>

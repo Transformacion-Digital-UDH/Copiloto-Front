@@ -325,7 +325,7 @@ export default defineComponent({
         </div>
       </div>
 
-      <!-- INFO DEL ESTUDIANTE COMO PROGRESO -->
+      <!-- INFO DEL ESTUDIANTE COMO PROGRESO FALTA FUNCIONALIDAD SI ERES NUEVO EN ESTO TOMALO COMO UN RETO :3
       <div class="px-6 mt-6 mb-8">
         <div class="flex justify-between mb-4">
           <span class="font-medium text-gray-600 dark:text-gray-300">Progreso General</span>
@@ -335,7 +335,7 @@ export default defineComponent({
           <span class="text-sm font-medium text-blue-700 dark:text-blue-200">{{ progreso }}%</span>
         </div>
       </div>
-      <hr class="border-gray-300 dark:border-gray-600" />
+      <hr class="border-gray-300 dark:border-gray-600" /> -->
 
       <nav class="mt-5 mb-10">
         <!-- Secciones Dinámicas -->

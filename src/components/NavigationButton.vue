@@ -18,7 +18,7 @@
       @click="handleNext" 
       :class="[ 'px-4 py-2 text-white rounded-md', isNextDisabled
       ? 'bg-gray-300 cursor-not-allowed'
-      : 'bg-[#38A169] hover:bg-green-600',]">Siguiente
+      : 'bg-base hover:bg-green-600',]">Siguiente
     </button>
   </div>
 </template>

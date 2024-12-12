@@ -16,7 +16,7 @@ const showArchivoModal = ref(false);
 const load = ref(false);
 
 // Texto que se escribe automáticamente
-const text = "Correciones Pendientes de Proyecto de Tesis";
+const text = "Correciones Pendientes de Proyecto de Investigación";
 const textoTipiado = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -206,7 +206,7 @@ const acceptCorrecion = async () => {
         solicitud.rev_num_of = response.data?.data?.rev_num_of || params.rev_num_of;  
       }
       await fetchReviews(); // Asegúrate de actualizar los datos después de aprobar
-      alertToast("El proyecto de tesis ha sido aprobado", "Éxito", "success");
+      alertToast("El proyecto de investigación ha sido aprobado", "Éxito", "success");
       closeModal();
     } else {
       alert("Hubo un problema al aprobar la solicitud.");
@@ -326,11 +326,11 @@ onMounted(() => {
                   </td>
                   <td class="px-2 py-3 text-center">{{ u.count }}</td>
                   <td class="px-2 py-3 text-center align-middle">
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 5px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 5px; ">
 
                       <!-- Mostrar presidente si el asesor no es presidente -->
                       <div v-if="u.rol !== 'presidente'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full" 
+                        <span class="block px-3 py-1 text-black rounded-full text-sm" 
                         >
                           Presidente: 
                           <span v-if="u.presidente_aprobado">
@@ -344,8 +344,7 @@ onMounted(() => {
 
                       <!-- Mostrar secretario si el asesor no es secretario -->
                       <div v-if="u.rol !== 'secretario'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full" 
-                        >
+                        <span class="block px-3 py-1 text-black rounded-full text-sm" >
                           Secretario: 
                           <span v-if="u.secretario_aprobado">
                             <i class="fas fa-check-circle text-green-500"></i>  <!-- Ícono de aprobado -->
@@ -358,8 +357,7 @@ onMounted(() => {
 
                       <!-- Mostrar vocal si el asesor no es vocal -->
                       <div v-if="u.rol !== 'vocal'" class="w-full flex justify-center">
-                        <span class="block px-3 py-1 text-black rounded-full" 
-                        >
+                        <span class="block px-3 py-1 text-black rounded-full text-sm" >
                           Vocal: 
                           <span v-if="u.vocal_aprobado">
                             <i class="fas fa-check-circle text-green-500"></i>  <!-- Ícono de aprobado -->
@@ -378,13 +376,13 @@ onMounted(() => {
                         <button
                           v-if="!u.oficio_generado && u.estado !== 'aprobado'" 
                           :disabled="u.estado === 'observado'" 
-                          :class="['w-24 px-3  py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400  text-white cursor-not-allowed' : 'bg-green-400 text-white']"
+                          :class="['w-24 px-3  py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400  text-white cursor-not-allowed' : 'bg-base text-white']"
                           @click="openModal(u.revision_id)">Aprobar
                         </button>
                         <button
                           v-if="!u.oficio_generado && u.estado !== 'aprobado'"  
                           :disabled="u.estado === 'observado'" 
-                          :class="['w-24 px-3 py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-gray-500 text-white']"
+                          :class="['w-24 px-3 py-1 text-sm rounded-xl focus:outline-none', u.estado === 'observado' ? 'bg-gray-400 text-white cursor-not-allowed' : 'bg-naranja text-white']"
                           @click="openRejectModal(u.revision_id)">Observar
                         </button>
                         <a
@@ -430,10 +428,10 @@ onMounted(() => {
             </button>
           </div>
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
-            <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el Proyecto de Tesis ya no requiere más observaciones?</h5>
+            <h5 class="text-lg font-ligth text-gray-900 text-center flex-1">¿Está seguro de que el proyecto de investigación ya no requiere más observaciones?</h5>
           </div>
           <div class="p-6">
-              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de Oficio para el Documento de Conformidad</p>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Dígite el N° de oficio para el documento de conformidad</p>
               <input
                 type="text"
                 id="nroCarta"
@@ -463,8 +461,8 @@ onMounted(() => {
           <div class="flex items-start justify-between p-3 border-b border-gray-200">
             <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Observación de proyecto</h5>
           </div>
-          <div class="p-6">
-            <p class="text-gray-600 text-center mb-4">¿Esta seguro que los comentarios han sido enviados correctamente en el documento de Google?</p>
+          <div class="p-3">
+            <p class="text-gray-600 text-center">¿Esta seguro que los comentarios han sido enviados correctamente en el documento de Google?</p>
           </div>
           <div class="flex items-center justify-center p-3 border-gray-200">
             <button class="px-4 py-2 text-xm text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
@@ -500,7 +498,7 @@ onMounted(() => {
   color: #ffffff;
 }
 .estado-aprobado {
-  background-color: #48bb78;
+  background-color: #39B49E;
   color: #ffffff;
 }
 
