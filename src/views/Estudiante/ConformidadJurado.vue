@@ -10,43 +10,14 @@ import ModalToolTip from "@/components/modalToolTip.vue";
 import JuradoCard from "@/components/JuradoCard.vue";
 import CorrecionTabla from "@/components/CorrecionTabla.vue";
 import DocumentCard from "@/components/DocumentCard.vue";
+import { useTypewriter } from "@/composables/useTypewriter";
+import NavigationButton from "@/components/NavigationButton.vue";
 
-// ***** Texto que se escribe automáticamente ********
-const text = "Conformidad del Proyecto de Tesis por los Jurados";
-const textoTipiado2 = ref("");
-let index = 0;
-const typeWriter = () => {
-  if (index < text.length) {
-    textoTipiado2.value += text.charAt(index);
-    index++;
-    setTimeout(typeWriter, 80);
-  }
-};
-onMounted(() => {
-  typeWriter();
-});
-/****************************************************** */
-
-const handleNextButtonClick = () => {
-  if (isNextButtonDisabled.value) {
-    Swal.fire({
-      icon: "warning",
-      title: "Pasos incompletos",
-      text: "Por favor, completa todos los pasos antes de continuar.",
-      confirmButtonText: "OK",
-    });
-  } else {
-    goToNextPage();
-  }
-};
-
-const goToNextPage = () => {
-  router.push("/estudiante/aprobacion-proyecto");
-};
-
-const isNextButtonDisabled = computed(() => {
-  return obtener.value?.estado_general !== 'aprobado';
-});
+// extrayendo funcionn del composable
+const { textoTipiado, typeWriter } = useTypewriter(
+  "Conformidad del Proyecto de Investigación por los Jurados"
+);
+onMounted(typeWriter);
 
 //*********************************** INTEGRACIÓN CON EL BACKEND PARA CONFORMIDAD DE JURADOS PY*************************************************** */
 const load = ref(false);
@@ -214,7 +185,7 @@ onMounted(() => {
 
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado2 }}</h3>
+      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- card para mostrar los jurados y titulo -->
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
@@ -330,7 +301,7 @@ onMounted(() => {
           <!-- INFORME DE CONFORMIDAD POR EL PRESIDENTE -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo='Informe de conformidad - Presidente'
+              titulo='ACTA DE CONFORMIDAD DEL PROYECTO DE INVESTIGACION - POR EL JURADO PRESIDENTE'
               :estado="obtenerEstadoDocumento(presidenteRevisiones[0]?.estado || '')"
               :id="presidente_id"
               :view="VIEW_CPA"
@@ -340,7 +311,7 @@ onMounted(() => {
           <!-- INFORME DE CONFORMIDAD POR EL SECRETARIO -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo='Informe de conformidad - Secretario'
+              titulo='ACTA DE CONFORMIDAD DEL PROYECTO DE INVESTIGACION - POR EL JURADO SECRETARIO'
               :estado="obtenerEstadoDocumento(secretarioRevisiones[0]?.estado || '')"
               :id="secretario_id"
               :view="VIEW_CPA"
@@ -350,7 +321,7 @@ onMounted(() => {
           <!-- INFORME DE CONFORMIDAD POR EL VOCAL -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo='Informe de conformidad - Secretario'
+              titulo='ACTA DE CONFORMIDAD DEL PROYECTO DE INVESTIGACION - POR EL JURADO VOCAL'
               :estado="obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '')"
               :id="vocal_id"
               :view="VIEW_CPA"
@@ -359,18 +330,11 @@ onMounted(() => {
         </div>
 
         <!--Botones siguiente y anteerior-->
-        <div class="flex justify-between">
-          <button 
-            @click="$router.push('/estudiante/designacion-jurado')" 
-            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600">Anterior
-          </button>
-          <button
-            @click="handleNextButtonClick"
-            :class="['px-4 py-2 text-white rounded-md', isNextButtonDisabled 
-            ? 'bg-gray-300 cursor-not-allowed' 
-            : 'bg-green-500 hover:bg-green-600',]">Siguiente
-          </button>
-        </div>
+        <NavigationButton
+          prevRoute="/estudiante/designacion-jurado"
+          nextRoute="/estudiante/aprobacion-proyecto"
+          :nextCondition="() => obtener?.estado_general === 'aprobado'"
+        />
       </div>
     </div>
   </template>
