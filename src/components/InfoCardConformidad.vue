@@ -15,7 +15,8 @@
       <!-- Título -->
       <div class="bg-white rounded-lg p-6 shadow-lg max-w-[820px] w-full mx-auto">
         <div class="flex flex-col items-center">
-          <p class="font-bold text-xm text-azul"> Título Provisional</p>
+          <!--<i class="fa-regular fa-file text-azul text-2xl mb-3"></i>-->
+          <p class="font-bold text-xm text-azul"> Título provisional</p>
         </div>
         <p class="max-full text-sm text-gray-600 uppercase text-center">
           {{ data.titulo || 'Título no asignado' }}
