@@ -41,7 +41,8 @@ const isRevisionDisabled = computed(() => {
 });
 
 interface Revision {
-  revision_id: string;
+  estudiante_id: string;
+  revision_id:string;
   estado: string;
   cantidad: number;
   archivos: string;
@@ -74,6 +75,7 @@ const obtenerDatosEstudiante = async () => {
   try {
     const response = await axios.get(`/api/student/get-review/${student_id}`);
     console.log("Mostrando lo recibido", response.data);
+    console.log("Student ID desde authStore:", authStore.id);
     obtener.value = response.data;
   } catch (error) {
     console.error("Error al obtener datos", error);
@@ -123,7 +125,6 @@ const actualizarEstadoRevision = async () => {
       payload
     );
     
-
     if (response.data.message) {
       alertToast(
         "Las observaciones han sido corregidas y enviadas correctamente.",
@@ -151,6 +152,10 @@ const actualizarEstadoRevision = async () => {
 onMounted(() => {
   obtenerDatosEstudiante();
 });
+
+//console.log("VIEW_CPA:", VIEW_CPA);
+
+
 </script>
 
 <template>
@@ -160,7 +165,7 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">
         {{ textoTipiado }}
       </h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-3 space-y-8">
         <!-- Sección 1: Solicitar link para cargar el Informe Final -->
         <!-- <div class="bg-white rounded-lg shadow-lg p-6">
           <h4 class="text-2xl font-medium text-black mb-3">1. Solicitar link para cargar su Informe final</h4>
@@ -186,9 +191,7 @@ onMounted(() => {
 
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
-            
-            
+          <div class="relative flex items-center ">
             <h2 class="text-xl font-medium text-black">
               1. Correcciones con tu asesor
             </h2>
@@ -207,7 +210,7 @@ onMounted(() => {
             >
             para iniciar las observaciones del proyecto de investigación.
           </p>
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-4">
             <!-- boton para solicitar revision de asesor -->
             <ButtonRequest
               label="Solicitar revisión"
@@ -278,7 +281,6 @@ onMounted(() => {
               :download="DOWNLOAD_CPA"
             />
           </div>
-
         </div>
 
         <!--Botones siguiente y anteerior-->

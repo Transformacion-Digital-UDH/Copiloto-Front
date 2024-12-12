@@ -100,11 +100,13 @@ function goToNextPage() {
 //*********************************** INTEGRACION CON EL BACKEND *************************************************** */
 
 const validateResolution = () => {
-  nroResolution.value = nroResolution.value.replace(/[^0-4]/g, '');
+  // Permitir solo números y limitar a 4 caracteres
+  nroResolution.value = nroResolution.value.replace(/[^0-9]/g, '');
   if (nroResolution.value.length > 4) {
     nroResolution.value = nroResolution.value.slice(0, 4);
   }
 };
+
 
 // Función para obtener los datos desde la API
 const fetchOffices = async () => {
@@ -365,48 +367,49 @@ function closeModal() {
 
 
                  <!-- Modal para generar un oficio al estudiante -->
-          <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
-            <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
-              <div class="flex justify-end items-start">
-                <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
-                  <IconCerrar />
-                </button>
-              </div>
-              <div class="flex items-start justify-between p-3 border-b border-gray-200">
-                <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">
-                  Se autogenerará la resolucion de asesor para este estudiante
-                </h5>
-              </div>
-              <div class="p-6">
-                <p class="text-gray-500 text-lg text-left mb-2">
-                  Dígite el N° de resolución.
-                </p>
-                <input 
-                  type="text" 
-                  id="nroResolution" 
-                  v-model="nroResolution" 
-                  class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
-                  maxlength="4" 
-                  inputmode="numeric" 
-                  @input="validateResolution"
-                  required>
-                <p v-if="nroResolution.length !== 4 && nroResolution !== ''" class="text-red-800">
-                  Debe ingresar 4 dígitos
-                </p>
-                </div>
-                <div class="flex items-center justify-center p-3 border-gray-200">
-                  <button class="px-4 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
-                    Cancelar
-                  </button>
-                  <button 
-                    class="ml-4 px-4 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" 
-                    :disabled="nroResolution.length !== 4" 
-                    @click="updateResolution">
-                    Generar
-                  </button>
-                </div>
-            </div>
-          </div>
+                 <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
+  <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
+    <div class="flex justify-end items-start">
+      <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+        <IconCerrar />
+      </button>
+    </div>
+    <div class="flex items-start justify-between p-3 border-b border-gray-200">
+      <h5 class="text-2xl font-light text-gray-900 text-center flex-1">
+        Se autogenerará la resolución de asesor para este estudiante
+      </h5>
+    </div>
+    <div class="p-6">
+      <p class="text-gray-500 text-lg text-left mb-2">
+        Dígite el N° de resolución.
+      </p>
+      <input 
+        type="text" 
+        id="nroResolution" 
+        v-model="nroResolution" 
+        class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" 
+        maxlength="4" 
+        inputmode="numeric" 
+        pattern="[0-9]*" 
+        @input="validateResolution"
+        required>
+      <p v-if="nroResolution.length !== 4 && nroResolution !== ''" class="text-red-800">
+        Debe ingresar 4 dígitos
+      </p>
+    </div>
+    <div class="flex items-center justify-center p-3 border-gray-200">
+      <button class="px-4 py-2 text-sm font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">
+        Cancelar
+      </button>
+      <button 
+        class="ml-4 px-4 py-2 text-sm font-thin text-white bg-base rounded-2xl" 
+        :disabled="nroResolution.length !== 4" 
+        @click="updateResolution">
+        Generar
+      </button>
+    </div>
+  </div>
+</div>
 
             <!-- Modal de observacion -->
             <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out">
