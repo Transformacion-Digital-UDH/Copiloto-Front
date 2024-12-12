@@ -23,7 +23,6 @@ interface Document {
 // Propiedades reactivas
 const startDate = ref<string>('');
 const endDate = ref<string>('');
-// const showDocumentModal = ref<boolean>(false);
 const authStore = useAuthStore();
 const load = ref(false);
 
@@ -39,10 +38,6 @@ const isButtonDisabled = computed (() => {
 const goToConformidadInformeAsesor = () => {
   router.push({ name: 'ConformidadInformeAsesor' });
 };
-
-// Función para abrir y cerrar el modal
-// const openDocumentModal = () => (showDocumentModal.value = true);
-// const closeDocumentModal = () => (showDocumentModal.value = false);
 
 // Función para obtener las fechas y URLs de documentos de la API
 const fetchThesisInfo = async () => {
@@ -160,72 +155,71 @@ onMounted(() => {
   </template>
 
   <template v-else>
-    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
-      <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="mt-6 space-y-10">
-        <div class="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-x-16 w-full max-w-7xl mx-auto mb-10">
-          <!-- imagen a la izquierda -->
-          <div class="w-auto lg:w-full flex justify-center items-center h-full">
-            <img src="/img/c2.svg" alt="Descripción de la imagen"
-              class="w-96 h-96 object-contain max-h-screen transform transition duration-500 ease-in-out hover:scale-105 fade-in"/>
-          </div>
-          <!-- contenido por etapas -->
-          <div class="flex-grow flex flex-col space-y-8 items-center text-center mt-2 w-full lg:w-2/3">
-            <div class="relative grid grid-cols-4 gap-4 sm:gap-16 lg:gap-24 xl:gap-16 mb-8">
-              <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xm font-bold">1</div>
-                <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Investigación</span>
-              </div>
-              <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xm font-bold">2</div>
-                <span class="mt-4 text-center font-semibold text-gray-700">Ejecución (Actual)</span>
-              </div>
-              <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xm font-bold">3</div>
-                <span class="mt-4 text-center font-semibold text-gray-700">Informe Final</span>
-              </div>
-              <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-sm font-bold">4</div>
-                <span class="mt-4 text-center font-semibold text-gray-700">Sustentación</span>
-              </div>
-            </div>
-            <!-- mensaje en que etapa se encuentra -->
-            <p class="text-lg md:text-xm text-gray-600">¡Estás a mitad de camino! Mantente enfocado y recuerda que cada paso te lleva más cerca de tu meta.</p>
-            <!-- fecha de inicio y fin -->
-            <div class="flex flex-col md:flex-row justify-around items-center w-full space-y-4 md:space-y-0 md:space-x-8">
-              <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
-                <div class="text-xm font-semibold text-gray-800">Inicio</div>
-                <div class="text-xl text-azul font-bold">{{ startDate }}</div>
-              </div>
-              <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
-                <div class="text-xm font-semibold text-gray-800">Fin</div>
-                <div class="text-xl text-azul font-bold">{{ endDate }}</div>
-              </div>
-            </div>
-            <!-- boton para ir al siguiente paso -->
-            <div class="flex justify-center gap-6">
-              <button 
-                class="px-6 py-3 w-54 bg-base text-white rounded-lg transition text-lg"
-                :disabled="documents.length === 0"
-                :class="documents.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul'"
-                @click="goToConformidadInformeAsesor">Ir a Informe Final
-              </button>
-            </div>
-          </div>
+  <div class="flex-1 p-6 font-Roboto bg-gray-100 min-h-full">
+    <h3 class="text-2xl md:text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
+    <div class="mt-8 space-y-8">
+      <!-- Indicadores del progreso -->
+      <div class="flex justify-center items-center space-x-4 lg:space-x-8">
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xs md:text-sm font-bold">1</div>
+          <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">Proyecto de Investigación</span>
         </div>
-        
-        <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
-            <h2 class="text-xl font-medium text-black">Documentos del proyecto de investigación</h2>
-          </div>
-          <div class="overflow-x-auto mt-4">
-            <DocumentTabla 
-              :documents="documents"/>
-          </div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xs md:text-sm font-bold">2</div>
+          <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">Ejecución (Actual)</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xs md:text-sm font-bold">3</div>
+          <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">Informe Final</span>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xs md:text-sm font-bold">4</div>
+          <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">Sustentación</span>
         </div>
       </div>
+
+      <!-- Imagen y Contenido -->
+        <div class="flex flex-col lg:flex-row items-center lg:justify-center lg:space-x-8">
+          <!-- Imagen -->
+          <div class="flex justify-center items-center w-full lg:w-1/2 mb-6 lg:mb-0">
+            <img src="/img/pr2.svg" alt="Progreso del Proyecto"
+          class="w-80 sm:w-96 lg:w-[500px] h-auto object-contain transform transition duration-500 ease-in-out hover:scale-105" />
+
+          </div>
+
+          <!-- Contenido -->
+          <div class="flex flex-col items-center space-y-6 w-full lg:w-1/2 text-center">
+            <p class="text-sm sm:text-lg font-medium text-gray-700 leading-relaxed">
+              ¡Estás a mitad de camino! Mantente enfocado y recuerda que<br> cada paso te lleva más cerca de tu meta.
+            </p>
+            <div class="flex flex-col space-y-4 w-full items-center">
+              <div class="bg-gray-100 p-4 rounded-lg shadow-lg text-center w-full max-w-xs">
+                <div class="text-sm font-semibold text-gray-800">Inicio</div>
+                <div class="text-base sm:text-xl text-azul font-bold">{{ startDate }}</div>
+              </div>
+              <div class="bg-gray-100 p-4 rounded-lg shadow-lg text-center w-full max-w-xs">
+                <div class="text-sm font-semibold text-gray-800">Fin</div>
+                <div class="text-base sm:text-xl text-azul font-bold">{{ endDate }}</div>
+              </div>
+            </div>
+            <button 
+              class="px-6 py-2 sm:px-8 sm:py-3 bg-base text-white rounded-lg shadow-lg hover:bg-azul transition transform hover:scale-105 text-sm sm:text-lg font-medium"
+              :disabled="documents.length === 0"
+              :class="documents.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul'">
+              Ir a Informe Final
+            </button>
+          </div>
+        </div>
     </div>
-  </template>
+    <!-- Tabla de Documentos -->
+    <div class="bg-white rounded-lg shadow-lg p-4 mt-6 ml-5">
+      <h2 class="text-lg sm:text-xl font-medium text-gray-700">Documentos del proyecto de investigación</h2>
+      <div class="overflow-x-auto mt-4 ">
+        <DocumentTabla :documents="documents" />
+      </div>
+    </div>
+  </div>
+</template>
 </template>
 
 <style scoped>
@@ -237,7 +231,6 @@ onMounted(() => {
   0% {
     opacity: 0;
   }
-
   100% {
     opacity: 1;
   }
