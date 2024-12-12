@@ -26,14 +26,15 @@ const solicitudEstado = ref<string>("");
 const isLoading = ref(false);
 const obtener = ref<Estudiante | null>(null);
 const tituloActual = ref<string>("");
-const showModal = ref(false);
+const mostrarModal = ref(false);
 
 function abrirModal() {
-  showModal.value = true;
+  obtenerDatosEstudiante();
+  mostrarModal.value = true;
 }
 
 function cerrarModal() {
-  showModal.value = false;
+  mostrarModal.value = false;
 }
 
 const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
@@ -86,6 +87,7 @@ const guardarNuevoTitulo = async (nuevoTitulo: string) => {
     if (response.data.estado === "pendiente") {
       alertToast("Título actualizado correctamente.", "Éxito", "success");
       tituloActual.value = nuevoTitulo;
+      closeModal();
     }
   } catch (error: any) {
     console.error("Error al actualizar el título", error.response?.data?.mensaje || error.message);
@@ -104,13 +106,14 @@ const solicitarAprobacionProyecto = async () => {
   isLoading.value = true;
   const student_id = authStore.id;
   try {
-    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
-    //console.log("Mostrando lo recibido: ",response);
+    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
+    // console.log("Mostrando lo recibido: ", response);
 
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada. Espere las indicaciones para la aprobación del proyecto de tesis.", "Éxito", "success");
       await obtenerDatosEstudiante();
+      closeModal();
     }
 
   } catch (error: any) {
@@ -168,78 +171,22 @@ onMounted(() => {
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
-        <!-- <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex flex-col  sm:flex-row items-center justify-between w-full"> -->
-        <!--<div class="flex items-center space-x-3">
-              <!-- Bolita con estado -->
-        <!-- <span
-                  class="flex items-center justify-center h-8 w-8 rounded-full border-2"
-                  :class="{
-                    'bg-green-500 border-green-500 text-white': solicitude.estado === 'aceptado',
-                    'bg-orange-500 border-orange-500 text-white': solicitude.estado === 'en progreso',
-                    'bg-gray-400 border-gray-400 text-white': !solicitude.estado || solicitude.estado === 'pendiente' || solicitude.estado === 'rechazado'
-                  }"
-                >
-                  <i
-                    :class="{
-                      'fas fa-check': solicitude.estado === 'aceptado',
-                      'fas fa-hourglass-half': solicitude.estado === 'en progreso',
-                      'fas fa-ellipsis-h': !solicitude.estado || solicitude.estado === 'pendiente' || solicitude.estado === 'rechazado'
-                    }"
-                    class="text-sm"
-                  ></i>
-                </span> -->
-        <!-- Título del encabezado -->
-        <!-- <h2 class="text-xl font-medium text-black">
-                1. Escribe el titulo final de tu tesis
-              </h2> -->
-        <!-- Modal con Tooltip -->
-        <!-- <ModalToolTip :infoModal="[{
-                info: 'Este título ya no lo podrás cambiar posteriormente',
-              }]" />
-            </div> -->
-        <!-- <Estados :estado="capitalizarEstado(solicitude.estado)" /> -->
-        <!-- </div> -->
-        <!-- <div class="mt-4">
-            <label for="tituloTesis" class="block text-xm font-medium text-gray-700 mb-2">
-              Título de proyecto de investigación (definitivo)
-            </label>
-            <div class="flex items-center">
-              <input id="tituloTesis" type="text"
-                class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Escribe el título de tu proyecto de investigación aquí" />
-              <span>
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor" stroke-width="7">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </span>
-            </div>
-            <br>
-            <button
-              class="bg-base   transition-all duration-200 px-6 py-3 text-white rounded-lg shadow-md text-sm md:text-base">
-              Enviar
-            </button>
-          </div>
-        </div> -->
 
-
-        <!-- solicitar aprobacion de proyecto de tesis-->
+        <!-- solicitar aprobacion de proyecto de investigacion y cambio de titulo-->
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-9">
           <div class="relative flex items-center">
-            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación</h2>
-            <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
+            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación para el cambio de título</h2>
+            <ModalToolTip
+              :infoModal="[{ info: 'Este título ya no lo podrás cambiar posteriormente y se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón
-            <strong class="text-green-500 text-sm font-medium">"Solicitar aprobación"</strong> para enviar tu
-            solicitud
-            a la Facultad y al Programa Académico.
+            <strong class="text-green-500 text-sm font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud
+            de cambio de título.
           </p>
-          <!-- boton para solicitar aprobacion de proyecto de tesis -->
+          <!-- boton para solicitar aprobacion de proyecto de investigacion y si desea el cambio de titulo  -->
           <div class="flex justify-center mt-4">
-            <ButtonRequest label="Solicitar aprobación" :loading="isLoading"
-              @click="abrirModal" />
-              <!-- :disabled="isAprobacionDisabled" -->
+            <ButtonRequest label="Solicitar aprobación" :loading="isLoading" @click="abrirModal" />
+            <!-- :disabled="isAprobacionDisabled" -->
           </div>
         </div>
       </div>
@@ -271,7 +218,7 @@ onMounted(() => {
       <NavigationButton prevRoute="/estudiante/conformidad-jurado" nextRoute="/estudiante/progreso"
         :nextCondition="() => obtener?.oficio_estado === 'tramitado' && obtener?.resolucion_estado === 'tramitado'" />
     </div>
-    <modalCambioTitulo :showModal="showModal" :initialTitle="tituloActual" @close="cerrarModal"
+    <modalCambioTitulo :mostrarModal="mostrarModal" :tituloActual="tituloActual" @close="cerrarModal"
       @tituloGuardado="manejarCambioTitulo" @solicitarAprobacionProyecto="solicitarAprobacionProyecto" />
   </template>
 </template>

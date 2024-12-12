@@ -325,7 +325,7 @@ const handleNextButtonClick = () => {
 
 /*********************** */
 //esta funcion es para obtener el titulo del C2 si existe o no en caso contrario
-const titulo = ref<string>("");
+
 const tituloExistente = ref(false);
 
 const getTitulo = async () => {
@@ -335,15 +335,12 @@ const getTitulo = async () => {
     const email = authStore.email;
     const apiUrl = `https://copiloto.udh.edu.pe/ideas/api/titulo/${email}`;
     const response = await axios.get(apiUrl);
-
-    console.log(response.data);
-    if (response.data.statusCode == true) {
-      titulo.value = response.data.titulo;
+    if (response.data.status == true) {
+      solicitude.value.titulo = response.data.titulo;
       tituloExistente.value = true;
     } else {
-      titulo.value = solicitude.value.titulo || "Título provisional no asignado";
+      solicitude.value.titulo = solicitude.value.titulo || "";
       tituloExistente.value = false;
-      console.log(titulo.value);
     }
   } catch (error) {
     console.error("Error al obtener el título:", error);
@@ -459,9 +456,16 @@ onMounted(() => { getTitulo(); });
               Título de proyecto de investigación (provisional)
             </label>
             <div class="flex items-center">
-              <input id="tituloTesis" type="text" v-model="titulo" :disabled="tituloExistente || titulo.length > 0"
-                class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              <template v-if="tituloExistente">
+                <input id="tituloTesis" type="text" v-model="tituloExistente" :disabled="tituloExistente"
+                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              </template>
+              <template v-else>
+                <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="solicitude.titulo"
+                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
+              </template>
               <!-- Mostrar un mensaje de éxito si el título existe -->
               <p v-if="tituloExistente" class="text-green-600 text-sm mt-2">
                 Tienes un título asignado
