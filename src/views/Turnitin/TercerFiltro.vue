@@ -127,7 +127,7 @@ const approveSolicitud = async (filterId: string) => {
 
     // Realizar la petición
     const response = await axios.post(
-      `/api/vri/update-filter/${filterId}/status`,
+      `/api/vri/update-filter/${filterId}/status?_method=PUT`,
       formData,
       {
         headers: {
