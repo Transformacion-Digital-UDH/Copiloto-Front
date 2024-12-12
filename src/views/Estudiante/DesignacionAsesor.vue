@@ -410,8 +410,8 @@ const handleNextButtonClick = () => {
 
   <template v-else>
     <template v-if="!solicitude.estado">
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-8 text-center">
+      <div class="flex-1 p-15 border-s-2 font-Roboto bg-gray-100 h-screen">
+        <div class="p-10 bg-white rounded-lg shadow-lg space-y-10 text-center">
           <h3 class="text-4xl font-semibold text-azul">
             Usted no ha iniciado un trámite
           </h3>
@@ -438,7 +438,7 @@ const handleNextButtonClick = () => {
       </div>
     </template>
     <template v-else>
-      <div class="flex-1 p-10 border-s-2 font-Roboto bg-gray-100">
+      <div class="flex-1 p-12 border-s-2 font-Roboto bg-gray-100">
         <h3 class="text-4xl font-semibold text-center text-azul">
           {{ textoTipiado }}
         </h3>
@@ -475,7 +475,6 @@ const handleNextButtonClick = () => {
                   }]"
                 />
               </div>
-
               <!-- <Estados :estado="capitalizarEstado(solicitude.estado)" /> -->
             </div>
           </div>
@@ -591,10 +590,10 @@ const handleNextButtonClick = () => {
               >
                 Enviar
               </button>
-            </div>
+          </div>
 
           <!-- Respuesta del asesor -->
-          <div class="mt-6 bg-gray-100 p-2 border border-base rounded-md"
+          <div class="mt-6 bg-gray-100 p-2 border border-gray-300 rounded-md"
             v-if="solicitude.estado !== 'en progreso'">
             <!-- Contenedor principal -->
             <div class="flex flex-col space-y-2 md:flex-row md:justify-between md:items-center">
@@ -654,9 +653,10 @@ const handleNextButtonClick = () => {
               </span>
             </div>
           </div>
-        </div>      
+        </div>   
+
         <!-- Card 2: Documentos -->
-        <div class="mt-4"
+        <div class="mt-8"
           :disabled="
             ['en progreso', 'pendiente', 'rechazado'].includes(
               solicitude.estado)"
@@ -708,13 +708,19 @@ const handleNextButtonClick = () => {
             <!-- Listado de documentos OFICIO-->
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
-                <!-- Nombre del documento -->
-                <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                  {{oficio.nombre_de_oficio}}
-                  <p v-if="oficio.estado === 'observado'" class="italic text-gray-500">
-                    <!-- "{{ oficio.observacion }}" --> Por favor comuníquese con secretaría del programa académico
-                  </p>
-                </span>
+                <div class="flex items-center space-x-4 text-gray-700 font-medium">
+                  <!-- Icono -->
+                  <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
+                  <!-- Nombre del documento -->
+                  <div>
+                    <span class="text-gray-700 font-medium">
+                      <!-- {{ oficio.nombre_de_oficio }} Solicitud de resolución de designación de asesor. -->
+                    </span>
+                    <p v-if="oficio.estado === 'observado'" class="text-sm italic text-gray-500">
+                      Por favor comuníquese con secretaría del programa académico
+                    </p>
+                  </div>
+                </div>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
                   <div v-if="['tramitado'].includes(oficio.estado)"
@@ -729,24 +735,28 @@ const handleNextButtonClick = () => {
                     </a>                  
                   </div>
                   <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-sm text-gray-400 italic">El documento aún no se ha cargado</span
-                  >
+                  <span v-else class="text-sm text-gray-400 italic">El documento aún no se ha cargado</span>
                   <!-- Estado del documento -->
                   <Estados :estado="capitalizarEstado(oficio.estado)" />
                 </div>
               </div>
             </div>
-
             <!-- Listado de documentos RESOLUCION-->
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
+                <div class="flex items-center space-x-4 text-gray-700 font-medium">
+                  <!-- Icono -->
+                  <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>     
                 <!-- Nombre del documento -->
+                <div>
                 <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                  {{resolucion.nombre}}
+                  <!-- {{resolucion.nombre}} resolución de designación de asesor. -->
                   <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
                     <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
                   </p>
                 </span>
+              </div>
+            </div>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <!-- Mostrar botones si el documento está listo -->
                   <div v-if="['tramitado'].includes(resolucion.estado)"

@@ -23,7 +23,7 @@
           <button
             :disabled="revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'"
             :class="[
-              'truncate px-4 py-2 text-base text-white bg-base rounded-md focus:outline-none',
+              'truncate px-4 py-2 text-xm text-white bg-base rounded-md focus:outline-none',
               revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'
               ? 'bg-gray-300 cursor-not-allowed'
               : 'bg-base hover:bg-[#29a790]',]"
@@ -79,7 +79,7 @@ const formatearTexto = (text: string): string =>
 <style scoped>
 .estado-estilo {
   padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.775rem;
   border-radius: 0.375rem;
   display: inline-block;
 }

@@ -109,20 +109,23 @@ const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
     const response = await axios.get(`api/student/get-juries/${authStore.id}`);
+    console.log("Respuesta de la API:", response.data);
 
-    if (
-      !response.data ||
-      !response.data.jurados ||
-      response.data.jurados.length === 0
-    )
-
-    obtener.value = response.data;
-    jurados.value = response.data.jurados.map(
-      (jurado: { rol: string; asesor: string }) => ({
+    if (!response.data || !response.data.jurados || response.data.jurados.length === 0) {
+      alertToast(
+        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
+        "Advertencia",
+        "warning",
+        { timer: 2000 }
+      );
+    } else {
+      // Asignar el estado y otros datos al objeto `obtener`
+      obtener.value = response.data;
+      jurados.value = response.data.jurados.map((jurado: { rol: string; asesor: string }) => ({
         rol: jurado.rol,
         nombre: jurado.asesor,
-      })
-    );
+      }));
+    }
   } catch (error: any) {
     if (error.response && error.response.status === 404) {
       alertToast(
@@ -133,8 +136,7 @@ const obtenerDatosEstudiante = async () => {
       );
     } else {
       alertToast(
-        error.message ||
-          "Error inesperado al obtener los datos de los jurados.",
+        error.message || "Error inesperado al obtener los datos de los jurados.",
         "Error",
         "error",
         { timer: 2000 }
@@ -144,6 +146,7 @@ const obtenerDatosEstudiante = async () => {
     load.value = false;
   }
 };
+
 
 // funcion para solicitar que me asignen jurados
 const solicitarJuradoProyecto = async () => {
@@ -177,7 +180,10 @@ const solicitarJuradoProyecto = async () => {
 
 onMounted(() => {
   obtenerDatosEstudiante();
+  //console.log("Estado del documento:", obtener.value?.estado);
 });
+
+
 </script>
 <template>
   <template v-if="load">
@@ -247,7 +253,7 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">
         {{ textoTipiado2 }}
       </h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-7">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
@@ -336,7 +342,7 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <DocumentCard
               titulo="Oficio Múltiple."
-              :estado="obtener?.estado || ''"
+              :estado="['tramitado'].includes(obtener?.estado ?? '') ? obtener?.estado ?? '' : ''"
               :id="obtener?.docof_id ?? ''"
               :view="VIEW_OFFICEJURADO"
               :download="DOWNLOAD_OFFICEJURADO"
@@ -344,7 +350,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <!--Botones siguiente y anteerior-->
+        <!--Botones siguiente y anterior-->
         <div class="flex justify-between">
           <button
             @click="$router.push('/estudiante/conformidad-asesor')"
@@ -359,7 +365,7 @@ onMounted(() => {
               'px-4 py-2 text-white rounded-md',
               isNextButtonDisabled
                 ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-green-500 hover:bg-green-600',
+                : 'bg-base hover:bg-green-600',
             ]"
           >
             Siguiente
