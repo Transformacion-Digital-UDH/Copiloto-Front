@@ -14,11 +14,13 @@ import { useTypewriter } from "@/composables/useTypewriter";
 import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonConformidadJurados from "@/components/SkeletonConformidadJurados.vue";
 
+
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter(
   "Conformidad del Proyecto de Investigación por los Jurados"
 );
 onMounted(typeWriter);
+
 
 //*********************************** INTEGRACIÓN CON EL BACKEND PARA CONFORMIDAD DE JURADOS PY*************************************************** */
 const load = ref(false);
@@ -131,8 +133,10 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <!-- card para mostrar los jurados y titulo -->
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
-          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de
-            tesis. Verifica la información y revisa las actualizaciones.</p>
+
+          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de investigación. 
+          Verifica la información y revisa las actualizaciones.</p>
+
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <JuradoCard v-for="jurado in jurados" :key="jurado.revision_id" :rol="jurado.rol" :nombre="jurado.nombre" />
           </div>
@@ -225,8 +229,9 @@ onMounted(() => {
         <!-- documentos de cada jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos de conformidad del proyecto de tesis por los
-              jurados</h2>
+
+            <h2 class="text-xl font-medium text-black">2. Actas de conformidad del proyecto de investigación por los jurados</h2>
+
             <ModalToolTip
               :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
           </div>

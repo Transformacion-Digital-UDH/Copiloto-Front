@@ -1,6 +1,6 @@
 <template>
   <table class="w-full max-w-full bg-white border rounded-md shadow">
-    <thead>
+    <thead class="text-sm">
       <tr class="text-center text-azul bg-gray-300 truncate">
         <th class="px-4 py-2 text-left tracking-wider">DOCUMENTOS</th>
         <th class="px-4 py-2 text-left tracking-wider">EMISOR</th>

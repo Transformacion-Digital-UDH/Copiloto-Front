@@ -7,7 +7,7 @@ import { useTypewriter } from '@/composables/useTypewriter';
 import DocumentTabla from '@/components/DocumentTabla.vue';
 
 // extrayendo funcionn del composable
-const { textoTipiado, typeWriter } = useTypewriter("Ejecución de tu Proyecto de Tesis");
+const { textoTipiado, typeWriter } = useTypewriter("Ejecución de tu Proyecto de Investigación");
 onMounted(typeWriter);
 
 //************************************* INTEGRACION EL BACKEND ********************************************* */
@@ -173,39 +173,39 @@ onMounted(() => {
           <div class="flex-grow flex flex-col space-y-8 items-center text-center mt-2 w-full lg:w-2/3">
             <div class="relative grid grid-cols-4 gap-4 sm:gap-16 lg:gap-24 xl:gap-16 mb-8">
               <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xl font-bold">1</div>
+                <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xm font-bold">1</div>
                 <span class="mt-4 text-center font-semibold text-gray-700">Proyecto de Investigación</span>
               </div>
               <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xl font-bold">2</div>
+                <div class="w-20 h-20 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xm font-bold">2</div>
                 <span class="mt-4 text-center font-semibold text-gray-700">Ejecución (Actual)</span>
               </div>
               <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xl font-bold">3</div>
+                <div class="w-20 h-20 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xm font-bold">3</div>
                 <span class="mt-4 text-center font-semibold text-gray-700">Informe Final</span>
               </div>
               <div class="flex flex-col items-center">
-                <div class="w-20 h-20 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xl font-bold">4</div>
+                <div class="w-20 h-20 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-sm font-bold">4</div>
                 <span class="mt-4 text-center font-semibold text-gray-700">Sustentación</span>
               </div>
             </div>
             <!-- mensaje en que etapa se encuentra -->
-            <p class="text-lg md:text-xl text-gray-600">¡Estás a mitad de camino! Mantente enfocado y recuerda que cada paso te lleva más cerca de tu meta.</p>
+            <p class="text-lg md:text-xm text-gray-600">¡Estás a mitad de camino! Mantente enfocado y recuerda que cada paso te lleva más cerca de tu meta.</p>
             <!-- fecha de inicio y fin -->
             <div class="flex flex-col md:flex-row justify-around items-center w-full space-y-4 md:space-y-0 md:space-x-8">
               <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
-                <div class="text-lg font-semibold text-gray-800">Inicio</div>
-                <div class="text-1xl text-azul font-bold">{{ startDate }}</div>
+                <div class="text-xm font-semibold text-gray-800">Inicio</div>
+                <div class="text-xl text-azul font-bold">{{ startDate }}</div>
               </div>
               <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center w-full max-w-xs transform transition duration-500 ease-in-out hover:scale-105">
-                <div class="text-lg font-semibold text-gray-800">Fin</div>
-                <div class="text-1xl text-azul font-bold">{{ endDate }}</div>
+                <div class="text-xm font-semibold text-gray-800">Fin</div>
+                <div class="text-xl text-azul font-bold">{{ endDate }}</div>
               </div>
             </div>
             <!-- boton para ir al siguiente paso -->
             <div class="flex justify-center gap-6">
               <button 
-                class="px-6 py-3 w-64 bg-base text-white rounded-lg transition text-lg"
+                class="px-6 py-3 w-54 bg-base text-white rounded-lg transition text-lg"
                 :disabled="documents.length === 0"
                 :class="documents.length === 0 ? 'bg-gray-400 cursor-not-allowed' : 'bg-base hover:bg-azul'"
                 @click="goToConformidadInformeAsesor">Ir a Informe Final
@@ -216,7 +216,7 @@ onMounted(() => {
         
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">Documentos de Proyecto de Investigación</h2>
+            <h2 class="text-xl font-medium text-black">Documentos del proyecto de investigación</h2>
           </div>
           <div class="overflow-x-auto mt-4">
             <DocumentTabla 
