@@ -64,20 +64,22 @@ const obtenerDatosEstudiante = async () => {
   load.value = true;
   try {
     const response = await axios.get(`api/student/get-juries/${authStore.id}`);
-    //console.log(response.data)
-    // if (
-    //   !response.data ||
-    //   !response.data.jurados ||
-    //   response.data.jurados.length === 0
-    // )
+    console.log("Respuesta de la API:", response.data);
 
-    obtener.value = response.data;
-    jurados.value = response.data.jurados.map(
-      (jurado: { rol: string; asesor: string }) => ({
+    if (!response.data || !response.data.jurados || response.data.jurados.length === 0) {
+      alertToast(
+        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
+        "Advertencia",
+        "warning"
+      );
+    } else {
+      // Asignar el estado y otros datos al objeto `obtener`
+      obtener.value = response.data;
+      jurados.value = response.data.jurados.map((jurado: { rol: string; asesor: string }) => ({
         rol: jurado.rol,
         nombre: jurado.asesor,
-      })
-    );
+      }));
+    }
   } catch (error: any) {
     if (error.response && error.response.status === 404) {
       alertToast(
@@ -87,8 +89,7 @@ const obtenerDatosEstudiante = async () => {
       );
     } else {
       alertToast(
-        error.message ||
-          "Error inesperado al obtener los datos de los jurados.",
+        error.message || "Error inesperado al obtener los datos de los jurados.",
         "Error",
         "error"
       );
@@ -97,6 +98,8 @@ const obtenerDatosEstudiante = async () => {
     load.value = false;
   }
 };
+
+
 
 // funcion para solicitar que me asignen jurados
 const solicitarJuradoProyecto = async () => {
@@ -130,7 +133,10 @@ const solicitarJuradoProyecto = async () => {
 
 onMounted(() => {
   obtenerDatosEstudiante();
+  //console.log("Estado del documento:", obtener.value?.estado);
 });
+
+
 </script>
 <template>
   <template v-if="load"><SkeletonDesignarJurados/></template>
@@ -139,7 +145,7 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">
         {{ textoTipiado }}
       </h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-7">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
