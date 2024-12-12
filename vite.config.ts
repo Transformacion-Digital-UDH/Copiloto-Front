@@ -7,20 +7,12 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/titulacion/',
   plugins: [
     vue(),
     vueJsx(),
     vueDevTools(),
   ],
-  server: {
-    proxy: {
-      '/faculty': {
-        target: 'https://titulacion-back.abimaelfv.site',
-        changeOrigin: true,
-        secure: false,
-      }
-    }
-  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

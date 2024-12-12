@@ -29,7 +29,7 @@
 
 <script lang="ts" setup>
 import { computed } from 'vue';
-const BASE_URL = "https://titulacion-back.abimaelfv.site";
+const BASE_URL = import.meta.env.VITE_URI_BACK;
 
 const props = defineProps({
   titulo: {
