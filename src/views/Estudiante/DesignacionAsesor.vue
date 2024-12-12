@@ -678,7 +678,7 @@ const handleNextButtonClick = () => {
                   <!-- Nombre del documento -->
                   <div>
                     <span class="text-gray-700 font-medium">
-                      <!-- {{ oficio.nombre_de_oficio }} Solicitud de resolución de designación de asesor. -->
+                      <!-- {{ oficio.nombre_de_oficio }}  --> SOLICITUD DE RESOLUCIÓN DE DESIGNACIÓN DE ASESOR.
                     </span>
                     <p v-if="oficio.estado === 'observado'" class="text-sm italic text-gray-500">
                       Por favor comuníquese con secretaría del programa académico
@@ -717,7 +717,7 @@ const handleNextButtonClick = () => {
                 <!-- Nombre del documento -->
                 <div>
                 <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                  <!-- {{resolucion.nombre}} resolución de designación de asesor. -->
+                  <!-- {{resolucion.nombre}}  --> RESOLUCIÓN DE DESIGNACIÓN DE ASESOR.
                   <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
                     <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
                   </p>
