@@ -146,14 +146,14 @@ onMounted(() =>{
         <!-- solicitar aprobacion de informe final -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Solicitar aprobación</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación</h2>
               <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />       
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-base">Haz clic en el botón  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
+          <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
+            <strong class="text-green-500 text-sm font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud a la Facultad y al Programa Académico.
           </p>
           <!-- boton para solicitar aprobacion informe final -->
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-5">
             <ButtonRequest 
               label="Solicitar aprobación" 
               :loading="isLoading" 
@@ -165,7 +165,7 @@ onMounted(() =>{
         <!-- documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos que verifican la aprobacion del informe final </h2>
+            <h2 class="text-xl font-medium text-black">2. Documentos que verifican la aprobacion del informe final </h2>
           </div>
           <!-- oficio de programa academico -->
           <div class="mt-4 space-y-4">

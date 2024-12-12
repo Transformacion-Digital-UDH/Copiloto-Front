@@ -12,7 +12,7 @@ import CorrecionTabla from "@/components/CorrecionTabla.vue";
 import DocumentCard from "@/components/DocumentCard.vue";
 
 // ***** Texto que se escribe automáticamente ********
-const text = "Conformidad del Proyecto de Tesis por los Jurados";
+const text = "Conformidad del Proyecto de Investigación por los Jurados";
 const textoTipiado2 = ref("");
 let index = 0;
 const typeWriter = () => {
@@ -218,7 +218,7 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <!-- card para mostrar los jurados y titulo -->
         <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 text-lg text-azul space-y-4 relative">
-          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de tesis. Verifica la información y revisa las actualizaciones.</p>
+          <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de investigación. Verifica la información y revisa las actualizaciones.</p>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <JuradoCard 
               v-for="jurado in jurados"
@@ -276,23 +276,16 @@ onMounted(() => {
         <!-- Revisión de levantamiento de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h4 class="text-2xl font-medium text-black">1. Revisión de observaciones</h4>
-            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
+            <h4 class="text-xl font-medium text-black">1. Revisión de observaciones</h4>
+            <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de investigación con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
-          <p class="text-gray-500 mt-1 text-lg">Si el jurado deja observaciones, el estado será 
-          <strong class="text-[#8898AA] text-lg font-medium">Pendiente</strong>. Corrige las observaciones en Google Docs.
+          <p class="text-gray-500 mt-1 text-sm">Si el jurado deja observaciones el estado será 
+          <strong class="text-gray-400 text-sm font-medium">"Pendiente"</strong>. Corrige las observaciones en Google Docs. Luego de corregir, haz clic en<strong class="text-green-500 text-sm font-medium">“Solicitar revisión”</strong> para una nueva revisión.<br> Cuando los 3 jurados aprueben, el estado cambiará a <strong class="text-green-500 text-sm font-medium">Aprobado</strong>
           </p>
-          <p class="text-gray-500 mt-1 text-lg">Al corregir, haz clic en  
-            <strong class="text-green-500 text-lg font-medium">“Solicitar revisión”</strong> para una nueva revisión.
-          </p>
-          <p class="text-gray-500 mt-1 text-lg">Cuando los 3 jurados aprueben, el estado cambiará a 
-            <strong class="text-green-500 text-lg font-medium">Aprobado</strong>
-          </p>
-
           <!-- Tabla de observaciones Presidente -->
           <div class="overflow-x-auto mt-4">
-            <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado presidente</p>
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado presidente</p>
             <CorrecionTabla
               :revisiones="presidenteRevisiones"
               :loading="loading"
@@ -301,7 +294,7 @@ onMounted(() => {
           </div>
           <!-- Tabla de observaciones Secretario -->
           <div class="overflow-x-auto mt-4">
-            <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado secretario</p>
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado secretario</p>
             <CorrecionTabla 
               :revisiones="secretarioRevisiones"
               :loading="loading"
@@ -310,7 +303,7 @@ onMounted(() => {
           </div>
           <!-- Tabla de observaciones Vocal -->
           <div class="overflow-x-auto mt-4">
-            <p class="text-2xl py-2 text-azul font-bold">Revisiones realizadas por el jurado vocal</p>
+            <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por el jurado vocal</p>
             <CorrecionTabla 
               :revisiones="vocalRevisiones"
               :loading="loading"
@@ -322,7 +315,7 @@ onMounted(() => {
         <!-- documentos de cada jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Documentos de conformidad del proyecto de tesis por los jurados</h2>
+            <h2 class="text-xl font-medium text-black">2. Documentos de conformidad del proyecto de investigación por los jurados</h2>
             <ModalToolTip
             :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
           </div>

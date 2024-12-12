@@ -1,12 +1,12 @@
 <template>
-  <div v-if="data" class="bg-baseClarito rounded-lg shadow-lg text-lg text-azul w-full p-6">
+  <div v-if="data" class="bg-baseClarito rounded-lg shadow-lg text-xm text-azul w-full p-6">
     <div class="space-y-4 relative max-w-[820px] w-full mx-auto">
       <!-- Información del Asesor -->
       <div class="grid grid-cols-1 gap-6">
         <div class="bg-white rounded-lg p-4 flex flex-col items-center shadow-lg w-full">
-          <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
-          <p class="font-bold text-xl text-azul">Asesor</p>
-          <p class="text-gray-600 text-center uppercase">
+          <i class="fas fa-user-tie text-azul text-2xl mb-3"></i>
+          <p class="font-bold text-xm text-azul">Asesor</p>
+          <p class="text-gray-600 text-center uppercase text-sm">
             {{ data.asesor || 'Asesor no asignado' }}
           </p>
         </div>
@@ -14,7 +14,11 @@
 
       <!-- Título -->
       <div class="bg-white rounded-lg p-6 shadow-lg max-w-[820px] w-full mx-auto">
-        <p class="max-full text-xm text-gray-600 uppercase text-center">
+        <div class="flex py-2 px-2">
+          <i class="fa-regular fa-file text-azul text-2xl mb-3"></i>
+          <p class="font-bold text-xm text-azul"> Título provisional</p>
+        </div>
+        <p class="max-full text-sm text-gray-600 uppercase text-center">
           {{ data.titulo || 'Título no asignado' }}
         </p>
       </div>

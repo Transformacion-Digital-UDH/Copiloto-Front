@@ -16,7 +16,7 @@
           <a
             :href="view"
             target="_blank"
-            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-200 w-full md:w-auto justify-center">
+            class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
             <i class="fas fa-eye mr-2"></i> Ver
           </a>
         </div>
@@ -62,7 +62,7 @@ const formatearTexto = (text: string): string =>
   color: #ffffff;
 }
 .estado-aprobado {
-  background-color: #38a169;
+  background-color: #39B49E;
   color: #ffffff;
 }
 </style>

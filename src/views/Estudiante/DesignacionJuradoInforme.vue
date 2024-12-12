@@ -199,14 +199,14 @@ onMounted(() => {
         <!-- solicitar designacion de jurados IF -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-2xl font-medium text-black">1. Solicitar designación de jurados</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar designación de jurados</h2>
             <ModalToolTip :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />               
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-lg">Haz clic en el botón  
-            <strong class="text-green-500 text-lg font-medium">"Solicitar jurados"</strong> para la designación de jurados.
+          <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
+            <strong class="text-green-500 text-sm font-medium">"Solicitar jurados"</strong> para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-4">
             <ButtonRequest 
               label="Solicitar jurados" 
               :loading="isLoading" 
@@ -218,7 +218,7 @@ onMounted(() => {
         <!-- jurados designados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">2. Tus jurados designados son:</h2>
+            <h2 class="text-xl font-medium text-black">2. Los jurados designados para tu informe final son:</h2>
           </div>
           <div class="overflow-x-auto mt-4 flex justify-center">
             <JuradoTabla :jurados="jurados"/>
@@ -228,13 +228,13 @@ onMounted(() => {
         <!-- se muestra oficio y resolucion de cada area -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-2xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
+            <h2 class="text-xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
             <ModalToolTip :infoModal="[{ info: 'Estos son los documentos oficiales con los jurados designados. Asegúrate de revisarlos antes de continuar.' },]" />                   
           </div>
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Oficio emitido por el Programa Académico."
+              titulo="Solicitud de resolución de designación de jurados para el informe final."
               :estado="obtener?.oficio.of_estado || ''"
               :id="obtener?.oficio.of_id ?? ''"
               :view="VIEW_OFINFORME"
@@ -244,7 +244,7 @@ onMounted(() => {
           <!-- resolucion de facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Resolución de Designación de Jurados."
+              titulo="Resolución de designación de jurados para el informe final."
               :estado="obtener?.resolucion.of_estado || ''"
               :id="obtener?.resolucion.of_id ?? ''"
               :observacion="obtener?.resolucion.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
