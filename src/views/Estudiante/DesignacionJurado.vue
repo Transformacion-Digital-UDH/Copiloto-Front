@@ -70,8 +70,7 @@ const obtenerDatosEstudiante = async () => {
       alertToast(
         "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
         "Advertencia",
-        "warning",
-        { timer: 2000 }
+        "warning"
       );
     } else {
       // Asignar el estado y otros datos al objeto `obtener`
@@ -99,6 +98,7 @@ const obtenerDatosEstudiante = async () => {
     load.value = false;
   }
 };
+
 
 
 // funcion para solicitar que me asignen jurados
