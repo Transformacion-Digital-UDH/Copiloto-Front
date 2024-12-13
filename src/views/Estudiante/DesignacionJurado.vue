@@ -130,7 +130,7 @@ const solicitarJuradoProyecto = async () => {
     isLoading.value = false;
   }
 };
-
+ 
 onMounted(() => {
   obtenerDatosEstudiante();
   //console.log("Estado del documento:", obtener.value?.estado);
@@ -145,7 +145,7 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">
         {{ textoTipiado }}
       </h3>
-      <div class="mt-6 space-y-7">
+      <div class="mt-6 space-y-8">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">

@@ -19,7 +19,7 @@
 
         <!-- Nombre del jurado -->
         <!-- <p class="text-lg font-semibold text-azul"> Apellido y Nombre</p> -->
-        <p class="text-sm font-medium text-gray-700 capitalize">{{ jurado.nombre }}</p>
+        <p class="text-sm font-medium text-gray-700  uppercase">{{ jurado.nombre }}</p>
       </div>
     </div>
     </template>
