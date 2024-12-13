@@ -51,6 +51,7 @@ const isAprobacionDisabled = computed(() => {
 });
 
 interface Estudiante {
+  titulo: string;
   estudiante_id: string;
   oficio_id: string;
   oficio_estado: string;
@@ -62,9 +63,8 @@ interface Estudiante {
 
 const obtenerDatosEstudiante = async () => {
   load.value = true;
-  const student_id = authStore.id
   try {
-    const response = await axios.get(`${VITE_URL_OBTAINED_INFO}/${student_id}`);
+    const response = await axios.get(`${VITE_URL_OBTAINED_INFO}/${authStore.id}`);
     obtener.value = response.data;
     tituloActual.value = response.data.titulo;
   } catch (error: any) {
@@ -104,9 +104,8 @@ function manejarCambioTitulo(nuevoTitulo: string) {
 const solicitarAprobacionProyecto = async () => {
   isLoading.value = true;
   const student_id = authStore.id;
-  console.log("authStore.id:", authStore.id);
   try {
-    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
+    const response = await axios.post(`${VITE_URL_CHANGE_INFO}/${student_id}`);
     // console.log("Mostrando lo recibido: ", response);
 
     if (response.data.estado) {

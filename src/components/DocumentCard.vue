@@ -106,6 +106,10 @@ const generateURL = (view: string, id: string): string => {
   background-color: #8898aa;
   color: #ffffff;
 }
+.estado-no-iniciado {
+  background-color: #8898aa;
+  color: #ffffff;
+}
 .estado-aprobado {
   background-color: #39b49e;
   color: #ffffff;
