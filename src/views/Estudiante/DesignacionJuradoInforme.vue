@@ -171,7 +171,7 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-8">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
@@ -264,7 +264,7 @@ onMounted(() => {
             :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled 
             ? 'bg-gray-300 cursor-not-allowed' 
             : 'bg-green-500 hover:bg-green-600',]">Siguiente
-          </button>
+          </button> 
         </div>
 
           <!-- Card 4: Solicitar cambio de jurado

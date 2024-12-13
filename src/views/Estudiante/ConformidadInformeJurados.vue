@@ -209,9 +209,9 @@ onMounted(() => {
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
     <div class="space-y-8">
       <!-- card para mostrar jurados y titulo -->
-      <div v-if="obtener" class=" text-azul space-y-2 relative">
+      <div v-if="obtener" class=" text-azul  bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
         <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu informe. Verifica la información y revisa las actualizaciones.</p>
-        <!-- para mostrar jurados -->
+        <div  class=" text-xm text-azul space-y-4 relative"><!-- para mostrar jurados -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <JuradoCard
             v-for="jurado in jurados"
@@ -238,7 +238,8 @@ onMounted(() => {
                   {{ obtener?.titulo || 'Título no asignado' }}
                 </p>
               </div>
-            </div>       
+        </div>  
+      </div>     
       </div>
 
       <!-- revisiones de cada jurado P,S y V -->

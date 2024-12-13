@@ -163,7 +163,7 @@ onMounted(() => {
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
+        <div v-if="obtener" class="bg-white rounded-lg shadow-lg p-6 relative">
           <!-- mostrar jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <JuradoCard
@@ -187,7 +187,7 @@ onMounted(() => {
             <strong class="text-base text-sm font-medium">"Solicitar fecha y hora"</strong> para solicitar la fecha y hora asignadas para la sustentación.
           </p>
           <!-- boton de solicitud fecha y hora --> 
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-4">
             <ButtonRequest 
               label="Solicitar fecha y hora" 
               :loading="isLoading" 

@@ -10,7 +10,7 @@ import DocumentCard from '@/components/DocumentCard.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
 
 // extrayendo funcionn del composable
-const { textoTipiado, typeWriter } = useTypewriter("Sustentación");
+const { textoTipiado, typeWriter } = useTypewriter("Sustentación de tesis");
 onMounted(typeWriter);
 
 // const handleNextButtonClick = () => {
@@ -110,19 +110,19 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- mistrar fecha y hora de sustentacion final -->
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
+        <div v-if="obtener" class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <!-- fecha de susnteacion -->
-            <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
-              <i class="fas fa-calendar-alt text-blue-500 text-3xl mb-4"></i>
-              <p class="text-lg font-semibold text-azul mb-2">Fecha de Sustentación</p>
-              <p class="text-gray-600 text-lg">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</p>
+            <div class="bg-white border rounded-lg p-6 flex flex-col items-center shadow-lg w-full border-gray-300">
+              <i class="fas fa-calendar-alt text-[#39B49E] text-3xl mb-4"></i>
+              <p class="text-lg font-semibold text-azul mb-2">Fecha y hora de sustentación</p>
+              <p class="text-gray-700 text-lg font-medium">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</p>
             </div>
             <!-- nota de sustneacion -->
-            <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
-              <i class="fas fa-star text-yellow-500 text-3xl mb-4"></i>
-              <p class="text-lg font-semibold text-azul mb-2">Nota de Sustentación</p>
-              <p class="text-gray-600 text-lg">{{ obtener?.sus_nota || 'Nota no asignada' }}</p>
+            <div class="bg-white border rounded-lg p-6 flex flex-col items-center shadow-lg w-full border-gray-300">
+              <i class="fas fa-star text-[#39B49E] text-3xl mb-4"></i>
+              <p class="text-lg font-semibold text-azul mb-2">Nota de sustentación</p>
+              <p class="text-gray-700 text-lg font-medium">{{ obtener?.sus_nota || 'Nota no asignada' }}</p>
               <!-- barra de la ntoa -->
               <div class="relative w-full bg-gray-200 h-4 rounded-full overflow-hidden mt-4 progress-bar">
                 <div
@@ -145,7 +145,7 @@ onMounted(() => {
           </div>
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Carta de Conformidad de Sustentación"
+              titulo="ACTA DE SUSTENTACIÓN DE TESIS PARA OPTAR EL TÍTULO PROFESIONAL"
               :estado="obtener?.sus_estado || ''"
               :id="obtener?.sus_id ?? ''"
               :view="VIEW_SUS"
