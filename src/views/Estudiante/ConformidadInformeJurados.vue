@@ -291,7 +291,7 @@ onMounted(() => {
         <!-- informe de conformidad del presidnetne -->
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad - Presidente"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL JURADO PRESIDENTE"
             :estado="obtenerEstadoDocumento(presidenteRevisiones[0]?.estado || '')"
             :id="presidente_id"
             :view="VIEW_CPA"
@@ -300,7 +300,7 @@ onMounted(() => {
         <!-- informe de conformidad del sercretario -->
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad - Secretario"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL JURADO SECRETARIO"
             :estado="obtenerEstadoDocumento(secretarioRevisiones[0]?.estado || '')"
             :id="secretario_id"
             :view="VIEW_CPA"
@@ -309,7 +309,7 @@ onMounted(() => {
         <!-- informe de conformidad del vocal -->
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad - Vocal"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL JURADO VOCAL"
             :estado="obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '')"
             :id="vocal_id"
             :view="VIEW_CPA"
