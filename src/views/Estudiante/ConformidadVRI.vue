@@ -280,7 +280,7 @@ onMounted(() => {
               <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
                 <div class="flex items-center space-x-4 text-gray-700 font-medium">
                 <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
-                <span class="flex-1 text-xm bg-gray-50">VERIFICACIÓN DE DOCUMENTOS</span>
+                <span class="flex-1 text-sm bg-gray-50">VERIFICACIÓN DE DOCUMENTOS</span>
                 </div>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
