@@ -7,7 +7,7 @@
         <i class="fas fa-file-alt text-[#39B49E] text-xl sm:text-2xl mr-2"></i>
         <span class="text-sm sm:text-md font-medium break-all text-left text-gray-700">
           {{ titulo }}
-        </span>
+        </span>   
       </div>
 
       <!-- Sección derecha: Botón "Ver" y estado -->
@@ -99,7 +99,12 @@ const generateURL = (view: string, id: string): string => {
 }
 
 .estado-aprobado {
-  background-color: #39b49e;
+  background-color: #38a169;
+  color: #ffffff;
+}
+
+.estado-emitido {
+  background-color: #38a169;
   color: #ffffff;
 }
 

@@ -145,16 +145,16 @@ onMounted(() => {
         <!-- solicitar declracion apto para suistentar -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-xl font-medium text-black">1. Solicitar oficio para sustentar</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar declaración como apto para sustentar</h2>
             <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
-            <strong class="text-green-500 text-sm font-medium">"Solicitar Oficio de Apto"</strong> para solicitar la aprobación necesaria para sustentar.
+            <strong class="text-green-500 text-sm font-medium">"Solicitar declaración como apto"</strong> para solicitar la aprobación necesaria para sustentar.
           </p>
           <!-- boton para solicitar apto para sustentar -->
           <div class="flex justify-center mt-4">
             <ButtonRequest 
-              label="Solicitar oficio de apto" 
+              label="Solicitar declaración como apto" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 
               @click="solicitarAptoSustentar" />
@@ -164,14 +164,14 @@ onMounted(() => {
         <!-- documentos -->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
             <div class="flex items-center">
-              <h2 class="text-xl font-medium text-black">2. Documentos para la sustentación</h2>
+              <h2 class="text-xl font-medium text-black">2. Documentos de declaración como apto para sustentar</h2>
               <ModalToolTip 
                 :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
             </div>
             <!-- oficio de PAISI -->
             <div class="mt-4 space-y-4">
               <DocumentCard 
-                  titulo="Oficio emitido por el Programa Académico."
+                  titulo="OFICIO PARA DECLARAR APTO PARA LA SUSTENTACION DE TESIS"
                   :estado="obtener?.oficio_estado || ''"
                   :id="obtener?.oficio_id ?? ''"
                   :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría PAISI'"
@@ -182,7 +182,7 @@ onMounted(() => {
             <!-- resolución de Facultad -->
             <div class="mt-4 space-y-4">
               <DocumentCard 
-                  titulo="Resolución de Declaración de Apto para Sustentación."
+                  titulo="RESOLUCION PARA DECLARAR APTO PARA LA SUSTENTACION DE TESIS"
                   :estado="obtener?.resolucion_estado || ''"
                   :id="obtener?.resolucion_id ?? ''"
                   :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
