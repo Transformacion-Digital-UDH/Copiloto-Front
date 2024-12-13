@@ -272,13 +272,13 @@ onMounted(() => {
         <!-- documentos de cada filtro del VRI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
-            <h2 class="text-xl font-medium text-black">3. Documentos de cada filtro del VRI</h2>
+            <h2 class="text-xl font-medium text-black">3. Documentos para la conformidad de integridad por el  vicerrectorado de investigación.</h2>
           </div>
 
           <div class="mt-4 space-y-4">
             <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
               <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
-                <span class="flex-1 text-xm bg-gray-50">Primer Filtro - VRI.</span>
+                <span class="flex-1 text-xm bg-gray-50">VERIFICACIÓN DE DOCUMENTOS</span>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
                   <span v-else class="text-gray-500 italic text-sm">Solicitud en espera</span>
@@ -293,13 +293,13 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <!-- segundo filtro -->
             <DocumentCurso
-              :titulo="'Segundo Filtro - VRI.'"
+              :titulo="'CONSTANCIA DE BUENAS PRÁCTICAS.'"
               :estado="segundoFiltro.fil_estado"
               :view="segundoFiltro.fil_ruta"/>
 
             <!-- tercer filtro -->
             <DocumentCurso
-              :titulo="'Tercer Filtro - VRI.'"
+              :titulo="'CONSTANCIA DE ORIGINALIDAD.'"
               :estado="tercerFiltro.fil_estado"
               :view="tercerFiltro.fil_ruta"/>
           </div>
