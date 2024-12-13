@@ -146,7 +146,7 @@ onMounted(() =>{
         <!-- solicitar aprobacion de informe final -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center space-x-3">
-            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación del informe final por la facultad</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación de informe final del proyecto de investigación por la facultad</h2>
               <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />       
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
