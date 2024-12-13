@@ -51,8 +51,8 @@ const jurados = ref<{ rol: string; nombre: string }[]>([]);
 
 const VIEW_OFINFORME = import.meta.env.VITE_URL_VIEW_OFINFORME;
 const DOWNLOAD_OFINFORME = import.meta.env.VITE_URL_DOWNLOAD_OFINFORME;
-const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RINFORME;
-const DOWNLOAD_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RINFORME;
+const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RJURADOINFORME;
+const DOWNLOAD_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RJURADOINFORME;
 
 // para que el botón quede deshabilitado
 const bloquear = ['pendiente', 'observado', 'tramitado']
