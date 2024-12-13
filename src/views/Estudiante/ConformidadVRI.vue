@@ -293,13 +293,13 @@ onMounted(() => {
           <div class="mt-4 space-y-4">
             <!-- segundo filtro -->
             <DocumentCurso
-              :titulo="'CONSTANCIA DE BUENAS PRÁCTICAS.'"
+              :titulo="'CONSTANCIA DE BUENAS PRÁCTICAS'"
               :estado="segundoFiltro.fil_estado"
               :view="segundoFiltro.fil_ruta"/>
 
             <!-- tercer filtro -->
             <DocumentCurso
-              :titulo="'CONSTANCIA DE ORIGINALIDAD.'"
+              :titulo="'CONSTANCIA DE ORIGINALIDAD'"
               :estado="tercerFiltro.fil_estado"
               :view="tercerFiltro.fil_ruta"/>
           </div>

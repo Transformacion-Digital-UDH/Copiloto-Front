@@ -244,7 +244,7 @@ onMounted(() => {
           <!-- resolucion de facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="RESOLUCION DE DESIGNACION DE JURADOS REV. PARA EL INF.FINAL DEL TRAB. INV.(TESIS) - POR LA FACULTAD."
+              titulo="RESOLUCION DE DESIGNACION DE JURADOS REV. PARA EL INF.FINAL DEL TRAB. INV.(TESIS) - POR LA FACULTAD"
               :estado="obtener?.resolucion.of_estado || ''"
               :id="obtener?.resolucion.of_id ?? ''"
               :observacion="obtener?.resolucion.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"

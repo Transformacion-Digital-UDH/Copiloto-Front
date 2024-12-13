@@ -170,7 +170,7 @@ onMounted(() =>{
           <!-- oficio de programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Oficio emitido por el Programa Académico."
+              titulo="Oficio emitido por el Programa Académico"
               :estado="obtener?.oficio_estado || ''"
               :id="obtener?.oficio_id ?? ''"
               :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
@@ -181,7 +181,7 @@ onMounted(() =>{
           <!-- resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Resolución emitido por la Facultad."
+              titulo="Resolución emitido por la Facultad"
               :estado="obtener?.resolucion_estado || ''"
               :id="obtener?.resolucion_id ?? ''"
               :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
