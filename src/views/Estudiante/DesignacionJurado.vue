@@ -12,6 +12,7 @@ import JuradoTabla from "@/components/JuradoTabla.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonDesignarJurados from "@/components/SkeletonDesignarJurados.vue";
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 
 // extrayendo funcionn del composable
@@ -26,6 +27,39 @@ const solicitarCambioJurado = (jurado: any) => {
   alert(`Has solicitado el cambio del jurado: ${jurado.nombre}`);
   // Aquí puedes agregar la lógica adicional para solicitar el cambio del jurado
 };
+
+const estadoBolitaJurados = computed(() => {
+  if (isSolicitarDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para determinar el estado de la bolita
+const estadoBolitaJuradosCargados = computed(() => {
+  return jurados.value.length > 0 ? "hecho" : "pendiente";
+});
+
+// Computed para manejar el estado de la bolita en esta sección (documento)
+const estadoDocumentoJurado = computed(() => {
+  const estadoDoc = obtener.value?.estado ?? '';
+
+  // Si el estado es "aprobado", la bolita debe mostrar "aprobado"
+  if (estadoDoc === "tramitado") {
+    return "tramitado";
+  }
+
+  // Si el estado es "observado", la bolita debe mostrar "observado"
+  if (estadoDoc === "observado") {
+    return "observado";
+  }
+
+  // Por defecto, si no es aprobado ni observado, mostrar "pendiente"
+  return "pendiente";
+});
+
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -99,8 +133,6 @@ const obtenerDatosEstudiante = async () => {
   }
 };
 
-
-
 // funcion para solicitar que me asignen jurados
 const solicitarJuradoProyecto = async () => {
   isLoading.value = true;
@@ -172,7 +204,8 @@ onMounted(() => {
         </div> -->
         <!-- solicitar designacion de jurados PY -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaJurados" />
             <h2 class="text-xl font-medium text-black">
               1. Solicitar designación de jurados
             </h2>
@@ -204,7 +237,8 @@ onMounted(() => {
 
         <!-- jurados designados por el decano -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaJuradosCargados" />
             <h2 class="text-xl font-medium text-black">
               2. Los jurados designados para tu proyecto de investigación son:
             </h2>
@@ -217,8 +251,8 @@ onMounted(() => {
         <!-- se muestra oficio mutiple -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
-            <div class="flex items-center">
-
+            <div class="flex items-center space-x-3">
+              <EstadoBolita :estado="estadoDocumentoJurado" />
               <h2 class="text-xl font-medium text-black">
                 3. Documento para la designación de jurados de proyecto de investigación
 
