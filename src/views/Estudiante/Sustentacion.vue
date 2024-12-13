@@ -8,6 +8,7 @@ import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Sustentación de tesis");
@@ -33,6 +34,23 @@ onMounted(typeWriter);
 // const isNextButtonDisabled = computed(() => {
 //   return obtener.value?.revision?.rev_estado !== 'aprobado';
 // });
+
+
+// Computed para manejar el estado de la bolita del acta de sustentación
+const estadoBolitaActaSustentacion = computed(() => {
+  const estadoActa = obtener.value?.sus_estado || "pendiente";
+
+  if (estadoActa === "observado") {
+    return "observado";
+  }
+
+  if (estadoActa === "aprobado") {
+    return "hecho";
+  }
+
+  return "pendiente"; // Valor por defecto
+});
+
 
 /****************************** INTEGRACION CON EL BACKEND *********************************** */
 const authStore = useAuthStore();
@@ -138,7 +156,8 @@ onMounted(() => {
         <!-- docuemnto de informe de conformidad de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
-            <div class="flex items-center">
+            <div class="flex items-center space-x-3">
+              <EstadoBolita :estado="estadoBolitaActaSustentacion" />
               <h2 class="text-xl font-medium text-black">1. Acta de sustentación de tesis</h2>
               <ModalToolTip :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la sustentación' },]" />
             </div>            

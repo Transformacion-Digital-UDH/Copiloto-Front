@@ -10,6 +10,7 @@ import JuradoCard from '@/components/JuradoCard.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import CorrecionTabla from '@/components/CorrecionTabla.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Conformidad del Informe Final por los Jurados");
@@ -34,6 +35,64 @@ const goToNextPage = () => {
 
 const isNextButtonDisabled = computed(() => {
   return obtener.value?.estado_general !== 'aprobado';
+});
+
+const estadoBolitaObservaciones = computed(() => {
+  const estados = [
+    ...presidenteRevisiones.value.map(revision => revision.estado),
+    ...secretarioRevisiones.value.map(revision => revision.estado),
+    ...vocalRevisiones.value.map(revision => revision.estado),
+  ];
+
+  // Si no hay revisiones en ninguna tabla, retornar "pendiente"
+  if (estados.length === 0) {
+    return "pendiente";
+  }
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "aprobado"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "aprobado";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
+
+// Computed para manejar el estado de las actas de conformidad
+const estadoBolitaActas = computed(() => {
+  const estados = [
+    presidenteRevisiones.value[0]?.estado || "pendiente", // Accede al valor usando `.value`
+    secretarioRevisiones.value[0]?.estado || "pendiente",
+    vocalRevisiones.value[0]?.estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "hecho"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
 });
 
 //*********************************** INTEGRACIÓN CON EL BACKEND PARA CONFORMIDAD DE IF *************************************************** */
@@ -244,7 +303,8 @@ onMounted(() => {
 
       <!-- revisiones de cada jurado P,S y V -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="relative flex items-center">
+        <div class="relative flex items-center space-x-3">
+          <EstadoBolita :estado="estadoBolitaObservaciones" />
           <h4 class="text-xl font-medium text-black">1. Revisión de observaciones</h4>
             <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tus jurados, hasta que esté todo conforme.' },]" />
         </div>
@@ -284,7 +344,8 @@ onMounted(() => {
 
       <!-- documentos de cada jurado revisor -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
+        <div class="flex items-center space-x-3">
+          <EstadoBolita :estado="estadoBolitaActas" />
           <h2 class="text-2xl font-medium text-black">2. Documentos de conformidad del informe final por los jurados</h2>
           <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />
         </div>
