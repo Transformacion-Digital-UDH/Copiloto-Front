@@ -11,16 +11,17 @@
             class="px-4 py-2 w-28 text-center text-white rounded-md text-md transition bg-base hover:bg-azul">Ir al curso
           </a>
         </div>
-        <!-- para ver documetno -->
-        <div v-if="estado === 'aprobado'" class="flex items-center space-x-4">
+        <!-- Botón Ver -->
+        <div v-if="estado === 'tramitado' || estado === 'aprobado' || estado === 'emitido'">
           <a
             :href="view"
             target="_blank"
-            class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
-            <i class="fas fa-eye mr-2"></i> Ver
+            class="flex items-center m-2 relative group">
+            <IconEyeCerrar class="mr-1 group-hover:hidden" />
+            <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+            <span class="text-[#34495e]">Ver</span>
           </a>
         </div>
-
         <span :class="`estado-estilo estado-${estado.toLowerCase().replace(' ', '-')}`">
           {{ formatearTexto(estado) }}
         </span>
@@ -30,6 +31,8 @@
 </template>
 
 <script lang="ts" setup>
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 const props = defineProps({
   titulo: {
     type: String,
