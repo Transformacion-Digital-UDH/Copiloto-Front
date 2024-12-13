@@ -171,7 +171,7 @@ onMounted(() => {
           </p>
         <!-- Tabla de observaciones -->
         <div class="overflow-x-auto mt-4">
-          <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por tu docente asesor</p>
+          <p class="text-lg py-2 text-azul text-center font-bold"> <i class="fas fa-edit"></i> Revisiones realizadas por tu asesor designado</p>
           <CorrecionAsesor 
             :revisiones="obtener?.revision ? [obtener.revision] : []"
             @actualizarEstado="actualizarEstadoRevision"/>
@@ -182,13 +182,13 @@ onMounted(() => {
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center">
           <div class="flex items-center">
-            <h2 class="text-xl font-medium text-black">3. Documento de conformidad del informe final</h2>
+            <h2 class="text-xl font-medium text-black">3. Documento de conformidad del asesor para el informe final del proyecto de investigación </h2>
             <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
         </div>
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Acta de conformidad del informe final - por el asesor"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL - POR EL ASESOR"
             :estado="['aprobado'].includes(obtener?.revision?.rev_estado ?? '') ? obtener?.revision?.rev_estado ?? '' : ''"
             :id="obtener?.revision?.rev_id ?? ''"
             :view="VIEW_CPA"
