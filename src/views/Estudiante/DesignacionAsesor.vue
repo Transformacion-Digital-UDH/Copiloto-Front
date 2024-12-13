@@ -634,7 +634,7 @@ onMounted(() => { getTitulo(); });
               </span>
               <!-- Título -->
               <h2 class="text-xl font-medium text-black">
-                2. Documentos para la conformidad de designación de asesor
+                2. Documentos para la designación de asesor del proyecto de investigación
               </h2>
               <!-- Tooltip -->
               <ModalToolTip :infoModal="[{
@@ -656,8 +656,8 @@ onMounted(() => { getTitulo(); });
                   <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
                   <!-- Nombre del documento -->
                   <div>
-                    <span class="text-gray-700 font-medium">
-                      <!-- {{ oficio.nombre_de_oficio }}  --> SOLICITUD DE RESOLUCIÓN DE DESIGNACIÓN DE ASESOR
+                    <span class="text-gray-700 font-medium text-sm">
+                      <!-- {{ oficio.nombre_de_oficio }}  --> OFICIO DE DESIGNACION DE DOCENTE ASESOR PARA TRABAJO DE INVESTIGACION - POR EL PROGRAMA ACADEMICO
                     </span>
                     <p v-if="oficio.estado === 'observado'" class="text-sm italic text-gray-500">
                       Por favor comuníquese con secretaría del programa académico
@@ -693,8 +693,8 @@ onMounted(() => { getTitulo(); });
                   <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
                   <!-- Nombre del documento -->
                   <div>
-                    <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                      <!-- {{resolucion.nombre}}  --> RESOLUCIÓN DE DESIGNACIÓN DE ASESOR
+                    <span class="w-full md:w-auto mb-2 md:mb-0 text-sm">
+                      <!-- {{resolucion.nombre}}  --> RESOLUCION DE DESIGNACION DE DOCENTE ASESOR PARA TRABAJO DE INVESTIGACION - POR LA FACULTAD
                       <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
                         <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
                       </p>
