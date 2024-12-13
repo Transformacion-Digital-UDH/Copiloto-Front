@@ -93,7 +93,7 @@ const estadoBolitaDesignacionJurados = computed(() => {
   }
 
   // Si todos los estados son "aprobado", retornar "hecho"
-  if (estados.every(estado => estado === "aprobado")) {
+  if (estados.every(estado => estado === "tramitado")) {
     return "hecho";
   }
 
