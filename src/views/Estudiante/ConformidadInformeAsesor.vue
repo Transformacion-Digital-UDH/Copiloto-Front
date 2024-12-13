@@ -141,7 +141,7 @@ onMounted(() => {
       <!-- solicitar correcion al asesor IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="relative flex items-center">
-          <h2 class="text-xl font-medium text-black">1. Correcciones con tu asesor</h2>
+          <h2 class="text-xl font-medium text-black">1. Solicitar revisión a tu asesor</h2>
           <ModalToolTip :infoModal="[{ info: 'Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
         </div>
         <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en  
