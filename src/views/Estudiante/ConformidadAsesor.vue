@@ -235,7 +235,7 @@ onMounted(() => {
           <div class="flex items-center space-x-3">
             <EstadoBolita :estado="estadoBoton" />
             <h2 class="text-xl font-medium text-black">
-              1.  Solicitar correcciones a tu asesor
+              1.  Solicitar revisión a tu asesor
             </h2>
             <ModalToolTip
               :infoModal="[
@@ -326,7 +326,7 @@ onMounted(() => {
                   ? obtener?.revision?.estado ?? ''
                   : ''
               "
-              :id="obtener?.revision?.estudiante_id ?? ''"
+              :id="obtener?.revision?.revision_id ?? ''"
               :view="VIEW_CPA"
               :download="DOWNLOAD_CPA"
             />  
