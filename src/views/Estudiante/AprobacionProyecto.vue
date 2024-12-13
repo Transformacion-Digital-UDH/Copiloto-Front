@@ -12,12 +12,54 @@ import DocumentCard from '@/components/DocumentCard.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
 import NavigationButton from '@/components/NavigationButton.vue';
 import modalCambioTitulo from '@/components/modalCambioTitulo.vue';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter(
   "Aprobación del Proyecto de Investigación"
 );
 onMounted(typeWriter);
+
+const estadoBolitaAprobacion = computed(() => {
+  if ( isAprobacionDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para manejar el estado de la bolita de los documentos
+const estadoBolitaDocumentos = computed(() => {
+  // Asegurarse de que 'obtener.value' no sea null
+  if (!obtener.value) {
+    return "pendiente"; // Valor por defecto si 'obtener' es null
+  }
+
+  const estados = [
+    obtener.value.oficio_estado || "pendiente", // Usar '.value' para acceder al contenido del Ref
+    obtener.value.resolucion_estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "hecho"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
+
 
 /*************************************** INTEGRACION CON EL BACKEND PARA APROBACION DE PROYECTO ************************************************ */
 const load = ref(false);
@@ -172,7 +214,8 @@ onMounted(async () => {
 
         <!-- solicitar aprobacion de proyecto de investigacion y cambio de titulo-->
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-9">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaAprobacion" />
             <h2 class="text-xl font-medium text-black">1. Solicitar aprobación para el cambio de título</h2>
             <ModalToolTip
               :infoModal="[{ info: 'Este título ya no lo podrás cambiar posteriormente y se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
@@ -191,7 +234,8 @@ onMounted(async () => {
 
       <!-- documentos -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
+        <div class="flex items-center space-x-3">
+          <EstadoBolita :estado="estadoBolitaDocumentos" />
           <h2 class="text-xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis
           </h2>
         </div>

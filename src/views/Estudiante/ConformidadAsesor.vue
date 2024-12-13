@@ -14,6 +14,7 @@ import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonConformidadesAsesor from "@/components/SkeletonConformidadesAsesor.vue";
 import InfoCardConformidad from "@/components/InfoCardConformidad.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter(
@@ -25,6 +26,46 @@ const capitalizarEstado = (estado: string): string => {
   if (!estado) return "Pendiente";
   return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
 };
+
+// Computed para manejar el estado de la bolita
+const estadoBoton = computed(() => {
+  if (isRevisionDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+  
+// Computed para manejar el estado de la bolita en esta sección
+const estadoRevisiones = computed(() => {
+  if (obtener.value?.revision?.estado === "aprobado") {
+    return "aceptado"; // Estado cuando el proyecto es aprobado
+  } else if (obtener.value?.revision?.estado === "observado") {
+    return "observado"; // Estado cuando hay observaciones
+  }
+  return "pendiente"; // Valor por defecto cuando no hay revisión o está pendiente
+});
+
+// Computed para manejar el estado de la bolita en esta sección (documento)
+const estadoDocumento = computed(() => {
+  const estadoRevision = obtener.value?.revision?.estado ?? '';
+
+  // Si el estado es pendiente, la bolita debe mostrar "pendiente"
+  if (estadoRevision === "aprobado") {
+    return "aprobado";
+  }
+
+  // Si el estado es observado, la bolita debe mostrar "observado"
+  if (estadoRevision === "observado") {
+    return "observado";
+  }
+
+  // Si el estado es aprobado, la bolita debe mostrar "hecho"
+  return "pendiente";
+});
+
+
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 const authStore = useAuthStore();
 const solicitudEstado = ref("");
@@ -191,7 +232,8 @@ onMounted(() => {
 
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center ">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBoton" />
             <h2 class="text-xl font-medium text-black">
               1.  Solicitar correcciones a tu asesor
             </h2>
@@ -223,7 +265,8 @@ onMounted(() => {
 
         <!-- revision del asesor para PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center  space-x-3">
+            <EstadoBolita :estado="estadoRevisiones" />
             <h4 class="text-xl font-medium text-black">
               2. Revisión de observaciones
             </h4>
@@ -261,7 +304,8 @@ onMounted(() => {
         <!--  informe de conformidad de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center relative">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between space-x-3">
+              <EstadoBolita :estado="estadoDocumento" />
               <h2 class="text-xl font-medium text-black">
                 3. Documento de conformidad del proyecto de investigación
               </h2>

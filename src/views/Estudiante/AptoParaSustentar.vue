@@ -9,6 +9,7 @@ import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Declaración de Apto para Sustentar");
@@ -34,6 +35,42 @@ const goToNextPage = () => {
 const isNextButtonDisabled = computed(() => {
   return obtener.value?.oficio_estado !== 'tramitado' || obtener.value.resolucion_estado !== 'tramitado';
 });
+
+const estadoBolitaAptoSustentar = computed(() => {
+  if (isSolicitarDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para manejar el estado de la bolita de los documentos de apto para sustentar
+const estadoBolitaAptoDocumentos = computed(() => {
+  const estados = [
+    obtener.value?.oficio_estado || "pendiente",
+    obtener.value?.resolucion_estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "hecho"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
+
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -144,7 +181,8 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <!-- solicitar declracion apto para suistentar -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaAptoSustentar" />
             <h2 class="text-xl font-medium text-black">1. Solicitar declaración como apto para sustentar</h2>
             <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />                
           </div>
@@ -163,7 +201,9 @@ onMounted(() => {
 
         <!-- documentos -->
           <div class="bg-white rounded-lg shadow-lg p-6 relative">
-            <div class="flex items-center">
+            <div class="flex items-center space-x-3">
+              <EstadoBolita :estado="estadoBolitaAptoDocumentos" />
+
               <h2 class="text-xl font-medium text-black">2. Documentos de declaración como apto para sustentar</h2>
               <ModalToolTip 
                 :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifican su conformidad de Apto para Sustentar.' },]" /> 
