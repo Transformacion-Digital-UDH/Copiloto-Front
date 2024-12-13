@@ -335,8 +335,6 @@ const getTitulo = async () => {
     const email = authStore.email;
     const apiUrl = `https://copiloto.udh.edu.pe/ideas/api/titulo/${email}`;
     const response = await axios.get(apiUrl);
-
-    console.log(response.data);
     if (response.data.status == true) {
       solicitude.value.titulo = response.data.titulo;
       tituloExistente.value = true;
@@ -351,6 +349,10 @@ const getTitulo = async () => {
     load.value = false;
   }
 };
+
+const isTituloDisabled = computed(() => {
+  return solicitude.value.estado === "pendiente" || solicitude.value.estado === "aceptado";
+});
 
 onMounted(() => { getTitulo(); });
 /*********************** */
@@ -464,7 +466,7 @@ onMounted(() => { getTitulo(); });
                   placeholder="Escribe el título de tu proyecto de investigación aquí" />
               </template>
               <template v-else>
-                <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="solicitude.titulo"
+                <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="isTituloDisabled"
                   class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Escribe el título de tu proyecto de investigación aquí" />
               </template>

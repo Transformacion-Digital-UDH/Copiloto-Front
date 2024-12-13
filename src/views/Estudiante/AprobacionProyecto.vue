@@ -26,14 +26,14 @@ const solicitudEstado = ref<string>("");
 const isLoading = ref(false);
 const obtener = ref<Estudiante | null>(null);
 const tituloActual = ref<string>("");
-const showModal = ref(false);
+const mostrarModal = ref(false);
 
 function abrirModal() {
-  showModal.value = true;
+  mostrarModal.value = true;
 }
 
 function cerrarModal() {
-  showModal.value = false;
+  mostrarModal.value = false;
 }
 
 const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
@@ -45,7 +45,9 @@ const VITE_URL_CHANGE_INFO = import.meta.env.VITE_URL_CHANGE_INFO;
 
 const bloquear = ['pendiente', 'observado', 'tramitado']
 const isAprobacionDisabled = computed(() => {
-  return (isLoading.value || (bloquear.includes(obtener.value?.oficio_estado ?? '') || bloquear.includes(obtener.value?.resolucion_estado ?? '')));
+  const oficioEstado = obtener.value?.oficio_estado ?? '';
+  const resolucionEstado = obtener.value?.resolucion_estado ?? '';
+  return isLoading.value || bloquear.includes(oficioEstado) || bloquear.includes(resolucionEstado);
 });
 
 interface Estudiante {
@@ -65,8 +67,6 @@ const obtenerDatosEstudiante = async () => {
     const response = await axios.get(`${VITE_URL_OBTAINED_INFO}/${student_id}`);
     obtener.value = response.data;
     tituloActual.value = response.data.titulo;
-    // console.log("Datos recibidos: ", tituloActual.value);
-
   } catch (error: any) {
     console.error("Error al obtener datos", error.response?.data?.mensaje || error.mensaje);
   } finally {
@@ -86,6 +86,7 @@ const guardarNuevoTitulo = async (nuevoTitulo: string) => {
     if (response.data.estado === "pendiente") {
       alertToast("Título actualizado correctamente.", "Éxito", "success");
       tituloActual.value = nuevoTitulo;
+      closeModal();
     }
   } catch (error: any) {
     console.error("Error al actualizar el título", error.response?.data?.mensaje || error.message);
@@ -103,14 +104,16 @@ function manejarCambioTitulo(nuevoTitulo: string) {
 const solicitarAprobacionProyecto = async () => {
   isLoading.value = true;
   const student_id = authStore.id;
+  console.log("authStore.id:", authStore.id);
   try {
-    const response = await axios.get(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
-    //console.log("Mostrando lo recibido: ",response);
+    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
+    // console.log("Mostrando lo recibido: ", response);
 
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada. Espere las indicaciones para la aprobación del proyecto de tesis.", "Éxito", "success");
       await obtenerDatosEstudiante();
+      closeModal();
     }
 
   } catch (error: any) {
@@ -125,10 +128,9 @@ const solicitarAprobacionProyecto = async () => {
   }
 };
 
-onMounted(() => {
-  obtenerDatosEstudiante();
-})
-
+onMounted(async () => {
+  await obtenerDatosEstudiante();
+});
 </script>
 <template>
   <template v-if="load">
@@ -173,16 +175,17 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-9">
           <div class="relative flex items-center">
             <h2 class="text-xl font-medium text-black">1. Solicitar aprobación para el cambio de título</h2>
-            <ModalToolTip :infoModal="[{ info: 'Este título ya no lo podrás cambiar posteriormente y se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
+            <ModalToolTip
+              :infoModal="[{ info: 'Este título ya no lo podrás cambiar posteriormente y se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón
-            <strong class="text-green-500 text-sm font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud de cambio de título.
+            <strong class="text-green-500 text-sm font-medium">"Solicitar aprobación"</strong> para enviar tu solicitud
+            de cambio de título.
           </p>
           <!-- boton para solicitar aprobacion de proyecto de investigacion y si desea el cambio de titulo  -->
           <div class="flex justify-center mt-4">
-            <ButtonRequest label="Solicitar aprobación" :loading="isLoading"
-              @click="abrirModal" />
-              <!-- :disabled="isAprobacionDisabled" -->
+            <ButtonRequest label="Solicitar aprobación" :loading="isLoading" @click="abrirModal" />
+            <!-- :disabled="isAprobacionDisabled" -->
           </div>
         </div>
       </div>
@@ -214,7 +217,7 @@ onMounted(() => {
       <NavigationButton prevRoute="/estudiante/conformidad-jurado" nextRoute="/estudiante/progreso"
         :nextCondition="() => obtener?.oficio_estado === 'tramitado' && obtener?.resolucion_estado === 'tramitado'" />
     </div>
-    <modalCambioTitulo :showModal="showModal" :initialTitle="tituloActual" @close="cerrarModal"
+    <modalCambioTitulo :mostrarModal="mostrarModal" :tituloActual="tituloActual" @close="cerrarModal"
       @tituloGuardado="manejarCambioTitulo" @solicitarAprobacionProyecto="solicitarAprobacionProyecto" />
   </template>
 </template>
