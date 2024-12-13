@@ -67,8 +67,6 @@ const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
 const DOWNLOAD_APROBACIONPAISI = import.meta.env.VITE_URL_DOWNLOAD_APAISI;
 const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD;
 const DOWNLOAD_APROBACIONFACULTAD = import.meta.env.VITE_URL_DOWNLOAD_AFACULTAD;
-// const VITE_URL_OBTAINED_INFO = import.meta.env.VITE_URL_OBTAINED_INFO;
-// const VITE_URL_CHANGE_INFO = import.meta.env.VITE_URL_CHANGE_INFO;
 
 const bloquear = ['pendiente', 'observado', 'tramitado']
 const isAprobacionDisabled = computed(() => {
@@ -93,7 +91,7 @@ const obtenerDatosEstudiante = async () => {
     const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${student_id}`);
 
     //console.log("Mostrando", response.data);
-    
+
     // mapeo de los datos para asegurar que cumplen con la interfaz Estudiante
     obtener.value = {
       titulo: response.data.titulo || '',
