@@ -149,7 +149,7 @@ onMounted(() => {
             <div class="flex justify-center items-center">
               <div class="bg-baseClarito rounded-lg p-4 shadow-md w-full text-center hover:shadow-lg transition-all">
                 <i class="fas fa-file-alt text-azul text-4xl mb-2"></i>
-                <p class="font-bold text-lg text-azul mb-2">Título provisional</p>
+                <p class="font-bold text-lg text-azul mb-2">Título de proyecto de investigación</p>
                 <p class="text-gray-700 uppercase text-sm font-medium">
                   {{ obtener?.titulo || 'Título no asignado' }}
                 </p>

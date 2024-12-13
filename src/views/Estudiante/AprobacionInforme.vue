@@ -146,7 +146,7 @@ onMounted(() =>{
         <!-- solicitar aprobacion de informe final -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center space-x-3">
-            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación del informe final por la facultad</h2>
               <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />       
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
@@ -170,7 +170,7 @@ onMounted(() =>{
           <!-- oficio de programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Oficio emitido por el Programa Académico."
+              titulo="OFICIO DE APROBACION DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL PROGRAMA ACADEMICO"
               :estado="obtener?.oficio_estado || ''"
               :id="obtener?.oficio_id ?? ''"
               :observacion="obtener?.oficio_observacion || 'Por favor, comunícate con secretaría del programa académico'"
@@ -181,7 +181,7 @@ onMounted(() =>{
           <!-- resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Resolución emitido por la Facultad."
+              titulo="RESOLUCION DE APROBACION DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR LA FACULTAD"
               :estado="obtener?.resolucion_estado || ''"
               :id="obtener?.resolucion_id ?? ''"
               :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"

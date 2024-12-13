@@ -1,7 +1,10 @@
 <template>
   <div class="bg-gray-50 p-4 border border-gray-200 rounded-md">
     <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium ">
+      <div class="flex items-center space-x-4 text-gray-700 font-medium">
+      <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
       <span class="flex-1 text-xm bg-gray-50">{{ titulo }}</span>
+      </div>
       <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
         <div
           v-if="estado === 'aprobado'"

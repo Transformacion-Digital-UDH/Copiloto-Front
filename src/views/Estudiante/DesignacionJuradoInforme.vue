@@ -234,7 +234,7 @@ onMounted(() => {
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Solicitud de resolución de designación de jurados para el informe final."
+              titulo="OFICIO DE DESIGNACION DE JURADOS REV. PARA EL INF.FINAL DEL TRAB. INV.(TESIS) - POR EL PROGRAMA ACADEMICO."
               :estado="obtener?.oficio.of_estado || ''"
               :id="obtener?.oficio.of_id ?? ''"
               :view="VIEW_OFINFORME"
@@ -244,7 +244,7 @@ onMounted(() => {
           <!-- resolucion de facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Resolución de designación de jurados para el informe final."
+              titulo="RESOLUCION DE DESIGNACION DE JURADOS REV. PARA EL INF.FINAL DEL TRAB. INV.(TESIS) - POR LA FACULTAD"
               :estado="obtener?.resolucion.of_estado || ''"
               :id="obtener?.resolucion.of_id ?? ''"
               :observacion="obtener?.resolucion.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
