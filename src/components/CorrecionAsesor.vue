@@ -25,7 +25,7 @@
             :class="[
               'truncate px-4 py-2 text-xm text-white bg-base rounded-md focus:outline-none',
               revision.rev_estado === 'pendiente' || revision.rev_estado === 'aprobado'
-              ? 'bg-gray-300 cursor-not-allowed'
+              ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-base hover:bg-[#29a790]',]"
             @click="actualizarEstado(revision.rev_id)">Observaciones corregidas
           </button>
