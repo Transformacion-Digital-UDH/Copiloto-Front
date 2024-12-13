@@ -38,7 +38,7 @@
         </p>
         <span
           v-else
-          class="text-gray-400 italic text-sm sm:text-base"
+          class="text-gray-400 italic text-sm sm:text-md"
           >El documento aún no se ha cargado</span
         >
 
