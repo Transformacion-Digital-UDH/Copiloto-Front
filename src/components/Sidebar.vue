@@ -106,37 +106,37 @@ export default defineComponent({
       if (role.value === 'estudiante') {
         // Estudiante tiene acceso a todas las secciones
         allSections[0].submenus.push(
-          { name: 'Designacion de asesor', label: 'Designación de Asesor', path: '/estudiante/designacion-asesor' },
-          { name: 'Conformidad por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-asesor' },
-          { name: 'Designacion de jurados', label: 'Designación de Jurados', path: '/estudiante/designacion-jurado' },
-          { name: 'Conformidad por los jurados', label: 'Conformidad por los Jurados', path: '/estudiante/conformidad-jurado' },
-          { name: 'Aprobacion del proyecto', label: 'Aprobación del Proyecto', path: '/estudiante/aprobacion-proyecto' }
+          { name: 'Designacion de asesor', label: 'Designación de asesor', path: '/estudiante/designacion-asesor' },
+          { name: 'Conformidad por el asesor', label: 'Conformidad por el asesor', path: '/estudiante/conformidad-asesor' },
+          { name: 'Designacion de jurados', label: 'Designación de jurados', path: '/estudiante/designacion-jurado' },
+          { name: 'Conformidad por los jurados', label: 'Conformidad por los jurados', path: '/estudiante/conformidad-jurado' },
+          { name: 'Aprobacion del proyecto', label: 'Aprobación del proyecto de investigación', path: '/estudiante/aprobacion-proyecto' }
         );
         allSections[1].submenus.push(
-          { name: 'Progreso', label: 'Progreso de la Investigación', path: '/estudiante/progreso' }
+          { name: 'Progreso', label: 'Ejecución del proyecto de investigación', path: '/estudiante/progreso' }
         );
         allSections[2].submenus.push(
-          { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el Asesor', path: '/estudiante/conformidad-informe-asesor' },
-          { name: 'Designacion de jurado para el informe final', label: 'Designación de Jurado', path: '/estudiante/designacion-informe-jurado' },
-          { name: 'Conformidad del informe final por los jurados', label: 'Conformidad del Informe Final', path: '/estudiante/conformidad-informe-jurado' },
-          { name: 'Conformidad por integridad VRI', label: 'Conformidad por Integridad VRI', path: '/estudiante/conformidad-vri' },
-          { name: 'Aprobacion del informe final', label: 'Aprobación del Informe Final', path: '/estudiante/aprobacion-informe' }
+          { name: 'Conformidad del informe final por el asesor', label: 'Conformidad por el asesor', path: '/estudiante/conformidad-informe-asesor' },
+          { name: 'Designacion de jurado para el informe final', label: 'Designación de jurados', path: '/estudiante/designacion-informe-jurado' },
+          { name: 'Conformidad del informe final por los jurados', label: 'Conformidad por los jurados', path: '/estudiante/conformidad-informe-jurado' },
+          { name: 'Conformidad por integridad VRI', label: 'Conformidad de integridad por el VRI', path: '/estudiante/conformidad-vri' },
+          { name: 'Aprobacion del informe final', label: 'Aprobación del informe final', path: '/estudiante/aprobacion-informe' }
         );
         allSections[3].submenus.push(
           //{ name: 'SustentacionEstudiante', label: 'Sustentación Submenu', path: '/sustentacion/estudiante' },
-          { name: 'AptoParaSustentar', label: 'Declaración Apto para Sustentar', path: '/estudiante/declaracion-apto-sustentar' },
-          { name: 'DesignacionFechayHora', label: 'Designación de Fecha y Hora', path: '/estudiante/designacion-fecha-hora' },
-          { name: 'Sustentación', label: 'Sustentación', path: '/estudiante/sustentacion' }
+          { name: 'AptoParaSustentar', label: 'Declaración de apto para sustentar', path: '/estudiante/declaracion-apto-sustentar' },
+          { name: 'DesignacionFechayHora', label: 'Designación de fecha y hora', path: '/estudiante/designacion-fecha-hora' },
+          { name: 'Sustentación', label: 'Sustentación de tesis', path: '/estudiante/sustentacion' }
         );
-        allSections[4].submenus.push(
-          { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }
-        );
+        // allSections[4].submenus.push(
+        //   { name: 'CierreEstudiante', label: 'Cierre de Trámites Submenu', path: '/cierre/estudiante' }
+        // );
         sections.value = allSections.filter(section => 
           section.name === 'ProyectoDeTesis' ||
           section.name === 'Ejecucion' ||
           section.name === 'InformeFinal' ||
-          section.name === 'Sustentacion' ||
-          section.name === 'Cierre'
+          section.name === 'Sustentacion' 
+         //section.name === 'Cierre'
         ); // Mostrar todas las secciones.
       } else if (role.value === 'asesor') {
         // Asesor solo tiene acceso a Proyecto Tesis, Ejecución e Informe Final
