@@ -9,6 +9,7 @@ import NavigationButton from "@/components/NavigationButton.vue";
 import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
+import buttonEye from "@/components/buttonEye.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 
 // extrayendo funcionn del composable
@@ -561,7 +562,6 @@ onMounted(() => { getTitulo(); });
                 </span>
                 <span v-else-if="solicitude.estado === 'rechazado'" class="ml-2 text-red-500 font-medium md:text-xm">
                   {{ solicitude.observacion }} 😢
-
                 </span>
               </h4>
 
@@ -571,12 +571,14 @@ onMounted(() => { getTitulo(); });
                 <div v-if="['aceptado'].includes(solicitude.estado)" class="w-full sm:w-auto">
                   <!-- Botón de Ver -->
 
-                  <a :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`" target="_blank"
+                  <!-- <a :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`" target="_blank"
                     class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito justify-center w-full sm:w-auto">
 
                     <i class="fas fa-eye mr-2"></i> Ver
-                  </a>
+                  </a> -->
+                  <buttonEye :href="`${VIEW_LETTER}/${solicitude.solicitud_id}`" />
                 </div>
+                <span v-else class="text-sm text-gray-400 italic">El documento aún no se ha cargado</span>
                 <Estados :estado="capitalizarEstado(solicitude.estado)" />
                 <!-- <a
                   href="#historial"
@@ -669,14 +671,14 @@ onMounted(() => { getTitulo(); });
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
 
-                    <a :href="`${VIEW_OFFICE}/${oficio.id}`" target="_blank"
+                    <!-- <a :href="`${VIEW_OFFICE}/${oficio.id}`" target="_blank"
                       class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
 
                       <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
+                    </a> -->
+                    <buttonEye :href="`${VIEW_OFFICE}/${oficio.id}`" />
                   </div>
                   <!-- Mensaje de que aún no está cargado -->
-                  <span v-else class="text-sm text-gray-400 italic">El documento aún no se ha cargado</span>
                   <span v-else class="text-sm text-gray-400 italic">El documento aún no se ha cargado</span>
                   <!-- Estado del documento -->
                   <Estados :estado="capitalizarEstado(oficio.estado)" />
@@ -706,11 +708,12 @@ onMounted(() => { getTitulo(); });
                     class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
                     <!-- Botón de Ver -->
 
-                    <a :href="`${VIEW_RESOLUTION}/${resolucion.id}`" target="_blank"
+                    <!-- <a :href="`${VIEW_RESOLUTION}/${resolucion.id}`" target="_blank"
                       class="flex items-center px-2 py-1 border rounded text-gray-600 border-gray-400 hover:bg-baseClarito w-full md:w-auto justify-center">
 
                       <i class="fas fa-eye mr-2"></i> Ver
-                    </a>
+                    </a> -->
+                    <buttonEye :href="`${VIEW_RESOLUTION}/${resolucion.id}`" />
                   </div>
                   <!-- Mensaje de que aún no está cargado -->
                   <span v-else class="text-sm text-gray-400 italic">El documento aún no se ha cargado</span>
