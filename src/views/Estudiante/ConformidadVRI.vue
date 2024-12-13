@@ -179,8 +179,8 @@ onMounted(() => {
             <h4 class="text-xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
           </div>
 
-          <p class="text-gray-500 mt-1 text-sm">Completa el Curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. </p>
-          <p class="text-gray-500 mt-1 text-sm">Haz clic en
+          <p class="text-gray-500 mt-1 text-sm">Completa el curso de Buenas Prácticas para obtener la conformidad por Integridad VRI. 
+          Haz clic en
             <strong class="text-sm font-medium text-green-500">“Ir al curso”</strong> para comenzar. Una vez aprobado, podrás visualizar el documento.
           </p>
           
@@ -196,7 +196,7 @@ onMounted(() => {
         <!-- solicitar conformidad por VRI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
-            <h2 class="text-xl font-medium text-black">2. Solicitar conformidad de VRI</h2>      
+            <h2 class="text-xl font-medium text-black">2. Solicitar conformidad de integridad por el vicerrectorado de investigación</h2>      
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
             <strong class="text-green-500 text-sm font-medium">"Solicitar conformidad"</strong> para enviar tu solicitud.
