@@ -115,7 +115,7 @@ onMounted(() => {
             <!-- fecha de susnteacion -->
             <div class="bg-white border rounded-lg p-6 flex flex-col items-center shadow-lg w-full border-gray-300">
               <i class="fas fa-calendar-alt text-[#39B49E] text-3xl mb-4"></i>
-              <p class="text-lg font-semibold text-azul mb-2">Fecha y hora de sustentación</p>
+              <p class="text-lg font-semibold text-azul mb-2">Fecha y hora final de sustentacion</p>
               <p class="text-gray-700 text-lg font-medium">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</p>
             </div>
             <!-- nota de sustneacion -->
