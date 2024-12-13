@@ -187,7 +187,7 @@ onMounted(() => {
           <!-- documento de buuenas practicas -->
           <div class="mt-4 space-y-4 text-gray-700 font-medium">
             <CursoCoachCard 
-            :titulo="'Documento emitido por TUCOACH'"
+            :titulo="'Certificado de buenas practicas - Tu Coach UDH.'"
             :estado="obtener?.tu_coach.doc_estado || ''"
             :view="obtener?.tu_coach.doc_ver"/>
           </div>
