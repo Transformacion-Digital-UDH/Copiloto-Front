@@ -130,16 +130,16 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="space-y-10">
+      <div class="space-y-8">
         <!-- card para mostrar los jurados y titulo -->
-        <div v-if="obtener" class=" text-xm text-azul space-y-2 relative">
+        <div v-if="obtener" class=" text-xm text-azul bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
           <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de investigación. Verifica la información y revisa las actualizaciones.</p>
         <div v-if="obtener" class=" text-xm text-azul space-y-4 relative">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <JuradoCard v-for="jurado in jurados" :key="jurado.revision_id" :rol="jurado.rol" :nombre="jurado.nombre" />
           </div>
           <!-- Enlace del proyecto de Tesis -->
-          <div v-if="obtener?.link" class="text-center mt-6">
+          <div v-if="obtener?.link" class="text-center mt-2">
             <a :href="obtener?.link" target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <i class="fas fa-external-link-alt"></i> Abrir proyecto
@@ -149,8 +149,8 @@ onMounted(() => {
             <div class="flex justify-center items-center">
               <div class="bg-baseClarito rounded-lg p-4 shadow-md w-full text-center hover:shadow-lg transition-all">
                 <i class="fas fa-file-alt text-azul text-4xl mb-2"></i>
-                <p class="font-bold text-lg text-azul mb-2">Título provisional</p>
-                <p class="text-gray-700 uppercase text-sm font-medium">
+                <p class="font-bold text-lg text-azul mb-2">Título de proyecto de investigación</p>
+                <p class="text-gray-700 uppercase text-sm  font-medium">
                   {{ obtener?.titulo || 'Título no asignado' }}
                 </p>
               </div>

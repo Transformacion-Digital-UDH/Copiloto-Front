@@ -6,19 +6,20 @@
     </div>
 
     <!-- Lista de jurados en una fila -->
-    <div v-else class="flex flex-wrap gap-4">
+    <div v-else class="flex  flex-wrap gap-4">
       <div
         v-for="(jurado, index) in jurados"
         :key="index"
-        class="bg-gray-50 border border-gray-200 rounded-md shadow p-4 flex-1 min-w-[300px] text-center hover:shadow-md transition-all"
+        class="bg-baseClarito border border-gray-200 rounded-md shadow p-4 flex-1 min-w-[350px] text-center hover:shadow-md transition-all"
       >
         <!-- Rol del jurado -->
-        <p class="text-lg font-semibold text-azul">Rol</p>
-        <p class="text-xm font-medium text-base mb-2 capitalize">{{ jurado.rol }}</p>
+        <i class="fas fa-user-tie text-azul text-3xl mb-3"></i>
+        <!-- <p class="text-lg font-semibold text-azul">Rol</p> -->
+        <p class="text-xm text-azul font-semibold mb-2 capitalize">{{ jurado.rol }}</p>
 
         <!-- Nombre del jurado -->
-        <p class="text-lg font-semibold text-azul"> Apellido y Nombre</p>
-        <p class="text-sm font-medium text-gray-700 capitalize">{{ jurado.nombre }}</p>
+        <!-- <p class="text-lg font-semibold text-azul"> Apellido y Nombre</p> -->
+        <p class="text-sm font-medium text-gray-700  uppercase">{{ jurado.nombre }}</p>
       </div>
     </div>
     </template>

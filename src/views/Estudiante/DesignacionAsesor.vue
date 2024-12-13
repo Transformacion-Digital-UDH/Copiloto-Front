@@ -10,6 +10,7 @@ import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
 import buttonEye from "@/components/buttonEye.vue";
+import EstadoBolita from "@/components/EstadoBolita.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 
 // extrayendo funcionn del composable
@@ -430,18 +431,8 @@ onMounted(() => { getTitulo(); });
           <div class="flex justify-between">
             <div class="flex flex-col sm:flex-row items-center justify-between w-full">
               <div class="flex items-center space-x-3">
-                <!-- Bolita con estado -->
-                <span class="flex items-center justify-center h-8 w-8 rounded-full border-2" :class="{
-                  'bg-green-500 border-green-500 text-white': solicitude.estado === 'aceptado',
-                  'bg-orange-500 border-orange-500 text-white': solicitude.estado === 'en progreso',
-                  'bg-gray-400 border-gray-400 text-white': !solicitude.estado || solicitude.estado === 'pendiente' || solicitude.estado === 'rechazado'
-                }">
-                  <i :class="{
-                    'fas fa-check': solicitude.estado === 'aceptado',
-                    'fas fa-hourglass-half': solicitude.estado === 'en progreso',
-                    'fas fa-ellipsis-h': !solicitude.estado || solicitude.estado === 'pendiente' || solicitude.estado === 'rechazado'
-                  }" class="text-sm"></i>
-                </span>
+                <!-- Usando el componente EstadoBolita -->
+                <EstadoBolita :estado="solicitude.estado" />
                 <!-- Título del encabezado -->
                 <h2 class="text-xl font-medium text-black">
                   1. Solicita tu asesor
@@ -620,21 +611,10 @@ onMounted(() => { getTitulo(); });
             class="flex flex-col sm:flex-row items-center justify-between w-full space-y-4 sm:space-y-0 sm:space-x-4">
             <div class="flex items-center space-x-3">
               <!-- Bolita de estado -->
-              <span class="flex items-center justify-center h-8 w-8 rounded-full border-2" :class="{
-                'bg-green-500 border-green-500 text-white': estadoDocumentos === 'hecho',
-                'bg-gray-400 border-gray-400 text-white': estadoDocumentos === 'pendiente',
-                'bg-orange-400 border-yellow-500 text-white': estadoDocumentos === 'observado'
-              }">
-                <i :class="{
-                  'fas fa-check': estadoDocumentos === 'hecho',
-                  'fas fa-ellipsis-h': estadoDocumentos === 'pendiente',
-                  'fas fa-exclamation-circle': estadoDocumentos === 'observado'
-
-                }" class="text-sm"></i>
-              </span>
+              <EstadoBolita :estado="solicitude.estado" />
               <!-- Título -->
               <h2 class="text-xl font-medium text-black">
-                2. Documentos para la conformidad de designación de asesor
+                2. Documentos para la designación de asesor del proyecto de investigación
               </h2>
               <!-- Tooltip -->
               <ModalToolTip :infoModal="[{
@@ -656,8 +636,8 @@ onMounted(() => { getTitulo(); });
                   <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
                   <!-- Nombre del documento -->
                   <div>
-                    <span class="text-gray-700 font-medium">
-                      <!-- {{ oficio.nombre_de_oficio }}  --> SOLICITUD DE RESOLUCIÓN DE DESIGNACIÓN DE ASESOR.
+                    <span class="text-gray-700 font-medium text-sm">
+                      <!-- {{ oficio.nombre_de_oficio }}  --> OFICIO DE DESIGNACION DE DOCENTE ASESOR PARA TRABAJO DE INVESTIGACION - POR EL PROGRAMA ACADEMICO
                     </span>
                     <p v-if="oficio.estado === 'observado'" class="text-sm italic text-gray-500">
                       Por favor comuníquese con secretaría del programa académico
@@ -693,8 +673,8 @@ onMounted(() => { getTitulo(); });
                   <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
                   <!-- Nombre del documento -->
                   <div>
-                    <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                      <!-- {{resolucion.nombre}}  --> RESOLUCIÓN DE DESIGNACIÓN DE ASESOR.
+                    <span class="w-full md:w-auto mb-2 md:mb-0 text-sm">
+                      <!-- {{resolucion.nombre}}  --> RESOLUCION DE DESIGNACION DE DOCENTE ASESOR PARA TRABAJO DE INVESTIGACION - POR LA FACULTAD
                       <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
                         <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
                       </p>

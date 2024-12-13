@@ -209,9 +209,9 @@ onMounted(() => {
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
     <div class="space-y-8">
       <!-- card para mostrar jurados y titulo -->
-      <div v-if="obtener" class=" text-azul space-y-2 relative">
+      <div v-if="obtener" class=" text-azul  bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
         <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu informe. Verifica la información y revisa las actualizaciones.</p>
-        <!-- para mostrar jurados -->
+        <div  class=" text-xm text-azul space-y-4 relative"><!-- para mostrar jurados -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <JuradoCard
             v-for="jurado in jurados"
@@ -233,12 +233,13 @@ onMounted(() => {
         <div class="flex justify-center items-center">
               <div class="bg-baseClarito rounded-lg p-4 shadow-md w-full text-center hover:shadow-lg transition-all">
                 <i class="fas fa-file-alt text-azul text-4xl mb-2"></i>
-                <p class="font-bold text-lg text-azul mb-2">Título provisional</p>
+                <p class="font-bold text-lg text-azul mb-2">Título de proyecto de investigación</p>
                 <p class="text-gray-700 uppercase text-sm font-medium">
                   {{ obtener?.titulo || 'Título no asignado' }}
                 </p>
               </div>
-            </div>       
+        </div>  
+      </div>     
       </div>
 
       <!-- revisiones de cada jurado P,S y V -->
@@ -291,7 +292,7 @@ onMounted(() => {
         <!-- informe de conformidad del presidnetne -->
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad - Presidente"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL JURADO PRESIDENTE"
             :estado="obtenerEstadoDocumento(presidenteRevisiones[0]?.estado || '')"
             :id="presidente_id"
             :view="VIEW_CPA"
@@ -300,7 +301,7 @@ onMounted(() => {
         <!-- informe de conformidad del sercretario -->
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad - Secretario"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL JURADO SECRETARIO"
             :estado="obtenerEstadoDocumento(secretarioRevisiones[0]?.estado || '')"
             :id="secretario_id"
             :view="VIEW_CPA"
@@ -309,7 +310,7 @@ onMounted(() => {
         <!-- informe de conformidad del vocal -->
         <div class="mt-4 space-y-4">
           <DocumentCard 
-            titulo="Informe de conformidad - Vocal"
+            titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL DEL TRABAJO DE INVESTIGACION (TESIS) - POR EL JURADO VOCAL"
             :estado="obtenerEstadoDocumento(vocalRevisiones[0]?.estado || '')"
             :id="vocal_id"
             :view="VIEW_CPA"

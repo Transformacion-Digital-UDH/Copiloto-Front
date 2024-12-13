@@ -51,8 +51,8 @@ const jurados = ref<{ rol: string; nombre: string }[]>([]);
 
 const VIEW_OFINFORME = import.meta.env.VITE_URL_VIEW_OFINFORME;
 const DOWNLOAD_OFINFORME = import.meta.env.VITE_URL_DOWNLOAD_OFINFORME;
-const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RINFORME;
-const DOWNLOAD_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RINFORME;
+const VIEW_RINFORME = import.meta.env.VITE_URL_VIEW_RJURADOINFORME;
+const DOWNLOAD_RINFORME = import.meta.env.VITE_URL_DOWNLOAD_RJURADOINFORME;
 
 // para que el botón quede deshabilitado
 const bloquear = ['pendiente', 'observado', 'tramitado']
@@ -171,7 +171,7 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-8">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
@@ -234,7 +234,7 @@ onMounted(() => {
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Solicitud de resolución de designación de jurados para el informe final."
+              titulo="OFICIO DE DESIGNACION DE JURADOS REV. PARA EL INF.FINAL DEL TRAB. INV.(TESIS) - POR EL PROGRAMA ACADEMICO."
               :estado="obtener?.oficio.of_estado || ''"
               :id="obtener?.oficio.of_id ?? ''"
               :view="VIEW_OFINFORME"
@@ -244,7 +244,7 @@ onMounted(() => {
           <!-- resolucion de facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Resolución de designación de jurados para el informe final."
+              titulo="RESOLUCION DE DESIGNACION DE JURADOS REV. PARA EL INF.FINAL DEL TRAB. INV.(TESIS) - POR LA FACULTAD"
               :estado="obtener?.resolucion.of_estado || ''"
               :id="obtener?.resolucion.of_id ?? ''"
               :observacion="obtener?.resolucion.resolucion_observacion || 'Por favor, comunícate con secretaría Facultad'"
@@ -264,7 +264,7 @@ onMounted(() => {
             :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled 
             ? 'bg-gray-300 cursor-not-allowed' 
             : 'bg-green-500 hover:bg-green-600',]">Siguiente
-          </button>
+          </button> 
         </div>
 
           <!-- Card 4: Solicitar cambio de jurado
