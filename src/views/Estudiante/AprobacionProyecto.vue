@@ -25,96 +25,118 @@ const authStore = useAuthStore();
 const solicitudEstado = ref<string>("");
 const isLoading = ref(false);
 const obtener = ref<Estudiante | null>(null);
-const tituloActual = ref<string>("");
+// const tituloActual = ref<string>("");
 const mostrarModal = ref(false);
 
 function abrirModal() {
+  if (!obtener.value || !obtener.value.titulo) {
+    alertToast('Cargando datos, por favor espera...', 'Advertencia', 'warning');
+    obtenerDatosEstudiante().then(() => {
+      if (obtener.value?.titulo) {
+          mostrarModal.value = true;
+      } else {
+          alertToast('No se pudo cargar el título. Intenta nuevamente.', 'Error', 'error');
+      }
+    }).catch(() => {
+        alertToast('Error al cargar los datos. Intenta nuevamente.', 'Error', 'error');
+    });
+    return;
+  }
   mostrarModal.value = true;
 }
-
 function cerrarModal() {
   mostrarModal.value = false;
 }
+
+// se guarda el titulo que ha definido para el informe final
+const guardarTitulo = async (tituloDefinitivo: string) => {
+  try {
+    console.log("Título guardado:", tituloDefinitivo);
+    alertToast("El título ha sido guardado correctamente.", "Éxito", "success");
+    if (obtener.value) {
+      obtener.value.titulo = tituloDefinitivo;
+    }
+
+    cerrarModal();
+  } catch (error) {
+    alertToast("Error al guardar el título. Intente nuevamente.", "Error", "error");
+  }
+};
 
 const VIEW_APROBACIONPAISI = import.meta.env.VITE_URL_VIEW_APAISI;
 const DOWNLOAD_APROBACIONPAISI = import.meta.env.VITE_URL_DOWNLOAD_APAISI;
 const VIEW_APROBACIONFACULTAD = import.meta.env.VITE_URL_VIEW_AFACULTAD;
 const DOWNLOAD_APROBACIONFACULTAD = import.meta.env.VITE_URL_DOWNLOAD_AFACULTAD;
-const VITE_URL_OBTAINED_INFO = import.meta.env.VITE_URL_OBTAINED_INFO;
-const VITE_URL_CHANGE_INFO = import.meta.env.VITE_URL_CHANGE_INFO;
 
 const bloquear = ['pendiente', 'observado', 'tramitado']
 const isAprobacionDisabled = computed(() => {
-  const oficioEstado = obtener.value?.oficio_estado ?? '';
-  const resolucionEstado = obtener.value?.resolucion_estado ?? '';
-  return isLoading.value || bloquear.includes(oficioEstado) || bloquear.includes(resolucionEstado);
+  return (isLoading.value || (bloquear.includes(obtener.value?.oficio_estado ?? '') || bloquear.includes(obtener.value?.resolucion_estado ?? '')));
 });
 
 interface Estudiante {
   titulo: string;
   estudiante_id: string;
-  oficio_id: string;
-  oficio_estado: string;
+  oficio_id?: string;
+  oficio_estado?: string;
   oficio_observacion?: string;
-  resolucion_id: string;
-  resolucion_estado: string;
+  resolucion_id?: string;
+  resolucion_estado?: string;
   resolucion_observacion?: string;
 }
 
 const obtenerDatosEstudiante = async () => {
   load.value = true;
+  const student_id = authStore.id
   try {
-    const response = await axios.get(`${VITE_URL_OBTAINED_INFO}/${authStore.id}`);
-    obtener.value = response.data;
-    tituloActual.value = response.data.titulo;
+    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${student_id}`);
+
+    //console.log("Mostrando", response.data);
+
+    // mapeo de los datos para asegurar que cumplen con la interfaz Estudiante
+    obtener.value = {
+      titulo: response.data.titulo || '',
+      estudiante_id: response.data.estudiante_id || student_id,
+      oficio_id: response.data.oficio_id || '',
+      oficio_estado: response.data.oficio_estado || '',
+      oficio_observacion: response.data.oficio_observacion || '',
+      resolucion_id: response.data.resolucion_id || '',
+      resolucion_estado: response.data.resolucion_estado || 'no iniciado',
+      resolucion_observacion: response.data.resolucion_observacion || '',
+    };
+
   } catch (error: any) {
-    console.error("Error al obtener datos", error.response?.data?.mensaje || error.mensaje);
-  } finally {
-    load.value = false;
-  }
-};
-
-// ACA GUARDAREMOS O MEJOR DICHO ACTUALIZAREMOS EL TITULO
-const guardarNuevoTitulo = async (nuevoTitulo: string) => {
-  load.value = true;
-  const student_id = authStore.id;
-  try {
-    const response = await axios.post(`${VITE_URL_CHANGE_INFO}/${student_id}`, {
-      titulo: nuevoTitulo,
-    });
-
-    if (response.data.estado === "pendiente") {
-      alertToast("Título actualizado correctamente.", "Éxito", "success");
-      tituloActual.value = nuevoTitulo;
-      closeModal();
+    console.error("Error al obtener datos", error.response?.data || error.message);
+    if (error.response?.status === 400 && error.response.data?.titulo) {
+        obtener.value = {
+            titulo: error.response.data.titulo || '',
+            estudiante_id: student_id || '',
+            oficio_id: '',
+            oficio_estado: '',
+            resolucion_id: '',
+            resolucion_estado: 'no iniciado',
+        };
+    } else {
+        alertToast('Error al obtener datos del estudiante.', 'Error', 'error');
     }
-  } catch (error: any) {
-    console.error("Error al actualizar el título", error.response?.data?.mensaje || error.message);
-    alertToast("No se pudo actualizar el título.", "Error", "error");
-  } finally {
+} finally {
     load.value = false;
   }
 };
 
-function manejarCambioTitulo(nuevoTitulo: string) {
-  tituloActual.value = nuevoTitulo;
-  cerrarModal();
-}
-
-const solicitarAprobacionProyecto = async () => {
+// funcion de disparador para solicitar aprob proyecto
+const solicitarAprobacionProyecto = async (tituloDefinitivo?: string) => {
   isLoading.value = true;
   const student_id = authStore.id;
   try {
-    const response = await axios.post(`${VITE_URL_CHANGE_INFO}/${student_id}`);
-    // console.log("Mostrando lo recibido: ", response);
+    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${student_id}`, {
+      titulo: tituloDefinitivo || obtener.value?.titulo || "",
+    });
 
     if (response.data.estado) {
       solicitudEstado.value = "pendiente";
       alertToast("Solicitud enviada. Espere las indicaciones para la aprobación del proyecto de tesis.", "Éxito", "success");
       await obtenerDatosEstudiante();
-      closeModal();
     }
-
   } catch (error: any) {
     if (error.response && error.response.data && error.response.data.mensaje) {
       const mensaje1 = error.response.data.mensaje;
@@ -127,9 +149,11 @@ const solicitarAprobacionProyecto = async () => {
   }
 };
 
-onMounted(async () => {
-  await obtenerDatosEstudiante();
+
+onMounted(() =>{
+  obtenerDatosEstudiante();
 });
+
 </script>
 <template>
   <template v-if="load">
@@ -183,8 +207,15 @@ onMounted(async () => {
           </p>
           <!-- boton para solicitar aprobacion de proyecto de investigacion y si desea el cambio de titulo  -->
           <div class="flex justify-center mt-4">
-            <ButtonRequest label="Solicitar aprobación" :loading="isLoading" @click="abrirModal" />
-            <!-- :disabled="isAprobacionDisabled" -->
+            <modalCambioTitulo
+              :mostrarModal="mostrarModal"
+              :tituloActual="obtener?.titulo || 'Título no disponible'"
+              @close="cerrarModal"
+              @tituloGuardado="guardarTitulo"
+              @solicitarAprobacionProyecto="solicitarAprobacionProyecto"
+            />
+            <ButtonRequest label="Solicitar aprobación" :loading="isLoading" @click="abrirModal" :disabled="isAprobacionDisabled" />
+            
           </div>
         </div>
       </div>
@@ -216,8 +247,6 @@ onMounted(async () => {
       <NavigationButton prevRoute="/estudiante/conformidad-jurado" nextRoute="/estudiante/progreso"
         :nextCondition="() => obtener?.oficio_estado === 'tramitado' && obtener?.resolucion_estado === 'tramitado'" />
     </div>
-    <modalCambioTitulo :mostrarModal="mostrarModal" :tituloActual="tituloActual" @close="cerrarModal"
-      @tituloGuardado="manejarCambioTitulo" @solicitarAprobacionProyecto="solicitarAprobacionProyecto" />
   </template>
 </template>
 

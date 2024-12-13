@@ -165,6 +165,7 @@ onMounted(() => {
         {{ textoTipiado }}
       </h3>
       <div class="mt-6 space-y-8">
+        <div class=" bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
         <!-- Sección 1: Solicitar link para cargar el Informe Final -->
         <!-- <div class="bg-white rounded-lg shadow-lg p-6">
           <h4 class="text-2xl font-medium text-black mb-3">1. Solicitar link para cargar su Informe final</h4>
@@ -186,12 +187,13 @@ onMounted(() => {
             link: obtener?.data?.['link-tesis'] || '#',
           }"
         />
+      </div>
 
         <!-- solicitar correciones aL asesor PI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center ">
             <h2 class="text-xl font-medium text-black">
-              1.  Solicitar correcciones a tu asesor
+              1.  Solicitar revisión a tu asesor
             </h2>
             <ModalToolTip
               :infoModal="[
@@ -280,7 +282,7 @@ onMounted(() => {
                   ? obtener?.revision?.estado ?? ''
                   : ''
               "
-              :id="obtener?.revision?.estudiante_id ?? ''"
+              :id="obtener?.revision?.revision_id ?? ''"
               :view="VIEW_CPA"
               :download="DOWNLOAD_CPA"
             />  

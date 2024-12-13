@@ -117,7 +117,8 @@ onMounted(() => {
   <template v-else>
   <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-    <div class="mt-6 space-y-10">
+    <div class="mt-6 space-y-8">
+      <div class=" bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
       <!-- Sección 1: Solicitar link para cargar el Informe Final -->
       <!-- <div class="bg-white rounded-lg shadow-lg p-6">
         <h4 class="text-2xl font-medium text-black mb-3">1. Solicitar link para cargar su Informe final</h4>
@@ -137,6 +138,7 @@ onMounted(() => {
           asesor: obtener?.asesor,
           titulo: obtener?.titulo,
           link: obtener?.['link-informe']}"/>
+         </div> 
 
       <!-- solicitar correcion al asesor IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
