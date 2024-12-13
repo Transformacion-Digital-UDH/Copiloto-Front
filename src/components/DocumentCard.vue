@@ -99,7 +99,12 @@ const generateURL = (view: string, id: string): string => {
 }
 
 .estado-aprobado {
-  background-color: #39b49e;
+  background-color: #38a169;
+  color: #ffffff;
+}
+
+.estado-emitido {
+  background-color: #38a169;
   color: #ffffff;
 }
 

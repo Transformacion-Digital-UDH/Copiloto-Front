@@ -9,18 +9,16 @@ export default {
   computed: {
     estadoClase() {
       const estadoLowerCase = this.estado.toLowerCase();
-      switch (estadoLowerCase) {
-        case "rechazado":
+      switch (true) {
+        case estadoLowerCase === "rechazado":
           return "bg-red-500 text-white";
-        case "pendiente":
+        case estadoLowerCase === "pendiente":
           return "bg-gray-400 text-white";
-        case "aceptado":
-          return "bg-[#39B49E] text-white";
-        case "tramitado":
+        case ["aceptado", "tramitado", "aprobado", "emitido"].includes(estadoLowerCase):
           return "bg-[#38a169] text-white";
-        case "observado":
+        case estadoLowerCase === "observado":
           return "bg-orange-400 text-white";
-        case "en_progreso":
+        case estadoLowerCase === "en_progreso":
           return "bg-gray-400 text-white";
         default:
           return "bg-gray-400 text-white";

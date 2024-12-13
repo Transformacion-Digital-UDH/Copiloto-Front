@@ -339,7 +339,7 @@ onMounted(() => {
   color: #ffffff;
 }
 .estado-aprobado {
-  background-color: #39B49E;
+  background-color: #38a169;
   color: #ffffff;
 }
 .text-center {

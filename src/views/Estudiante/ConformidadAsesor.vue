@@ -21,6 +21,10 @@ const { textoTipiado, typeWriter } = useTypewriter(
 );
 onMounted(typeWriter);
 
+const capitalizarEstado = (estado: string): string => {
+  if (!estado) return "Pendiente";
+  return estado.charAt(0).toUpperCase() + estado.slice(1).toLowerCase();
+};
 //*********************************** INTEGRACIÓN CON EL BACKEND *************************************************** */
 const authStore = useAuthStore();
 const solicitudEstado = ref("");
@@ -281,7 +285,7 @@ onMounted(() => {
               :id="obtener?.revision?.estudiante_id ?? ''"
               :view="VIEW_CPA"
               :download="DOWNLOAD_CPA"
-            />
+            />  
           </div>
         </div>
 
