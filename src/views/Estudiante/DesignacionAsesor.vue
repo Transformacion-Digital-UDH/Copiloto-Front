@@ -610,8 +610,7 @@ onMounted(() => { getTitulo(); });
           <div
             class="flex flex-col sm:flex-row items-center justify-between w-full space-y-4 sm:space-y-0 sm:space-x-4">
             <div class="flex items-center space-x-3">
-              <!-- Bolita de estado -->
-              <EstadoBolita :estado="solicitude.estado" />
+              <EstadoBolita :estado="estadoDocumentos" />
               <!-- Título -->
               <h2 class="text-xl font-medium text-black">
                 2. Documentos para la designación de asesor del proyecto de investigación
