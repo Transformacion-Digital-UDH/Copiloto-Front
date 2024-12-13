@@ -12,7 +12,7 @@ import { alertToast } from '@/functions';
 import { useTypewriter } from '@/composables/useTypewriter';
 
 // extrayendo funcionn del composable
-const { textoTipiado, typeWriter } = useTypewriter("Conformidad por Integridad VRI");
+const { textoTipiado, typeWriter } = useTypewriter("Conformidad de integridad por el Vicerrectorado de Investigación");
 onMounted(typeWriter);
 
 const handleNextButtonClick = () => {
