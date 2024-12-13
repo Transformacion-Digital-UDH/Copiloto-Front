@@ -91,8 +91,9 @@ const obtenerDatosEstudiante = async () => {
   const student_id = authStore.id
   try {
     const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${student_id}`);
-    console.log("Mostrando", response.data);
 
+    //console.log("Mostrando", response.data);
+    
     // mapeo de los datos para asegurar que cumplen con la interfaz Estudiante
     obtener.value = {
       titulo: response.data.titulo || '',
