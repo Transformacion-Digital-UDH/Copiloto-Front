@@ -38,7 +38,7 @@
         </p>
         <span
           v-else
-          class="text-gray-400 italic text-sm sm:text-base"
+          class="text-gray-400 italic text-sm sm:text-md"
           >El documento aún no se ha cargado</span
         >
 
@@ -103,6 +103,10 @@ const generateURL = (view: string, id: string): string => {
   display: inline-block;
 }
 .estado-pendiente {
+  background-color: #8898aa;
+  color: #ffffff;
+}
+.estado-no-iniciado {
   background-color: #8898aa;
   color: #ffffff;
 }

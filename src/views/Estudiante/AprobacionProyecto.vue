@@ -29,7 +29,6 @@ const tituloActual = ref<string>("");
 const mostrarModal = ref(false);
 
 function abrirModal() {
-  obtenerDatosEstudiante();
   mostrarModal.value = true;
 }
 
@@ -46,10 +45,13 @@ const VITE_URL_CHANGE_INFO = import.meta.env.VITE_URL_CHANGE_INFO;
 
 const bloquear = ['pendiente', 'observado', 'tramitado']
 const isAprobacionDisabled = computed(() => {
-  return (isLoading.value || (bloquear.includes(obtener.value?.oficio_estado ?? '') || bloquear.includes(obtener.value?.resolucion_estado ?? '')));
+  const oficioEstado = obtener.value?.oficio_estado ?? '';
+  const resolucionEstado = obtener.value?.resolucion_estado ?? '';
+  return isLoading.value || bloquear.includes(oficioEstado) || bloquear.includes(resolucionEstado);
 });
 
 interface Estudiante {
+  titulo: string;
   estudiante_id: string;
   oficio_id: string;
   oficio_estado: string;
@@ -61,13 +63,10 @@ interface Estudiante {
 
 const obtenerDatosEstudiante = async () => {
   load.value = true;
-  const student_id = authStore.id
   try {
-    const response = await axios.get(`${VITE_URL_OBTAINED_INFO}/${student_id}`);
+    const response = await axios.get(`${VITE_URL_OBTAINED_INFO}/${authStore.id}`);
     obtener.value = response.data;
     tituloActual.value = response.data.titulo;
-    // console.log("Datos recibidos: ", tituloActual.value);
-
   } catch (error: any) {
     console.error("Error al obtener datos", error.response?.data?.mensaje || error.mensaje);
   } finally {
@@ -106,7 +105,7 @@ const solicitarAprobacionProyecto = async () => {
   isLoading.value = true;
   const student_id = authStore.id;
   try {
-    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${student_id}`);
+    const response = await axios.post(`${VITE_URL_CHANGE_INFO}/${student_id}`);
     // console.log("Mostrando lo recibido: ", response);
 
     if (response.data.estado) {
@@ -128,10 +127,9 @@ const solicitarAprobacionProyecto = async () => {
   }
 };
 
-onMounted(() => {
-  obtenerDatosEstudiante();
-})
-
+onMounted(async () => {
+  await obtenerDatosEstudiante();
+});
 </script>
 <template>
   <template v-if="load">

@@ -160,7 +160,7 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">
         {{ textoTipiado }}
       </h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-8">
         <!-- Sección 1: Solicitar link para cargar el Informe Final -->
         <!-- <div class="bg-white rounded-lg shadow-lg p-6">
           <h4 class="text-2xl font-medium text-black mb-3">1. Solicitar link para cargar su Informe final</h4>
@@ -187,7 +187,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="relative flex items-center">
             <h2 class="text-xl font-medium text-black">
-              1. Correcciones con tu asesor
+              1.  Solicitar correcciones a tu asesor
             </h2>
             <ModalToolTip
               :infoModal="[
@@ -199,12 +199,12 @@ onMounted(() => {
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">
             Haz clic en
-            <strong class="text-green-500 text-lg font-medium"
+            <strong class="text-green-500 text-sm font-medium"
               >"Solicitar revisión"</strong
             >
             para iniciar las observaciones del proyecto de investigación.
           </p>
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-4">
             <!-- boton para solicitar revision de asesor -->
             <ButtonRequest
               label="Solicitar revisión"
@@ -231,21 +231,18 @@ onMounted(() => {
           </div>
 
           <p class="text-gray-500 mt-2 mb-1 text-sm">
-            Si tu asesor deja observaciones, el estado será
+            Si tu asesor deja observaciones el estado será
             <strong class="text-[#8898aa] text-sm font-medium"
               >"Pendiente"</strong
-            >. Corrige en Google Docs.
-          </p>
-          <p class="text-gray-500 text-sm">
-            Luego, haz clic en
+            >. Corrígelas en Google Docs.Luego, haz click en
             <strong class="text-green-500 text-sm font-medium"
-              >“Observaciones corregidas”</strong
-            >. Si todo está bien, el estado cambiará a
-            <strong class="text-green-500 text-lg font-medium"
+              >“Observaciones corregidas”</strong >. 
+              Si todo está bien, el asesor aprobará <br> tu proyecto de investigación y elestado cambiará a
+            <strong class="text-green-500 text-sm font-medium"
               >"Aprobado"</strong
             >.
           </p>
-
+          
           <!-- Tabla de observaciones -->
           <div class="overflow-x-auto mt-4">
             <CorrecionAsesorPY
@@ -257,8 +254,8 @@ onMounted(() => {
 
         <!--  informe de conformidad de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <div class="flex items-center">
+          <div class="flex items-center relative">
+            <div class="flex items-center justify-between">
               <h2 class="text-xl font-medium text-black">
                 3. Documento de conformidad del proyecto de investigación
               </h2>

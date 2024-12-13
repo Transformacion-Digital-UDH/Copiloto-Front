@@ -1,14 +1,14 @@
 <template>
-  <div v-if="data" class="rounded-lg text-xm text-azul w-full p-4 flex flex-col md:flex-row items-start">
+  <div v-if="data" class="rounded-lg text-xm text-azul w-full p-2 flex flex-col md:flex-row items-start mb-0">
     <!-- Imagen a la izquierda -->
     <div class="flex justify-center items-center w-full md:w-1/2">
-      <img src="/img/conformidad1.svg" alt="Conformidad" class="w-full max-w-[430px] md:max-w-[500px] ">
+      <img src="/img/conformidad1.svg" alt="Conformidad" class="w-full max-w-[400px] md:max-w-[520px] ">
     </div>
 
     <!-- Contenido principal -->
-    <div class="space-y-5 relative w-full md:w-1/2 p-4">
+    <div class="space-y-5 relative w-full md:w-1/2 p-2 ">
       <!-- Información del Asesor -->
-      <div class="bg-baseClarito rounded-lg p-4 flex flex-col items-center shadow-md w-full text-center hover:shadow-lg transition-all">
+      <div class="bg-baseClarito rounded-lg p-4 mr-10 shadow-md w-full sm:w-96 md:w-[400px] lg:w-[500px] text-center hover:shadow-lg transition-all">
         <i class="fas fa-user-tie text-azul text-4xl mb-3"></i>
         <p class="font-bold text-lg text-azul mb-2">Asesor</p>
         <p class="text-gray-700 uppercase text-sm font-medium">
@@ -17,29 +17,28 @@
       </div>
 
       <!-- Título -->
-      <div class="bg-baseClarito rounded-lg p-4 shadow-md w-full text-center hover:shadow-lg transition-all">
+      <div class="bg-baseClarito rounded-lg p-4 mr-10 shadow-md w-full sm:w-96 md:w-[400px] lg:w-[500px] text-center hover:shadow-lg transition-all">
         <i class="fas fa-file-alt text-azul text-4xl mb-2"></i>
-        <p class="font-bold text-lg text-azul mb-2">Título Provisional</p>
+        <p class="font-bold text-lg text-azul mb-2">Título de Proyecto de Investigación</p>
         <p class="text-gray-700 uppercase text-sm font-medium">
-          {{ data.titulo || 'Sin título' }}
+          {{ data.titulo || 'Sin título' }}  
         </p>
       </div>
     </div>
   </div>
     <!-- Botón para abrir el proyecto -->
-    <div v-if="data.link" class="flex justify-center">
+    <div v-if="data.link" class="flex justify-center ">
         <a
           :href="data.link"
           target="_blank"
-          class="inline-block bg-azul text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-800 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-base font-medium">
+          class="inline-block bg-azul text-white px-6 py-2 rounded-lg shadow-md hover:bg-blue-800 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 text-xm font-medium">
           <i class="fas fa-external-link-alt mr-2"></i> Abrir proyecto
         </a>
       </div>
-
       <!-- Mensaje -->
       <p class="text-sm text-gray-500 text-center">
-        Asegúrate de corregir y actualizar tu información en Google Docs antes de hacer clic en
-        <strong class="text-g">"Solicitar revisión"</strong>.
+        Asegúrate de corregir y actualizar tu información del proyecto de investigación en Google Docs antes de hacer clic en
+        <strong class="text-g font-medium">"Solicitar revisión"</strong>.
       </p>
 </template>
 
