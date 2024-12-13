@@ -29,6 +29,7 @@ export default defineComponent({
     },
     methods: {
         closeModal() {
+            this.resetFormulario();
             this.$emit("close");
         },
         handleEnviar() {
@@ -37,6 +38,10 @@ export default defineComponent({
         },
         solicitarAprobacion() {
             this.$emit("solicitarAprobacionProyecto");
+        },
+        resetFormulario() {
+            this.mostrarInputCambio = false;
+            this.tituloDefinitivo = this.tituloActual;
         },
     },
 });
@@ -72,11 +77,18 @@ export default defineComponent({
                     </button>
                     <button class="px-7 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                         @click="solicitarAprobacion">
-                        No
+                        No, Continuar
                     </button>
                 </div>
             </template>
             <template v-else>
+                <div class="flex justify-end items-start">
+                    <button
+                        class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                        @click="closeModal">
+                        <IconCerrar />
+                    </button>
+                </div>
                 <div class="font-Roboto flex items-start justify-between p-3 border-b border-gray-200">
                     <h5 class="text-2xl font-light text-gray-900 text-center flex-1">
                         Título de proyecto de investigación (definitivo)
