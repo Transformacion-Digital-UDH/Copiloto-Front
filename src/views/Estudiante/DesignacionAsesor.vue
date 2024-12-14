@@ -448,30 +448,49 @@ onMounted(() => { getTitulo(); });
             <label for="tituloTesis" class="block text-xm font-medium text-gray-700 mb-2">
               Título de proyecto de investigación (provisional)
             </label>
-            <div class="flex items-center">
-              <template v-if="tituloExistente">
-                <input id="tituloTesis" type="text" v-model="tituloExistente" :disabled="tituloExistente"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
-              </template>
-              <template v-else>
-                <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="isTituloDisabled"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
-              </template>
-              <!-- Mostrar un mensaje de éxito si el título existe -->
+            <div class="flex flex-col">
+              <!-- Input con ícono de check -->
+              <div class="flex items-center">
+                <template v-if="tituloExistente">
+                  <input
+                    id="tituloTesis"
+                    type="text"
+                    v-model="tituloExistente"
+                    :disabled="tituloExistente"
+                    class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Escribe el título de tu proyecto de investigación aquí"
+                  />
+                </template>
+                <template v-else>
+                  <input
+                    id="tituloTesis"
+                    type="text"
+                    v-model="solicitude.titulo"
+                    :disabled="isTituloDisabled"
+                    class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Escribe el título de tu proyecto de investigación aquí"
+                  />
+                </template>
+                <!-- Ícono de check solo si el título está completo -->
+                <span v-if="solicitude.titulo && solicitude.titulo.trim() !== ''" class="ml-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-green-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="7"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+              </div>
+
+              <!-- Mensaje de éxito debajo del input -->
               <p v-if="tituloExistente" class="text-green-600 text-sm mt-2">
                 Tienes un título asignado
               </p>
-              <!-- Ícono de check solo si el título está completo -->
-              <span v-if="solicitude.titulo && solicitude.titulo.trim() !== ''" class="ml-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor" stroke-width="7">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </span>
             </div>
-
             <!-- Select para elegir asesor -->
             <label for="nombreAsesor" class="block text-xm font-medium text-gray-700 mb-2 mt-4">
               Elige a tu asesor
