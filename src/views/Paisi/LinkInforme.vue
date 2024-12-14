@@ -308,7 +308,7 @@ onMounted(() => {
                           class="text-white bg-azul w-25 px-3 py-1 text-xs rounded-xl focus:outline-none">
                           Generar docs
                         </button>
-                        <a v-else :href="solicitude.link" target="_blank" class="text-blue-800 hover:underline">Ver
+                        <a v-else :href="solicitude.link" target="_blank" class="text-azul font-medium hover:underline">Ver
                           documento</a>
                       </td>
 
