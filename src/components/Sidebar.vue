@@ -303,19 +303,16 @@ export default defineComponent({
 </script>
 
 <template>
-  <div :class="[isOpen ? 'w-0 lg:w-64' : '', 'flex bg-white dark:bg-gray-800']">
-    <!-- Backdrop -->
-    <div :class="isOpen ? 'block' : 'hidden'" @click="isOpen = !isOpen"
-      class="fixed inset-0 z-20 transition-opacity bg-black opacity-50 lg:hidden"></div>
-    <!-- End Backdrop -->
-
-    <div :class="[isOpen ? 'translate-x-0 ease-out' : '-translate-x-full ease-in',
-      'fixed inset-y-0 left-0 z-30 w-64 overflow-y-auto transition duration-300 transform',
-      isDark ? 'bg-gray-900 text-gray-100' : 'bg-white text-gray-900',
-      'sidebar']">
-
-      <!-- INFO DEL ESTUDIANTE COMO EL NOMBRE -->
-      <div class="flex flex-col items-center justify-center mt-6">
+  <div class="flex">
+    <div
+      :class="[isOpen ? 'lg:w-64' : 'lg:w-16 collapsed', 
+                'flex flex-shrink-0 h-full border-r border-gray-300 dark:border-gray-800']">
+      <!-- Sidebar Content -->
+      <div :class="[isOpen ? 'w-64' : 'w-16', 'h-full overflow-y-auto', isDark ? 'bg-gray-900  transition-opacity text-gray-100' : 'bg-white text-gray-900']">
+       <!-- Profile Section -->
+      <div
+        v-if="isOpen"
+        class="flex flex-col items-center justify-center mt-6 border-b border-gray-300 dark:border-gray-700">
         <div class="w-24 h-24 mb-4 overflow-hidden rounded-full shadow-lg">
           <img class="object-cover w-full h-full" :src="image_profile" alt="Avatar" />
         </div>
@@ -323,62 +320,42 @@ export default defineComponent({
           <h2 class="text-xl font-semibold break-words">{{ full_name }}</h2>
           <p class="text-lg text-[#2EBAA1] tracking-wide">{{ formatearTexto(role) }}</p>
         </div>
+        <hr>
+        <br>
       </div>
-
-      <!-- INFO DEL ESTUDIANTE COMO PROGRESO FALTA FUNCIONALIDAD SI ERES NUEVO EN ESTO TOMALO COMO UN RETO :3
-      <div class="px-6 mt-6 mb-8">
-        <div class="flex justify-between mb-4">
-          <span class="font-medium text-gray-600 dark:text-gray-300">Progreso General</span>
-        </div>
-        <div class="w-full bg-gray-200 rounded-full h-2.5">
-          <div :style="{ width: progreso + '%' }" class="bg-blue-600 h-2.5 rounded-full"></div>
-          <span class="text-sm font-medium text-blue-700 dark:text-blue-200">{{ progreso }}%</span>
-        </div>
-      </div>
-      <hr class="border-gray-300 dark:border-gray-600" /> -->
-
-      <nav class="mt-5 mb-10">
-        <!-- Secciones Dinámicas -->
-        <div v-for="section in sections" :key="section.name" class="mb-4">
-          <button
-            @click="toggleSubmenu(section.name)"
-            class="flex w-full items-center px-6 py-2 mt-4 duration-200 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-600 group">
-            <component :is="section.icon" class="w-8 h-8 transition-transform transform group-hover:translate-x-2 duration-300" />
-            <span class="mx-4 text-left text-base font-medium transition-transform transform group-hover:translate-x-2 duration-300">
-              {{ section.label }}
-            </span>
-            <svg
-              v-if="!section.isOpen"
-              viewBox="0 0 24 24"
-              class="w-4 h-4 ml-auto text-gray-500 dark:text-gray-400"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-                fill="#ffffff"
+        <!-- Sidebar Navigation -->
+        <nav class="mt-5">
+          <div v-for="section in sections" :key="section.name" class="mb-4">
+            <!-- Section Button -->
+            <button
+              @click="isOpen = true; toggleSubmenu(section.name)"
+              class="flex items-center w-full text-left group"
+              :class="isOpen ? 'px-6 py-2 hover:bg-gray-100 dark:hover:bg-gray-600' : 'justify-center mt-2'">
+              <component
+                :is="section.icon"
+                :class="isOpen ? 'w-9 h-9' : 'w-6 h-6 mt-20'" 
+                class="transition-transform transform group-hover:scale-110 duration-300"
               />
-            </svg>
-            <svg
-              v-else
-              viewBox="0 0 24 24"
-              class="w-4 h-4 ml-auto text-gray-500 dark:text-gray-400 rotate-180"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg">
-              <path
-                fill-rule="evenodd"
-                clip-rule="evenodd"
-                d="M11.9999 13.9394L17.4696 8.46973L18.5303 9.53039L11.9999 16.0607L5.46961 9.53039L6.53027 8.46973L11.9999 13.9394Z"
-                fill="currentColor"
-              />
-            </svg>
-          </button>
-          <div v-if="section.isOpen">
-            <ul class="pl-8 mt-2">
-              <li v-for="submenu in section.submenus" :key="submenu.name" class="flex items-center mb-1">
-                <div v-if="role === 'asesor' && submenu.name.includes('jurado')" class="w-1 bg-green-600 mr-2 h-full rounded"></div>
-                <router-link
+              <span
+                v-if="isOpen"
+                class="ml-4 text-base font-medium text-[#39B49E] dark:text-[#39B49E]">
+                {{ section.label }}
+              </span>
+              <!-- Toggle Icon -->
+              <svg v-if="section.submenus.length && isOpen"
+                  :class="[section.isOpen ? 'rotate-180' : 'rotate-0']"
+                  class="ml-auto w-5 h-5 transition-transform duration-300"
+                  xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+
+            <!-- Submenu -->
+            <div v-if="section.isOpen && isOpen" class="pl-8 mt-2">
+              <ul>
+                <li v-for="submenu in section.submenus" :key="submenu.name" class="mb-1">
+                  <router-link
                     :to="submenu.path"
                     class="flex items-center justify-between p-3 text-sm  transition duration-200"
                     :class="[
@@ -386,50 +363,39 @@ export default defineComponent({
                         ? 'bg-base text-white hover:bg-base dark:hover:bg-base'
                         : 'hover:bg-gray-100 dark:hover:bg-gray-700'
                     ]"
-                    style="margin: 0; width: 100%; box-sizing: border-box;"
-                  >
-                    <span>{{ submenu.label }}</span>
-                    <span
-                      v-if="role === 'asesor' && submenu.name.includes('jurado')"
-                      class="ml-2 text-xs text-white bg-green-600 px-2 py-1 rounded-lg"
-                    >
-                      Jurado
-                    </span>
+                    style="margin: 0; width: 100%; box-sizing: border-box;">
+                    {{ submenu.label }}
                   </router-link>
-
-
-              </li>
-
-            </ul>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </nav>
+        </nav>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Estilos mejorados para el sidebar */
+/* Sidebar Background and Text Color */
+.sidebar {
+  border-right: 1px solid #e5e7eb; /* Border light mode */
+  transition: all 0.3s ease; /* Smooth transition */
+}
+
 .dark .sidebar {
-  background-color: #1a202c;
-  color: #edf2f7;
+  background-color: #1a202c; /* Dark mode background */
+  color: #edf2f7; /* Light text in dark mode */
+  border-right: 1px solid #374151; /* Dark mode border */
 }
 
-.sidebar ul li .text-sm {
-  font-size: 0.875rem;
+.sidebar .submenu-item {
+  padding: 8px 16px; /* Adjust padding for submenu items */
 }
 
-.router-link-active {
-  font-weight: normal;
-}
 
-/* Badge personalizado para el rol de jurado */
-.badge-jurado {
-  background-color: #34d399; /* Verde claro */
-  color: #fff;
-  padding: 2px 6px;
-  font-size: 0.75rem;
-  border-radius: 4px;
-  margin-left: 0.5rem;
-}
+
 </style>
+
+
+
