@@ -29,7 +29,7 @@ export const alertConfirmation = (message: string, title: string, icon: string =
         text: message,
         customClass: {
             confirmButton: 'bg-base text-white px-4 py-2 rounded-md hover:bg-emerald-400',
-            cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-orange-400'
+            cancelButton: 'bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-300'
         },
         showCloseButton: true,
         showCancelButton: true,
