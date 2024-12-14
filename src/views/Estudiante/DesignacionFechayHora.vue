@@ -11,6 +11,7 @@ import DocumentCard from '@/components/DocumentCard.vue';
 import FechayHoraCard from '@/components/FechayHoraCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Designación de Fecha y Hora para Sustentación");
@@ -36,6 +37,42 @@ const goToNextPage = () => {
 const isNextButtonDisabled = computed(() => {
   return obtener.value?.oficio_estado !== 'tramitado' || obtener.value.resolucion_estado !== 'tramitado';
 });
+
+const estadoBolitaFechayHora = computed(() => {
+  if (isSolicitarDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para manejar el estado de la bolita de los documentos de fecha y hora
+const estadoBolitaFechayHoraDocumentos = computed(() => {
+  const estados = [
+    obtener.value?.oficio_estado || "pendiente",
+    obtener.value?.resolucion_estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "tramitado", retornar "hecho"
+  if (estados.every(estado => estado === "tramitado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
+
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -163,7 +200,7 @@ onMounted(() => {
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl -mb-2 font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
+        <div v-if="obtener" class="bg-white rounded-lg shadow-lg p-6 relative">
           <!-- mostrar jurados -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <JuradoCard
@@ -179,17 +216,18 @@ onMounted(() => {
 
         <!-- solicitar fecha y hora de sustentacion -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
-            <h2 class="text-xl font-medium text-black">1. Solicitar oficio para fecha y hora</h2>
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaFechayHora" />
+            <h2 class="text-xl font-medium text-black">1. Solicitar designación de fecha y hora para sustentar</h2>
             <ModalToolTip :infoModal="[{ info: 'Se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />               
           </div>
-          <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
-            <strong class="text-green-500 text-sm font-medium">"Solicitar Fecha y Hora"</strong> para solicitar la fecha y hora asignadas para la sustentación.
+          <p class="text-gray-500 mt-2 mb-1 text-sm">Haz click en el botón  
+            <strong class="text-base text-sm font-medium">"Solicitar fecha y hora"</strong> para solicitar la fecha y hora asignadas para la sustentación.
           </p>
           <!-- boton de solicitud fecha y hora --> 
-          <div class="flex justify-center mt-2">
+          <div class="flex justify-center mt-4">
             <ButtonRequest 
-              label="Solicitar Fecha y Hora" 
+              label="Solicitar fecha y hora" 
               :loading="isLoading" 
               :disabled="isSolicitarDisabled" 
               @click="solicitarFechayHora" />
@@ -198,14 +236,15 @@ onMounted(() => {
 
         <!-- documentos -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-            <h2 class="text-xl font-medium text-black">2. Documentos de fecha y hora</h2>
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaFechayHoraDocumentos" />
+            <h2 class="text-xl font-medium text-black">2. Documentos de designación de fecha y hora para sustentar</h2>
             <ModalToolTip :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la designación de fecha y hora para la sustentación' },]" /> 
           </div>
           <!-- oficio de PAISI -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-                titulo="Oficio emitido por el Programa Académico."
+                titulo="OFICIO PARA DESIGANCION DE FECHA Y HORA PARA SUSTENTACION DE TESIS - POR EL PROGRAMA ACADEMICO"
                 :estado="obtener?.oficio_estado || ''"
                 :id="obtener?.oficio_id ?? ''"
                 :view="VIEW_FYH"
@@ -215,7 +254,7 @@ onMounted(() => {
           <!-- resolución de Facultad -->
           <div class="mt-4 space-y-4">
             <DocumentCard 
-                titulo="Resolución de Fecha y Hora para la Sustentación."
+                titulo="RESOLUCION PARA DESIGANCION DE FECHA Y HORA PARA SUSTENTACION DE TESIS - POR LA FACULTAD"
                 :estado="obtener?.resolucion_estado || ''"
                 :id="obtener?.resolucion_id ?? ''"
                 :observacion="obtener?.resolucion_observacion || 'Por favor, comunícate con secretaría PAISI'"

@@ -10,6 +10,7 @@ import confetti from "canvas-confetti";
 import router from "@/router";
 import ModalToolTip from "@/components/modalToolTip.vue";
 import buttonEye from "@/components/buttonEye.vue";
+import EstadoBolita from "@/components/EstadoBolita.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 
 // extrayendo funcionn del composable
@@ -187,7 +188,7 @@ const sendSolicitude = async (student_id: string) => {
     };
 
     alertConfirmation(
-      "Estás seguro de iniciar este trámite?",
+      "¿Estás seguro de iniciar este trámite?",
       "Iniciar trámite",
       "question",
       params,
@@ -397,31 +398,28 @@ onMounted(() => { getTitulo(); });
 
   <template v-else>
     <template v-if="!solicitude.estado">
-      <div class="flex-1 p-15 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-10 text-center">
+      <div class="flex-1 p-15 font-Roboto bg-white h-screen">
+        <div class="p-10 bg-white space-y-10 text-center">
           <h3 class="text-4xl font-semibold text-azul">
-            Usted no ha iniciado un trámite
+            TRÁMITE DE LA TITULACIÓN 
           </h3>
-          <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
+        <p class="text-gray-500">Este es el inicio para el proceso de trámite de titulación, por favor dale click en <strong class="text-base">Iniciar trámite</strong> <br>  para empezar con la el trámite de la designación de tu asesor </p>
 
           <div class="flex justify-center">
             <img src="/img/notInitSolicitude.svg" alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md" />
+              class="w-[40%] h-auto object-cover" />
           </div>
-
           <div class="flex justify-center">
-
             <button v-if="authStore.id"
-              class="bg-base text-white px-6 py-3 rounded-lg text-xm hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)">
-
+              class="bg-base text-white px-6 py-3 rounded-lg text-xl hover:bg-base transition duration-300 font-medium space-x-3"
+              @click="sendSolicitude(authStore.id)"><i class="fas fa-step-forward text-azul text-xl"></i>
               Iniciar trámite
             </button>
           </div>
         </div>
       </div>
-    </template>
-    <template v-else>
+    </template>    
+    <template v-else>    
       <div class="flex-1 p-12 border-s-2 font-Roboto bg-gray-100">
         <h3 class="text-4xl font-semibold text-center text-azul">
           {{ textoTipiado }}
@@ -430,18 +428,8 @@ onMounted(() => { getTitulo(); });
           <div class="flex justify-between">
             <div class="flex flex-col sm:flex-row items-center justify-between w-full">
               <div class="flex items-center space-x-3">
-                <!-- Bolita con estado -->
-                <span class="flex items-center justify-center h-8 w-8 rounded-full border-2" :class="{
-                  'bg-green-500 border-green-500 text-white': solicitude.estado === 'aceptado',
-                  'bg-orange-500 border-orange-500 text-white': solicitude.estado === 'en progreso',
-                  'bg-gray-400 border-gray-400 text-white': !solicitude.estado || solicitude.estado === 'pendiente' || solicitude.estado === 'rechazado'
-                }">
-                  <i :class="{
-                    'fas fa-check': solicitude.estado === 'aceptado',
-                    'fas fa-hourglass-half': solicitude.estado === 'en progreso',
-                    'fas fa-ellipsis-h': !solicitude.estado || solicitude.estado === 'pendiente' || solicitude.estado === 'rechazado'
-                  }" class="text-sm"></i>
-                </span>
+                <!-- Usando el componente EstadoBolita -->
+                <EstadoBolita :estado="solicitude.estado" />
                 <!-- Título del encabezado -->
                 <h2 class="text-xl font-medium text-black">
                   1. Solicita tu asesor
@@ -460,30 +448,49 @@ onMounted(() => { getTitulo(); });
             <label for="tituloTesis" class="block text-xm font-medium text-gray-700 mb-2">
               Título de proyecto de investigación (provisional)
             </label>
-            <div class="flex items-center">
-              <template v-if="tituloExistente">
-                <input id="tituloTesis" type="text" v-model="tituloExistente" :disabled="tituloExistente"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
-              </template>
-              <template v-else>
-                <input id="tituloTesis" type="text" v-model="solicitude.titulo" :disabled="isTituloDisabled"
-                  class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Escribe el título de tu proyecto de investigación aquí" />
-              </template>
-              <!-- Mostrar un mensaje de éxito si el título existe -->
+            <div class="flex flex-col">
+              <!-- Input con ícono de check -->
+              <div class="flex items-center">
+                <template v-if="tituloExistente">
+                  <input
+                    id="tituloTesis"
+                    type="text"
+                    v-model="solicitude.titulo"
+                    :disabled="tituloExistente"
+                    class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Escribe el título de tu proyecto de investigación aquí"
+                  />
+                </template>
+                <template v-else>
+                  <input
+                    id="tituloTesis"
+                    type="text"
+                    v-model="solicitude.titulo"
+                    :disabled="isTituloDisabled"
+                    class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Escribe el título de tu proyecto de investigación aquí"
+                  />
+                </template>
+                <!-- Ícono de check solo si el título está completo -->
+                <span v-if="solicitude.titulo && solicitude.titulo.trim() !== ''" class="ml-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 text-green-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="7"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </span>
+              </div>
+
+              <!-- Mensaje de éxito debajo del input -->
               <p v-if="tituloExistente" class="text-green-600 text-sm mt-2">
                 Tienes un título asignado
               </p>
-              <!-- Ícono de check solo si el título está completo -->
-              <span v-if="solicitude.titulo && solicitude.titulo.trim() !== ''" class="ml-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24"
-                  stroke="currentColor" stroke-width="7">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              </span>
             </div>
-
             <!-- Select para elegir asesor -->
             <label for="nombreAsesor" class="block text-xm font-medium text-gray-700 mb-2 mt-4">
               Elige a tu asesor
@@ -619,22 +626,10 @@ onMounted(() => { getTitulo(); });
           <div
             class="flex flex-col sm:flex-row items-center justify-between w-full space-y-4 sm:space-y-0 sm:space-x-4">
             <div class="flex items-center space-x-3">
-              <!-- Bolita de estado -->
-              <span class="flex items-center justify-center h-8 w-8 rounded-full border-2" :class="{
-                'bg-green-500 border-green-500 text-white': estadoDocumentos === 'hecho',
-                'bg-gray-400 border-gray-400 text-white': estadoDocumentos === 'pendiente',
-                'bg-orange-400 border-yellow-500 text-white': estadoDocumentos === 'observado'
-              }">
-                <i :class="{
-                  'fas fa-check': estadoDocumentos === 'hecho',
-                  'fas fa-ellipsis-h': estadoDocumentos === 'pendiente',
-                  'fas fa-exclamation-circle': estadoDocumentos === 'observado'
-
-                }" class="text-sm"></i>
-              </span>
+              <EstadoBolita :estado="estadoDocumentos" />
               <!-- Título -->
               <h2 class="text-xl font-medium text-black">
-                2. Documentos para la conformidad de designación de asesor
+                2. Documentos para la designación de asesor del proyecto de investigación
               </h2>
               <!-- Tooltip -->
               <ModalToolTip :infoModal="[{
@@ -656,8 +651,8 @@ onMounted(() => { getTitulo(); });
                   <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
                   <!-- Nombre del documento -->
                   <div>
-                    <span class="text-gray-700 font-medium">
-                      <!-- {{ oficio.nombre_de_oficio }}  --> SOLICITUD DE RESOLUCIÓN DE DESIGNACIÓN DE ASESOR
+                    <span class="text-gray-700 font-medium text-sm">
+                      <!-- {{ oficio.nombre_de_oficio }}  --> OFICIO DE DESIGNACION DE DOCENTE ASESOR PARA TRABAJO DE INVESTIGACION - POR EL PROGRAMA ACADEMICO
                     </span>
                     <p v-if="oficio.estado === 'observado'" class="text-sm italic text-gray-500">
                       Por favor comuníquese con secretaría del programa académico
@@ -693,8 +688,8 @@ onMounted(() => { getTitulo(); });
                   <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
                   <!-- Nombre del documento -->
                   <div>
-                    <span class="w-full md:w-auto mb-2 md:mb-0 text-xm">
-                      <!-- {{resolucion.nombre}}  --> RESOLUCIÓN DE DESIGNACIÓN DE ASESOR
+                    <span class="w-full md:w-auto mb-2 md:mb-0 text-sm">
+                      <!-- {{resolucion.nombre}}  --> RESOLUCION DE DESIGNACION DE DOCENTE ASESOR PARA TRABAJO DE INVESTIGACION - POR LA FACULTAD
                       <p v-if="resolucion.estado === 'observado'" class="italic text-gray-500">
                         <!-- "{{ resolucion.observacion }}" --> Por favor comuníquese con secretaría de facultad.
                       </p>

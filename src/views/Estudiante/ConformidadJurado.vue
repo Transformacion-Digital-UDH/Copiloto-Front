@@ -13,6 +13,7 @@ import DocumentCard from "@/components/DocumentCard.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonConformidadJurados from "@/components/SkeletonConformidadJurados.vue";
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 
 // extrayendo funcionn del composable
@@ -20,6 +21,65 @@ const { textoTipiado, typeWriter } = useTypewriter(
   "Conformidad del Proyecto de Investigación por los Jurados"
 );
 onMounted(typeWriter);
+
+// Computed para manejar el estado de la bolita en la revisión de observaciones
+const estadoBolitaObservaciones = computed(() => {
+  const estados = [
+    ...presidenteRevisiones.value.map(revision => revision.estado),
+    ...secretarioRevisiones.value.map(revision => revision.estado),
+    ...vocalRevisiones.value.map(revision => revision.estado),
+  ];
+
+  // Si no hay revisiones en ninguna tabla, retornar "pendiente"
+  if (estados.length === 0) {
+    return "pendiente";
+  }
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "aprobado"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "aprobado";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
+
+// Computed para manejar el estado de las actas de conformidad
+const estadoBolitaActas = computed(() => {
+  const estados = [
+    presidenteRevisiones.value[0]?.estado || "pendiente", // Accede al valor usando `.value`
+    secretarioRevisiones.value[0]?.estado || "pendiente",
+    vocalRevisiones.value[0]?.estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "hecho"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
 
 
 //*********************************** INTEGRACIÓN CON EL BACKEND PARA CONFORMIDAD DE JURADOS PY*************************************************** */
@@ -130,16 +190,16 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="space-y-10">
+      <div class="space-y-8">
         <!-- card para mostrar los jurados y titulo -->
-        <div v-if="obtener" class=" text-xm text-azul space-y-2 relative">
+        <div v-if="obtener" class=" text-xm text-azul bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
           <p class="text-gray-600 text-sm text-center">Estos son los jurados asignados y el título de tu proyecto de investigación. Verifica la información y revisa las actualizaciones.</p>
         <div v-if="obtener" class=" text-xm text-azul space-y-4 relative">
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <JuradoCard v-for="jurado in jurados" :key="jurado.revision_id" :rol="jurado.rol" :nombre="jurado.nombre" />
           </div>
           <!-- Enlace del proyecto de Tesis -->
-          <div v-if="obtener?.link" class="text-center mt-6">
+          <div v-if="obtener?.link" class="text-center mt-2">
             <a :href="obtener?.link" target="_blank"
               class="inline-block bg-azul text-white px-4 py-2 rounded-lg hover:bg-blue-900 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <i class="fas fa-external-link-alt"></i> Abrir proyecto
@@ -150,7 +210,7 @@ onMounted(() => {
               <div class="bg-baseClarito rounded-lg p-4 shadow-md w-full text-center hover:shadow-lg transition-all">
                 <i class="fas fa-file-alt text-azul text-4xl mb-2"></i>
                 <p class="font-bold text-lg text-azul mb-2">Título de proyecto de investigación</p>
-                <p class="text-gray-700 uppercase text-sm font-medium">
+                <p class="text-gray-700 uppercase text-sm  font-medium">
                   {{ obtener?.titulo || 'Título no asignado' }}
                 </p>
               </div>
@@ -192,14 +252,15 @@ onMounted(() => {
 
         <!-- Revisión de levantamiento de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaObservaciones" />
             <h4 class="text-xl font-medium text-black">1. Revisión de observaciones</h4>
             <ModalToolTip
               :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu proyecto de tesis con tus jurados, hasta que esté todo conforme.' },]" />
           </div>
 
           <p class="text-gray-500 mt-1 text-sm">Si el jurado deja observaciones el estado será 
-          <strong class="text-gray-400 text-sm font-medium">"Pendiente"</strong>. Corrige las observaciones en Google Docs. Luego de corregir, haz clic en<strong class="text-green-500 text-sm font-medium">“Solicitar revisión”</strong> para una nueva revisión.<br> Cuando los 3 jurados aprueben, el estado cambiará a <strong class="text-green-500 text-sm font-medium">Aprobado</strong>
+          <strong class="text-gray-400 text-sm font-medium">"Pendiente"</strong>. Corrige las observaciones en Google Docs. Luego de corregir, haz clic en<strong class="text-green-500 text-sm font-medium">“Solicitar revisión”</strong> para una nueva revisión.<br> Cuando los 3 jurados aprueben, el estado cambiará a <strong class="text-green-500 text-sm font-medium">"Aprobado"</strong>
         </p>
 
           <!-- Tabla de observaciones Presidente -->
@@ -224,9 +285,9 @@ onMounted(() => {
 
         <!-- documentos de cada jurado -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
-
-            <h2 class="text-xl font-medium text-black">2. Actas de conformidad del proyecto de investigación por los jurados</h2>
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaActas" />
+            <h2 class="text-xl font-medium text-black">2. Documentos de conformidad del proyecto de investigación por los jurados</h2>
 
             <ModalToolTip
               :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />

@@ -3,18 +3,20 @@
     <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium ">
       <div class="flex items-center space-x-4 text-gray-700 font-medium">
       <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
-      <span class="flex-1 text-xm bg-gray-50">{{ titulo }}</span>
+      <span class="flex-1 text-sm bg-gray-50">{{ titulo }}</span>
       </div>
       <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
-        <div
-          v-if="estado === 'aprobado'"
-          class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2">
-          <a 
+         <!-- Botón Ver -->
+         <div
+          v-if="estado === 'aprobado'">
+          <a
             :href="dynamicHref"
             target="_blank"
             rel="noopener noreferrer"
-            class="flex items-center px-4 py-2 border rounded text-gray-600 border-gray-400 hover:bg-gray-100 w-full md:w-auto justify-center">
-            <i class="fas fa-eye mr-2"></i> Ver
+            class="flex items-center m-2 relative group">
+            <IconEyeCerrar class="mr-1 group-hover:hidden" />
+            <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+            <span class="text-[#34495e]">Ver</span>
           </a>
         </div>
 
@@ -31,6 +33,8 @@
 </template>
 
 <script lang="ts" setup>
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 import { computed } from 'vue';
 const BASE_URL = import.meta.env.VITE_URI_BACK;
 

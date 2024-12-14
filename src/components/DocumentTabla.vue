@@ -1,36 +1,44 @@
 <template>
   <div class="overflow-x-auto">
-    <table class="w-full bg-white border rounded-md shadow text-xs">
+    <table class="w-11/12 mx-auto bg-white border rounded-md shadow text-sm">
       <thead>
-        <tr class="text-center text-azul bg-gray-300 truncate">
-          <th class="px-2 py-1 text-left tracking-wider">DOCUMENTOS</th>
-          <th class="px-2 py-1 text-left tracking-wider">EMISOR</th>
-          <th class="px-2 py-1 tracking-wider">FECHA EMISIÓN</th>
-          <th class="px-2 py-1 tracking-wider">ACCIÓN</th>
+        <tr class="bg-gray-200 text-azul">
+          <th class="px-4 py-2 text-left whitespace-nowrap">DOCUMENTOS</th>
+          <th class="px-4 py-2 text-left whitespace-nowrap">EMISOR</th>
+          <th class="px-4 py-2 text-center whitespace-nowrap">FECHA EMISIÓN</th> <!-- Cambié a text-center -->
+          <th class="px-4 py-2 text-center whitespace-nowrap">ACCIÓN</th>
         </tr>
       </thead>
       <tbody v-if="documents && documents.length > 0">
         <tr
           v-for="(doc, index) in documents"
           :key="index"
-          class="border-b border-gray-200 text-center uppercase"
+          class="border-b border-gray-300"
         >
-          <td class="px-2 py-1 text-left text-gray-600 truncate">
-            <p class="truncate">{{ documentCambioDeTexto(doc.nombre) }}</p>
+          <!-- Documento -->
+          <td class="px-4 py-2 text-gray-700">
+            <div class="flex items-start space-x-2">
+              <i class="fas fa-file-alt text-green-500 text-base"></i>
+              <p class="whitespace-normal break-words uppercase">{{ documentCambioDeTexto(doc.nombre) }}</p>
+            </div>
           </td>
-          <td class="px-2 py-1 text-left text-gray-600 truncate">
-            <p class="truncate">{{ doc.emisor || "Sin emisor" }}</p>
+          <!-- Emisor -->
+          <td class="px-4 py-2 text-gray-700">
+            <p class="whitespace-normal break-words uppercase">{{ doc.emisor || "Sin emisor" }}</p>
           </td>
-          <td class="px-2 py-1 text-gray-600 truncate">
-            <p class="truncate">{{ doc.fechaEmision || "Sin fecha" }}</p>
+          <!-- Fecha de emisión -->
+          <td class="px-4 py-2 text-center text-gray-700"> <!-- Cambié a text-center -->
+            <p class="whitespace-normal break-words">{{ doc.fechaEmision || "Sin fecha" }}</p>
           </td>
-          <td class="px-2 py-1 flex justify-center items-center">
+          <!-- Acción -->
+          <td class="px-4 py-2 text-center">
             <a
               :href="doc.urlView"
               target="_blank"
-              class="flex items-center px-2 py-1 text-xs border rounded text-gray-600 border-gray-400 hover:bg-gray-100 justify-center"
-            >
-              <i class="fas fa-eye mr-1"></i> Ver
+              class="flex items-center m-2 relative group">
+              <IconEyeCerrar class="mr-1 group-hover:hidden" />
+              <IconEyeAbrir class="mr-1 hidden group-hover:block" />
+              <span class="text-[#34495e]">Ver</span>
             </a>
           </td>
         </tr>
@@ -47,7 +55,10 @@
 </template>
 
 
+
 <script lang="ts" setup>
+import IconEyeAbrir from "@/components/icons/IconEyeAbrir.vue";
+import IconEyeCerrar from "@/components/icons/IconEyeCerrar.vue";
 
 interface Document {
   nombre: string;

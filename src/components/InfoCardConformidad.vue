@@ -36,7 +36,7 @@
         </a>
       </div>
       <!-- Mensaje -->
-      <p class="text-sm text-gray-500 text-center">
+      <p class="text-sm text-gray-500 text-center pt-4">
         Asegúrate de corregir y actualizar tu información del proyecto de investigación en Google Docs antes de hacer clic en
         <strong class="text-g font-medium">"Solicitar revisión"</strong>.
       </p>

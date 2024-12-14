@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import router from '@/router';
 import { alertToast } from '@/functions';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Conformidad de integridad por el Vicerrectorado de Investigación");
@@ -34,6 +35,52 @@ const goToNextPage = () => {
 
 const isNextButtonDisabled = computed(() => {
   return !obtener.value?.filtros.every(filtro => filtro.fil_estado === 'aprobado');
+});
+
+// Computed para manejar el estado de la bolita en el curso de Buenas Prácticas
+const estadoBolitaCurso = computed(() => {
+  const estadoCurso = obtener.value?.tu_coach?.doc_estado ?? "pendiente";
+
+  // Retornar el estado de acuerdo al valor
+  if (estadoCurso === "aprobado") {
+    return "hecho";
+  }
+  if (estadoCurso === "observado") {
+    return "observado";
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para manejar el estado de la bolita
+const estadoBolitaConformidad = computed(() => {
+  return isAprobacionDisabled.value ? "hecho" : "pendiente";
+});
+
+// Computed para manejar el estado de la bolita de los documentos de integridad
+const estadoBolitaIntegridad = computed(() => {
+  const estados = [
+    primerFiltro.value.fil_estado || "pendiente",
+    segundoFiltro.value.fil_estado || "pendiente",
+    tercerFiltro.value.fil_estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "hecho"
+  if (estados.every(estado => estado === "aprobado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
 });
 
 /*************************************** INTEGRACION CON EL BACKEND ************************************************ */
@@ -175,7 +222,8 @@ onMounted(() => {
       <div class="mt-6 space-y-10">
         <!-- constancia de tucoach -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaCurso" />
             <h4 class="text-xl font-medium text-black">1. Curso de Buenas Prácticas - TUCOACH.UDH</h4>
           </div>
 
@@ -195,7 +243,8 @@ onMounted(() => {
 
         <!-- solicitar conformidad por VRI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaConformidad" />
             <h2 class="text-xl font-medium text-black">2. Solicitar conformidad de integridad por el vicerrectorado de investigación</h2>      
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">Haz clic en el botón  
@@ -271,7 +320,8 @@ onMounted(() => {
         
         <!-- documentos de cada filtro del VRI -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaIntegridad" />
             <h2 class="text-xl font-medium text-black">3. Documentos para la conformidad de integridad por el  vicerrectorado de investigación.</h2>
           </div>
 
@@ -280,7 +330,7 @@ onMounted(() => {
               <div class="flex flex-col md:flex-row justify-between md:items-center text-gray-700 font-medium">
                 <div class="flex items-center space-x-4 text-gray-700 font-medium">
                 <i class="fas fa-file-alt text-[#39B49E] text-2xl"></i>
-                <span class="flex-1 text-xm bg-gray-50">VERIFICACIÓN DE DOCUMENTOS</span>
+                <span class="flex-1 text-sm bg-gray-50">VERIFICACIÓN DE DOCUMENTOS</span>
                 </div>
                 <div class="flex flex-col md:flex-row items-start md:items-center justify-end w-full md:w-auto space-y-2 md:space-y-0 md:space-x-4">
                   <div v-if="primerFiltro.fil_estado === 'aprobado'" class="flex flex-col space-y-2 w-full md:flex-row md:space-y-0 md:space-x-2"></div>
@@ -339,7 +389,7 @@ onMounted(() => {
   color: #ffffff;
 }
 .estado-aprobado {
-  background-color: #39B49E;
+  background-color: #38a169;
   color: #ffffff;
 }
 .text-center {

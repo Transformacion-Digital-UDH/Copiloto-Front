@@ -12,6 +12,7 @@ import JuradoTabla from "@/components/JuradoTabla.vue";
 import { useTypewriter } from "@/composables/useTypewriter";
 import NavigationButton from "@/components/NavigationButton.vue";
 import SkeletonDesignarJurados from "@/components/SkeletonDesignarJurados.vue";
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 
 // extrayendo funcionn del composable
@@ -26,6 +27,39 @@ const solicitarCambioJurado = (jurado: any) => {
   alert(`Has solicitado el cambio del jurado: ${jurado.nombre}`);
   // Aquí puedes agregar la lógica adicional para solicitar el cambio del jurado
 };
+
+const estadoBolitaJurados = computed(() => {
+  if (isSolicitarDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para determinar el estado de la bolita
+const estadoBolitaJuradosCargados = computed(() => {
+  return jurados.value.length > 0 ? "hecho" : "pendiente";
+});
+
+// Computed para manejar el estado de la bolita en esta sección (documento)
+const estadoDocumentoJurado = computed(() => {
+  const estadoDoc = obtener.value?.estado ?? '';
+
+  // Si el estado es "aprobado", la bolita debe mostrar "aprobado"
+  if (estadoDoc === "tramitado") {
+    return "tramitado";
+  }
+
+  // Si el estado es "observado", la bolita debe mostrar "observado"
+  if (estadoDoc === "observado") {
+    return "observado";
+  }
+
+  // Por defecto, si no es aprobado ni observado, mostrar "pendiente"
+  return "pendiente";
+});
+
 
 //************************************* INTEGRACION EL BACKEND PARA VER Y SOLICITAR JURADOS ********************************************* */
 const authStore = useAuthStore();
@@ -67,11 +101,7 @@ const obtenerDatosEstudiante = async () => {
     console.log("Respuesta de la API:", response.data);
 
     if (!response.data || !response.data.jurados || response.data.jurados.length === 0) {
-      alertToast(
-        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
-        "Advertencia",
-        "warning"
-      );
+      console.log("No se encontraron jurados designados. Verifica si ya solicitó sus jurados.");
     } else {
       // Asignar el estado y otros datos al objeto `obtener`
       obtener.value = response.data;
@@ -98,8 +128,6 @@ const obtenerDatosEstudiante = async () => {
     load.value = false;
   }
 };
-
-
 
 // funcion para solicitar que me asignen jurados
 const solicitarJuradoProyecto = async () => {
@@ -139,13 +167,15 @@ onMounted(() => {
 
 </script>
 <template>
-  <template v-if="load"><SkeletonDesignarJurados/></template>
+  <template v-if="load">
+    <SkeletonDesignarJurados />
+  </template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">
         {{ textoTipiado }}
       </h3>
-      <div class="mt-6 space-y-7">
+      <div class="mt-6 space-y-8">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
@@ -172,39 +202,33 @@ onMounted(() => {
         </div> -->
         <!-- solicitar designacion de jurados PY -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaJurados" />
             <h2 class="text-xl font-medium text-black">
               1. Solicitar designación de jurados
             </h2>
-            <ModalToolTip
-              :infoModal="[
-                {
-                  info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
-                },
-              ]"
-            />
+            <ModalToolTip :infoModal="[
+              {
+                info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
+              },
+            ]" />
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">
             Haz clic en el botón
-            <strong class="text-green-500 text-sm font-medium"
-              >"Solicitar jurados"</strong
-            >
+            <strong class="text-green-500 text-sm font-medium">"Solicitar jurados"</strong>
             para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-4">
-            <ButtonRequest
-              label="Solicitar jurados"
-              :loading="isLoading"
-              :disabled="isSolicitarDisabled"
-              @click="solicitarJuradoProyecto"
-            />
+            <ButtonRequest label="Solicitar jurados" :loading="isLoading" :disabled="isSolicitarDisabled"
+              @click="solicitarJuradoProyecto" />
           </div>
         </div>
 
         <!-- jurados designados por el decano -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaJuradosCargados" />
             <h2 class="text-xl font-medium text-black">
               2. Los jurados designados para tu proyecto de investigación son:
             </h2>
@@ -217,39 +241,31 @@ onMounted(() => {
         <!-- se muestra oficio mutiple -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
-            <div class="flex items-center">
-
+            <div class="flex items-center space-x-3">
+              <EstadoBolita :estado="estadoDocumentoJurado" />
               <h2 class="text-xl font-medium text-black">
                 3. Documento para la designación de jurados de proyecto de investigación
 
               </h2>
-              <ModalToolTip
-                :infoModal="[
-                  {
-                    info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
-                  },
-                ]"
-              />
+              <ModalToolTip :infoModal="[
+                {
+                  info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
+                },
+              ]" />
             </div>
           </div>
           <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard
               titulo="OFICIO MULTIPLE DE DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS) - POR EL PROGRAMA ACADEMICO"
-              :estado="obtener?.estado || ''"
-              :id="obtener?.docof_id ?? ''"
-              :view="VIEW_OFFICEJURADO"
-              :download="DOWNLOAD_OFFICEJURADO"
-            />
+              :estado="obtener?.estado || ''" :id="obtener?.docof_id ?? ''" :view="VIEW_OFFICEJURADO"
+              :download="DOWNLOAD_OFFICEJURADO" />
           </div>
         </div>
 
         <!--Botones siguiente y anteerior-->
-        <NavigationButton
-          prevRoute="/estudiante/conformidad-asesor"
-          nextRoute="/estudiante/conformidad-jurado"
-          :nextCondition="() => obtener?.estado === 'tramitado'"
-        />
+        <NavigationButton prevRoute="/estudiante/conformidad-asesor" nextRoute="/estudiante/conformidad-jurado"
+          :nextCondition="() => obtener?.estado === 'tramitado'" />
 
         <!-- Card 4: Solicitar cambio de jurado
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -317,6 +333,7 @@ onMounted(() => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
+
 .text-center {
   text-align: center;
   padding: 1rem;

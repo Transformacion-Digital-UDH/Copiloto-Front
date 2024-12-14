@@ -8,9 +8,10 @@ import router from '@/router';
 import ModalToolTip from '@/components/modalToolTip.vue';
 import DocumentCard from '@/components/DocumentCard.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
-const { textoTipiado, typeWriter } = useTypewriter("Sustentación");
+const { textoTipiado, typeWriter } = useTypewriter("Sustentación de tesis");
 onMounted(typeWriter);
 
 // const handleNextButtonClick = () => {
@@ -33,6 +34,23 @@ onMounted(typeWriter);
 // const isNextButtonDisabled = computed(() => {
 //   return obtener.value?.revision?.rev_estado !== 'aprobado';
 // });
+
+
+// Computed para manejar el estado de la bolita del acta de sustentación
+const estadoBolitaActaSustentacion = computed(() => {
+  const estadoActa = obtener.value?.sus_estado || "pendiente";
+
+  if (estadoActa === "observado") {
+    return "observado";
+  }
+
+  if (estadoActa === "emitido") {
+    return "hecho";
+  }
+
+  return "pendiente"; // Valor por defecto
+});
+
 
 /****************************** INTEGRACION CON EL BACKEND *********************************** */
 const authStore = useAuthStore();
@@ -110,19 +128,19 @@ onMounted(() => {
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
       <div class="mt-6 space-y-10">
         <!-- mistrar fecha y hora de sustentacion final -->
-        <div v-if="obtener" class="bg-baseClarito rounded-lg shadow-lg p-6 relative">
+        <div v-if="obtener" class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             <!-- fecha de susnteacion -->
-            <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
-              <i class="fas fa-calendar-alt text-blue-500 text-3xl mb-4"></i>
-              <p class="text-lg font-semibold text-azul mb-2">Fecha de Sustentación</p>
-              <p class="text-gray-600 text-lg">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</p>
+            <div class="bg-white border rounded-lg p-6 flex flex-col items-center shadow-lg w-full border-gray-300">
+              <i class="fas fa-calendar-alt text-[#39B49E] text-3xl mb-4"></i>
+              <p class="text-lg font-semibold text-azul mb-2">Fecha y hora final de sustentacion</p>
+              <p class="text-gray-700 text-lg font-medium">{{ obtener?.sus_fecha || 'Fecha no asignada' }}</p>
             </div>
             <!-- nota de sustneacion -->
-            <div class="bg-white rounded-lg p-14 flex flex-col items-center shadow-lg w-full">
-              <i class="fas fa-star text-yellow-500 text-3xl mb-4"></i>
-              <p class="text-lg font-semibold text-azul mb-2">Nota de Sustentación</p>
-              <p class="text-gray-600 text-lg">{{ obtener?.sus_nota || 'Nota no asignada' }}</p>
+            <div class="bg-white border rounded-lg p-6 flex flex-col items-center shadow-lg w-full border-gray-300">
+              <i class="fas fa-star text-[#39B49E] text-3xl mb-4"></i>
+              <p class="text-lg font-semibold text-azul mb-2">Nota de sustentación</p>
+              <p class="text-gray-700 text-lg font-medium">{{ obtener?.sus_nota || 'Nota no asignada' }}</p>
               <!-- barra de la ntoa -->
               <div class="relative w-full bg-gray-200 h-4 rounded-full overflow-hidden mt-4 progress-bar">
                 <div
@@ -138,14 +156,15 @@ onMounted(() => {
         <!-- docuemnto de informe de conformidad de observaciones -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center justify-between">
-            <div class="flex items-center">
+            <div class="flex items-center space-x-3">
+              <EstadoBolita :estado="estadoBolitaActaSustentacion" />
               <h2 class="text-xl font-medium text-black">1. Acta de sustentación de tesis</h2>
               <ModalToolTip :infoModal="[{ info: 'Por favor espere que se carguen los documentos que verifiquen la sustentación' },]" />
             </div>            
           </div>
           <div class="mt-4 space-y-4">
             <DocumentCard 
-              titulo="Carta de Conformidad de Sustentación"
+              titulo="ACTA DE SUSTENTACIÓN DE TESIS PARA OPTAR EL TÍTULO PROFESIONAL"
               :estado="obtener?.sus_estado || ''"
               :id="obtener?.sus_id ?? ''"
               :view="VIEW_SUS"

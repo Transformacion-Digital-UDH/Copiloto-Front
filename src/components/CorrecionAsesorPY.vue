@@ -27,7 +27,7 @@
               revision.estado === 'pendiente' || revision.estado === 'aprobado' 
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-base hover:bg-[#29a790]',]"
-            @click="actualizarEstado(revision.revision_id)"
+            @click="actualizarEstado(revision.revision_id)" 
           >
             <i class="fas fa-comment text-blue-500 mr-2"></i> Observaciones corregidas
           </button>
@@ -89,7 +89,7 @@ const formatearTexto = (text: string): string =>
 }
 .estado-tramitado,
 .estado-aprobado {
-  background-color: #39B49E;
+  background-color: #38a169;
   color: #ffffff;
 }
 .estado-observado {

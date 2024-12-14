@@ -13,10 +13,49 @@ import NavigationButton from '@/components/NavigationButton.vue';
 import SkeletonConformidadesAsesor from '@/components/SkeletonConformidadesAsesor.vue';
 import InfoCardConformidad from '@/components/InfoCardConformidad.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Conformidad de Informe Final por Asesor");
 onMounted(typeWriter);
+
+const estadoBolitaRevision = computed(() => {
+  if ( isSolicitarDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para manejar el estado de la bolita en la revisión de observaciones
+// Computed para manejar el estado de la bolita en la revisión de observaciones
+const estadoBolitaObservaciones = computed(() => {
+  const estadoRevision = obtener.value?.revision?.rev_estado ?? "pendiente";
+
+  if (estadoRevision === "observado") {
+    return "observado";
+  }
+  if (estadoRevision === "aprobado") {
+    return "hecho";
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para manejar el estado de la bolita
+const estadoBolitaDocumento = computed(() => {
+  const estadoDocumento = obtener.value?.revision?.rev_estado ?? "pendiente";
+
+  // Manejar los posibles estados
+  if (estadoDocumento === "aprobado") {
+    return "hecho";
+  }
+  if (estadoDocumento === "observado") {
+    return "observado";
+  }
+  return "pendiente"; // Valor por defecto
+});
+
 
 /****************************** INTEGRACION CON EL BACKEND *********************************** */
 const authStore = useAuthStore();
@@ -107,6 +146,7 @@ const actualizarEstadoRevision = async (review_id: string) => {
   }
 };
 
+
 onMounted(() => {
   obtenerDatosEstudiante();
 });
@@ -117,7 +157,8 @@ onMounted(() => {
   <template v-else>
   <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
     <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-    <div class="mt-6 space-y-10">
+    <div class="mt-6 space-y-8">
+      <div class=" bg-white rounded-lg shadow-lg p-6  space-y-2 relative">
       <!-- Sección 1: Solicitar link para cargar el Informe Final -->
       <!-- <div class="bg-white rounded-lg shadow-lg p-6">
         <h4 class="text-2xl font-medium text-black mb-3">1. Solicitar link para cargar su Informe final</h4>
@@ -137,10 +178,12 @@ onMounted(() => {
           asesor: obtener?.asesor,
           titulo: obtener?.titulo,
           link: obtener?.['link-informe']}"/>
+         </div> 
 
       <!-- solicitar correcion al asesor IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="relative flex items-center">
+        <div class="relative flex items-center space-x-3">
+          <EstadoBolita :estado="estadoBolitaRevision" />
           <h2 class="text-xl font-medium text-black">1. Solicitar revisión a tu asesor</h2>
           <ModalToolTip :infoModal="[{ info: 'Asegúrate de haber subido tu informe final en el documento de google para que el asesor pueda revisar y realizar las correcciones.' },]" />
         </div>
@@ -159,7 +202,8 @@ onMounted(() => {
 
       <!-- revision del asesor para IF -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="relative flex items-center">
+        <div class="relative flex items-center space-x-3">
+          <EstadoBolita :estado="estadoBolitaObservaciones" />
           <h4 class="text-xl font-medium text-black">2. Revisión de observaciones</h4>
           <ModalToolTip :infoModal="[{ info: 'En esta sección se revisarán y corregirán las observaciones de tu informe final con tu asesor, hasta que esté todo conforme.' },]" />            
         </div>
@@ -180,12 +224,12 @@ onMounted(() => {
 
       <!-- informe de conformidad de observaciones -->
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
-        <div class="flex items-center">
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaDocumento" />
             <h2 class="text-xl font-medium text-black">3. Documento de conformidad del asesor para el informe final del proyecto de investigación </h2>
             <ModalToolTip :infoModal="[{ info: 'Asegúrate de revisar el documento para verificar las observaciones antes de continuar.' },]" />
           </div>            
-        </div>
+       
         <div class="mt-4 space-y-4">
           <DocumentCard 
             titulo="ACTA DE CONFORMIDAD DEL INFORME FINAL - POR EL ASESOR"

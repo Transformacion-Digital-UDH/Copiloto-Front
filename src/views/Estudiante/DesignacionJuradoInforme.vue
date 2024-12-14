@@ -10,6 +10,7 @@ import DocumentCard from '@/components/DocumentCard.vue';
 import ButtonRequest from '@/components/ButtonRequest.vue';
 import JuradoTabla from '@/components/JuradoTabla.vue';
 import { useTypewriter } from '@/composables/useTypewriter';
+import EstadoBolita from "@/components/EstadoBolita.vue";
 
 // extrayendo funcionn del composable
 const { textoTipiado, typeWriter } = useTypewriter("Designación de Jurados para el Informe Final");
@@ -59,6 +60,47 @@ const bloquear = ['pendiente', 'observado', 'tramitado']
 const isSolicitarDisabled = computed(() => {
   return ( isLoading.value || (bloquear.includes(obtener.value?.oficio.of_estado ?? '') || bloquear.includes(obtener.value?.resolucion.of_estado ?? '')));
 });
+
+const estadoBolitaJurados = computed(() => {
+  if (isSolicitarDisabled.value) {
+    return "hecho"; // Estado cuando el botón está deshabilitado
+  } else if (isLoading.value) {
+    return "pendiente"; // Estado cuando está cargando
+  }
+  return "pendiente"; // Valor por defecto
+});
+
+// Computed para determinar el estado de la bolita
+const estadoBolitaJuradosCargados = computed(() => {
+  return jurados.value.length > 0 ? "hecho" : "pendiente";
+});
+
+// Computed para manejar el estado de la bolita en los documentos de jurados
+const estadoBolitaDesignacionJurados = computed(() => {
+  const estados = [
+    obtener.value?.oficio?.of_estado || "pendiente",
+    obtener.value?.resolucion?.of_estado || "pendiente",
+  ];
+
+  // Si alguno de los estados es "observado", retornar "observado"
+  if (estados.includes("observado")) {
+    return "observado";
+  }
+
+  // Si alguno de los estados es "pendiente", retornar "pendiente"
+  if (estados.includes("pendiente")) {
+    return "pendiente";
+  }
+
+  // Si todos los estados son "aprobado", retornar "hecho"
+  if (estados.every(estado => estado === "tramitado")) {
+    return "hecho";
+  }
+
+  // Valor por defecto
+  return "pendiente";
+});
+
 
 interface Jurado {
   rol: string;
@@ -171,7 +213,7 @@ onMounted(() => {
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
-      <div class="mt-6 space-y-10">
+      <div class="mt-6 space-y-8">
         <!-- Card 1: Pago de Trámite
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center">
@@ -198,7 +240,8 @@ onMounted(() => {
         </div> --> 
         <!-- solicitar designacion de jurados IF -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="relative flex items-center">
+          <div class="relative flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaJurados" />
             <h2 class="text-xl font-medium text-black">1. Solicitar designación de jurados</h2>
             <ModalToolTip :infoModal="[{ info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.' },]" />               
           </div>
@@ -217,7 +260,8 @@ onMounted(() => {
 
         <!-- jurados designados -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaJuradosCargados" />
             <h2 class="text-xl font-medium text-black">2. Los jurados designados para tu informe final son:</h2>
           </div>
           <div class="overflow-x-auto mt-4 flex justify-center">
@@ -227,7 +271,8 @@ onMounted(() => {
 
         <!-- se muestra oficio y resolucion de cada area -->
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
-          <div class="flex items-center">
+          <div class="flex items-center space-x-3">
+            <EstadoBolita :estado="estadoBolitaDesignacionJurados" />
             <h2 class="text-xl font-medium text-black">3. Documentos para la conformidad de designación de jurados</h2>
             <ModalToolTip :infoModal="[{ info: 'Estos son los documentos oficiales con los jurados designados. Asegúrate de revisarlos antes de continuar.' },]" />                   
           </div>
@@ -264,7 +309,7 @@ onMounted(() => {
             :class="[ 'px-4 py-2 text-white rounded-md', isNextButtonDisabled 
             ? 'bg-gray-300 cursor-not-allowed' 
             : 'bg-green-500 hover:bg-green-600',]">Siguiente
-          </button>
+          </button> 
         </div>
 
           <!-- Card 4: Solicitar cambio de jurado
