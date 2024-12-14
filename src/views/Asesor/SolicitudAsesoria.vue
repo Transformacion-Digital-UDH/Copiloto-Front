@@ -159,8 +159,8 @@ const filteredTableData = computed(() => {
 const totalPages = computed(() => {
   const filteredData = selectedFilter.value
     ? tableData.value.filter(
-        (data) => data.estado === selectedFilter.value.toLowerCase()
-      )
+      (data) => data.estado === selectedFilter.value.toLowerCase()
+    )
     : tableData.value;
 
   return Math.ceil(filteredData.length / rowsPerPage.value);
@@ -217,13 +217,12 @@ const validateResolution = () => {
                 <span class="absolute inset-y-0 left-0 flex items-center pl-2">
                   <IconBuscar />
                 </span>
-                <input
-                  placeholder="Buscar"
-                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300"
-                 />
+                <input placeholder="Buscar"
+                  class="block w-full py-2 pl-8 pr-6 text-sm text-gray-700 placeholder-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base focus:ring-2 focus:ring-base hover:shadow-lg transition ease-in-out duration-300" />
               </div>
               <div class="relative">
-                <select v-model="rowsPerPage" class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
+                <select v-model="rowsPerPage"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                   <option value="5">5</option>
                   <option value="10">10</option>
                   <option value="20">20</option>
@@ -232,7 +231,8 @@ const validateResolution = () => {
 
               <!-- Filtro de estado -->
               <div class="relative">
-                <select v-model="selectedFilter" class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
+                <select v-model="selectedFilter"
+                  class="block w-full h-full px-4 py-2 pr-8 leading-tight text-base bg-white border border-base rounded-lg appearance-none focus:outline-none focus:border-base hover:shadow-lg focus:ring-2 focus:ring-base transition ease-in-out duration-300">
                   <option value="">Todos</option>
                   <option value="Pendiente">Pendiente</option>
                   <option value="Aceptado">Aceptado</option>
@@ -256,7 +256,8 @@ const validateResolution = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(u, index) in filteredTableData" :key="u.id" class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
+                  <tr v-for="(u, index) in filteredTableData" :key="u.id"
+                    class="border-b border-gray-200 hover:bg-gray-200 transition-colors duration-300">
                     <td class="px-3 py-5 text-base">
                       <p class="text-black whitespace-nowrap w-64">
                         {{ u.estudiante?.nombre_completo || "Nombre desconocido" }}
@@ -266,29 +267,21 @@ const validateResolution = () => {
                       <p class="text-black text-wrap w-80 uppercase">{{ u.titulo || "Título no disponible" }}</p>
                     </td>
                     <td class="px-3 py-5 text-center align-middle">
-                      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
-                        <button
-                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                          :class="[
-                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                            ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-green-600'
-                          ]"
-                          :disabled="['rechazado'].includes(u.estado)"
-                          @click="openModal(u.id)">Aceptar
+                      <div
+                        style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 10px;">
+                        <button v-if="['pendiente', 'rechazado'].includes(u.estado)" :class="[
+                          'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#48bb78] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                          ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-green-600'
+                        ]" :disabled="['rechazado'].includes(u.estado)" @click="openModal(u.id)">Aceptar
                         </button>
 
-                        <button
-                          v-if="['pendiente', 'rechazado'].includes(u.estado)"
-                          :class="[
-                            'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
-                            ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-red-600'
-                          ]"
-                          :disabled="['rechazado'].includes(u.estado)"
-                          @click="openRejectModal(u.id)">Rechazar
+                        <button v-if="['pendiente', 'rechazado'].includes(u.estado)" :class="[
+                          'w-20 px-3 py-1 mb-2 text-sm text-white bg-[#dd4e4e] rounded-xl focus:outline-none transform active:translate-y-1 transition-transform duration-150',
+                          ['rechazado'].includes(u.estado) ? 'cursor-not-allowed' : 'hover:bg-red-600'
+                        ]" :disabled="['rechazado'].includes(u.estado)" @click="openRejectModal(u.id)">Rechazar
                         </button>
 
-                        <button
-                          v-if="['aceptado'].includes(u.estado)"
+                        <button v-if="['aceptado'].includes(u.estado)"
                           class="w-20 px-3 py-1 text-sm text-white bg-azul rounded-xl focus:outline-none hover:bg-slate-700 transform active:translate-y-1 transition-transform duration-150"
                           @click="openRejectModal(u.id)">Declinar
                         </button>
@@ -299,9 +292,10 @@ const validateResolution = () => {
                     <td class="px-3 py-5 text-center">
                       <div class="flex justify-center items-center">
                         <!-- Botón de Documentos -->
-                        <button v-if="u.estado === 'aceptado'" @click="openDocumentModal(u.id)" class="focus:outline-none flex justify-center items-center space-x-1">
-                          <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                          <IconEyeAbrir v-else class="mr-1"/>
+                        <button v-if="u.estado === 'aceptado'" @click="openDocumentModal(u.id)"
+                          class="flex items-center m-2 relative group">
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
+                          <IconEyeAbrir class="mr-1 hidden group-hover:block" />
                           <span class="text-[#34495e]">Documentos</span>
                         </button>
                         <!-- Mensaje alternativo cuando no está aceptado -->
@@ -319,10 +313,13 @@ const validateResolution = () => {
               </table>
               <!-- Paginación -->
               <div class="flex flex-col items-center px-5 py-5 border-t xs:flex-row xs:justify-between">
-                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage + 1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
+                <span class="text-sm text-gray-500 xs:text-sm italic">Mostrando del {{ (currentPage - 1) * rowsPerPage +
+                  1 }} al {{ Math.min(currentPage * rowsPerPage, tableData.length) }} de {{ tableData.length }}</span>
                 <div class="inline-flex mt-2 xs:mt-0 space-x-4">
-                  <button :disabled="currentPage === 1" @click="goToPreviousPage" class="px-4 py-2 text-white bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
-                  <button :disabled="currentPage === totalPages" @click="goToNextPage" class="px-4 py-2 text-white bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
+                  <button :disabled="currentPage === 1" @click="goToPreviousPage"
+                    class="px-4 py-2 text-white bg-base hover:bg-baseClarito rounded-s-2xl">Anterior</button>
+                  <button :disabled="currentPage === totalPages" @click="goToNextPage"
+                    class="px-4 py-2 text-white bg-base hover:bg-baseClarito rounded-e-2xl">Siguiente</button>
                 </div>
               </div>
             </div>
@@ -331,10 +328,14 @@ const validateResolution = () => {
         </div>
 
         <!-- Modal de confirmación -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
+        <div v-if="showModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out"
+          @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -342,31 +343,32 @@ const validateResolution = () => {
               <h5 class="text-2xl font-ligth text-gray-900 text-center flex-1">Confirmación</h5>
             </div>
             <div class="p-6">
-              <p class="text-[#5d6d7e] text-lg text-left mb-2">Porfavor escriba el N° de Oficio para la Carta de Aceptación</p>
-              <input
-                type="text"
-                id="nroCarta"
-                v-model="nroCarta"
-                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0"
-                maxlength="3"
-                inputmode="numeric"
-                @input="validateResolution"
-                required>
-                <p v-if="nroCarta.length !== 3 && nroCarta !== ''" class="text-red-800">Debe ingresar 3 dígitos</p>
-                <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
+              <p class="text-[#5d6d7e] text-lg text-left mb-2">Porfavor escriba el N° de Oficio para la Carta de
+                Aceptación</p>
+              <input type="text" id="nroCarta" v-model="nroCarta"
+                class="mb-1 px-2 w-full rounded-md focus:border-gray-900 focus:ring-0" maxlength="3" inputmode="numeric"
+                @input="validateResolution" required>
+              <p v-if="nroCarta.length !== 3 && nroCarta !== ''" class="text-red-800">Debe ingresar 3 dígitos</p>
+              <p class="text-base text-left mb-2"><i>Esta carta se autogenerará por el sistema</i></p>
             </div>
             <div class="flex items-center justify-center p-1 border-gray-200">
-              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button class="ml-5 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" :disabled="nroCarta.length !== 3" @click="acceptSolicitude">Generar</button>
+              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">Cancelar</button>
+              <button class="ml-5 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
+                :disabled="nroCarta.length !== 3" @click="acceptSolicitude">Generar</button>
             </div>
           </div>
         </div>
 
         <!-- Modal de rechazo -->
-        <div v-if="showRejectModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeModal">
+        <div v-if="showRejectModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out"
+          @click.self="closeModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -375,20 +377,27 @@ const validateResolution = () => {
             </div>
             <div class="p-6 bg-white rounded-lg">
               <p class="text-gray-600 text-lg mb-4">Por favor escriba el motivo de su decisión</p>
-              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0" v-model="motivoRechazo" placeholder="Escriba aquí su observación..."></textarea>
+              <textarea class="text-gray-950 rounded-md w-full mt-3 border text-xm focus:border-gray-900 focus:ring-0"
+                v-model="motivoRechazo" placeholder="Escriba aquí su observación..."></textarea>
             </div>
             <div class="flex items-center justify-center p-3 border-gray-200">
-              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" @click="closeModal">Cancelar</button>
-              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base" @click="rejectSolicitude">Confirmar</button>
+              <button class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeModal">Cancelar</button>
+              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl hover:bg-base"
+                @click="rejectSolicitude">Confirmar</button>
             </div>
           </div>
         </div>
 
         <!-- Modal de documentos -->
-        <div v-if="showDocumentModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out" @click.self="closeDocumentModal">
+        <div v-if="showDocumentModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50 backdrop-blur-sm transition-opacity duration-300 ease-out"
+          @click.self="closeDocumentModal">
           <div class="relative w-full max-w-md p-4 bg-white rounded-lg shadow-lg">
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeDocumentModal">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeDocumentModal">
                 <IconCerrar />
               </button>
             </div>
@@ -398,20 +407,17 @@ const validateResolution = () => {
             <div class="p-6 bg-white rounded-lg">
               <div class="flex justify-between items-center">
                 <p class="text-gray-600 text-lg">Carta de aceptación</p>
-                <a
-                  :href="`${VIEW_LETTER}/${solicitudSeleccionada}`"
-                  target="_blank"
-                  @mouseenter="isHovered = true"
-                  @mouseleave="isHovered = false"
-                  class="flex items-center">
-                  <IconEyeCerrar v-if="!isHovered" class="mr-1"/>
-                  <IconEyeAbrir v-else class="mr-1"/>
+                <a :href="`${VIEW_LETTER}/${solicitudSeleccionada}`" target="_blank" @mouseenter="isHovered = true"
+                  @mouseleave="isHovered = false" class="flex items-center">
+                  <IconEyeCerrar v-if="!isHovered" class="mr-1" />
+                  <IconEyeAbrir v-else class="mr-1" />
                   <span class="text-[#34495e]">Visualizar</span>
                 </a>
               </div>
             </div>
             <div class="flex items-center justify-center p-6 border-t border-gray-200">
-              <button class="px-3 py-2 text-xm font-thin text-white bg-[#5d6d7e] rounded-2xl" @click="closeDocumentModal">Cancelar</button>
+              <button class="px-3 py-2 text-xm font-thin text-white bg-[#5d6d7e] rounded-2xl"
+                @click="closeDocumentModal">Cancelar</button>
             </div>
           </div>
         </div>
@@ -448,5 +454,4 @@ const validateResolution = () => {
   font-size: 16px;
   text-transform: uppercase;
 }
-
 </style>
