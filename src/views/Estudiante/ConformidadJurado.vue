@@ -287,7 +287,7 @@ onMounted(() => {
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
           <div class="flex items-center space-x-3">
             <EstadoBolita :estado="estadoBolitaActas" />
-            <h2 class="text-xl font-medium text-black">2. Actas de conformidad del proyecto de investigación por los jurados</h2>
+            <h2 class="text-xl font-medium text-black">2. Documentos de conformidad del proyecto de investigación por los jurados</h2>
 
             <ModalToolTip
               :infoModal="[{ info: 'Asegúrate de revisar los documentos de Informe de Conformidad por los Jurados antes de continuar.' },]" />

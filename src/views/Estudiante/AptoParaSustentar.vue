@@ -62,8 +62,8 @@ const estadoBolitaAptoDocumentos = computed(() => {
     return "pendiente";
   }
 
-  // Si todos los estados son "aprobado", retornar "hecho"
-  if (estados.every(estado => estado === "aprobado")) {
+  // Si todos los estados son "tramitado", retornar "hecho"
+  if (estados.every(estado => estado === "tramitado")) {
     return "hecho";
   }
 
