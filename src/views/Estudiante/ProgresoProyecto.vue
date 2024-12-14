@@ -214,9 +214,9 @@ onMounted(() => {
     </div>
 
     <!-- Tabla de Documentos -->
-    <div class="bg-white rounded-lg shadow-lg p-4 mt-6">
+    <div class="bg-white rounded-lg shadow-lg p-4">
       <!-- Título centrado -->
-      <h2 class="text-xl sm:text-xl font-medium text-gray-700 text-center">
+      <h2 class="text-xl sm:text-xl font-medium text-gray-700 text-center uppercase">
         Documentos del proyecto de investigación
       </h2>
       <!-- Contenedor de la tabla -->
