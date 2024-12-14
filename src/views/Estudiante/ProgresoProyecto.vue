@@ -121,6 +121,41 @@ onMounted(() => {
 </script>
 
 <template>
+  <template v-if="load">
+    <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
+      <div class="flex justify-center items-center content-center px-14 flex-col">
+        <h3 class="bg-gray-200 h-10 w-full mx-auto rounded-md duration-200 skeleton-loader"></h3><br>
+      </div>
+      <div class="mt-6 space-y-10">
+        <div
+          class="flex flex-col lg:flex-row items-center justify-center space-y-8 lg:space-x-16 w-full max-w-7xl mx-auto mb-10">
+          <div class="w-auto lg:w-full flex justify-center items-center h-full">
+            <div class="w-96 h-96 bg-gray-300 rounded-full duration-200 skeleton-loader"></div>
+          </div>
+          <div class="flex-grow flex flex-col space-y-8 items-center text-center mt-2 w-full lg:w-2/3">
+            <div class="relative grid grid-cols-4 gap-4 sm:gap-16 lg:gap-24 xl:gap-16 mb-8">
+              <div v-for="i in 4" :key="i" class="flex flex-col items-center">
+                <div class="w-20 h-20 bg-gray-300 rounded-full duration-200 skeleton-loader"></div>
+                <div class="h-4 w-16 mt-4 bg-gray-300 rounded duration-200 skeleton-loader"></div>
+              </div>
+            </div>
+            <div class="h-4 w-2/3 bg-gray-300 mx-auto rounded duration-200 skeleton-loader"></div>
+            <div
+              class="flex flex-col md:flex-row justify-around items-center w-full space-y-4 md:space-y-0 md:space-x-8">
+              <div class="bg-gray-300 h-20 w-40 rounded-lg shadow-lg duration-200 skeleton-loader"></div>
+              <div class="bg-gray-300 h-20 w-40 rounded-lg shadow-lg duration-200 skeleton-loader"></div>
+            </div><br><br><br>
+            <div class="h-14 w-64 bg-gray-300 mx-auto rounded duration-200 skeleton-loader"></div>
+          </div>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 relative">
+          <div class="bg-gray-300 h-8 w-2/4 rounded duration-200 skeleton-loader"></div>
+          <div class="h-20 bg-gray-300 w-full rounded mt-4 duration-200 skeleton-loader"></div>
+        </div>
+      </div>
+    </div>
+  </template>
+
   <div class="flex-1 p-6 font-Roboto bg-white min-h-full">
     <!-- Título Tipiado -->
     <h3 class="text-2xl md:text-4xl font-bold text-center text-azul">{{ textoTipiado }}</h3>
@@ -129,7 +164,8 @@ onMounted(() => {
       <div class="flex flex-wrap justify-center items-center gap-4 lg:gap-8 mb-4">
         <!-- Paso 1 -->
         <div class="flex flex-col items-center w-1/2 sm:w-auto">
-          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
             1
           </div>
           <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">
@@ -139,7 +175,8 @@ onMounted(() => {
 
         <!-- Paso 2 -->
         <div class="flex flex-col items-center w-1/2 sm:w-auto">
-          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-base text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
             2
           </div>
           <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">
@@ -149,7 +186,8 @@ onMounted(() => {
 
         <!-- Paso 3 -->
         <div class="flex flex-col items-center w-1/2 sm:w-auto">
-          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
             3
           </div>
           <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">
@@ -159,7 +197,8 @@ onMounted(() => {
 
         <!-- Paso 4 -->
         <div class="flex flex-col items-center w-1/2 sm:w-auto">
-          <div class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
+          <div
+            class="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center bg-gray-400 text-white rounded-full shadow-lg text-xs md:text-sm font-bold">
             4
           </div>
           <span class="mt-2 text-xs md:text-sm font-medium text-azul text-center">
