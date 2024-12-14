@@ -455,7 +455,7 @@ onMounted(() => { getTitulo(); });
                   <input
                     id="tituloTesis"
                     type="text"
-                    v-model="tituloExistente"
+                    v-model="solicitude.titulo"
                     :disabled="tituloExistente"
                     class="w-full p-3 text-sm bg-gray-100 border border-gray-300 rounded-md text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Escribe el título de tu proyecto de investigación aquí"
