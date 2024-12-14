@@ -44,7 +44,7 @@ const estadoBolitaActaSustentacion = computed(() => {
     return "observado";
   }
 
-  if (estadoActa === "aprobado") {
+  if (estadoActa === "emitido") {
     return "hecho";
   }
 

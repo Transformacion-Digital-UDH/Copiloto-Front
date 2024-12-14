@@ -52,7 +52,7 @@ const estadoBolitaDocumentos = computed(() => {
   }
 
   // Si todos los estados son "aprobado", retornar "hecho"
-  if (estados.every(estado => estado === "aprobado")) {
+  if (estados.every(estado => estado === "tramitado")) {
     return "hecho";
   }
 
@@ -240,7 +240,7 @@ onMounted(() =>{
         <div class="bg-white rounded-lg shadow-lg p-6 relative mb-9">
           <div class="relative flex items-center space-x-3">
             <EstadoBolita :estado="estadoBolitaAprobacion" />
-            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación para el cambio de título</h2>
+            <h2 class="text-xl font-medium text-black">1. Solicitar aprobación de proyecto de investigación por la facultad</h2>
             <ModalToolTip
               :infoModal="[{ info: 'Este título ya no lo podrás cambiar posteriormente y se enviará tu solicitud al Programa Académico y a la Facultad.' },]" />
           </div>
@@ -267,7 +267,7 @@ onMounted(() =>{
       <div class="bg-white rounded-lg shadow-lg p-6 relative">
         <div class="flex items-center space-x-3">
           <EstadoBolita :estado="estadoBolitaDocumentos" />
-          <h2 class="text-xl font-medium text-black">2. Documentos que verifican la aprobacion del proyecto de tesis
+          <h2 class="text-xl font-medium text-black">2. Documentos para la aprobación de proyecto de investigación
           </h2>
         </div>
         <!-- oficio de programa academico-->
