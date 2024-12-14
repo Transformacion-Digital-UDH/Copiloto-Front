@@ -264,7 +264,7 @@ export default defineComponent({
     };
 
     const isActive = (submenu: Submenu) => {
-      return route.path.includes(submenu.path);
+      return route.path === submenu.path;
     };
 
     const openSectionIfActive = () => {

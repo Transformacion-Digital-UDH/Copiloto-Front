@@ -101,11 +101,7 @@ const obtenerDatosEstudiante = async () => {
     console.log("Respuesta de la API:", response.data);
 
     if (!response.data || !response.data.jurados || response.data.jurados.length === 0) {
-      alertToast(
-        "No se encontraron jurados designados. Verifica si ya solicitó sus jurados.",
-        "Advertencia",
-        "warning"
-      );
+      console.log("No se encontraron jurados designados. Verifica si ya solicitó sus jurados.");
     } else {
       // Asignar el estado y otros datos al objeto `obtener`
       obtener.value = response.data;
@@ -162,7 +158,7 @@ const solicitarJuradoProyecto = async () => {
     isLoading.value = false;
   }
 };
- 
+
 onMounted(() => {
   obtenerDatosEstudiante();
   //console.log("Estado del documento:", obtener.value?.estado);
@@ -171,7 +167,9 @@ onMounted(() => {
 
 </script>
 <template>
-  <template v-if="load"><SkeletonDesignarJurados/></template>
+  <template v-if="load">
+    <SkeletonDesignarJurados />
+  </template>
   <template v-else>
     <div class="flex-1 p-10 font-Roboto bg-gray-100 min-h-full">
       <h3 class="text-4xl font-bold text-center text-azul">
@@ -209,29 +207,21 @@ onMounted(() => {
             <h2 class="text-xl font-medium text-black">
               1. Solicitar designación de jurados
             </h2>
-            <ModalToolTip
-              :infoModal="[
-                {
-                  info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
-                },
-              ]"
-            />
+            <ModalToolTip :infoModal="[
+              {
+                info: 'Tus jurados serán seleccionados por el coordinador y se mostrarán en la brevedad en el sistema.',
+              },
+            ]" />
           </div>
           <p class="text-gray-500 mt-2 mb-1 text-sm">
             Haz clic en el botón
-            <strong class="text-green-500 text-sm font-medium"
-              >"Solicitar jurados"</strong
-            >
+            <strong class="text-green-500 text-sm font-medium">"Solicitar jurados"</strong>
             para la designación de jurados.
           </p>
           <!-- boton para solicitar designacion de jurados -->
           <div class="flex justify-center mt-4">
-            <ButtonRequest
-              label="Solicitar jurados"
-              :loading="isLoading"
-              :disabled="isSolicitarDisabled"
-              @click="solicitarJuradoProyecto"
-            />
+            <ButtonRequest label="Solicitar jurados" :loading="isLoading" :disabled="isSolicitarDisabled"
+              @click="solicitarJuradoProyecto" />
           </div>
         </div>
 
@@ -257,33 +247,25 @@ onMounted(() => {
                 3. Documento para la designación de jurados de proyecto de investigación
 
               </h2>
-              <ModalToolTip
-                :infoModal="[
-                  {
-                    info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
-                  },
-                ]"
-              />
+              <ModalToolTip :infoModal="[
+                {
+                  info: 'Este es el documento oficial con los jurados designados. Asegúrate de revisarlo antes de continuar.',
+                },
+              ]" />
             </div>
           </div>
           <!-- oficion multiple emitido por el programa academico -->
           <div class="mt-4 space-y-4">
             <DocumentCard
               titulo="OFICIO MULTIPLE DE DESIGNACION DE JURADOS PARA LA REV. DEL TRABAJO DE INV. (TESIS) - POR EL PROGRAMA ACADEMICO"
-              :estado="obtener?.estado || ''"
-              :id="obtener?.docof_id ?? ''"
-              :view="VIEW_OFFICEJURADO"
-              :download="DOWNLOAD_OFFICEJURADO"
-            />
+              :estado="obtener?.estado || ''" :id="obtener?.docof_id ?? ''" :view="VIEW_OFFICEJURADO"
+              :download="DOWNLOAD_OFFICEJURADO" />
           </div>
         </div>
 
         <!--Botones siguiente y anteerior-->
-        <NavigationButton
-          prevRoute="/estudiante/conformidad-asesor"
-          nextRoute="/estudiante/conformidad-jurado"
-          :nextCondition="() => obtener?.estado === 'tramitado'"
-        />
+        <NavigationButton prevRoute="/estudiante/conformidad-asesor" nextRoute="/estudiante/conformidad-jurado"
+          :nextCondition="() => obtener?.estado === 'tramitado'" />
 
         <!-- Card 4: Solicitar cambio de jurado
         <div class="bg-white rounded-lg shadow-lg p-6 relative">
@@ -351,6 +333,7 @@ onMounted(() => {
   font-weight: 400;
   border-radius: 0.375rem;
 }
+
 .text-center {
   text-align: center;
   padding: 1rem;

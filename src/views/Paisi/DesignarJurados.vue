@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted,nextTick  } from "vue";
+import { ref, computed, onMounted, nextTick } from "vue";
 import axios from "axios";
 import { alertToast } from "@/functions";
 import IconCerrar from "@/components/icons/IconCerrar.vue";
@@ -154,8 +154,8 @@ const asignarJurado = () => {
     return;
   }
   if (selectedPresidente.value === selectedSecretario.value ||
-      selectedPresidente.value === selectedVocal.value ||
-      selectedSecretario.value === selectedVocal.value) {
+    selectedPresidente.value === selectedVocal.value ||
+    selectedSecretario.value === selectedVocal.value) {
     alertToast('No puedes seleccionar al mismo docente en roles diferentes', 'error');
     return;
   }
@@ -177,7 +177,7 @@ const sendToBackend = async () => {
     alertToast('Formulario inválido. Verifica los campos.', 'error');
     return;
   }
-  
+
   const payload = {
     estado: 'tramitado',
     numero_oficio: nroOficio1.value,
@@ -190,7 +190,7 @@ const sendToBackend = async () => {
   confirming.value = true;
   try {
     if (selectedOficioId.value) {
-      
+
       // Asegúrate de que sea una solicitud PUT
       const response = await axios.put(`/api/office/djt/${selectedOficioId.value}/status`, payload);
       alertToast('Datos enviados correctamente', "Éxito", "success");
@@ -338,9 +338,9 @@ onMounted(() => {
                         <a v-if="u.of_status.toLowerCase() === 'tramitado'"
                           :href="`${VIEW_OFFICEJURADO}/${u.oficio_id}`" target="_blank"
                           class="flex items-center m-2 relative group">
-                          <IconEyeCerrar class=" group-hover:hidden" />
+                          <IconEyeCerrar class="mr-1 group-hover:hidden" />
                           <IconEyeAbrir class="mr-1 hidden group-hover:block" />
-                          <span class="text-[#34495e]">Oficio <br> Múltiple</span>
+                          <span class="text-[#34495e]">Oficio<br>Múltiple</span>
                         </a>
 
                         <!-- Si el estado no es "tramitado", mostrar el botón de Asignar -->
@@ -355,12 +355,11 @@ onMounted(() => {
 
                     <!-- Estado del Proyecto -->
                     <td class="px-3 py-5 text-center">
-                        <span
-                          :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-') }`">
-                          {{  u.of_status  ?  u.of_status .charAt(0).toUpperCase() +
-                             u.of_status .slice(1).toLowerCase() : 'Estado desconocido' }}
-                        </span>
-                      </td>
+                      <span :class="`estado-estilo estado-${u.of_status.toLowerCase().replace(' ', '-')}`">
+                        {{ u.of_status ? u.of_status.charAt(0).toUpperCase() +
+                          u.of_status.slice(1).toLowerCase() : 'Estado desconocido' }}
+                      </span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -381,12 +380,15 @@ onMounted(() => {
         </div>
 
         <!-- Modal para la designación de jurados -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
+        <div v-if="showModal"
+          class="fixed inset-0 z-50 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-gray-900 bg-opacity-50">
           <div class="relative max-w-lg w-full flex flex-col p-8 bg-gray-100 rounded-lg shadow-lg">
-            
+
             <!-- Botón de cierre -->
             <div class="flex justify-end items-start">
-              <button class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out" @click="closeModal">
+              <button
+                class="absolute top-0 right-0 m-2 text-gray-900 hover:scale-75 transition-transform duration-150 ease-in-out"
+                @click="closeModal">
                 <IconCerrar />
               </button>
             </div>
@@ -401,7 +403,9 @@ onMounted(() => {
               <div class="p-6">
                 <div class="flex-1">
                   <!-- Selección del presidente -->
-                  <select v-model="selectedPresidente" id="presidente" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Presidente', selectedPresidente)">
+                  <select v-model="selectedPresidente" id="presidente"
+                    class="w-full p-2 border border-gray-300 rounded mb-4"
+                    @change="handleJuradoSelect('Presidente', selectedPresidente)">
                     <option disabled value="">Selecciona un presidente</option>
                     <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
                       {{ jurado.asesor }}
@@ -409,7 +413,9 @@ onMounted(() => {
                   </select>
 
                   <!-- Selección del secretario -->
-                  <select v-model="selectedSecretario" id="secretario" class="w-full p-2 border border-gray-300 rounded mb-4" @change="handleJuradoSelect('Secretario', selectedSecretario)">
+                  <select v-model="selectedSecretario" id="secretario"
+                    class="w-full p-2 border border-gray-300 rounded mb-4"
+                    @change="handleJuradoSelect('Secretario', selectedSecretario)">
                     <option disabled value="">Selecciona un secretario</option>
                     <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
                       {{ jurado.asesor }}
@@ -417,7 +423,8 @@ onMounted(() => {
                   </select>
 
                   <!-- Selección del vocal -->
-                  <select v-model="selectedVocal" id="vocal" class="w-full p-2 border border-gray-300 rounded" @change="handleJuradoSelect('Vocal', selectedVocal)">
+                  <select v-model="selectedVocal" id="vocal" class="w-full p-2 border border-gray-300 rounded"
+                    @change="handleJuradoSelect('Vocal', selectedVocal)">
                     <option disabled value="">Selecciona un vocal</option>
                     <option v-for="jurado in jurados" :key="jurado.asesor_id" :value="jurado.asesor_id">
                       {{ jurado.asesor }}
@@ -436,26 +443,26 @@ onMounted(() => {
 
               <!-- Tabla para mostrar las revisiones si existen -->
               <div v-if="selectedRevisiones.length" class="mt-6">
-                        <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
-                        <!-- Aplicamos un contenedor con scroll si la tabla crece mucho -->
-                        <div class="overflow-y-auto max-h-48"> <!-- Aquí se agrega el scroll -->
-                          <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
-                            <thead>
-                              <tr class="bg-gray-200 text-left">
-                                <th class="px-4 py-2">Rol</th>
-                                <th class="px-4 py-2">Estudiante</th>
-                                <th class="px-4 py-2">Días</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr v-for="(revision, index) in selectedRevisiones" :key="index">
-                                <td class="border px-4 py-2">{{ revision.rol }}</td>
-                                <td class="border px-4 py-2">{{ revision.estudiante }}</td>
-                                <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div> <!-- Fin del contenedor con scroll -->
+                <h3 class="text-xl font-semibold">Revisiones del jurado seleccionado</h3>
+                <!-- Aplicamos un contenedor con scroll si la tabla crece mucho -->
+                <div class="overflow-y-auto max-h-48"> <!-- Aquí se agrega el scroll -->
+                  <table class="min-w-full table-auto mt-4 bg-white shadow-lg rounded-lg">
+                    <thead>
+                      <tr class="bg-gray-200 text-left">
+                        <th class="px-4 py-2">Rol</th>
+                        <th class="px-4 py-2">Estudiante</th>
+                        <th class="px-4 py-2">Días</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="(revision, index) in selectedRevisiones" :key="index">
+                        <td class="border px-4 py-2">{{ revision.rol }}</td>
+                        <td class="border px-4 py-2">{{ revision.estudiante }}</td>
+                        <td class="border px-4 py-2">{{ revision.tiempo_dias }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div> <!-- Fin del contenedor con scroll -->
               </div>
 
               <!-- Mensaje cuando no hay revisiones -->
@@ -495,18 +502,15 @@ onMounted(() => {
               <p v-if="nroExped1.length !== 17 && nroExped1 !== ''" class="text-red-800">Debe ingresar 17 dígitos</p>
             </div>
             <div class="flex items-center justify-center p-3 border-gray-200">
-              <button 
-                :disabled="confirming" 
-                class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl" 
+              <button :disabled="confirming" class="px-3 py-2 text-xm font-Thin 100 text-white bg-[#5d6d7e] rounded-2xl"
                 @click="closeModal">
                 Cancelar
               </button>
-              <button 
-                class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl" 
-                :disabled="!formIsValid || confirming" 
-                @click="sendToBackend">
+              <button class="ml-4 px-3 py-2 text-xm font-Thin 100 text-white bg-base rounded-2xl"
+                :disabled="!formIsValid || confirming" @click="sendToBackend">
                 <div v-if="confirming" class="flex items-center gap-2">
-                  <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg class="animate-spin h-5 w-5 text-gray-200 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
                   </svg>

@@ -335,7 +335,7 @@ function closeDocumentModal() {
                         </p>
                       </td>
 
-                      <td class="px-3 py-5 flex flex-col items-center justify-center">
+                      <td class="px-3 py-9 flex flex-col items-center justify-center">
                         <!-- Botón para Generar -->
                         <button v-if="['pendiente', 'observado'].includes(solicitude.estado ?? '')" :class="[
                           'w-20 px-2 py-1 mb-2 text-sm text-white bg-base rounded-xl focus:outline-none',
