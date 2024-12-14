@@ -188,7 +188,7 @@ const sendSolicitude = async (student_id: string) => {
     };
 
     alertConfirmation(
-      "Estás seguro de iniciar este trámite?",
+      "¿Estás seguro de iniciar este trámite?",
       "Iniciar trámite",
       "question",
       params,
@@ -398,31 +398,28 @@ onMounted(() => { getTitulo(); });
 
   <template v-else>
     <template v-if="!solicitude.estado">
-      <div class="flex-1 p-15 border-s-2 font-Roboto bg-gray-100 h-screen">
-        <div class="p-10 bg-white rounded-lg shadow-lg space-y-10 text-center">
+      <div class="flex-1 p-15 font-Roboto bg-white h-screen">
+        <div class="p-10 bg-white space-y-10 text-center">
           <h3 class="text-4xl font-semibold text-azul">
-            Usted no ha iniciado un trámite
+            TRÁMITE DE LA TITULACIÓN 
           </h3>
-          <p class="text-gray-500">Iniciar trámite para solicitar un asesor</p>
+        <p class="text-gray-500">Este es el inicio para el proceso de trámite de titulación, por favor dale click en <strong class="text-base">Iniciar trámite</strong> <br>  para empezar con la el trámite de la designación de tu asesor </p>
 
           <div class="flex justify-center">
             <img src="/img/notInitSolicitude.svg" alt="Iniciar trámite o solicitar asesor"
-              class="w-[40%] h-auto object-cover rounded-md shadow-md" />
+              class="w-[40%] h-auto object-cover" />
           </div>
-
           <div class="flex justify-center">
-
             <button v-if="authStore.id"
-              class="bg-base text-white px-6 py-3 rounded-lg text-xm hover:bg-base transition duration-300"
-              @click="sendSolicitude(authStore.id)">
-
+              class="bg-base text-white px-6 py-3 rounded-lg text-xl hover:bg-base transition duration-300 font-medium space-x-3"
+              @click="sendSolicitude(authStore.id)"><i class="fas fa-step-forward text-azul text-xl"></i>
               Iniciar trámite
             </button>
           </div>
         </div>
       </div>
-    </template>
-    <template v-else>
+    </template>    
+    <template v-else>    
       <div class="flex-1 p-12 border-s-2 font-Roboto bg-gray-100">
         <h3 class="text-4xl font-semibold text-center text-azul">
           {{ textoTipiado }}
