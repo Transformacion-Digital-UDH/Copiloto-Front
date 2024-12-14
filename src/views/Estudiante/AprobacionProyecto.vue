@@ -130,8 +130,7 @@ const obtenerDatosEstudiante = async () => {
   load.value = true;
   const student_id = authStore.id
   try {
-    const response = await axios.get(`/api/estudiante/get-info-aprobar-tesis/${student_id}`);
-
+    const response = await axios.get(`api/estudiante/get-info-aprobar-tesis/${student_id}`);
     //console.log("Mostrando", response.data);
 
     // mapeo de los datos para asegurar que cumplen con la interfaz Estudiante
@@ -165,12 +164,25 @@ const obtenerDatosEstudiante = async () => {
   }
 };
 
+const revocarPermisosProyecto = async () => {
+  const student_id = authStore.id;
+  try {
+    const response = await axios.post('api/revoke-permissions', { estudiante_id: student_id });
+    console.log("que me devuelves:", response.data)
+  } catch (error: any) {
+    console.error("No se pudo revocar los permisos", error.response?.data || error.message);
+  }
+}
 // funcion de disparador para solicitar aprob proyecto
 const solicitarAprobacionProyecto = async (tituloDefinitivo?: string) => {
   isLoading.value = true;
   const student_id = authStore.id;
   try {
-    const response = await axios.post(`/api/oficio/solicitud-aprobar-tesis/${student_id}`, {
+
+    // revocar todos los permisos proyecto
+    await revocarPermisosProyecto();
+    
+    const response = await axios.post(`api/oficio/solicitud-aprobar-tesis/${student_id}`, {
       titulo: tituloDefinitivo || obtener.value?.titulo || "",
     });
 
@@ -190,7 +202,6 @@ const solicitarAprobacionProyecto = async (tituloDefinitivo?: string) => {
     isLoading.value = false;
   }
 };
-
 
 onMounted(() =>{
   obtenerDatosEstudiante();
