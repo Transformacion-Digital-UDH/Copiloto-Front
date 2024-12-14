@@ -71,7 +71,7 @@ const props = defineProps({
 const formatearTexto = (text: string): string =>
   text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 const generateURL = (view: string, id: string): string => {
-  console.log("Generando URL con:", { view, id });
+  //console.log("Generando URL con:", { view, id });
   if (!view || !id) {
     console.error("View o ID no proporcionados correctamente:", { view, id });
     return "#";
